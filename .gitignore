@@ -1,0 +1,31 @@
+# Terraform working data and local state
+**/.terraform/
+**/__pycache__/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.plan
+crash.log
+crash.*.log
+
+# Local variable and backend overrides
+*.auto.tfvars
+*.auto.tfvars.json
+*.backend.hcl
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Credentials and environment files
+.env
+.env.*
+!.env.example
+
+# Generated Lambda packages
+*.zip
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store

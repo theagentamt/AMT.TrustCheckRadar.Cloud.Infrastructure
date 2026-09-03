@@ -1,0 +1,170 @@
+name: Deploy infrastructure
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "terraform/**"
+      - "environments/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to deploy
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      artifact_release:
+        description: Immutable Lambda artifact release identifier
+        required: false
+        type: string
+      deployment_scope:
+        description: Deploy only the foundation or the complete environment
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - foundation
+      execution_mode:
+        description: Generate plans only or apply them
+        required: true
+        default: plan
+        type: choice
+        options:
+          - plan
+          - apply
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
+
+    env:
+      DEPLOY_ENV: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
+      DEPLOY_SCOPE: ${{ github.event_name == 'workflow_dispatch' && inputs.deployment_scope || 'all' }}
+      EXECUTION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.execution_mode || 'apply' }}
+      STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      TF_VAR_state_bucket_name: ${{ vars.TF_STATE_BUCKET }}
+      TF_VAR_state_bucket_region: ${{ vars.AWS_REGION }}
+      TF_VAR_artifact_release: ${{ github.event_name == 'workflow_dispatch' && inputs.artifact_release || vars.ARTIFACT_RELEASE }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6.0.2
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: terraform-${{ github.run_id }}
+
+      - name: Check deployment configuration
+        run: |
+          test -n "$TF_VAR_state_bucket_name" || { echo "TF_STATE_BUCKET is not configured for $DEPLOY_ENV"; exit 1; }
+          test -n "$TF_VAR_state_bucket_region" || { echo "AWS_REGION is not configured for $DEPLOY_ENV"; exit 1; }
+          if [[ "$DEPLOY_SCOPE" == "all" ]]; then
+            test -n "$TF_VAR_artifact_release" || { echo "ARTIFACT_RELEASE or workflow artifact_release is required"; exit 1; }
+          fi
+
+      - name: Plan foundation
+        run: |
+          terraform -chdir=terraform/foundation init -reconfigure \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=$STATE_KEY_PREFIX/$DEPLOY_ENV/foundation.tfstate" \
+            -backend-config="region=$TF_VAR_state_bucket_region" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+          terraform -chdir=terraform/foundation plan \
+            -var-file="../../environments/$DEPLOY_ENV/foundation.tfvars" \
+            -out=foundation.tfplan
+
+      - name: Apply foundation
+        if: env.EXECUTION_MODE == 'apply'
+        run: terraform -chdir=terraform/foundation apply -auto-approve foundation.tfplan
+
+      - name: Verify immutable Lambda artifacts
+        if: env.DEPLOY_SCOPE == 'all' && (env.EXECUTION_MODE == 'apply' || github.event_name == 'workflow_dispatch')
+        run: |
+          artifact_bucket=$(terraform -chdir=terraform/foundation output -raw artifact_bucket_name)
+          for artifact in \
+            age_attestation.zip \
+            conversation_analysis.zip \
+            device_registration.zip \
+            purchase_handoff.zip \
+            entitlement_snapshot.zip \
+            post_confirmation.zip
+          do
+            aws s3api head-object \
+              --bucket "$artifact_bucket" \
+              --key "releases/$TF_VAR_artifact_release/$artifact" >/dev/null
+          done
+
+      - name: Plan API
+        if: env.DEPLOY_SCOPE == 'all'
+        run: |
+          terraform -chdir=terraform/api init -reconfigure \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=$STATE_KEY_PREFIX/$DEPLOY_ENV/api.tfstate" \
+            -backend-config="region=$TF_VAR_state_bucket_region" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+          terraform -chdir=terraform/api plan \
+            -var-file="../../environments/$DEPLOY_ENV/api.tfvars" \
+            -out=api.tfplan
+
+      - name: Apply API
+        if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
+        run: terraform -chdir=terraform/api apply -auto-approve api.tfplan
+
+      - name: Plan identity workflows
+        if: env.DEPLOY_SCOPE == 'all'
+        run: |
+          terraform -chdir=terraform/identity-workflows init -reconfigure \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=$STATE_KEY_PREFIX/$DEPLOY_ENV/identity-workflows.tfstate" \
+            -backend-config="region=$TF_VAR_state_bucket_region" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+          terraform -chdir=terraform/identity-workflows plan \
+            -var-file="../../environments/$DEPLOY_ENV/identity-workflows.tfvars" \
+            -out=identity-workflows.tfplan
+
+      - name: Apply identity workflows
+        if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
+        run: terraform -chdir=terraform/identity-workflows apply -auto-approve identity-workflows.tfplan
+
+      - name: Deployment summary
+        run: |
+          echo "### $DEPLOY_ENV infrastructure" >> "$GITHUB_STEP_SUMMARY"
+          echo "Scope: \`$DEPLOY_SCOPE\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Mode: \`$EXECUTION_MODE\`" >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$DEPLOY_SCOPE" == "all" ]]; then
+            echo "Release: \`$TF_VAR_artifact_release\`" >> "$GITHUB_STEP_SUMMARY"
+            if [[ "$EXECUTION_MODE" == "apply" ]]; then
+              echo "API endpoint: \`$(terraform -chdir=terraform/api output -raw age_attestation_api_url)\`" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          fi
