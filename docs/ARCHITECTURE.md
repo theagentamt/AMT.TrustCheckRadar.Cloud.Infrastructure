@@ -4,7 +4,7 @@
 
 Every resource name and tag contains the environment. Every environment and stack uses a distinct state object and lock file. GitHub deployment concurrency prevents two applies from racing against the same environment.
 
-Using separate AWS accounts is recommended for production. The same code also supports a single account because resource names, artifact buckets, IAM roles, and state keys remain environment-specific.
+This deployment keeps `dev`, `staging`, and `prod` in one existing AWS account. Resource names, artifact buckets, IAM roles, and state keys remain environment-specific.
 
 ## Stack Boundaries
 

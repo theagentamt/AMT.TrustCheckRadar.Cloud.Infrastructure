@@ -1,6 +1,6 @@
 # Initial Setup
 
-This guide supports either one AWS account containing all environments or a separate AWS account for each environment. Separate accounts provide the strongest production boundary.
+This deployment uses one existing AWS account for `dev`, `staging`, and `prod`. Environment-specific state keys, names, roles, and artifact buckets keep the deployments independent within that account.
 
 ## Prerequisites
 
@@ -9,11 +9,11 @@ This guide supports either one AWS account containing all environments or a sepa
 - Permission to configure GitHub repository environments
 - A Route 53 hosted zone for the production custom domain
 
-When production uses a separate AWS account, the configured Route 53 zone must be in that account. Otherwise delegate the API subdomain to the production account or disable the custom domain until DNS ownership is arranged.
+Complete the account-owner actions in [ACCESS_RUNBOOK.md](ACCESS_RUNBOOK.md) before bootstrap. The production Route 53 hosted zone must be available in this account, or DNS delegation must be arranged before enabling the custom domain.
 
 ## 1. Create Remote State
 
-Choose a globally unique bucket name. For separate AWS accounts, perform this step once in each account and use a different bucket name for each environment.
+Choose a globally unique bucket name. Create this shared state bucket once in the existing account; each environment uses a separate object key.
 
 ```bash
 terraform -chdir=bootstrap/state-bucket init
@@ -38,14 +38,6 @@ terraform -chdir=bootstrap/access init \
 
 terraform -chdir=bootstrap/access apply \
   -var="state_bucket_name=amt-trustcheckradar-ACCOUNT_ID-tfstate"
-```
-
-For a separate environment account, limit the roles created in that account:
-
-```bash
-terraform -chdir=bootstrap/access apply \
-  -var="state_bucket_name=amt-trustcheckradar-DEV_ACCOUNT_ID-tfstate" \
-  -var='environments=["dev"]'
 ```
 
 If the AWS account already has the GitHub OIDC provider, pass its ARN through `existing_github_oidc_provider_arn` instead of creating another provider.

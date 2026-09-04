@@ -34,5 +34,3 @@ Run a manual deployment for the environment and inspect the generated plans. Any
 ## Destruction
 
 Production artifact buckets do not allow force deletion, and the state bucket has Terraform deletion protection. Environment destruction must be an explicit, separately reviewed operation; it is not part of the deployment workflow.
-
-Deleting a workload and closing an AWS account are separate approvals. Follow [MIGRATION_RUNBOOK.md](MIGRATION_RUNBOOK.md) for inventory, backup, ownership, and account-closure checkpoints.
