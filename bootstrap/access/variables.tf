@@ -27,10 +27,22 @@ variable "github_organization" {
   default     = "theagentamt"
 }
 
+variable "github_owner_id" {
+  description = "Immutable GitHub ID for the repository owner"
+  type        = number
+  default     = 286777212
+}
+
 variable "github_repository" {
   description = "GitHub repository trusted by AWS OIDC"
   type        = string
   default     = "AMT.TrustCheckRadar.Cloud.Infrastructure"
+}
+
+variable "github_repository_id" {
+  description = "Immutable GitHub repository ID trusted by AWS OIDC"
+  type        = number
+  default     = 1355413242
 }
 
 variable "environments" {

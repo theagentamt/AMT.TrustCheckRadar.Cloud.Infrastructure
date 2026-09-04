@@ -49,7 +49,7 @@ terraform -chdir=bootstrap/access apply \
 
 If the AWS account already has the GitHub OIDC provider, pass its ARN through `existing_github_oidc_provider_arn` instead of creating another provider.
 
-The role trust policy matches the exact repository and GitHub environment subject. Do not replace that condition with a wildcard.
+The role trust policy matches the repository's immutable owner and repository IDs plus the exact GitHub environment subject. If the repository is transferred or recreated, update those IDs before applying. Do not replace the subject condition with a wildcard.
 
 ## 3. Configure GitHub Environments
 

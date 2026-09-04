@@ -20,7 +20,7 @@ State remains sensitive even when outputs are marked nonsensitive. Access to the
 
 ## AWS Authentication
 
-GitHub Actions uses an AWS IAM OIDC provider. Each deploy role accepts tokens only when the `aud` claim is `sts.amazonaws.com`, the `sub` claim exactly matches this repository and one GitHub environment, and the workflow is running from `main`.
+GitHub Actions uses an AWS IAM OIDC provider. Each deploy role accepts tokens only when the `aud` claim is `sts.amazonaws.com`, the `sub` claim exactly matches this repository's immutable owner and repository IDs plus one GitHub environment, and the workflow is running from `main`.
 
 The bootstrap policy is a service-limited deployment baseline for the resources in this repository. Review CloudTrail after initial deployments and narrow actions further as the resource model stabilizes.
 
