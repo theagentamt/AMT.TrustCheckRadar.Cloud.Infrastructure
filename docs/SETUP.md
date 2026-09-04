@@ -16,13 +16,20 @@ Complete the account-owner actions in [ACCESS_RUNBOOK.md](ACCESS_RUNBOOK.md) bef
 Choose a globally unique bucket name. Create this shared state bucket once in the existing account; each environment uses a separate object key.
 
 ```bash
-terraform -chdir=bootstrap/state-bucket init
+terraform -chdir=bootstrap/state-bucket init -backend=false
 terraform -chdir=bootstrap/state-bucket apply \
   -var="state_bucket_name=amt-trustcheckradar-ACCOUNT_ID-tfstate" \
   -var="aws_region=us-east-1"
+
+terraform -chdir=bootstrap/state-bucket init -migrate-state -force-copy \
+  -backend-config="bucket=amt-trustcheckradar-ACCOUNT_ID-tfstate" \
+  -backend-config="key=trustcheckradar/bootstrap/state-bucket.tfstate" \
+  -backend-config="region=us-east-1" \
+  -backend-config="encrypt=true" \
+  -backend-config="use_lockfile=true"
 ```
 
-The bucket has versioning, server-side encryption, blocked public access, bucket-owner-enforced ownership, TLS-only access, and deletion protection. Its small bootstrap state remains local and is ignored by Git; retain an encrypted administrative backup.
+The bucket has versioning, server-side encryption, blocked public access, bucket-owner-enforced ownership, TLS-only access, and deletion protection. Initial creation uses temporary local state because the backend does not exist yet; the second initialization migrates that state into the protected bucket.
 
 ## 2. Create GitHub OIDC Access
 
