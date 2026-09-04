@@ -8,15 +8,10 @@ For release `2026.09.03-1`, the required object layout is:
 releases/2026.09.03-1/age_attestation.zip
 releases/2026.09.03-1/conversation_analysis.zip
 releases/2026.09.03-1/device_registration.zip
+releases/2026.09.03-1/device_recovery.zip
 releases/2026.09.03-1/purchase_handoff.zip
 releases/2026.09.03-1/entitlement_snapshot.zip
 releases/2026.09.03-1/post_confirmation.zip
-```
-
-When enabled, also publish:
-
-```text
-releases/2026.09.03-1/device_recovery.zip
 releases/2026.09.03-1/web_risk_communication.zip
 ```
 

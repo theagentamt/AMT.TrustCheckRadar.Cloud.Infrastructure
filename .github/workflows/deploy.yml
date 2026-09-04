@@ -114,9 +114,11 @@ jobs:
             age_attestation.zip \
             conversation_analysis.zip \
             device_registration.zip \
+            device_recovery.zip \
             purchase_handoff.zip \
             entitlement_snapshot.zip \
-            post_confirmation.zip
+            post_confirmation.zip \
+            web_risk_communication.zip
           do
             aws s3api head-object \
               --bucket "$artifact_bucket" \

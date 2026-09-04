@@ -236,7 +236,7 @@ variable "api_mapping_key" {
 variable "disable_execute_api_endpoint" {
   description = "Disable the default execute-api endpoint so the API is reachable only through the custom domain"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "api_throttle_burst_limit" {

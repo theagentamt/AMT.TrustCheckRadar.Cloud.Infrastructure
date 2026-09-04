@@ -72,6 +72,13 @@ check "foundation_contract_version" {
   }
 }
 
+check "api_has_reachable_endpoint" {
+  assert {
+    condition     = var.custom_domain_enabled || !var.disable_execute_api_endpoint
+    error_message = "The default execute-api endpoint cannot be disabled unless a custom domain is enabled."
+  }
+}
+
 resource "aws_secretsmanager_secret" "openai" {
   count = var.openai_secret_arn == null ? 1 : 0
 
