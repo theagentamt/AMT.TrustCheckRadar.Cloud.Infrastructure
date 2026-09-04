@@ -88,4 +88,4 @@ Do not run raw Terraform commands against a stack already initialized for anothe
 - Never commit state, plans, `.auto.tfvars`, backend files, or zip artifacts.
 - Promote the same immutable application release through environments.
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for design decisions and [docs/OPERATIONS.md](docs/OPERATIONS.md) for deployment and recovery procedures.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for design decisions, [docs/OPERATIONS.md](docs/OPERATIONS.md) for deployment and recovery procedures, and [docs/MIGRATION_RUNBOOK.md](docs/MIGRATION_RUNBOOK.md) for the old-account migration and console/CLI responsibility boundary.

@@ -22,6 +22,9 @@ override.tf.json
 .env.*
 !.env.example
 
+# Local account inventory exports
+.local/aws-inventory/
+
 # Generated Lambda packages
 *.zip
 
