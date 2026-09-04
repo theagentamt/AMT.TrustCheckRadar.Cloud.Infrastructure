@@ -153,6 +153,7 @@ output "analysis_backend_settings" {
     lambdaLogGroup                    = aws_cloudwatch_log_group.analysis_lambda.name
     apiAccessLogGroup                 = aws_cloudwatch_log_group.age_attestation_api.name
     entitlementsTable                 = local.analysis_entitlements_table_name
+    processingLeaseSeconds            = var.analysis_processing_lease_seconds
     scanRateLimitWindowSeconds        = var.analysis_scan_rate_limit_window_seconds
     scanRateLimitMaxRequests          = var.analysis_scan_rate_limit_max_requests
     freeMonthlyScanLimit              = var.analysis_free_monthly_scan_limit

@@ -295,6 +295,17 @@ variable "analysis_scan_rate_limit_window_seconds" {
   default     = 60
 }
 
+variable "analysis_processing_lease_seconds" {
+  description = "Lease duration for one authoritative conversation-analysis worker"
+  type        = number
+  default     = 60
+
+  validation {
+    condition     = var.analysis_processing_lease_seconds >= 30 && var.analysis_processing_lease_seconds <= 300
+    error_message = "Analysis processing leases must be between 30 and 300 seconds."
+  }
+}
+
 variable "analysis_scan_rate_limit_max_requests" {
   description = "Maximum scan requests allowed per window for the conversation analysis Lambda"
   type        = number

@@ -272,6 +272,17 @@ data "aws_iam_policy_document" "analysis_runtime" {
   }
 
   statement {
+    sid     = "AtomicAnalysisCommit"
+    effect  = "Allow"
+    actions = ["dynamodb:TransactWriteItems"]
+
+    resources = [
+      local.analysis_abuse_control_table_arn,
+      local.analysis_entitlements_table_arn
+    ]
+  }
+
+  statement {
     sid    = "DeviceBindingsReadOnly"
     effect = "Allow"
     actions = [
@@ -586,6 +597,7 @@ resource "aws_lambda_function" "analysis" {
       DEVICE_BINDINGS_TABLE_NAME            = local.device_bindings_table_name
       ENTITLEMENTS_TABLE_ARN                = local.analysis_entitlements_table_arn
       ENTITLEMENTS_TABLE_NAME               = local.analysis_entitlements_table_name
+      PROCESSING_LEASE_SECONDS              = tostring(var.analysis_processing_lease_seconds)
       SCAN_RATE_LIMIT_WINDOW_SECONDS        = tostring(var.analysis_scan_rate_limit_window_seconds)
       SCAN_RATE_LIMIT_MAX_REQUESTS          = tostring(var.analysis_scan_rate_limit_max_requests)
       FREE_MONTHLY_SCAN_LIMIT               = tostring(var.analysis_free_monthly_scan_limit)
