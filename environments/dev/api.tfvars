@@ -8,7 +8,6 @@ tags = {
   CostCenter  = "TrustCheckRadar"
 }
 
-custom_domain_enabled         = false
 disable_execute_api_endpoint  = false
 purchase_verification_mode    = "stub"
 analysis_legacy_path_enabled  = false

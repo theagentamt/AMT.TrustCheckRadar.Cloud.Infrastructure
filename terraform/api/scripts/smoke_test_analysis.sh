@@ -11,8 +11,8 @@ Runs two smoke tests against the deployed conversation analysis endpoint:
 - one expected-success request
 - one expected-structured-failure request
 
-If --endpoint is omitted, the script reads terraform output analysis_custom_endpoint_url
-from the current terraform/api stack, falling back to analysis_endpoint_url.
+If --endpoint is omitted, the script reads analysis_endpoint_url from the current
+terraform/api stack. Pass the edge stack's custom URL to test the public hostname.
 EOF
 }
 
@@ -52,11 +52,7 @@ if [[ -z "$TOKEN" ]]; then
 fi
 
 if [[ -z "$ENDPOINT" ]]; then
-  if terraform -chdir="$ROOT_DIR" output -raw analysis_custom_endpoint_url >/dev/null 2>&1; then
-    ENDPOINT="$(terraform -chdir="$ROOT_DIR" output -raw analysis_custom_endpoint_url)"
-  else
-    ENDPOINT="$(terraform -chdir="$ROOT_DIR" output -raw analysis_endpoint_url)"
-  fi
+  ENDPOINT="$(terraform -chdir="$ROOT_DIR" output -raw analysis_endpoint_url)"
 fi
 
 SUCCESS_PAYLOAD="$(mktemp)"

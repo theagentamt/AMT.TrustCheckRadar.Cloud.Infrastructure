@@ -1,13 +1,13 @@
 # Initial Setup
 
-This deployment uses one existing AWS account for `dev`, `staging`, and `prod`. Environment-specific state keys, names, roles, and artifact buckets keep the deployments independent within that account.
+This deployment uses one existing AWS account for `dev`, `uat`, and `prod`. Environment-specific state keys, names, roles, artifact buckets, and API hostnames keep the deployments independent within that account.
 
 ## Prerequisites
 
 - Terraform `1.12.1`
 - AWS CLI authenticated as an administrator for the bootstrap only
 - Permission to configure GitHub repository environments
-- A Route 53 hosted zone for the production custom domain
+- The Route 53 hosted zone for `andmorethings.net`
 
 Complete the account-owner actions in [ACCESS_RUNBOOK.md](ACCESS_RUNBOOK.md) before bootstrap. The production Route 53 hosted zone must be available in this account, or DNS delegation must be arranged before enabling the custom domain.
 
@@ -53,7 +53,7 @@ The role trust policy matches the repository's immutable owner and repository ID
 
 ## 3. Configure GitHub Environments
 
-Create `dev`, `staging`, and `prod` under repository settings. Define these environment variables in each one:
+Create `dev`, `uat`, and `prod` under repository settings. Define these environment variables in each one:
 
 | Variable | Value |
 | --- | --- |
@@ -68,7 +68,7 @@ Environment variables are configuration, not credentials. AWS authorization is e
 Recommended protection:
 
 - `dev`: deployments only from `main`; no manual reviewer.
-- `staging`: deployments only from `main`; one reviewer.
+- `uat`: deployments only from `main`; one reviewer.
 - `prod`: deployments only from `main` or release tags; required reviewer; prevent self-approval and administrator bypass where the GitHub plan supports it.
 
 Protect `main` with pull requests, required CI, and no direct pushes.
@@ -84,13 +84,13 @@ execution_mode: apply
 artifact_release: leave empty
 ```
 
-Repeat for staging and production when each environment is ready.
+Repeat for UAT and production when each environment is ready.
 
 ## 5. Publish and Deploy a Release
 
 Upload immutable Lambda packages using [RELEASES.md](RELEASES.md), then run the deployment workflow with `deployment_scope=all`.
 
-For staging and production, first run with `execution_mode=plan`, review all Terraform plan logs, and then rerun the same release with `execution_mode=apply`.
+For UAT and production, first run with `execution_mode=plan`, review all Terraform plan logs, and then rerun the same release with `execution_mode=apply`.
 
 After API creation, populate these Secrets Manager containers using a restricted secret-management process:
 

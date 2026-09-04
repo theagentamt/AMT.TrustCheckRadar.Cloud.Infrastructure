@@ -8,11 +8,7 @@ tags = {
   CostCenter  = "TrustCheckRadar"
 }
 
-custom_domain_enabled         = true
 disable_execute_api_endpoint  = true
-api_domain_name               = "api.andmorethings.net"
-route53_zone_name             = "andmorethings.net"
-api_mapping_key               = "TrustCheckRadar/Api"
 purchase_verification_mode    = "live"
 analysis_legacy_path_enabled  = false
 enable_device_recovery        = true

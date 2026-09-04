@@ -18,8 +18,8 @@ variable "environment" {
   type        = string
 
   validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "environment must be one of: dev, staging, prod."
+    condition     = contains(["dev", "uat", "prod"], var.environment)
+    error_message = "environment must be one of: dev, uat, prod."
   }
 }
 
@@ -197,40 +197,6 @@ variable "api_stage_name" {
   description = "API Gateway stage name"
   type        = string
   default     = "$default"
-}
-
-variable "custom_domain_enabled" {
-  description = "Whether to provision a custom domain and route53 alias for the API"
-  type        = bool
-  default     = false
-}
-
-variable "api_domain_name" {
-  description = "Custom domain name for the API"
-  type        = string
-  default     = null
-
-  validation {
-    condition     = !var.custom_domain_enabled || var.api_domain_name != null
-    error_message = "api_domain_name is required when custom_domain_enabled is true."
-  }
-}
-
-variable "route53_zone_name" {
-  description = "Route 53 public hosted zone name for the API domain"
-  type        = string
-  default     = null
-
-  validation {
-    condition     = !var.custom_domain_enabled || var.route53_zone_name != null
-    error_message = "route53_zone_name is required when custom_domain_enabled is true."
-  }
-}
-
-variable "api_mapping_key" {
-  description = "Base path mapping key under the custom domain"
-  type        = string
-  default     = "TrustCheckRadar/Api"
 }
 
 variable "disable_execute_api_endpoint" {

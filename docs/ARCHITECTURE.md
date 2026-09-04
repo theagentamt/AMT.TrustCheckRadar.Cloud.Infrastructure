@@ -4,13 +4,25 @@
 
 Every resource name and tag contains the environment. Every environment and stack uses a distinct state object and lock file. GitHub deployment concurrency prevents two applies from racing against the same environment.
 
-This deployment keeps `dev`, `staging`, and `prod` in one existing AWS account. Resource names, artifact buckets, IAM roles, and state keys remain environment-specific.
+This deployment keeps `dev`, `uat`, and `prod` in one existing AWS account. Resource names, artifact buckets, IAM roles, state keys, Cognito clients, data stores, and API endpoints remain environment-specific.
 
 ## Stack Boundaries
 
-`foundation` owns long-lived stateful services. `api` owns independently deployable request-processing infrastructure. `identity-workflows` owns the Cognito trigger integration that must run after the user pool and artifact bucket exist.
+`foundation` owns long-lived stateful services. `api` owns independently deployable request-processing infrastructure. `edge` owns ACM, the API Gateway custom domain, its root API mapping, and the Route 53 alias. `identity-workflows` owns the Cognito trigger integration that must run after the user pool and artifact bucket exist.
 
-Keeping these states separate limits routine API deployments from locking or rewriting the stateful foundation. Downstream stacks read only the `downstream_contract` foundation output, whose `schema_version` is checked before planning.
+Keeping these states separate limits routine API deployments from locking or rewriting the stateful foundation. The API and identity stacks read only the versioned foundation contract. The edge stack reads only the API ID, stage, and route-path outputs.
+
+## Environment Endpoints
+
+The APIs are mapped at each hostname root so route paths remain identical in every environment:
+
+```text
+dev  -> api-dev.andmorethings.net
+uat  -> api-uat.andmorethings.net
+prod -> api.andmorethings.net
+```
+
+No environment shares an API Gateway custom domain or API mapping with another environment.
 
 ## State
 

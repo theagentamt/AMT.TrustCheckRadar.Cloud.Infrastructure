@@ -1,6 +1,9 @@
 aws_region   = "us-east-1"
 project_name = "trustcheckradar"
-environment  = "staging"
+environment  = "uat"
+
+domain_name       = "api-uat.andmorethings.net"
+route53_zone_name = "andmorethings.net"
 
 tags = {
   Application = "TrustCheckRadar"

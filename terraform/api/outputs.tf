@@ -13,6 +13,24 @@ output "age_attestation_api_id" {
   value       = aws_apigatewayv2_api.age_attestation.id
 }
 
+output "api_stage_name" {
+  description = "API Gateway stage name consumed by the edge stack"
+  value       = aws_apigatewayv2_stage.age_attestation.name
+}
+
+output "endpoint_paths" {
+  description = "Route paths consumed by the edge stack and application configuration"
+  value = {
+    age_attestation        = "/v1/users/age-attestation"
+    analysis               = var.analysis_primary_path
+    device_registration    = var.device_registration_path
+    device_recovery        = var.enable_device_recovery ? var.device_recovery_path : null
+    entitlement_snapshot   = var.entitlement_snapshot_path
+    purchase_handoff       = var.purchase_handoff_path
+    web_risk_communication = var.enable_web_risk_communication ? var.web_risk_communication_path : null
+  }
+}
+
 output "age_attestation_api_url" {
   description = "Base invoke URL for the age attestation HTTP API"
   value       = aws_apigatewayv2_stage.age_attestation.invoke_url
@@ -21,16 +39,6 @@ output "age_attestation_api_url" {
 output "age_attestation_endpoint_url" {
   description = "Full POST endpoint URL for age attestation"
   value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}/v1/users/age-attestation"
-}
-
-output "age_attestation_custom_domain_name" {
-  description = "Custom domain name for the age attestation API"
-  value       = var.custom_domain_enabled ? aws_apigatewayv2_domain_name.age_attestation[0].domain_name : null
-}
-
-output "age_attestation_custom_endpoint_url" {
-  description = "Custom-domain endpoint URL for age attestation"
-  value       = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}/v1/users/age-attestation" : null
 }
 
 output "analysis_lambda_name" {
@@ -71,11 +79,6 @@ output "analysis_integration_timeout_ms" {
 output "analysis_endpoint_url" {
   description = "Full execute-api URL for conversation analysis"
   value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.analysis_primary_path}"
-}
-
-output "analysis_custom_endpoint_url" {
-  description = "Custom-domain endpoint URL for conversation analysis"
-  value       = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.analysis_primary_path}" : null
 }
 
 output "analysis_lambda_log_group_name" {
@@ -136,7 +139,7 @@ output "shared_entitlement_service_settings" {
 output "analysis_backend_settings" {
   description = "App-ready values for backend-settings.json or equivalent mobile configuration"
   value = {
-    endpointUrl                       = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.analysis_primary_path}" : "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.analysis_primary_path}"
+    endpointUrl                       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.analysis_primary_path}"
     method                            = "POST"
     authorizationType                 = "CognitoJWT"
     authorizationHeader               = "Authorization: Bearer <access-token>"
@@ -204,11 +207,6 @@ output "device_registration_endpoint_url" {
   value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.device_registration_path}"
 }
 
-output "device_registration_custom_endpoint_url" {
-  description = "Custom-domain endpoint URL for device registration"
-  value       = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.device_registration_path}" : null
-}
-
 output "device_registration_lambda_log_group_name" {
   description = "CloudWatch log group for the device registration Lambda"
   value       = aws_cloudwatch_log_group.device_registration_lambda.name
@@ -217,7 +215,7 @@ output "device_registration_lambda_log_group_name" {
 output "device_registration_backend_settings" {
   description = "App-ready values for device registration integration"
   value = {
-    endpointUrl           = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.device_registration_path}" : "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.device_registration_path}"
+    endpointUrl           = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.device_registration_path}"
     method                = "POST"
     authorizationType     = "CognitoJWT"
     authorizationHeader   = "Authorization: Bearer <access-token>"
@@ -267,11 +265,6 @@ output "device_recovery_endpoint_url" {
   value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.device_recovery_path}"
 }
 
-output "device_recovery_custom_endpoint_url" {
-  description = "Custom-domain endpoint URL for device recovery"
-  value       = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.device_recovery_path}" : null
-}
-
 output "device_recovery_lambda_log_group_name" {
   description = "CloudWatch log group for the device recovery Lambda"
   value       = var.enable_device_recovery ? aws_cloudwatch_log_group.device_recovery_lambda[0].name : null
@@ -280,7 +273,7 @@ output "device_recovery_lambda_log_group_name" {
 output "device_recovery_backend_settings" {
   description = "App-ready values for device recovery integration"
   value = var.enable_device_recovery ? {
-    endpointUrl           = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.device_recovery_path}" : "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.device_recovery_path}"
+    endpointUrl           = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.device_recovery_path}"
     method                = "POST"
     authorizationType     = "CognitoJWT"
     authorizationHeader   = "Authorization: Bearer <access-token>"
@@ -330,11 +323,6 @@ output "entitlement_snapshot_endpoint_url" {
   value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.entitlement_snapshot_path}"
 }
 
-output "entitlement_snapshot_custom_endpoint_url" {
-  description = "Custom-domain endpoint URL for entitlement snapshot refresh"
-  value       = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.entitlement_snapshot_path}" : null
-}
-
 output "entitlement_snapshot_lambda_log_group_name" {
   description = "CloudWatch log group for the entitlement snapshot Lambda"
   value       = aws_cloudwatch_log_group.entitlement_snapshot_lambda.name
@@ -343,7 +331,7 @@ output "entitlement_snapshot_lambda_log_group_name" {
 output "entitlement_snapshot_backend_settings" {
   description = "App-ready values for entitlement snapshot refresh integration"
   value = {
-    endpointUrl                       = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.entitlement_snapshot_path}" : "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.entitlement_snapshot_path}"
+    endpointUrl                       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.entitlement_snapshot_path}"
     method                            = "GET"
     authorizationType                 = "CognitoJWT"
     authorizationHeader               = "Authorization: Bearer <access-token>"
@@ -402,11 +390,6 @@ output "purchase_handoff_endpoint_url" {
   value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.purchase_handoff_path}"
 }
 
-output "purchase_handoff_custom_endpoint_url" {
-  description = "Custom-domain endpoint URL for purchase handoff"
-  value       = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.purchase_handoff_path}" : null
-}
-
 output "purchase_handoff_lambda_log_group_name" {
   description = "CloudWatch log group for the purchase handoff Lambda"
   value       = aws_cloudwatch_log_group.purchase_handoff_lambda.name
@@ -415,7 +398,7 @@ output "purchase_handoff_lambda_log_group_name" {
 output "purchase_handoff_backend_settings" {
   description = "App-ready values for purchase handoff integration"
   value = {
-    endpointUrl                       = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.purchase_handoff_path}" : "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.purchase_handoff_path}"
+    endpointUrl                       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.purchase_handoff_path}"
     method                            = "POST"
     authorizationType                 = "CognitoJWT"
     authorizationHeader               = "Authorization: Bearer <access-token>"
@@ -479,11 +462,6 @@ output "web_risk_communication_endpoint_url" {
   value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.web_risk_communication_path}"
 }
 
-output "web_risk_communication_custom_endpoint_url" {
-  description = "Custom-domain endpoint URL for Web Risk communication"
-  value       = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.web_risk_communication_path}" : null
-}
-
 output "web_risk_communication_lambda_log_group_name" {
   description = "CloudWatch log group for the Web Risk communication Lambda"
   value       = var.enable_web_risk_communication ? aws_cloudwatch_log_group.web_risk_communication_lambda[0].name : null
@@ -492,7 +470,7 @@ output "web_risk_communication_lambda_log_group_name" {
 output "web_risk_communication_backend_settings" {
   description = "App-ready values for Web Risk communication integration"
   value = var.enable_web_risk_communication ? {
-    endpointUrl         = var.custom_domain_enabled ? "https://${var.api_domain_name}/${var.api_mapping_key}${var.web_risk_communication_path}" : "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.web_risk_communication_path}"
+    endpointUrl         = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.web_risk_communication_path}"
     method              = "POST"
     authorizationType   = "CognitoJWT"
     authorizationHeader = "Authorization: Bearer <access-token>"

@@ -15,7 +15,7 @@ releases/2026.09.03-1/post_confirmation.zip
 releases/2026.09.03-1/web_risk_communication.zip
 ```
 
-Never overwrite an existing release object. Build once, verify checksums, and promote the same files to staging and production.
+Never overwrite an existing release object. Build once, verify checksums, and promote the same files to UAT and production.
 
 Example upload:
 
@@ -27,4 +27,4 @@ aws s3 cp dist/age_attestation.zip \
 
 The infrastructure workflow verifies required objects with `HeadObject` before planning dependent stacks. A missing package stops the deployment before API resources change.
 
-For automatic development deployments, update the `ARTIFACT_RELEASE` variable in the GitHub `dev` environment before merging the infrastructure change. For staging and production, supply the release identifier to the manual deployment workflow.
+For automatic development deployments, update the `ARTIFACT_RELEASE` variable in the GitHub `dev` environment before merging the infrastructure change. For UAT and production, supply the release identifier to the manual deployment workflow.

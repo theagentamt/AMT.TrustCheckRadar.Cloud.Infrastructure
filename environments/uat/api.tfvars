@@ -1,6 +1,6 @@
 aws_region   = "us-east-1"
 project_name = "trustcheckradar"
-environment  = "staging"
+environment  = "uat"
 
 tags = {
   Application = "TrustCheckRadar"
@@ -8,7 +8,6 @@ tags = {
   CostCenter  = "TrustCheckRadar"
 }
 
-custom_domain_enabled         = false
 disable_execute_api_endpoint  = false
 purchase_verification_mode    = "live"
 analysis_legacy_path_enabled  = false

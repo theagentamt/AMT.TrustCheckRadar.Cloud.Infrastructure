@@ -48,7 +48,7 @@ variable "github_repository_id" {
 variable "environments" {
   description = "GitHub environments allowed to deploy infrastructure"
   type        = set(string)
-  default     = ["dev", "staging", "prod"]
+  default     = ["dev", "uat", "prod"]
 }
 
 variable "existing_github_oidc_provider_arn" {

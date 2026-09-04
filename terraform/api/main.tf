@@ -72,13 +72,6 @@ check "foundation_contract_version" {
   }
 }
 
-check "api_has_reachable_endpoint" {
-  assert {
-    condition     = var.custom_domain_enabled || !var.disable_execute_api_endpoint
-    error_message = "The default execute-api endpoint cannot be disabled unless a custom domain is enabled."
-  }
-}
-
 resource "aws_secretsmanager_secret" "openai" {
   count = var.openai_secret_arn == null ? 1 : 0
 
@@ -104,12 +97,6 @@ resource "aws_secretsmanager_secret" "web_risk" {
   recovery_window_in_days = var.web_risk_secret_recovery_window_in_days
 
   tags = local.common_tags
-}
-
-data "aws_route53_zone" "api" {
-  count        = var.custom_domain_enabled ? 1 : 0
-  name         = var.route53_zone_name
-  private_zone = false
 }
 
 data "aws_iam_policy_document" "age_attestation_assume_role" {
@@ -982,74 +969,6 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
   }
 
   tags = local.common_tags
-}
-
-resource "aws_acm_certificate" "api_domain" {
-  count             = var.custom_domain_enabled ? 1 : 0
-  domain_name       = var.api_domain_name
-  validation_method = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = local.common_tags
-}
-
-resource "aws_route53_record" "api_domain_validation" {
-  for_each = var.custom_domain_enabled ? {
-    for dvo in aws_acm_certificate.api_domain[0].domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  } : {}
-
-  zone_id = data.aws_route53_zone.api[0].zone_id
-  name    = each.value.name
-  type    = each.value.type
-  ttl     = 60
-  records = [each.value.record]
-}
-
-resource "aws_acm_certificate_validation" "api_domain" {
-  count                   = var.custom_domain_enabled ? 1 : 0
-  certificate_arn         = aws_acm_certificate.api_domain[0].arn
-  validation_record_fqdns = [for record in aws_route53_record.api_domain_validation : record.fqdn]
-}
-
-resource "aws_apigatewayv2_domain_name" "age_attestation" {
-  count       = var.custom_domain_enabled ? 1 : 0
-  domain_name = var.api_domain_name
-
-  domain_name_configuration {
-    certificate_arn = aws_acm_certificate_validation.api_domain[0].certificate_arn
-    endpoint_type   = "REGIONAL"
-    security_policy = "TLS_1_2"
-  }
-
-  depends_on = [aws_acm_certificate_validation.api_domain]
-}
-
-resource "aws_apigatewayv2_api_mapping" "age_attestation" {
-  count           = var.custom_domain_enabled ? 1 : 0
-  api_id          = aws_apigatewayv2_api.age_attestation.id
-  domain_name     = aws_apigatewayv2_domain_name.age_attestation[0].id
-  stage           = aws_apigatewayv2_stage.age_attestation.id
-  api_mapping_key = var.api_mapping_key
-}
-
-resource "aws_route53_record" "api_custom_domain_alias" {
-  count   = var.custom_domain_enabled ? 1 : 0
-  zone_id = data.aws_route53_zone.api[0].zone_id
-  name    = var.api_domain_name
-  type    = "A"
-
-  alias {
-    name                   = aws_apigatewayv2_domain_name.age_attestation[0].domain_name_configuration[0].target_domain_name
-    zone_id                = aws_apigatewayv2_domain_name.age_attestation[0].domain_name_configuration[0].hosted_zone_id
-    evaluate_target_health = false
-  }
 }
 
 resource "aws_lambda_permission" "allow_api_gateway_invoke_age_attestation" {

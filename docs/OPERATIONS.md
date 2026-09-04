@@ -7,15 +7,16 @@ Always deploy in this order:
 1. Foundation
 2. Artifact verification
 3. API
-4. Identity workflows
+4. Edge
+5. Identity workflows
 
 The GitHub deployment workflow enforces this sequence. Direct local changes should use `scripts/terraform.sh` and follow the same order.
 
 ## Promotion
 
-Deploy a release to development, run API smoke tests, promote the identical package set to staging, then promote it to production after approval. Do not rebuild packages between environments.
+Deploy a release to development, run API smoke tests, promote the identical package set to UAT, then promote it to production after approval. Do not rebuild packages between environments.
 
-For staging and production, run the workflow in `plan` mode first. Review replacements and deletions, then rerun the identical environment, scope, commit, and release in `apply` mode.
+For UAT and production, run the workflow in `plan` mode first. Review replacements and deletions, then rerun the identical environment, scope, commit, and release in `apply` mode.
 
 ## Rollback
 

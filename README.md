@@ -1,20 +1,22 @@
 # AMT TrustCheckRadar Cloud Infrastructure
 
-Terraform infrastructure for TrustCheckRadar, organized for isolated `dev`, `staging`, and `prod` deployments through GitHub Actions.
+Terraform infrastructure for TrustCheckRadar, organized for isolated `dev`, `uat`, and `prod` deployments through GitHub Actions.
 
 ## Architecture
 
-Each environment has three independently locked remote states:
+Each environment has four independently locked remote states:
 
 1. `foundation` creates Cognito, DynamoDB, the versioned Lambda artifact bucket, and shared IAM roles.
-2. `api` reads the foundation contract and creates Secrets Manager containers, Lambda functions, API Gateway, logs, and optional DNS/ACM resources.
-3. `identity-workflows` reads the same contract and creates the Cognito PostConfirmation Lambda and trigger binding.
+2. `api` reads the foundation contract and creates Secrets Manager containers, Lambda functions, API Gateway, and logs.
+3. `edge` reads the API contract and creates the environment hostname, certificate, DNS alias, and root API mapping.
+4. `identity-workflows` reads the foundation contract and creates the Cognito PostConfirmation Lambda and trigger binding.
 
 State object keys follow this convention:
 
 ```text
 trustcheckradar/<environment>/foundation.tfstate
 trustcheckradar/<environment>/api.tfstate
+trustcheckradar/<environment>/edge.tfstate
 trustcheckradar/<environment>/identity-workflows.tfstate
 ```
 
@@ -28,11 +30,12 @@ bootstrap/
   access/                # GitHub OIDC provider and environment deployment roles
 environments/
   dev/                   # Nonsecret development values
-  staging/               # Nonsecret staging values
+  uat/                   # Nonsecret user-acceptance values
   prod/                  # Nonsecret production values
 terraform/
   foundation/
   api/
+  edge/
   identity-workflows/
 scripts/
   terraform.sh           # Consistent local Terraform entry point
@@ -45,11 +48,12 @@ scripts/
 
 - Pull requests and pushes run recursive formatting and validation.
 - A push to `main` deploys `dev` using the release configured in the GitHub `dev` environment.
-- Staging and production are promoted with the `Deploy infrastructure` workflow.
+- UAT and production are promoted with the `Deploy infrastructure` workflow.
 - Manual deployments default to plan-only mode; rerun with `execution_mode=apply` after reviewing the plan.
 - GitHub obtains short-lived AWS credentials through OIDC. No AWS access keys are stored in GitHub.
 - One deployment can run per environment at a time.
 - Foundation is applied before dependent stacks.
+- Environment endpoints are `api-dev.andmorethings.net`, `api-uat.andmorethings.net`, and `api.andmorethings.net`.
 - The pipeline verifies every required Lambda zip before changing API or identity resources.
 - Lambda objects live under `releases/<release-id>/` and are never overwritten.
 - Production applies should be protected by required reviewers in the GitHub `prod` environment.
@@ -75,6 +79,7 @@ export ARTIFACT_RELEASE="2026.09.03-1"
 
 ./scripts/terraform.sh plan dev foundation
 ./scripts/terraform.sh plan dev api "$ARTIFACT_RELEASE"
+./scripts/terraform.sh plan dev edge
 ./scripts/terraform.sh plan dev identity-workflows "$ARTIFACT_RELEASE"
 ```
 

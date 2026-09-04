@@ -15,7 +15,7 @@ on:
         type: choice
         options:
           - dev
-          - staging
+          - uat
           - prod
       artifact_release:
         description: Immutable Lambda artifact release identifier
@@ -142,6 +142,23 @@ jobs:
         if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
         run: terraform -chdir=terraform/api apply -auto-approve api.tfplan
 
+      - name: Plan edge
+        if: env.DEPLOY_SCOPE == 'all'
+        run: |
+          terraform -chdir=terraform/edge init -reconfigure \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=$STATE_KEY_PREFIX/$DEPLOY_ENV/edge.tfstate" \
+            -backend-config="region=$TF_VAR_state_bucket_region" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+          terraform -chdir=terraform/edge plan \
+            -var-file="../../environments/$DEPLOY_ENV/edge.tfvars" \
+            -out=edge.tfplan
+
+      - name: Apply edge
+        if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
+        run: terraform -chdir=terraform/edge apply -auto-approve edge.tfplan
+
       - name: Plan identity workflows
         if: env.DEPLOY_SCOPE == 'all'
         run: |
@@ -167,6 +184,6 @@ jobs:
           if [[ "$DEPLOY_SCOPE" == "all" ]]; then
             echo "Release: \`$TF_VAR_artifact_release\`" >> "$GITHUB_STEP_SUMMARY"
             if [[ "$EXECUTION_MODE" == "apply" ]]; then
-              echo "API endpoint: \`$(terraform -chdir=terraform/api output -raw age_attestation_api_url)\`" >> "$GITHUB_STEP_SUMMARY"
+              echo "API endpoint: \`$(terraform -chdir=terraform/edge output -raw base_url)\`" >> "$GITHUB_STEP_SUMMARY"
             fi
           fi

@@ -72,7 +72,7 @@ After CLI identity verification, Codex:
 1. Checks for conflicting state buckets, GitHub OIDC providers, IAM roles, and TrustCheckRadar resources.
 2. Installs the pinned Terraform version.
 3. Plans and applies `bootstrap/state-bucket` in the existing account.
-4. Plans and applies `bootstrap/access` to create the `dev`, `staging`, and `prod` GitHub deployment roles.
+4. Plans and applies `bootstrap/access` to create the `dev`, `uat`, and `prod` GitHub deployment roles.
 5. Reports the state bucket name and role ARN for each environment.
 
 All three environments use the same AWS account. Their Terraform state keys, resource names, IAM roles, and artifact buckets remain environment-specific.
@@ -83,7 +83,7 @@ The account owner signs in to GitHub and performs these website steps:
 
 1. Open `theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure`.
 2. Open **Settings**, then **Environments**.
-3. Create `dev`, `staging`, and `prod`.
+3. Create `dev`, `uat`, and `prod`.
 4. Add the environment variables documented in [SETUP.md](SETUP.md).
 5. Restrict deployments to `main`.
 6. Add the protection rules and reviewers supported by the repository's GitHub plan.
@@ -101,6 +101,6 @@ The first deployment remains intentionally staged:
 1. Deploy the `dev` foundation.
 2. Build and upload immutable Lambda packages when application code is available.
 3. Deploy the `dev` API and identity workflows.
-4. Promote the same package set to staging and production after plan review and approval.
+4. Promote the same package set to UAT and production after plan review and approval.
 
 See [RELEASES.md](RELEASES.md) and [OPERATIONS.md](OPERATIONS.md) for release and promotion procedures.
