@@ -21,6 +21,8 @@ must be returned before this package becomes accepted.
 - [Data Flow](DATA-FLOW.md) identifies every allowed transient and durable copy.
 - [Threat Model](THREAT-MODEL.md) records the initial abuse and privacy analysis
   and required controls.
+- [Cost Model](COST-MODEL.md) estimates fixed and usage-based spend and defines
+  the V1 budget guardrails.
 
 ## Decision Summary
 
@@ -40,7 +42,9 @@ must be returned before this package becomes accepted.
 | Transient backups | Disabled; restore must never resurrect transient personal data |
 | Persistent backups | DynamoDB PITR for aggregate-only data |
 | Environments | Separate tables, queues, keys, roles, logs, state, and artifact deployment |
-| Vector search | Not provisioned initially; DynamoDB candidate indexes and bounded Lambda scoring |
+| Vector search | Explicitly excluded from V1; reconsider only in V2 or later |
+| Initial environments | Dev only; UAT and Production disabled until promotion |
+| Target Dev pilot cost | $5-$8/month at up to 10,000 eligible scans/month |
 
 ## Ownership
 

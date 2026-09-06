@@ -30,6 +30,10 @@ foundation -> campaign-data -> artifact verification -> campaign-processing -> a
 Every output contract contains `schema_version`, `environment`, and only resource
 identifiers required by the downstream stack.
 
+Both campaign stacks are conditional. V1 sets
+`campaign_intelligence_enabled=true` only in Dev; UAT and Production contain the
+configuration flag but create no campaign resources until promotion is approved.
+
 ## Resource Capabilities
 
 ### CampaignPipeline DynamoDB
@@ -96,8 +100,10 @@ increments a content-free metric, and sends terminal failures to the DLQ.
 
 ### KMS and Period Keys
 
-- Separate table/queue/log encryption keys per environment and data class where
-  service integration permits.
+- Exactly two long-lived customer-managed encryption keys per enabled environment:
+  one transient key shared by CampaignPipeline and its queues, and one persistent
+  key for CampaignIntelligence. CloudWatch Logs and ECR use service-managed
+  encryption in V1 to avoid unnecessary fixed key charges.
 - One environment-specific KMS HMAC key per 14-day contributor period.
 - Period keys use `HMAC_256`, `GENERATE_VERIFY_MAC`, and `HMAC_SHA_256`.
 - Only the publisher/deletion bridge may call `kms:GenerateMac`.
@@ -113,6 +119,13 @@ increments a content-free metric, and sends terminal failures to the DLQ.
 - CI promotes the same approved image digest between repositories without rebuilding.
 - Runtime roles cannot push, retag, delete, or download a model from another
   environment.
+
+### V1 Exclusions
+
+V1 must not provision OpenSearch, a NAT gateway, paid VPC interface endpoints,
+provisioned Lambda concurrency, Step Functions, DynamoDB Global Tables,
+cross-Region replicas, or always-on compute. Any exception requires a separate
+cost estimate and explicit approval.
 
 ## IAM Contract
 
@@ -164,7 +177,8 @@ accepted.
 ## Deployment Gates
 
 - Dev: architecture approval, schemas, synthetic fixtures, Terraform tests, and
-  budget alarms are required.
+  budget alarms are required. The initial monthly campaign budget is $25 with
+  notifications at 50, 80, and 100 percent.
 - UAT: privacy/security signoff, deletion and time-travel tests, failure injection,
   cross-environment negative tests, and measured ML cost/performance are required.
 - Production: manual GitHub environment approval, immutable artifacts previously

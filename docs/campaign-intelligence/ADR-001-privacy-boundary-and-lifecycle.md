@@ -116,11 +116,16 @@ model-image repositories. No runtime role has cross-environment permissions.
 Synthetic or explicitly licensed fixtures are used outside Production. Production
 events cannot be replayed into non-Production.
 
+Only Dev is enabled for the initial implementation. UAT and Production keep
+`campaign_intelligence_enabled=false` and incur no campaign resource cost until an
+explicit promotion is approved.
+
 ### Search Architecture
 
-The first release uses DynamoDB candidate indexes and bounded Lambda-side scoring.
-OpenSearch or another vector index requires a separate privacy review and story.
-An evaluation is triggered when any two conditions hold in UAT or Production:
+V1 uses DynamoDB candidate indexes and bounded Lambda-side scoring. OpenSearch or
+another vector index is explicitly excluded from V1. It may be reconsidered only
+for V2 or later through a separate story, privacy review, and cost approval. An
+evaluation is justified when any two conditions hold in UAT or Production:
 
 1. p95 candidate retrieval returns more than 500 candidates per observation for
    seven consecutive days.
