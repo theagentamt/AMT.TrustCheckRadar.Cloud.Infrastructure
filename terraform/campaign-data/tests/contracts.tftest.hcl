@@ -4,6 +4,12 @@ mock_provider "aws" {
       account_id = "107827791950"
     }
   }
+
+  mock_data "aws_iam_policy_document" {
+    defaults = {
+      json = "{\"Version\":\"2012-10-17\",\"Statement\":[]}"
+    }
+  }
 }
 
 run "disabled_environment_is_empty" {

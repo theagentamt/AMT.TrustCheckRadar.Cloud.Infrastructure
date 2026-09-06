@@ -45,6 +45,18 @@ variable "github_repository_id" {
   default     = 1355413242
 }
 
+variable "lambda_repository" {
+  description = "GitHub repository allowed to publish immutable Lambda artifacts"
+  type        = string
+  default     = "AMT.TrustCheckRadar.Lambdas"
+}
+
+variable "lambda_repository_id" {
+  description = "Immutable GitHub repository ID trusted for Lambda artifact publishing"
+  type        = number
+  default     = 1355411973
+}
+
 variable "environments" {
   description = "GitHub environments allowed to deploy infrastructure"
   type        = set(string)

@@ -593,17 +593,15 @@ data "aws_iam_policy_document" "model_repository" {
       "ecr:BatchGetImage",
       "ecr:GetDownloadUrlForLayer",
     ]
-    resources = [aws_ecr_repository.model[0].arn]
-
     principals {
       type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
     }
 
     condition {
-      test     = "StringEquals"
-      variable = "aws:SourceAccount"
-      values   = [data.aws_caller_identity.current.account_id]
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values   = ["arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:${local.name_prefix}-*"]
     }
   }
 }

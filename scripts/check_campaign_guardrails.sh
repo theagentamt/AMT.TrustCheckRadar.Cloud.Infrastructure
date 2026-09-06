@@ -42,7 +42,7 @@ if search_with_lines 'sourceIp|jwtSubject|integrationErrorMessage|authorizerErro
   exit 1
 fi
 
-for environment in dev uat prod; do
+for environment in uat prod; do
   file_matches '^campaign_intelligence_enabled[[:space:]]*=[[:space:]]*false$' \
     "environments/$environment/campaign-data.tfvars"
   file_matches '^campaign_intelligence_enabled[[:space:]]*=[[:space:]]*false$' \
@@ -58,5 +58,47 @@ for environment in dev uat prod; do
   file_matches '^campaign_review_api_enabled[[:space:]]*=[[:space:]]*false$' \
     "environments/$environment/campaign-api.tfvars"
 done
+
+dev_foundation_enabled=false
+dev_data_enabled=false
+dev_api_data_enabled=false
+dev_processing_enabled=false
+dev_trends_enabled=false
+dev_review_enabled=false
+
+file_matches '^campaign_intelligence_enabled[[:space:]]*=[[:space:]]*true$' \
+  environments/dev/foundation.tfvars && dev_foundation_enabled=true
+file_matches '^campaign_intelligence_enabled[[:space:]]*=[[:space:]]*true$' \
+  environments/dev/campaign-data.tfvars && dev_data_enabled=true
+file_matches '^campaign_intelligence_enabled[[:space:]]*=[[:space:]]*true$' \
+  environments/dev/api.tfvars && dev_api_data_enabled=true
+file_matches '^campaign_processing_enabled[[:space:]]*=[[:space:]]*true$' \
+  environments/dev/campaign-processing.tfvars && dev_processing_enabled=true
+file_matches '^campaign_api_enabled[[:space:]]*=[[:space:]]*true$' \
+  environments/dev/campaign-api.tfvars && dev_trends_enabled=true
+file_matches '^campaign_review_api_enabled[[:space:]]*=[[:space:]]*true$' \
+  environments/dev/campaign-api.tfvars && dev_review_enabled=true
+
+[[ "$dev_foundation_enabled" == "$dev_data_enabled" ]] || {
+  echo "Dev foundation and campaign-data activation flags must agree." >&2
+  exit 1
+}
+
+if [[ "$dev_processing_enabled" == true ]]; then
+  [[ "$dev_data_enabled" == true && "$dev_api_data_enabled" == true ]] || {
+    echo "Dev processing requires the foundation, campaign data, and source API integration." >&2
+    exit 1
+  }
+fi
+
+if [[ "$dev_trends_enabled" == true || "$dev_review_enabled" == true ]]; then
+  [[ "$dev_data_enabled" == true ]] || {
+    echo "Dev campaign APIs require the campaign data plane." >&2
+    exit 1
+  }
+fi
+
+file_matches '^kill_switch_enabled[[:space:]]*=[[:space:]]*true$' \
+  environments/dev/campaign-processing.tfvars
 
 echo "Campaign V1 infrastructure guardrails passed."

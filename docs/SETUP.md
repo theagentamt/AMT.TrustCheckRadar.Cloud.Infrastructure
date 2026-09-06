@@ -51,6 +51,11 @@ If the AWS account already has the GitHub OIDC provider, pass its ARN through `e
 
 The role trust policy matches the repository's immutable owner and repository IDs plus the exact GitHub environment subject. If the repository is transferred or recreated, update those IDs before applying. Do not replace the subject condition with a wildcard.
 
+The same stack creates a separate `lambda_publisher_role_arns` map for
+`AMT.TrustCheckRadar.Lambdas`. Configure each matching Lambda repository GitHub
+environment with that ARN. These roles can publish immutable release objects and
+the campaign feature image, but cannot deploy infrastructure.
+
 ## 3. Configure GitHub Environments
 
 Create `dev`, `uat`, and `prod` under repository settings. Define these environment variables in each one:

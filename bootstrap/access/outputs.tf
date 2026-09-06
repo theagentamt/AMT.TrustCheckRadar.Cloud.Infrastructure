@@ -7,3 +7,8 @@ output "github_oidc_provider_arn" {
   description = "GitHub Actions OIDC provider ARN"
   value       = local.github_oidc_provider_arn
 }
+
+output "lambda_publisher_role_arns" {
+  description = "Set each value as AWS_ROLE_ARN in the matching Lambda repository environment"
+  value       = { for environment, role in aws_iam_role.lambda_publisher : environment => role.arn }
+}

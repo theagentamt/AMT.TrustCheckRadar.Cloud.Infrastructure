@@ -142,12 +142,16 @@ data "aws_iam_policy_document" "github_deploy" {
     actions = [
       "kms:CancelKeyDeletion",
       "kms:CreateGrant",
+      "kms:Decrypt",
       "kms:DescribeKey",
       "kms:DisableKey",
       "kms:EnableKey",
       "kms:EnableKeyRotation",
       "kms:GetKeyPolicy",
       "kms:GetKeyRotationStatus",
+      "kms:GenerateDataKey",
+      "kms:GenerateDataKeyWithoutPlaintext",
+      "kms:Encrypt",
       "kms:ListGrants",
       "kms:ListResourceTags",
       "kms:PutKeyPolicy",
@@ -320,7 +324,10 @@ data "aws_iam_policy_document" "github_deploy" {
     sid    = "ManageCampaignBudgets"
     effect = "Allow"
     actions = [
+      "budgets:ListTagsForResource",
       "budgets:ModifyBudget",
+      "budgets:TagResource",
+      "budgets:UntagResource",
       "budgets:ViewBudget",
     ]
     resources = ["arn:aws:budgets::${data.aws_caller_identity.current.account_id}:budget/${var.project_name}-${each.key}-campaign-*"]
@@ -407,4 +414,122 @@ resource "aws_iam_role_policy_attachment" "github_deploy" {
 
   role       = aws_iam_role.github_deploy[each.key].name
   policy_arn = aws_iam_policy.github_deploy[each.key].arn
+}
+
+data "aws_iam_policy_document" "lambda_publish_assume_role" {
+  for_each = var.environments
+
+  statement {
+    sid     = "GitHubLambdaEnvironment"
+    effect  = "Allow"
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [local.github_oidc_provider_arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = ["repo:${var.github_organization}@${var.github_owner_id}/${var.lambda_repository}@${var.lambda_repository_id}:environment:${each.key}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:ref"
+      values   = ["refs/heads/main"]
+    }
+  }
+}
+
+resource "aws_iam_role" "lambda_publisher" {
+  for_each = var.environments
+
+  name                 = "${var.project_name}-${each.key}-lambda-publisher"
+  description          = "GitHub Actions publisher for TrustCheckRadar ${each.key} Lambda artifacts"
+  assume_role_policy   = data.aws_iam_policy_document.lambda_publish_assume_role[each.key].json
+  max_session_duration = 3600
+
+  tags = merge(var.tags, {
+    Environment = each.key
+    ManagedBy   = "terraform-bootstrap"
+    Project     = var.project_name
+    Purpose     = "lambda-artifact-publishing"
+  })
+}
+
+data "aws_iam_policy_document" "lambda_publish" {
+  for_each = var.environments
+
+  statement {
+    sid    = "InspectArtifactBucket"
+    effect = "Allow"
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+    ]
+    resources = ["arn:aws:s3:::${var.project_name}-${each.key}-${data.aws_caller_identity.current.account_id}-artifacts"]
+
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values   = ["releases/*"]
+    }
+  }
+
+  statement {
+    sid    = "PublishImmutableLambdaArtifacts"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+    ]
+    resources = ["arn:aws:s3:::${var.project_name}-${each.key}-${data.aws_caller_identity.current.account_id}-artifacts/releases/*"]
+  }
+
+  statement {
+    sid       = "AuthenticateToEcr"
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "PublishCampaignFeatureImage"
+    effect = "Allow"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:BatchGetImage",
+      "ecr:CompleteLayerUpload",
+      "ecr:DescribeImages",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:InitiateLayerUpload",
+      "ecr:ListImages",
+      "ecr:PutImage",
+      "ecr:UploadLayerPart",
+    ]
+    resources = ["arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.project_name}-${each.key}-campaign-model"]
+  }
+
+  statement {
+    sid       = "ReadCallerIdentity"
+    effect    = "Allow"
+    actions   = ["sts:GetCallerIdentity"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "lambda_publish" {
+  for_each = var.environments
+
+  name   = "publish-${each.key}-lambda-artifacts"
+  role   = aws_iam_role.lambda_publisher[each.key].name
+  policy = data.aws_iam_policy_document.lambda_publish[each.key].json
 }
