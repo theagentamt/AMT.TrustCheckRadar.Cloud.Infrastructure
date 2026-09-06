@@ -1043,6 +1043,7 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.age_attestation_api.arn
     format = jsonencode({
+      requestId          = "$context.requestId"
       httpMethod         = "$context.httpMethod"
       routeKey           = "$context.routeKey"
       status             = "$context.status"
