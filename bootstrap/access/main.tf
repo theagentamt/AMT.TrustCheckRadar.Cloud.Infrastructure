@@ -181,10 +181,30 @@ data "aws_iam_policy_document" "github_deploy" {
       "kms:DeleteAlias",
       "kms:UpdateAlias",
     ]
-    resources = [
-      "arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alias/${var.project_name}-${each.key}-campaign-*",
-      "arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:key/*",
+    resources = ["arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alias/${var.project_name}-${each.key}-campaign-*"]
+  }
+
+  statement {
+    sid    = "UseTaggedCampaignKeysForAliases"
+    effect = "Allow"
+    actions = [
+      "kms:CreateAlias",
+      "kms:DeleteAlias",
+      "kms:UpdateAlias",
     ]
+    resources = ["arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:key/*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/Project"
+      values   = [var.project_name]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/Environment"
+      values   = [each.key]
+    }
   }
 
   statement {
@@ -201,10 +221,54 @@ data "aws_iam_policy_document" "github_deploy" {
     sid    = "ManageCampaignMessagingAndArtifacts"
     effect = "Allow"
     actions = [
-      "ecr:*",
-      "scheduler:*",
-      "sns:*",
-      "sqs:*",
+      "ecr:BatchDeleteImage",
+      "ecr:CreateRepository",
+      "ecr:DeleteLifecyclePolicy",
+      "ecr:DeleteRepository",
+      "ecr:DeleteRepositoryPolicy",
+      "ecr:DescribeImages",
+      "ecr:DescribeRepositories",
+      "ecr:GetLifecyclePolicy",
+      "ecr:GetRepositoryPolicy",
+      "ecr:ListImages",
+      "ecr:ListTagsForResource",
+      "ecr:PutImageScanningConfiguration",
+      "ecr:PutImageTagMutability",
+      "ecr:PutLifecyclePolicy",
+      "ecr:SetRepositoryPolicy",
+      "ecr:TagResource",
+      "ecr:UntagResource",
+      "scheduler:CreateSchedule",
+      "scheduler:CreateScheduleGroup",
+      "scheduler:DeleteSchedule",
+      "scheduler:DeleteScheduleGroup",
+      "scheduler:GetSchedule",
+      "scheduler:GetScheduleGroup",
+      "scheduler:ListTagsForResource",
+      "scheduler:TagResource",
+      "scheduler:UntagResource",
+      "scheduler:UpdateSchedule",
+      "sns:CreateTopic",
+      "sns:DeleteTopic",
+      "sns:GetSubscriptionAttributes",
+      "sns:GetTopicAttributes",
+      "sns:ListSubscriptionsByTopic",
+      "sns:ListTagsForResource",
+      "sns:SetSubscriptionAttributes",
+      "sns:SetTopicAttributes",
+      "sns:Subscribe",
+      "sns:TagResource",
+      "sns:Unsubscribe",
+      "sns:UntagResource",
+      "sqs:CreateQueue",
+      "sqs:DeleteQueue",
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl",
+      "sqs:ListDeadLetterSourceQueues",
+      "sqs:ListQueueTags",
+      "sqs:SetQueueAttributes",
+      "sqs:TagQueue",
+      "sqs:UntagQueue",
     ]
     resources = [
       "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.project_name}-${each.key}-campaign-*",
@@ -216,30 +280,50 @@ data "aws_iam_policy_document" "github_deploy" {
   }
 
   statement {
-    sid    = "CampaignServiceDiscovery"
+    sid       = "CampaignServiceDiscovery"
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "ManageCampaignObservability"
     effect = "Allow"
     actions = [
-      "ecr:GetAuthorizationToken",
-      "ecr:DescribeRepositories",
-      "ecr:ListImages",
-      "scheduler:ListScheduleGroups",
-      "scheduler:ListSchedules",
-      "sns:ListTopics",
-      "sqs:CreateQueue",
-      "sqs:GetQueueUrl",
-      "sqs:ListQueues",
+      "cloudwatch:DeleteAlarms",
+      "cloudwatch:DeleteDashboards",
+      "cloudwatch:GetDashboard",
+      "cloudwatch:ListTagsForResource",
+      "cloudwatch:PutDashboard",
+      "cloudwatch:PutMetricAlarm",
+      "cloudwatch:TagResource",
+      "cloudwatch:UntagResource",
+    ]
+    resources = [
+      "arn:aws:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${each.key}-campaign-*",
+      "arn:aws:cloudwatch::${data.aws_caller_identity.current.account_id}:dashboard/${var.project_name}-${each.key}-campaign-*",
+    ]
+  }
+
+  statement {
+    sid    = "ReadCampaignObservability"
+    effect = "Allow"
+    actions = [
+      "cloudwatch:DescribeAlarms",
+      "cloudwatch:DescribeAlarmsForMetric",
+      "cloudwatch:ListDashboards",
     ]
     resources = ["*"]
   }
 
   statement {
-    sid    = "ManageCampaignObservabilityAndBudgets"
+    sid    = "ManageCampaignBudgets"
     effect = "Allow"
     actions = [
-      "budgets:*",
-      "cloudwatch:*",
+      "budgets:ModifyBudget",
+      "budgets:ViewBudget",
     ]
-    resources = ["*"]
+    resources = ["arn:aws:budgets::${data.aws_caller_identity.current.account_id}:budget/${var.project_name}-${each.key}-campaign-*"]
   }
 
   statement {
