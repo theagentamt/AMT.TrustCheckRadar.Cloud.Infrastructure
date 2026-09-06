@@ -14,6 +14,7 @@ output "downstream_contract" {
     outbox_stream_arn       = local.enabled ? aws_dynamodb_table.outbox[0].stream_arn : null
     pipeline_table_name     = local.enabled ? aws_dynamodb_table.pipeline[0].name : null
     pipeline_table_arn      = local.enabled ? aws_dynamodb_table.pipeline[0].arn : null
+    expiration_index_name   = "ExpirationIndex"
     intelligence_table_name = local.enabled ? aws_dynamodb_table.intelligence[0].name : null
     intelligence_table_arn  = local.enabled ? aws_dynamodb_table.intelligence[0].arn : null
     publication_index_name  = "PublicationIndex"

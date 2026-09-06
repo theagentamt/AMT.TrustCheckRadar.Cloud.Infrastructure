@@ -85,6 +85,7 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
           outbox_stream_arn       = "arn:aws:dynamodb:us-east-1:107827791950:table/campaign-outbox/stream/1"
           pipeline_table_name     = "campaign-pipeline"
           pipeline_table_arn      = "arn:aws:dynamodb:us-east-1:107827791950:table/campaign-pipeline"
+          expiration_index_name   = "ExpirationIndex"
           intelligence_table_name = "campaign-intelligence"
           intelligence_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/campaign-intelligence"
           feature_queue_url       = "https://sqs.us-east-1.amazonaws.com/107827791950/campaign-feature"
@@ -125,5 +126,10 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
   assert {
     condition     = aws_lambda_function.feature[0].memory_size <= 3072 && aws_lambda_function.feature[0].package_type == "Image"
     error_message = "The multilingual feature worker must stay within the approved Lambda runtime and packaging bounds."
+  }
+
+  assert {
+    condition     = aws_lambda_function.worker["lifecycle"].environment[0].variables["EXPIRATION_INDEX_NAME"] == "ExpirationIndex"
+    error_message = "The lifecycle worker must receive the explicit-expiration index contract."
   }
 }

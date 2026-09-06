@@ -203,6 +203,16 @@ resource "aws_dynamodb_table" "pipeline" {
     type = "S"
   }
 
+  attribute {
+    name = "GSI3PK"
+    type = "S"
+  }
+
+  attribute {
+    name = "GSI3SK"
+    type = "N"
+  }
+
   global_secondary_index {
     name            = "ContributorPeriodIndex"
     hash_key        = "GSI1PK"
@@ -219,6 +229,18 @@ resource "aws_dynamodb_table" "pipeline" {
     name            = "CandidateBucketIndex"
     hash_key        = "GSI2PK"
     range_key       = "GSI2SK"
+    projection_type = "KEYS_ONLY"
+
+    on_demand_throughput {
+      max_read_request_units  = var.pipeline_max_read_request_units
+      max_write_request_units = var.pipeline_max_write_request_units
+    }
+  }
+
+  global_secondary_index {
+    name            = "ExpirationIndex"
+    hash_key        = "GSI3PK"
+    range_key       = "GSI3SK"
     projection_type = "KEYS_ONLY"
 
     on_demand_throughput {

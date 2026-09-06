@@ -46,6 +46,9 @@ configuration flag but create no campaign resources until promotion is approved.
 
 - On-demand billing and a customer-managed environment KMS key.
 - TTL enabled on `expiresAt` but backed by explicit lifecycle deletion.
+- `ExpirationIndex` is a sparse, keys-only index. Expiring records set
+  `GSI3PK=EXPIRATION` and numeric `GSI3SK=expiresAt`; the lifecycle worker queries
+  through the current epoch and deletes the base-table items in bounded batches.
 - Streams use `NEW_AND_OLD_IMAGES` only when required for deterministic cleanup;
   stream consumers must not log records.
 - PITR, AWS Backup, exports, and replicas are disabled.

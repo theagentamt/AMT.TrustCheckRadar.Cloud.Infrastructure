@@ -59,6 +59,14 @@ run "enabled_dev_contract" {
   }
 
   assert {
+    condition = contains(
+      aws_dynamodb_table.pipeline[0].global_secondary_index[*].name,
+      "ExpirationIndex",
+    )
+    error_message = "The transient pipeline requires a sparse expiration index for explicit lifecycle deletion."
+  }
+
+  assert {
     condition = (
       aws_sqs_queue.feature[0].message_retention_seconds == 345600 &&
       aws_sqs_queue.feature_dlq[0].message_retention_seconds == 1209600

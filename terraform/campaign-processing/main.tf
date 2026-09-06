@@ -35,6 +35,7 @@ locals {
     outbox_stream_arn       = null
     pipeline_table_name     = null
     pipeline_table_arn      = null
+    expiration_index_name   = "ExpirationIndex"
     intelligence_table_name = null
     intelligence_table_arn  = null
     feature_queue_url       = null
@@ -116,6 +117,7 @@ check "enabled_dependencies" {
         local.campaign.enabled &&
         local.foundation.deletion_ledger_stream_arn != null &&
         local.campaign.outbox_stream_arn != null &&
+        local.campaign.expiration_index_name == "ExpirationIndex" &&
         var.artifact_release != null &&
         var.feature_image_digest != null &&
         var.model_version != null
@@ -588,9 +590,9 @@ data "aws_iam_policy_document" "lifecycle_runtime" {
     ]
     resources = [
       local.campaign.pipeline_table_arn,
-      "${local.campaign.pipeline_table_arn}/index/*",
+      "${local.campaign.pipeline_table_arn}/index/CandidateBucketIndex",
+      "${local.campaign.pipeline_table_arn}/index/${local.campaign.expiration_index_name}",
       local.campaign.intelligence_table_arn,
-      "${local.campaign.intelligence_table_arn}/index/*",
     ]
   }
 
@@ -764,6 +766,7 @@ resource "aws_lambda_function" "worker" {
       CAMPAIGN_SCHEMA_VERSION     = tostring(var.contract_schema_version)
       OUTBOX_TABLE_NAME           = local.campaign.outbox_table_name
       PIPELINE_TABLE_NAME         = local.campaign.pipeline_table_name
+      EXPIRATION_INDEX_NAME       = local.campaign.expiration_index_name
       INTELLIGENCE_TABLE_NAME     = local.campaign.intelligence_table_name
       FEATURE_QUEUE_URL           = local.campaign.feature_queue_url
       CLUSTER_QUEUE_URL           = local.campaign.cluster_queue_url
