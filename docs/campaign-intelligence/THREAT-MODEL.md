@@ -1,6 +1,6 @@
 # Campaign Intelligence Threat Model
 
-Status: **Initial proposed review** for `SECUR4ALL-202`
+Status: **Infrastructure controls implemented; `SECUR4ALL-215` review pending**
 
 ## Protected Assets
 
@@ -34,8 +34,8 @@ Status: **Initial proposed review** for `SECUR4ALL-202`
 
 ## Residual Risks Requiring Handoff
 
-- Product/privacy must decide whether cohort 10 and the proposed count bands are
-  adequate for the intended claims and jurisdictions.
+- Security/privacy must validate the approved cohort threshold of 10 and count
+  bands for the intended claims and jurisdictions.
 - ML/security must quantify inversion and membership-inference risk for the chosen
   encoder and centroid method.
 - Backend/security must prove the completed-analysis event is committed once and
@@ -47,3 +47,19 @@ Status: **Initial proposed review** for `SECUR4ALL-202`
 
 Production remains blocked until each residual risk has a named owner, evidence,
 and an approved disposition in YouTrack.
+
+## Implemented Infrastructure Controls
+
+- Separate state and resource names for every environment and campaign stack.
+- Distinct transient and persistent customer-managed KMS keys; transient queues
+  share the transient key to avoid unnecessary fixed cost.
+- Cross-account DynamoDB resource-policy denial plus exact-ARN runtime IAM.
+- Explicit campaign read/reviewer denies for transient tables, identity tables,
+  and `kms:GenerateMac`.
+- Queue TLS-only policies, encrypted DLQs, bounded retention, and redrive limits.
+- Content-free log groups and API access logs without source IP, Cognito subject,
+  or request ID fields.
+- Reserved-concurrency caps, on-demand DynamoDB request caps, queue-age/DLQ/error
+  alarms, budget alerts, and a processing kill switch.
+- Terraform promotion checks prevent enabled UAT/Production plans without an
+  explicit approval flag.

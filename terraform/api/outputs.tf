@@ -56,6 +56,24 @@ output "analysis_authorizer_id" {
   value       = aws_apigatewayv2_authorizer.cognito_jwt.id
 }
 
+output "api_execution_arn" {
+  description = "HTTP API execution ARN used by separately owned route integrations"
+  value       = aws_apigatewayv2_api.age_attestation.execution_arn
+}
+
+output "campaign_route_contract" {
+  description = "Versioned API identifiers consumed by the campaign API stack"
+  value = {
+    schema_version                = 1
+    environment                   = var.environment
+    campaign_intelligence_enabled = var.campaign_intelligence_enabled
+    api_id                        = aws_apigatewayv2_api.age_attestation.id
+    execution_arn                 = aws_apigatewayv2_api.age_attestation.execution_arn
+    authorizer_id                 = aws_apigatewayv2_authorizer.cognito_jwt.id
+    stage_name                    = aws_apigatewayv2_stage.age_attestation.name
+  }
+}
+
 output "analysis_route_key" {
   description = "HTTP method and path for the conversation analysis endpoint"
   value       = aws_apigatewayv2_route.analysis.route_key

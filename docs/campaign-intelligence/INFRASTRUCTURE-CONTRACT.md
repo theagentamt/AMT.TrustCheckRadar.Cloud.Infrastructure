@@ -9,13 +9,16 @@ OpenAPI contract.
 
 ## Stack Contract
 
-Campaign resources are split into two independently locked Terraform states:
+Campaign resources are split into three independently locked Terraform states:
 
 1. `campaign-data` owns environment KMS keys, the transient and persistent
    DynamoDB tables, queues/DLQs, deployed-model ECR repository, and resource
    policies.
 2. `campaign-processing` owns Lambda roles/functions, event-source mappings,
    EventBridge schedules, log groups, metrics, alarms, and dashboards.
+3. `campaign-api` owns the trends and reviewer Lambda roles/functions, integrations,
+   routes, permissions, alarms, and API dashboard. It adds routes to the existing
+   environment API and creates no domain or API Gateway API.
 
 The existing `foundation` stack exports the completed-analysis stream/outbox
 contract. `campaign-processing` consumes versioned outputs from `foundation` and
@@ -25,7 +28,9 @@ campaign contract when `SECUR4ALL-209` is implemented.
 Required deployment order:
 
 ```text
-foundation -> campaign-data -> artifact verification -> campaign-processing -> api
+foundation -> campaign-data -> base artifact verification -> api
+           -> campaign artifact verification -> campaign-processing
+           -> campaign-api -> edge
 ```
 
 Every output contract contains `schema_version`, `environment`, and only resource
@@ -167,9 +172,11 @@ compatibility requirements.
 ## Logging and Metrics Contract
 
 Logs may contain operation name, schema version, model version, coarse period,
-result category, duration, queue age, and AWS-generated trace identifiers. Logs,
-metrics, traces, alarms, and errors must not contain event IDs, contributor tokens,
-candidate/campaign IDs as dimensions, content, indicators, vectors, or identity.
+result category, duration, queue age, AWS-generated opaque trace identifiers, and
+AWS service event timestamps. Those trace identifiers and timestamps remain only
+in short-lived operational logs. Logs, metrics, traces, alarms, and errors must
+not contain application request/event IDs, contributor tokens, candidate/campaign
+IDs as dimensions, content, indicators, vectors, or identity.
 
 Required low-cardinality counters include published, consent-suppressed,
 duplicate, malformed, expired, feature-failed, cluster-failed, deletion-requested,

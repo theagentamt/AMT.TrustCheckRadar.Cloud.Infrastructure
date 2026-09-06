@@ -29,6 +29,7 @@ on:
         options:
           - all
           - foundation
+          - campaign-data
       execution_mode:
         description: Generate plans only or apply them
         required: true
@@ -64,6 +65,7 @@ jobs:
       TF_VAR_state_bucket_name: ${{ vars.TF_STATE_BUCKET }}
       TF_VAR_state_bucket_region: ${{ vars.AWS_REGION }}
       TF_VAR_artifact_release: ${{ github.event_name == 'workflow_dispatch' && inputs.artifact_release || vars.ARTIFACT_RELEASE }}
+      TF_VAR_budget_notification_emails: ${{ vars.CAMPAIGN_BUDGET_NOTIFICATION_EMAILS || '[]' }}
 
     steps:
       - name: Check out repository
@@ -81,6 +83,22 @@ jobs:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
           role-session-name: terraform-${{ github.run_id }}
+
+      - name: Configure optional campaign inputs
+        env:
+          CAMPAIGN_FEATURE_IMAGE_DIGEST: ${{ vars.CAMPAIGN_FEATURE_IMAGE_DIGEST }}
+          CAMPAIGN_MODEL_VERSION: ${{ vars.CAMPAIGN_MODEL_VERSION }}
+          CAMPAIGN_REVIEWER_USERNAME: ${{ secrets.CAMPAIGN_REVIEWER_USERNAME }}
+        run: |
+          if [[ -n "$CAMPAIGN_FEATURE_IMAGE_DIGEST" ]]; then
+            echo "TF_VAR_feature_image_digest=$CAMPAIGN_FEATURE_IMAGE_DIGEST" >> "$GITHUB_ENV"
+          fi
+          if [[ -n "$CAMPAIGN_MODEL_VERSION" ]]; then
+            echo "TF_VAR_model_version=$CAMPAIGN_MODEL_VERSION" >> "$GITHUB_ENV"
+          fi
+          if [[ -n "$CAMPAIGN_REVIEWER_USERNAME" ]]; then
+            echo "TF_VAR_campaign_reviewer_username=$CAMPAIGN_REVIEWER_USERNAME" >> "$GITHUB_ENV"
+          fi
 
       - name: Check deployment configuration
         run: |
@@ -105,6 +123,23 @@ jobs:
       - name: Apply foundation
         if: env.EXECUTION_MODE == 'apply'
         run: terraform -chdir=terraform/foundation apply -auto-approve foundation.tfplan
+
+      - name: Plan campaign data
+        if: env.DEPLOY_SCOPE == 'all' || env.DEPLOY_SCOPE == 'campaign-data'
+        run: |
+          terraform -chdir=terraform/campaign-data init -reconfigure \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=$STATE_KEY_PREFIX/$DEPLOY_ENV/campaign-data.tfstate" \
+            -backend-config="region=$TF_VAR_state_bucket_region" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+          terraform -chdir=terraform/campaign-data plan \
+            -var-file="../../environments/$DEPLOY_ENV/campaign-data.tfvars" \
+            -out=campaign-data.tfplan
+
+      - name: Apply campaign data
+        if: (env.DEPLOY_SCOPE == 'all' || env.DEPLOY_SCOPE == 'campaign-data') && env.EXECUTION_MODE == 'apply'
+        run: terraform -chdir=terraform/campaign-data apply -auto-approve campaign-data.tfplan
 
       - name: Verify immutable Lambda artifacts
         if: env.DEPLOY_SCOPE == 'all' && (env.EXECUTION_MODE == 'apply' || github.event_name == 'workflow_dispatch')
@@ -142,6 +177,90 @@ jobs:
         if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
         run: terraform -chdir=terraform/api apply -auto-approve api.tfplan
 
+      - name: Verify immutable campaign artifacts
+        if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
+        run: |
+          processing_vars="environments/$DEPLOY_ENV/campaign-processing.tfvars"
+          api_vars="environments/$DEPLOY_ENV/campaign-api.tfvars"
+          if grep -Eq '^campaign_processing_enabled[[:space:]]*=[[:space:]]*true' "$processing_vars"; then
+            test -n "$TF_VAR_artifact_release" || { echo "Campaign processing requires ARTIFACT_RELEASE"; exit 1; }
+            test -n "$TF_VAR_feature_image_digest" || { echo "Campaign processing requires CAMPAIGN_FEATURE_IMAGE_DIGEST"; exit 1; }
+            test -n "$TF_VAR_model_version" || { echo "Campaign processing requires CAMPAIGN_MODEL_VERSION"; exit 1; }
+            artifact_bucket=$(terraform -chdir=terraform/foundation output -raw artifact_bucket_name)
+            for artifact in \
+              campaign_observation_publisher.zip \
+              campaign_cluster_aggregator.zip \
+              campaign_lifecycle.zip \
+              campaign_deletion_bridge.zip
+            do
+              aws s3api head-object \
+                --bucket "$artifact_bucket" \
+                --key "releases/$TF_VAR_artifact_release/$artifact" >/dev/null
+            done
+            repository_url=$(terraform -chdir=terraform/campaign-data output -json downstream_contract | jq -r .model_repository_url)
+            repository_name=${repository_url#*/}
+            aws ecr describe-images \
+              --repository-name "$repository_name" \
+              --image-ids "imageDigest=$TF_VAR_feature_image_digest" >/dev/null
+            image_size=$(aws ecr describe-images \
+              --repository-name "$repository_name" \
+              --image-ids "imageDigest=$TF_VAR_feature_image_digest" \
+              --query 'imageDetails[0].imageSizeInBytes' \
+              --output text)
+            [[ "$image_size" =~ ^[0-9]+$ && "$image_size" -le 2147483648 ]] || {
+              echo "Campaign feature image exceeds the approved 2 GB limit"
+              exit 1
+            }
+          fi
+          if grep -Eq '^campaign_api_enabled[[:space:]]*=[[:space:]]*true' "$api_vars"; then
+            test -n "$TF_VAR_artifact_release" || { echo "Campaign API requires ARTIFACT_RELEASE"; exit 1; }
+            artifact_bucket=$(terraform -chdir=terraform/foundation output -raw artifact_bucket_name)
+            aws s3api head-object \
+              --bucket "$artifact_bucket" \
+              --key "releases/$TF_VAR_artifact_release/campaign_trends.zip" >/dev/null
+          fi
+          if grep -Eq '^campaign_review_api_enabled[[:space:]]*=[[:space:]]*true' "$api_vars"; then
+            test -n "$TF_VAR_campaign_reviewer_username" || { echo "Campaign review requires CAMPAIGN_REVIEWER_USERNAME"; exit 1; }
+            artifact_bucket=$(terraform -chdir=terraform/foundation output -raw artifact_bucket_name)
+            aws s3api head-object \
+              --bucket "$artifact_bucket" \
+              --key "releases/$TF_VAR_artifact_release/campaign_review.zip" >/dev/null
+          fi
+
+      - name: Plan campaign processing
+        if: env.DEPLOY_SCOPE == 'all'
+        run: |
+          terraform -chdir=terraform/campaign-processing init -reconfigure \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=$STATE_KEY_PREFIX/$DEPLOY_ENV/campaign-processing.tfstate" \
+            -backend-config="region=$TF_VAR_state_bucket_region" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+          terraform -chdir=terraform/campaign-processing plan \
+            -var-file="../../environments/$DEPLOY_ENV/campaign-processing.tfvars" \
+            -out=campaign-processing.tfplan
+
+      - name: Apply campaign processing
+        if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
+        run: terraform -chdir=terraform/campaign-processing apply -auto-approve campaign-processing.tfplan
+
+      - name: Plan campaign API
+        if: env.DEPLOY_SCOPE == 'all'
+        run: |
+          terraform -chdir=terraform/campaign-api init -reconfigure \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=$STATE_KEY_PREFIX/$DEPLOY_ENV/campaign-api.tfstate" \
+            -backend-config="region=$TF_VAR_state_bucket_region" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+          terraform -chdir=terraform/campaign-api plan \
+            -var-file="../../environments/$DEPLOY_ENV/campaign-api.tfvars" \
+            -out=campaign-api.tfplan
+
+      - name: Apply campaign API
+        if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
+        run: terraform -chdir=terraform/campaign-api apply -auto-approve campaign-api.tfplan
+
       - name: Plan edge
         if: env.DEPLOY_SCOPE == 'all'
         run: |
@@ -178,12 +297,20 @@ jobs:
 
       - name: Deployment summary
         run: |
-          echo "### $DEPLOY_ENV infrastructure" >> "$GITHUB_STEP_SUMMARY"
-          echo "Scope: \`$DEPLOY_SCOPE\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "Mode: \`$EXECUTION_MODE\`" >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$DEPLOY_SCOPE" == "all" ]]; then
-            echo "Release: \`$TF_VAR_artifact_release\`" >> "$GITHUB_STEP_SUMMARY"
-            if [[ "$EXECUTION_MODE" == "apply" ]]; then
-              echo "API endpoint: \`$(terraform -chdir=terraform/edge output -raw base_url)\`" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "### $DEPLOY_ENV infrastructure"
+            echo "Scope: \`$DEPLOY_SCOPE\`"
+            echo "Mode: \`$EXECUTION_MODE\`"
+            if [[ "$DEPLOY_SCOPE" == "campaign-data" && "$EXECUTION_MODE" == "apply" ]]; then
+              echo "Campaign data enabled: \`$(terraform -chdir=terraform/campaign-data output -raw campaign_intelligence_enabled)\`"
             fi
-          fi
+            if [[ "$DEPLOY_SCOPE" == "all" ]]; then
+              echo "Release: \`$TF_VAR_artifact_release\`"
+              if [[ "$EXECUTION_MODE" == "apply" ]]; then
+                echo "API endpoint: \`$(terraform -chdir=terraform/edge output -raw base_url)\`"
+                echo "Campaign data enabled: \`$(terraform -chdir=terraform/campaign-data output -raw campaign_intelligence_enabled)\`"
+                echo "Campaign processing enabled: \`$(terraform -chdir=terraform/campaign-processing output -raw campaign_processing_enabled)\`"
+                echo "Campaign API enabled: \`$(terraform -chdir=terraform/campaign-api output -raw campaign_api_enabled)\`"
+              fi
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

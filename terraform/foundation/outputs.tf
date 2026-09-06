@@ -38,6 +38,11 @@ output "deletion_ledger_table_arn" {
   value       = aws_dynamodb_table.deletion_ledger.arn
 }
 
+output "deletion_ledger_stream_arn" {
+  description = "Deletion ledger stream used by privacy-aware downstream cleanup"
+  value       = var.campaign_intelligence_enabled ? aws_dynamodb_table.deletion_ledger.stream_arn : null
+}
+
 output "backend_service_role_arn" {
   description = "Backend service IAM role ARN"
   value       = aws_iam_role.backend_service.arn
@@ -107,6 +112,9 @@ output "downstream_contract" {
     cognito_app_client_id             = aws_cognito_user_pool_client.mobile.id
     users_table_arn                   = aws_dynamodb_table.users.arn
     users_table_name                  = aws_dynamodb_table.users.name
+    deletion_ledger_stream_arn        = var.campaign_intelligence_enabled ? aws_dynamodb_table.deletion_ledger.stream_arn : null
+    deletion_ledger_table_arn         = aws_dynamodb_table.deletion_ledger.arn
+    deletion_ledger_table_name        = aws_dynamodb_table.deletion_ledger.name
     analysis_abuse_control_table_arn  = aws_dynamodb_table.analysis_abuse_control.arn
     analysis_abuse_control_table_name = aws_dynamodb_table.analysis_abuse_control.name
     purchase_entitlements_table_arn   = aws_dynamodb_table.purchase_entitlements.arn

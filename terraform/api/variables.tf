@@ -45,6 +45,12 @@ variable "state_key_prefix" {
   default     = "trustcheckradar"
 }
 
+variable "campaign_intelligence_enabled" {
+  description = "Allow the analysis Lambda to publish versioned campaign outbox records"
+  type        = bool
+  default     = false
+}
+
 variable "artifact_release" {
   description = "Immutable application release identifier used in Lambda artifact S3 keys"
   type        = string

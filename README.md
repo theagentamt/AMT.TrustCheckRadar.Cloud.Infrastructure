@@ -4,18 +4,24 @@ Terraform infrastructure for TrustCheckRadar, organized for isolated `dev`, `uat
 
 ## Architecture
 
-Each environment has four independently locked remote states:
+Each environment has seven independently locked remote states:
 
 1. `foundation` creates Cognito, DynamoDB, the versioned Lambda artifact bucket, and shared IAM roles.
-2. `api` reads the foundation contract and creates Secrets Manager containers, Lambda functions, API Gateway, and logs.
-3. `edge` reads the API contract and creates the environment hostname, certificate, DNS alias, and root API mapping.
-4. `identity-workflows` reads the foundation contract and creates the Cognito PostConfirmation Lambda and trigger binding.
+2. `campaign-data` creates the gated campaign KMS keys, DynamoDB tables, queues, model repository, and budget controls.
+3. `api` reads the foundation and optional campaign-data contracts and creates Secrets Manager containers, Lambda functions, API Gateway, and logs.
+4. `campaign-processing` creates the gated campaign workers, event sources, schedules, least-privilege roles, alarms, and dashboard.
+5. `campaign-api` adds gated trends and reviewer integrations to the existing environment API.
+6. `edge` reads the API contract and creates the environment hostname, certificate, DNS alias, and root API mapping.
+7. `identity-workflows` reads the foundation contract and creates the Cognito PostConfirmation Lambda and trigger binding.
 
 State object keys follow this convention:
 
 ```text
 trustcheckradar/<environment>/foundation.tfstate
+trustcheckradar/<environment>/campaign-data.tfstate
 trustcheckradar/<environment>/api.tfstate
+trustcheckradar/<environment>/campaign-processing.tfstate
+trustcheckradar/<environment>/campaign-api.tfstate
 trustcheckradar/<environment>/edge.tfstate
 trustcheckradar/<environment>/identity-workflows.tfstate
 ```
@@ -34,7 +40,10 @@ environments/
   prod/                  # Nonsecret production values
 terraform/
   foundation/
+  campaign-data/
   api/
+  campaign-processing/
+  campaign-api/
   edge/
   identity-workflows/
 scripts/
@@ -53,6 +62,9 @@ scripts/
 - GitHub obtains short-lived AWS credentials through OIDC. No AWS access keys are stored in GitHub.
 - One deployment can run per environment at a time.
 - Foundation is applied before dependent stacks.
+- Campaign resources use explicit environment flags. Dev is activated only after
+  its contract, artifact, reviewer, security, and budget inputs are accepted; UAT
+  and Production also require promotion approval.
 - Environment endpoints are `api-dev.andmorethings.net`, `api-uat.andmorethings.net`, and `api.andmorethings.net`.
 - The pipeline verifies every required Lambda zip before changing API or identity resources.
 - Lambda objects live under `releases/<release-id>/` and are never overwritten.
@@ -78,7 +90,10 @@ export AWS_REGION="us-east-1"
 export ARTIFACT_RELEASE="2026.09.03-1"
 
 ./scripts/terraform.sh plan dev foundation
+./scripts/terraform.sh plan dev campaign-data
 ./scripts/terraform.sh plan dev api "$ARTIFACT_RELEASE"
+./scripts/terraform.sh plan dev campaign-processing "$ARTIFACT_RELEASE"
+./scripts/terraform.sh plan dev campaign-api "$ARTIFACT_RELEASE"
 ./scripts/terraform.sh plan dev edge
 ./scripts/terraform.sh plan dev identity-workflows "$ARTIFACT_RELEASE"
 ```

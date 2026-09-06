@@ -10,8 +10,22 @@ data "terraform_remote_state" "foundation" {
   }
 }
 
+data "terraform_remote_state" "campaign_data" {
+  count   = var.campaign_intelligence_enabled ? 1 : 0
+  backend = "s3"
+
+  config = {
+    bucket       = var.state_bucket_name
+    key          = "${var.state_key_prefix}/${var.environment}/campaign-data.tfstate"
+    region       = var.state_bucket_region
+    encrypt      = true
+    use_lockfile = true
+  }
+}
+
 locals {
   foundation                                  = data.terraform_remote_state.foundation.outputs.downstream_contract
+  campaign                                    = var.campaign_intelligence_enabled ? data.terraform_remote_state.campaign_data[0].outputs.downstream_contract : null
   artifact_prefix                             = "releases/${var.artifact_release}"
   name_prefix                                 = "${var.project_name}-${var.environment}"
   lambda_name                                 = coalesce(var.age_attestation_lambda_name, "${local.name_prefix}-age-attestation")
@@ -56,6 +70,15 @@ locals {
   purchase_handoff_artifact_key               = coalesce(var.purchase_handoff_lambda_s3_key, "${local.artifact_prefix}/purchase_handoff.zip")
   entitlement_snapshot_artifact_key           = coalesce(var.entitlement_snapshot_lambda_s3_key, "${local.artifact_prefix}/entitlement_snapshot.zip")
   web_risk_communication_artifact_key         = coalesce(var.web_risk_communication_lambda_s3_key, "${local.artifact_prefix}/web_risk_communication.zip")
+  campaign_outbox_table_arn                   = var.campaign_intelligence_enabled ? local.campaign.outbox_table_arn : null
+  campaign_outbox_table_name                  = var.campaign_intelligence_enabled ? local.campaign.outbox_table_name : null
+  analysis_transaction_resources = concat(
+    [
+      local.analysis_abuse_control_table_arn,
+      local.analysis_entitlements_table_arn,
+    ],
+    var.campaign_intelligence_enabled ? [local.campaign_outbox_table_arn] : [],
+  )
 
   common_tags = merge(var.tags, {
     Project     = var.project_name
@@ -69,6 +92,16 @@ check "foundation_contract_version" {
   assert {
     condition     = local.foundation.schema_version == 1
     error_message = "The foundation state contract is incompatible with this API stack."
+  }
+}
+
+check "campaign_data_contract_version" {
+  assert {
+    condition = (
+      !var.campaign_intelligence_enabled ||
+      (local.campaign.schema_version == 1 && local.campaign.environment == var.environment && local.campaign.enabled)
+    )
+    error_message = "The campaign-data state contract is disabled, incompatible, or cross-environment."
   }
 }
 
@@ -276,10 +309,35 @@ data "aws_iam_policy_document" "analysis_runtime" {
     effect  = "Allow"
     actions = ["dynamodb:TransactWriteItems"]
 
-    resources = [
-      local.analysis_abuse_control_table_arn,
-      local.analysis_entitlements_table_arn
-    ]
+    resources = local.analysis_transaction_resources
+  }
+
+  dynamic "statement" {
+    for_each = var.campaign_intelligence_enabled ? [1] : []
+
+    content {
+      sid     = "WriteCampaignOutbox"
+      effect  = "Allow"
+      actions = ["dynamodb:PutItem"]
+
+      resources = [local.campaign_outbox_table_arn]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.campaign_intelligence_enabled ? [1] : []
+
+    content {
+      sid    = "UseCampaignOutboxEncryption"
+      effect = "Allow"
+      actions = [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:GenerateDataKey",
+      ]
+
+      resources = [local.campaign.transient_kms_key_arn]
+    }
   }
 
   statement {
@@ -613,7 +671,11 @@ resource "aws_lambda_function" "analysis" {
       OPENAI_SECRET_ARN                     = local.effective_openai_secret_arn
       OPENAI_SECRET_NAME                    = local.openai_secret_name
       ANALYSIS_REQUEST_TIMEOUT_MS           = tostring(29000)
-    })
+      }, var.campaign_intelligence_enabled ? {
+      CAMPAIGN_OUTBOX_TABLE_ARN  = local.campaign_outbox_table_arn
+      CAMPAIGN_OUTBOX_TABLE_NAME = local.campaign_outbox_table_name
+      CAMPAIGN_SCHEMA_VERSION    = "1"
+    } : {})
   }
 
   depends_on = [aws_cloudwatch_log_group.analysis_lambda]
@@ -964,19 +1026,30 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
     throttling_rate_limit    = var.api_throttle_rate_limit
   }
 
+  dynamic "route_settings" {
+    for_each = var.campaign_intelligence_enabled ? {
+      trends = "GET /v1/scam-trends"
+      review = "POST /v1/internal/campaigns/{campaignId}/transitions"
+    } : {}
+
+    content {
+      route_key                = route_settings.value
+      detailed_metrics_enabled = true
+      throttling_burst_limit   = 4
+      throttling_rate_limit    = 2
+    }
+  }
+
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.age_attestation_api.arn
     format = jsonencode({
-      requestId        = "$context.requestId"
-      sourceIp         = "$context.identity.sourceIp"
-      requestTime      = "$context.requestTime"
-      httpMethod       = "$context.httpMethod"
-      routeKey         = "$context.routeKey"
-      status           = "$context.status"
-      responseLength   = "$context.responseLength"
-      integrationError = "$context.integrationErrorMessage"
-      authorizerError  = "$context.authorizer.error"
-      jwtSubject       = "$context.authorizer.jwt.claims.sub"
+      httpMethod         = "$context.httpMethod"
+      routeKey           = "$context.routeKey"
+      status             = "$context.status"
+      responseLength     = "$context.responseLength"
+      integrationStatus  = "$context.integration.status"
+      integrationLatency = "$context.integrationLatency"
+      responseLatency    = "$context.responseLatency"
     })
   }
 

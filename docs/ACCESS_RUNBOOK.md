@@ -75,6 +75,11 @@ After CLI identity verification, Codex:
 4. Plans and applies `bootstrap/access` to create the `dev`, `uat`, and `prod` GitHub deployment roles.
 5. Reports the state bucket name and role ARN for each environment.
 
+After campaign infrastructure is merged, reapply `bootstrap/access` before
+enabling any campaign flag. The deployment roles need the tagged KMS, SQS, ECR,
+EventBridge Scheduler, SNS, CloudWatch, and AWS Budgets permissions introduced by
+the campaign stacks.
+
 All three environments use the same AWS account. Their Terraform state keys, resource names, IAM roles, and artifact buckets remain environment-specific.
 
 ## 4. Configure GitHub Environments
@@ -99,8 +104,9 @@ Reference: [Managing environments for deployment](https://docs.github.com/en/act
 The first deployment remains intentionally staged:
 
 1. Deploy the `dev` foundation.
-2. Build and upload immutable Lambda packages when application code is available.
-3. Deploy the `dev` API and identity workflows.
-4. Promote the same package set to UAT and production after plan review and approval.
+2. Deploy the disabled `dev` campaign-data state.
+3. Build and upload immutable Lambda packages when application code is available.
+4. Deploy the `dev` API, campaign-processing, campaign-api, edge, and identity workflows.
+5. Promote the same package set to UAT and production after plan review and approval.
 
 See [RELEASES.md](RELEASES.md) and [OPERATIONS.md](OPERATIONS.md) for release and promotion procedures.

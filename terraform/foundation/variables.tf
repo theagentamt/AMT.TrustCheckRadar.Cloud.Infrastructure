@@ -184,3 +184,9 @@ variable "deletion_s3_bucket_arns" {
   type        = list(string)
   default     = []
 }
+
+variable "campaign_intelligence_enabled" {
+  description = "Enable the deletion-ledger stream used by the campaign deletion bridge"
+  type        = bool
+  default     = false
+}

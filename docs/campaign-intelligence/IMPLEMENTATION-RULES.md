@@ -29,8 +29,11 @@ infrastructure portions of the rules.
   fields.
 - Queue envelopes contain only environment, operation, random event ID, record
   version, and schema version.
-- Account identifiers, Cognito subject IDs, request IDs, device IDs, IP addresses,
-  raw content, OCR text, screenshots, and precise timestamps are prohibited.
+- Account identifiers, Cognito subject IDs, application/user-supplied request IDs,
+  device IDs, IP addresses, raw content, OCR text, screenshots, and application
+  timestamps are prohibited. AWS-generated opaque trace IDs and service event
+  timestamps may exist only in short-lived operational logs; they are never
+  stored in campaign records, metrics, alarms, or API responses.
 - Transient identifiers and contributor tokens remain in transient storage only.
 - Persistent records contain only confirmed aggregates, taxonomy identifiers,
   count bands, coarse weeks, clipped centroids, workflow state, and privacy-safe

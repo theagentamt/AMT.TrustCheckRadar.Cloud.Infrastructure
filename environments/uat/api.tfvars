@@ -2,6 +2,8 @@ aws_region   = "us-east-1"
 project_name = "trustcheckradar"
 environment  = "uat"
 
+campaign_intelligence_enabled = false
+
 tags = {
   Application = "TrustCheckRadar"
   Owner       = "AMT"

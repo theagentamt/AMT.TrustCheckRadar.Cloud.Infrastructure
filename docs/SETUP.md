@@ -62,8 +62,14 @@ Create `dev`, `uat`, and `prod` under repository settings. Define these environm
 | `TF_STATE_BUCKET` | State bucket for that environment/account |
 | `TF_STATE_KEY_PREFIX` | `trustcheckradar` |
 | `ARTIFACT_RELEASE` | Release deployed automatically to `dev` |
+| `CAMPAIGN_BUDGET_NOTIFICATION_EMAILS` | JSON list of budget recipients, for example `["owner@example.com"]` |
+| `CAMPAIGN_FEATURE_IMAGE_DIGEST` | Approved `sha256:` digest from `SECUR4ALL-214`; set only when campaign processing is enabled |
+| `CAMPAIGN_MODEL_VERSION` | Approved model version from `SECUR4ALL-214`; set only when campaign processing is enabled |
 
 Environment variables are configuration, not credentials. AWS authorization is exchanged through GitHub OIDC.
+
+Store the sole Cognito reviewer username in the `CAMPAIGN_REVIEWER_USERNAME`
+GitHub environment secret. Do not store it in committed environment files.
 
 Recommended protection:
 
@@ -91,6 +97,12 @@ Repeat for UAT and production when each environment is ready.
 Upload immutable Lambda packages using [RELEASES.md](RELEASES.md), then run the deployment workflow with `deployment_scope=all`.
 
 For UAT and production, first run with `execution_mode=plan`, review all Terraform plan logs, and then rerun the same release with `execution_mode=apply`.
+
+Campaign intelligence remains disabled in every committed environment until its
+handoff gates pass. Activation requires changing the matching `campaign-data`,
+`campaign-processing`, `campaign-api`, `foundation`, and `api` environment flags
+in the same reviewed release. UAT and Production additionally require
+`promotion_approved=true` in all three campaign variable files.
 
 After API creation, populate these Secrets Manager containers using a restricted secret-management process:
 

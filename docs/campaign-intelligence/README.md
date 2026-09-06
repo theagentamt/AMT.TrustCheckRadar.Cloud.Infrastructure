@@ -30,6 +30,21 @@ must be returned before this package becomes accepted.
 - [Implementation Rules](IMPLEMENTATION-RULES.md) is the normative rule set for
   contracts, taxonomy, model runtime, similarity, privacy, retention, launch, and
   cost validation.
+- [Deployment Gates](DEPLOYMENT-GATES.md) records the exact inputs, flag changes,
+  ordering, tests, and promotion approvals required to activate an environment.
+
+## Infrastructure Status
+
+The `campaign-data`, `campaign-processing`, and `campaign-api` Terraform stacks
+are implemented with environment gates and native contract tests. Foundation and
+API contracts include the optional outbox/deletion integrations. Every committed
+environment remains disabled, so no campaign collection or billable campaign
+resource is authorized yet.
+
+Activation is blocked until `SECUR4ALL-213` through `SECUR4ALL-215` return accepted
+technical/privacy artifacts and the application-owned worker, review, and trends
+Lambda artifacts are available. The required GitHub environment inputs are also
+not configured yet.
 
 ## Decision Summary
 

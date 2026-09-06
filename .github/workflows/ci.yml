@@ -44,11 +44,32 @@ jobs:
           terraform init -backend=false -input=false
           terraform validate
 
+      - name: Validate campaign data
+        working-directory: terraform/campaign-data
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
       - name: Validate API
         working-directory: terraform/api
         run: |
           terraform init -backend=false -input=false
           terraform validate
+
+      - name: Validate campaign processing
+        working-directory: terraform/campaign-processing
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
+      - name: Validate campaign API
+        working-directory: terraform/campaign-api
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
 
       - name: Validate edge
         working-directory: terraform/edge
@@ -65,5 +86,10 @@ jobs:
       - name: Validate helper scripts
         run: |
           bash -n scripts/terraform.sh
+          bash -n scripts/check_campaign_guardrails.sh
           bash -n terraform/api/scripts/smoke_test_analysis.sh
+          bash -n terraform/campaign-api/scripts/smoke_test_campaign_trends.sh
           python3 -m py_compile terraform/identity-workflows/scripts/update_user_pool_lambda_config.py
+
+      - name: Check campaign infrastructure guardrails
+        run: scripts/check_campaign_guardrails.sh

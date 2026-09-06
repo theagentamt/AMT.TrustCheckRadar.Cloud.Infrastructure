@@ -247,6 +247,9 @@ resource "aws_dynamodb_table" "deletion_ledger" {
     enabled = true
   }
 
+  stream_enabled   = var.campaign_intelligence_enabled
+  stream_view_type = var.campaign_intelligence_enabled ? "NEW_IMAGE" : null
+
   tags = local.common_tags
 }
 

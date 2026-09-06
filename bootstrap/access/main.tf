@@ -116,6 +116,133 @@ data "aws_iam_policy_document" "github_deploy" {
   }
 
   statement {
+    sid    = "CreateTaggedCampaignKeys"
+    effect = "Allow"
+    actions = [
+      "kms:CreateKey",
+    ]
+    resources = ["*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/Project"
+      values   = [var.project_name]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/Environment"
+      values   = [each.key]
+    }
+  }
+
+  statement {
+    sid    = "ManageTaggedCampaignKeys"
+    effect = "Allow"
+    actions = [
+      "kms:CancelKeyDeletion",
+      "kms:CreateGrant",
+      "kms:DescribeKey",
+      "kms:DisableKey",
+      "kms:EnableKey",
+      "kms:EnableKeyRotation",
+      "kms:GetKeyPolicy",
+      "kms:GetKeyRotationStatus",
+      "kms:ListGrants",
+      "kms:ListResourceTags",
+      "kms:PutKeyPolicy",
+      "kms:RetireGrant",
+      "kms:RevokeGrant",
+      "kms:ScheduleKeyDeletion",
+      "kms:TagResource",
+      "kms:UntagResource",
+      "kms:UpdateKeyDescription",
+    ]
+    resources = ["arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:key/*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/Project"
+      values   = [var.project_name]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/Environment"
+      values   = [each.key]
+    }
+  }
+
+  statement {
+    sid    = "ManageCampaignKeyAliases"
+    effect = "Allow"
+    actions = [
+      "kms:CreateAlias",
+      "kms:DeleteAlias",
+      "kms:UpdateAlias",
+    ]
+    resources = [
+      "arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alias/${var.project_name}-${each.key}-campaign-*",
+      "arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:key/*",
+    ]
+  }
+
+  statement {
+    sid    = "ReadKmsAliases"
+    effect = "Allow"
+    actions = [
+      "kms:ListAliases",
+      "kms:ListKeys",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "ManageCampaignMessagingAndArtifacts"
+    effect = "Allow"
+    actions = [
+      "ecr:*",
+      "scheduler:*",
+      "sns:*",
+      "sqs:*",
+    ]
+    resources = [
+      "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.project_name}-${each.key}-campaign-*",
+      "arn:aws:scheduler:${var.aws_region}:${data.aws_caller_identity.current.account_id}:schedule-group/${var.project_name}-${each.key}-campaign*",
+      "arn:aws:scheduler:${var.aws_region}:${data.aws_caller_identity.current.account_id}:schedule/${var.project_name}-${each.key}-campaign*/*",
+      "arn:aws:sns:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${var.project_name}-${each.key}-campaign-*",
+      "arn:aws:sqs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${var.project_name}-${each.key}-campaign-*",
+    ]
+  }
+
+  statement {
+    sid    = "CampaignServiceDiscovery"
+    effect = "Allow"
+    actions = [
+      "ecr:GetAuthorizationToken",
+      "ecr:DescribeRepositories",
+      "ecr:ListImages",
+      "scheduler:ListScheduleGroups",
+      "scheduler:ListSchedules",
+      "sns:ListTopics",
+      "sqs:CreateQueue",
+      "sqs:GetQueueUrl",
+      "sqs:ListQueues",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "ManageCampaignObservabilityAndBudgets"
+    effect = "Allow"
+    actions = [
+      "budgets:*",
+      "cloudwatch:*",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
     sid    = "ManageEnvironmentArtifactBuckets"
     effect = "Allow"
     actions = [

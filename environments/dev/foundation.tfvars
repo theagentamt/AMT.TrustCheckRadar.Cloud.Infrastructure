@@ -14,3 +14,4 @@ users_status_gsi_enabled      = true
 
 backend_assume_role_principals  = ["lambda.amazonaws.com"]
 deletion_assume_role_principals = ["lambda.amazonaws.com"]
+campaign_intelligence_enabled   = false
