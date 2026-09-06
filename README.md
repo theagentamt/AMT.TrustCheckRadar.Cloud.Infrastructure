@@ -94,3 +94,7 @@ Do not run raw Terraform commands against a stack already initialized for anothe
 - Promote the same immutable application release through environments.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for design decisions, [docs/OPERATIONS.md](docs/OPERATIONS.md) for deployment and recovery procedures, and [docs/ACCESS_RUNBOOK.md](docs/ACCESS_RUNBOOK.md) for the console/CLI responsibility boundary.
+
+The proposed AWS architecture and infrastructure contracts for privacy-preserving
+campaign intelligence are documented in
+[docs/campaign-intelligence/README.md](docs/campaign-intelligence/README.md).

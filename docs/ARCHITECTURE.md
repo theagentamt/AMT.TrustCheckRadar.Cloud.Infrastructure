@@ -45,3 +45,12 @@ Terraform creates Secrets Manager containers and IAM access, but it does not cre
 ## Cognito Trigger
 
 The AWS provider manages Lambda configuration as part of the full Cognito user-pool resource, but does not provide an independent trigger-binding resource. Because the user pool and workflow have separate states, the identity stack uses a guarded Python helper that reads the current pool configuration, merges `PostConfirmation`, and writes the complete mutable configuration back. The step runs through `terraform_data` and is repeatable in GitHub-hosted runners.
+
+## Campaign Intelligence
+
+Campaign intelligence is a separate privacy boundary, not an extension of the
+account or analysis data model. Its proposed AWS decisions, data flow, resource
+contract, and threat model are maintained under
+[`docs/campaign-intelligence`](campaign-intelligence/README.md). No campaign
+resources are provisioned until the `SECUR4ALL-202` architecture gate is
+approved; provisioning belongs to `SECUR4ALL-203`.
