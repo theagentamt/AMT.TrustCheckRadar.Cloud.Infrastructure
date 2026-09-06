@@ -4,11 +4,11 @@ This directory contains the proposed AWS architecture package for
 `SECUR4ALL-202`. It defines the infrastructure boundary that must be approved
 before `SECUR4ALL-203` provisions resources.
 
-Status: **Product-approved v1; technical and security handoffs pending**
+Status: **Dev data plane and campaign APIs deployed; worker activation blocked**
 
-No document in this directory authorizes a Dev, UAT, or Production deployment.
-The product/privacy, backend-contract, ML, and security handoffs listed below
-must be returned before this package becomes accepted.
+The approved Dev deployment is limited to the resources recorded below. This
+document does not authorize worker activation or promotion to UAT or Production;
+those actions remain subject to the deployment gates.
 
 ## Documents
 
@@ -36,15 +36,16 @@ must be returned before this package becomes accepted.
 ## Infrastructure Status
 
 The `campaign-data`, `campaign-processing`, and `campaign-api` Terraform stacks
-are implemented with environment gates and native contract tests. Foundation and
-API contracts include the optional outbox/deletion integrations. Every committed
-environment remains disabled, so no campaign collection or billable campaign
-resource is authorized yet.
+are implemented with environment gates and native contract tests. Dev data
+resources and the authenticated review/trend APIs are deployed. Dev source
+publishing and processing remain disabled, the processing kill switch is on, and
+UAT and Production remain disabled.
 
-Activation is blocked until `SECUR4ALL-213` through `SECUR4ALL-215` return accepted
-technical/privacy artifacts and the application-owned worker, review, and trends
-Lambda artifacts are available. The required GitHub environment inputs are also
-not configured yet.
+The immutable worker ZIPs and model image are published. The model image is
+blocked from deployment because its compressed size is 4.41 GB, above the
+approved 2 GB guardrail. The Lambda/ML handoff must reduce that image before
+background worker infrastructure is enabled. See [Deployment Gates](DEPLOYMENT-GATES.md)
+for the pinned digest and current verification state.
 
 ## Decision Summary
 

@@ -6,9 +6,25 @@ does not authorize campaign data collection.
 
 ## Current State
 
-All environments are disabled. A disabled plan creates no campaign resources.
-The CI tests exercise both the disabled configuration and a mocked enabled Dev
-configuration.
+Dev campaign data and API resources were deployed on 2026-09-06. The data plane
+includes the encrypted on-demand DynamoDB tables, TTL policies, required indexes,
+queues and DLQs, KMS keys, ECR repository, alarms, and campaign budget. The
+authenticated review and trend routes are available through
+`api-dev.andmorethings.net`; the sole reviewer is assigned to the Cognito
+`campaign-reviewer` group and must complete the first-password change.
+The campaign budget email subscription for `support@andmorethings.com` is
+confirmed.
+
+Campaign source publishing and all background workers remain disabled. The
+processing kill switch remains enabled and AWS has no campaign event-source
+mappings or lifecycle schedules. The tested feature image is pinned at
+`sha256:5271f0cadf979c8bbdf29126648562b861290e7a6206d2d9a3135639cb2b9f82`,
+but its 4,407,806,951-byte compressed size exceeds the approved 2 GB deployment
+limit. The Lambda/ML owner must return a smaller image before Dev processing can
+be deployed.
+
+UAT and Production remain disabled. CI continues to exercise both disabled
+configurations and mocked enabled configurations.
 
 ## Dev Activation Inputs
 
@@ -48,7 +64,9 @@ Use staged reviewed changes:
    event mappings, and outputs.
 4. Set `campaign_api_enabled=true` and, when its separate handoff is accepted,
    `campaign_review_api_enabled=true`; deploy and run authenticated negative and
-   positive smoke tests.
+   positive smoke tests. Dev infrastructure is at this stage: unauthenticated
+   requests return `401`, while authenticated tests remain pending the reviewer's
+   first-password change.
 5. Set `kill_switch_enabled=false` only after deletion, suppression, retry, and
    privacy-negative tests pass.
 
