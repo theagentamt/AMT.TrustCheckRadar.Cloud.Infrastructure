@@ -1,6 +1,6 @@
 # Campaign Intelligence V1 Cost Model
 
-Status: **Proposed v1** for `SECUR4ALL-202`
+Status: **Product-approved v1 guardrails** for `SECUR4ALL-202`
 
 Region: `us-east-1`
 
@@ -103,7 +103,9 @@ Rates can change. Recalculate them before approving UAT or Production.
    weights at runtime.
 8. Use sampled, content-free logs and the shortest approved retention period.
 9. Keep at most 10 standard alarm metrics in the initial Dev package when practical.
-10. Create a $25 monthly campaign budget with alerts at 50, 80, and 100 percent.
+10. Create a $25 Dev monthly campaign budget and a $50 Production monthly campaign
+    budget, each with alerts at 50, 80, and 100 percent. UAT receives an explicit
+    ceiling as part of its promotion approval and remains disabled until then.
 11. Tag every resource with project, environment, stack, owner, and cost category.
 12. Provide a kill switch that disables event-source mappings and schedules without
     deleting state.
@@ -111,9 +113,9 @@ Rates can change. Recalculate them before approving UAT or Production.
 The budget is an alerting control, not a real-time hard stop. AWS Budgets can lag
 actual usage, so service-level throughput and concurrency caps remain required.
 
-The Dev ceiling is product-approved. The initial Production monthly ceiling is
-still an open product-owner decision and must be recorded before Production
-resources are enabled.
+The Dev and Production ceilings are product-approved. Production resources remain
+disabled until the privacy, security, quality, abuse, rollback, and cost evidence
+gates pass; the ceiling does not itself authorize deployment.
 
 ## Services Deliberately Avoided
 

@@ -1,6 +1,6 @@
 # ADR-001: Campaign Privacy Boundary and Lifecycle
 
-- Status: Product approved; pending security and technical contract validation
+- Status: Product approved; pending `SECUR4ALL-213` through `SECUR4ALL-215`
 - Story: `SECUR4ALL-202`
 - Date: 2026-09-05
 - Owners: AWS infrastructure, with product/privacy and security approval required
@@ -151,7 +151,8 @@ privacy/cost review.
   deleted, or suppressed work a successful no-op.
 - Periodic KMS key creation, disablement, and deletion require lifecycle automation
   and privacy-safe alarms.
-- Product/privacy, backend, ML, and security approvals remain blocking inputs.
+- Canonical contracts/taxonomy, ML calibration, and security/privacy evidence from
+  `SECUR4ALL-213` through `SECUR4ALL-215` remain blocking inputs.
 
 ## AWS References
 

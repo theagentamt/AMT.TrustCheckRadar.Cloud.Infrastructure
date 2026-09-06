@@ -8,7 +8,7 @@ stories.
 
 | Story | Infrastructure classification | Work owned by this repository | Required handoff |
 | --- | --- | --- | --- |
-| `SECUR4ALL-202` | Shared architecture; no deployment | AWS data flow, trust boundaries, retention enforcement, KMS lifecycle, DynamoDB access patterns, stack contract, threat model, and cost guardrails | Product/privacy decisions, canonical schemas, ML design, and security approval |
+| `SECUR4ALL-202` | Shared architecture; no deployment | AWS data flow, trust boundaries, retention enforcement, KMS lifecycle, DynamoDB access patterns, stack contract, threat model, and cost guardrails | Product decisions are approved; `SECUR4ALL-213` through `SECUR4ALL-215` own the remaining technical handoffs |
 | `SECUR4ALL-203` | Primary infrastructure implementation | All V1 tables, indexes, KMS keys and policies, queues/DLQs, ECR, Lambda resource shells, event-source mappings, schedules, IAM, logs, metrics, alarms, budgets, state outputs, environment flags, and Terraform tests | Immutable Lambda/container artifacts and accepted contracts |
 | `SECUR4ALL-204` | Infrastructure consumer | No independent resource design after `SECUR4ALL-203`; only contract-driven adjustments to publisher wiring, permissions, configuration, alarms, and immutable release references | Lambda team owns observation-publisher code, sanitization, consent evaluation, idempotency behavior, and tests |
 | `SECUR4ALL-205` | Infrastructure consumer | No independent resource design after `SECUR4ALL-203`; only contract-driven ECR, Lambda sizing, queue mapping, IAM, timeout, concurrency, and alarm adjustments | ML/Lambda team owns model selection, image contents, redaction, feature extraction, provenance evidence, and quality tests |
@@ -19,6 +19,9 @@ stories.
 | `SECUR4ALL-210` | Shared validation gate; normally no permanent runtime resources | Terraform/security assertions, effective IAM review, environment-isolation tests, alarm and dashboard evidence, load/cost measurements, rollback proof, and removal of temporary test resources | ML, privacy, security, backend, and QA owners provide quality, re-identification, abuse, deletion, and go/no-go evidence |
 | `SECUR4ALL-211` | Lambda implementation handoff | No application code in this repository; infrastructure validates the returned immutable artifact and contract | Lambda team owns the privacy-thresholded trends handler, schemas, filters, localization, pagination, suppression, and tests |
 | `SECUR4ALL-212` | Primary API infrastructure implementation | Environment trend route, JWT authorizer, Lambda deployment/integration, aggregate-only IAM, throttling, concurrency, logs, alarms, outputs, smoke tests, and environment flags | Consumes the immutable artifact and canonical contract from `SECUR4ALL-211` |
+| `SECUR4ALL-213` | Backend/API architecture handoff | Review returned contracts for transport, storage, IAM, encryption, lifecycle, and environment compatibility | Backend/API team owns canonical JSON Schema or OpenAPI artifacts, bilingual taxonomy fixtures, examples, and compatibility tests |
+| `SECUR4ALL-214` | ML/Lambda handoff | Validate returned image digest and measured runtime envelope against Terraform limits | ML/Lambda team owns model selection, packaging, calibration, quality fixtures, benchmarks, and similarity evidence |
+| `SECUR4ALL-215` | Security/privacy/QA handoff | Supply infrastructure controls and evidence for review; no separate runtime resources | Security, privacy, product, and QA own threat-model approval, re-identification review, test evidence plan, and signoff |
 
 ## Infrastructure Execution Set
 
@@ -41,6 +44,9 @@ application stories.
 
 ```text
 SECUR4ALL-202 architecture approval
+  -> SECUR4ALL-213 contracts and taxonomy handoff
+  -> SECUR4ALL-214 model and calibration handoff
+  -> SECUR4ALL-215 privacy, security, and evidence approval
   -> SECUR4ALL-203 Dev infrastructure
   -> SECUR4ALL-204 through SECUR4ALL-207 application artifacts and integration
   -> SECUR4ALL-208 review controls

@@ -1,7 +1,7 @@
 # Campaign Intelligence Product Decisions
 
 - Story: `SECUR4ALL-202`
-- Decision date: 2026-09-05
+- Decision date: 2026-09-06
 - Decision owner: Product owner
 
 ## Approved Decisions
@@ -54,10 +54,12 @@ remain explicit:
 Use a self-hosted open-source English/Spanish encoder. No third party processes
 submissions, no model is downloaded at runtime, and campaign processing remains
 asynchronous from user analysis. OpenSearch is excluded from V1. The Dev campaign
-budget ceiling is $25 per month.
+budget ceiling is $25 per month and the Production campaign budget ceiling is $50
+per month. Both use alerts at 50, 80, and 100 percent.
 
-The exact model remains an ML-owner decision subject to license, provenance,
-quality, memory, cold-start, and measured-cost evidence.
+The exact model remains an ML-owner decision under `SECUR4ALL-214`, constrained to
+the license, provenance, image-size, memory, latency, quality, and measured-cost
+rules in [Implementation Rules](IMPLEMENTATION-RULES.md).
 
 ### Similarity and Publication
 
@@ -93,8 +95,9 @@ review.
 - Production remains disabled until UAT privacy, security, quality, abuse,
   rollback, and cost evidence is approved.
 
-## Open Decision
+## Open Technical Handoffs
 
-The product owner must set the initial Production monthly campaign budget ceiling
-before Production resources can be enabled. This does not block architecture,
-contract, Dev infrastructure, or Dev implementation work.
+There are no remaining product decisions for this baseline. Architecture approval
+still requires the versioned contract and taxonomy artifacts from `SECUR4ALL-213`,
+model calibration evidence from `SECUR4ALL-214`, and privacy/security approval
+from `SECUR4ALL-215`.

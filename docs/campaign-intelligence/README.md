@@ -26,7 +26,10 @@ must be returned before this package becomes accepted.
 - [Story Ownership](STORY-OWNERSHIP.md) identifies which campaign stories own
   infrastructure changes and which require application-team handoff.
 - [Product Decisions](PRODUCT-DECISIONS.md) records the product-owner approvals
-  and the remaining Production budget decision.
+  for the V1 baseline.
+- [Implementation Rules](IMPLEMENTATION-RULES.md) is the normative rule set for
+  contracts, taxonomy, model runtime, similarity, privacy, retention, launch, and
+  cost validation.
 
 ## Decision Summary
 
@@ -49,6 +52,7 @@ must be returned before this package becomes accepted.
 | Vector search | Explicitly excluded from V1; reconsider only in V2 or later |
 | Initial environments | Dev only; UAT and Production disabled until promotion |
 | Target Dev pilot cost | $5-$8/month at up to 10,000 eligible scans/month |
+| Monthly budget ceilings | Dev $25; Production $50; alerts at 50, 80, and 100 percent |
 
 ## Ownership
 
@@ -66,14 +70,16 @@ The following work is explicitly outside this repository:
   implementation.
 - Android and iOS implementation.
 
-Those owners must return versioned artifacts to `SECUR4ALL-202`. This repository
-will review them against the infrastructure contract before acceptance.
+Those owners must return versioned artifacts through `SECUR4ALL-213`,
+`SECUR4ALL-214`, and `SECUR4ALL-215`. This repository will review them against the
+infrastructure contract before acceptance.
 
 ## Approval Gates
 
 1. Product/privacy approves the numeric policy and collection/deletion language.
-2. Backend owners publish canonical schemas and English/Spanish fixtures.
-3. ML owners publish model provenance and calibrated quality targets.
-4. Security approves the threat model and re-identification review.
+2. `SECUR4ALL-213` publishes canonical schemas and English/Spanish fixtures.
+3. `SECUR4ALL-214` publishes model provenance and calibrated quality evidence.
+4. `SECUR4ALL-215` approves the threat model, re-identification review, and
+   evidence plan.
 5. Infrastructure records the accepted ADR and only then begins
    `SECUR4ALL-203`.

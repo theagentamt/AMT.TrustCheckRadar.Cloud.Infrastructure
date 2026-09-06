@@ -205,7 +205,8 @@ accepted.
   cross-environment negative tests, and measured ML cost/performance are required.
 - Production: manual GitHub environment approval, immutable artifacts previously
   exercised in UAT, go/no-go record, rollback evidence, and zero unresolved privacy
-  blockers are required.
+  blockers are required. Its product-approved campaign budget ceiling is $50 with
+  notifications at 50, 80, and 100 percent.
 
 ## AWS References
 

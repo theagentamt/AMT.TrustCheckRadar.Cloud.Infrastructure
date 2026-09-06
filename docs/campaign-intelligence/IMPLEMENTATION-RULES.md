@@ -1,0 +1,129 @@
+# Campaign Intelligence V1 Implementation Rules
+
+- Story: `SECUR4ALL-202`
+- Approval date: 2026-09-06
+- Decision owner: Product owner
+- Status: Approved product baseline; technical handoffs remain open
+
+These rules are normative for V1. Changes require a versioned decision record and
+updated evidence from the affected owner. This repository implements only the AWS
+infrastructure portions of the rules.
+
+## Taxonomy
+
+- Machine identifiers use stable `lower_snake_case` values.
+- English and Spanish labels are stored separately from machine identifiers.
+- Labels may be added or corrected without breaking clients.
+- New identifiers require a schema-minor version.
+- Removing an identifier or changing its meaning requires a schema-major version.
+- Every dimension includes `other` and `unknown`.
+- V1 dimensions cover scam category, claimed organization, requested action,
+  payment method, emotional tactic, channel, language, risk, confidence, and
+  bounded indicators.
+- Full phone numbers, wallet identifiers, usernames, and URLs are never published.
+  Reviewed domains may be published only after the 10-contributor threshold.
+
+## Data Contracts
+
+- Every contract carries `schemaVersion` and internal producers reject unknown
+  fields.
+- Queue envelopes contain only environment, operation, random event ID, record
+  version, and schema version.
+- Account identifiers, Cognito subject IDs, request IDs, device IDs, IP addresses,
+  raw content, OCR text, screenshots, and precise timestamps are prohibited.
+- Transient identifiers and contributor tokens remain in transient storage only.
+- Persistent records contain only confirmed aggregates, taxonomy identifiers,
+  count bands, coarse weeks, clipped centroids, workflow state, and privacy-safe
+  audit data.
+- App-facing APIs expose confirmed campaigns only.
+- Pagination tokens are opaque, bounded, expiring, and tamper-resistant.
+
+`SECUR4ALL-213` owns the canonical JSON Schema or OpenAPI artifacts and bilingual
+taxonomy fixtures. Infrastructure consumes those versioned artifacts but does not
+implement them here.
+
+## Model Runtime
+
+- Use a self-hosted, open-source English/Spanish encoder with an Apache-2.0, MIT,
+  BSD, or explicitly approved permissive license.
+- V1 uses no Bedrock, external inference provider, GPU, SageMaker, or runtime model
+  download.
+- Pin the model checksum and container digest.
+- The model image must not exceed 2 GB and Lambda memory must not exceed 3 GB.
+- Warm p95 inference must be no more than 2 seconds; cold p95 must be no more than
+  10 seconds.
+- Model compute must cost no more than $100 per million eligible scans.
+- A lexical/taxonomy fallback is allowed but cannot automatically publish a
+  campaign.
+
+`SECUR4ALL-214` owns model selection, packaging, calibration, and evidence. No
+model or Lambda application code belongs in this repository.
+
+## Similarity and Promotion
+
+- Candidate scoring weights are 45 percent semantic, 25 percent
+  lexical/fingerprint, 20 percent tactics/taxonomy, and 10 percent bounded
+  indicators.
+- A score of at least 0.82 is a candidate match when there is no category
+  conflict.
+- Scores from 0.72 through 0.81 remain separate candidates for review.
+- Scores below 0.72 have no association.
+- Promotion requires at least 10 distinct contributors and measured precision of
+  at least 95 percent.
+- Recall must be at least 80 percent on approved English and Spanish fixtures.
+- Merge, split, confirmation, and publication are never automatic.
+- Threshold changes require versioned evidence.
+
+## Privacy and Security
+
+- Campaign participation requires explicit opt-in. Declining does not block normal
+  analysis.
+- Consent withdrawal immediately blocks future campaign processing and deletes
+  active or unfinalized contributions within 24 hours.
+- One contributor may influence one vector and at most three counted submissions
+  per campaign and period.
+- Campaigns and dimensions below 10 contributors are suppressed.
+- V1 has exactly one named reviewer: the product owner. Shared credentials are
+  prohibited.
+- Every review transition requires a reason and a privacy-safe immutable audit
+  item.
+- IAM identity data and persistent campaign data remain separated.
+- Development uses only synthetic or explicitly licensed data.
+- Production requires manual privacy and security approval.
+
+`SECUR4ALL-215` owns the privacy, security, and evidence review. Infrastructure
+implements only the controls accepted through that review.
+
+## Retention
+
+- Active aggregation periods are 14 days, followed by a 7-day recovery window.
+- Sanitized observations retain for no more than 72 hours.
+- Features, contributor tokens, dedupe records, and candidates retain for no more
+  than 21 days.
+- Confirmed non-linkable aggregates and privacy-safe audit records retain for 400
+  days.
+- Transient data has no backup or PITR. Persistent aggregate-only data uses PITR.
+- Period KMS HMAC keys are disabled after the recovery window and scheduled for
+  deletion with the minimum permitted waiting period.
+
+## Launch and Cost Gates
+
+- No prohibited identity or content may appear in queues, tables, logs, metrics,
+  traces, backups, or APIs.
+- Consent-withdrawal and account-deletion tests must pass completely.
+- Active-data deletion must complete within 24 hours.
+- No campaign or dimension may publish below 10 contributors.
+- English and Spanish evaluation must reach at least 95 percent precision and 80
+  percent recall.
+- p95 end-to-end campaign processing must complete within five minutes without
+  delaying normal user analysis.
+- The Dev campaign budget ceiling is $25 per month.
+- The Production campaign budget ceiling is $50 per month.
+- Budget alerts fire at 50, 80, and 100 percent.
+- V1 provisions no OpenSearch, NAT gateway, paid VPC interface endpoints,
+  provisioned concurrency, Step Functions, Global Tables, cross-Region replicas,
+  or always-on compute.
+- UAT and Production remain disabled until their promotion evidence is approved.
+
+AWS Budgets is an alerting control, not a hard stop. Throughput and concurrency
+caps plus the campaign kill switch are required to bound operational exposure.
