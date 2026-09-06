@@ -1,6 +1,7 @@
 # Campaign Intelligence Infrastructure Contract
 
-Status: **Proposed v1** for `SECUR4ALL-202`
+Status: **Product-approved v1; technical and security handoffs pending** for
+`SECUR4ALL-202`
 
 This document defines the AWS capabilities and application-facing boundaries that
 `SECUR4ALL-203` must provision. It is not the canonical backend JSON Schema or
@@ -141,6 +142,27 @@ cost estimate and explicit approval.
 
 No role may read both account identity data and persistent campaign intelligence.
 Infrastructure tests must inspect effective policies, not only Terraform source.
+
+V1 authorizes exactly one named human reviewer principal per environment. The
+initial reviewer is the product owner. Shared credentials are prohibited. Review,
+publication, suppression, merge, and split actions require a reason and a
+privacy-safe immutable audit item. Emergency suppression is limited to that same
+reviewer principal until a separately approved operational role is introduced.
+
+## Taxonomy Contract
+
+The taxonomy uses language-neutral stable identifiers with English and Spanish
+display labels. Labels may be expanded or corrected without changing an
+identifier or requiring a schema-major version. New identifiers may be added in a
+backward-compatible schema-minor version. Removing an identifier, changing its
+meaning, or changing the data type of a taxonomy dimension requires a new schema
+major version.
+
+Every dimension includes `other` and `unknown`. Clients must render unknown future
+identifiers safely and must not reject a response only because a newer label or
+identifier is present. The backend owner retains the canonical taxonomy artifact
+and localization fixtures; this repository validates only its infrastructure and
+compatibility requirements.
 
 ## Logging and Metrics Contract
 

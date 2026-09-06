@@ -4,7 +4,7 @@ This directory contains the proposed AWS architecture package for
 `SECUR4ALL-202`. It defines the infrastructure boundary that must be approved
 before `SECUR4ALL-203` provisions resources.
 
-Status: **Proposed v1**
+Status: **Product-approved v1; technical and security handoffs pending**
 
 No document in this directory authorizes a Dev, UAT, or Production deployment.
 The product/privacy, backend-contract, ML, and security handoffs listed below
@@ -25,6 +25,8 @@ must be returned before this package becomes accepted.
   the V1 budget guardrails.
 - [Story Ownership](STORY-OWNERSHIP.md) identifies which campaign stories own
   infrastructure changes and which require application-team handoff.
+- [Product Decisions](PRODUCT-DECISIONS.md) records the product-owner approvals
+  and the remaining Production budget decision.
 
 ## Decision Summary
 

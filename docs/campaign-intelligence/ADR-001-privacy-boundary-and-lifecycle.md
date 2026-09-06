@@ -1,6 +1,6 @@
 # ADR-001: Campaign Privacy Boundary and Lifecycle
 
-- Status: Proposed
+- Status: Product approved; pending security and technical contract validation
 - Story: `SECUR4ALL-202`
 - Date: 2026-09-05
 - Owners: AWS infrastructure, with product/privacy and security approval required
@@ -45,8 +45,9 @@ event timestamp.
 - Durable timestamps use ISO week buckets. Exact processing timestamps remain
   operational metadata only and are never copied to durable campaign records.
 
-The threshold and bands are privacy defaults, not ML similarity thresholds.
-Product/privacy must approve them before UAT.
+The threshold and bands are privacy defaults, not ML similarity thresholds. The
+product owner approved them on 2026-09-05; security/privacy validation remains a
+UAT gate.
 
 ### Event Identity
 

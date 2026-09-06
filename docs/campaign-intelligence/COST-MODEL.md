@@ -111,6 +111,10 @@ Rates can change. Recalculate them before approving UAT or Production.
 The budget is an alerting control, not a real-time hard stop. AWS Budgets can lag
 actual usage, so service-level throughput and concurrency caps remain required.
 
+The Dev ceiling is product-approved. The initial Production monthly ceiling is
+still an open product-owner decision and must be recorded before Production
+resources are enabled.
+
 ## Services Deliberately Avoided
 
 - **OpenSearch:** not needed for V1 and may introduce avoidable indexing/search
