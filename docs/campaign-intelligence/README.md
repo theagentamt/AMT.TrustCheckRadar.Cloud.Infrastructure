@@ -23,6 +23,8 @@ must be returned before this package becomes accepted.
   and required controls.
 - [Cost Model](COST-MODEL.md) estimates fixed and usage-based spend and defines
   the V1 budget guardrails.
+- [Story Ownership](STORY-OWNERSHIP.md) identifies which campaign stories own
+  infrastructure changes and which require application-team handoff.
 
 ## Decision Summary
 
