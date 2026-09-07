@@ -8,8 +8,9 @@ does not authorize campaign data collection.
 
 Dev campaign data and API resources were deployed on 2026-09-06. The data plane
 includes the encrypted on-demand DynamoDB tables, TTL policies, required indexes,
-legacy feature/clustering queues and DLQs, KMS keys, a legacy ECR repository,
-alarms, and campaign budget. The
+the clustering queue and DLQ, KMS keys, alarms, and campaign budget. The legacy
+server feature queue, feature DLQ, ECR repository, and image policies were
+removed on 2026-09-07 after feature extraction moved permanently to the app. The
 authenticated review and trend routes are available through
 `api-dev.andmorethings.net`; the sole reviewer is assigned to the Cognito
 `campaign-reviewer` group and must complete the first-password change.
@@ -18,17 +19,17 @@ confirmed.
 
 Campaign source publishing and all background workers remain disabled. The
 processing kill switch remains enabled and AWS has no campaign event-source
-mappings or lifecycle schedules. Product direction on 2026-09-07 moved feature
-extraction permanently to the app. The next reviewed campaign-data apply must
-remove the legacy feature queue, feature DLQ, ECR repository, and image policies.
-No feature image may be deployed or replaced.
+mappings or lifecycle schedules. No feature image may be deployed or replaced.
 
-Lambda commit `9ef72258614ba9fc8639ee7c084c429cc454b33b` implements the
-server side of the app-feature contract: analysis validation and transactional
-outbox persistence, publisher revalidation and direct clustering enqueue, and
-cluster input validation. Its GitHub CI and independent local campaign-evidence
-gate pass. The release workflow was intentionally skipped, so this commit has
-not been uploaded as an immutable S3 release or deployed to any Lambda function.
+Lambda release `e0d3811ee0358cf064a5d325ad0c0d8e5b5bf7a8` was published and
+deployed to the Dev API stack on 2026-09-07. It contains the server side of the
+app-feature contract plus the campaign-participation Lambda. The JWT-protected
+`GET` and `PUT /v1/users/campaign-participation` routes are available at
+`api-dev.andmorethings.net`; unauthenticated smoke requests return `401` as
+expected. Authenticated participation, quota, publication, withdrawal, and
+deletion smoke tests remain pending an app or test-user JWT. The campaign worker
+artifacts are published, but their resources remain gated off as described
+above.
 
 UAT and Production remain disabled. CI continues to exercise both disabled
 configurations and mocked enabled configurations.
