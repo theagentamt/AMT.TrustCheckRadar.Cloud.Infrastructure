@@ -74,15 +74,11 @@ run "enabled_dev_contract" {
 
   assert {
     condition = (
-      aws_sqs_queue.feature[0].message_retention_seconds == 345600 &&
-      aws_sqs_queue.feature_dlq[0].message_retention_seconds == 1209600
+      aws_sqs_queue.cluster[0].message_retention_seconds == 345600 &&
+      aws_sqs_queue.cluster_dlq[0].message_retention_seconds == 1209600 &&
+      length(local.campaign_queues) == 2
     )
-    error_message = "Feature queue retention or redrive does not match the V1 contract."
-  }
-
-  assert {
-    condition     = aws_ecr_repository.model[0].image_tag_mutability == "IMMUTABLE"
-    error_message = "The campaign model repository must reject mutable tags."
+    error_message = "The clustering queue retention or redrive contract is invalid, or a server feature queue remains."
   }
 
   assert {

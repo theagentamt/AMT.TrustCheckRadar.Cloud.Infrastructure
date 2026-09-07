@@ -13,29 +13,28 @@ are shared by the account and might already be consumed.
 | Usage | Dev-only estimate | Main driver |
 | --- | ---: | --- |
 | Idle architecture | $4-$6 | Customer-managed KMS keys |
-| Up to 10,000 eligible scans | $5-$8 | Fixed KMS plus light Lambda use |
-| 100,000 eligible scans | $10-$18 | Multilingual model Lambda duration |
-| 1,000,000 eligible scans | $75-$150 | Model memory and inference duration |
+| Up to 10,000 eligible scans | $4-$7 | Fixed KMS plus light Lambda use |
+| 100,000 eligible scans | $6-$12 | DynamoDB, KMS, and clustering Lambda use |
+| 1,000,000 eligible scans | $20-$45 | DynamoDB, KMS, and clustering Lambda use |
 | Idle Dev, UAT, and Production | $12-$20 | Tripled keys, artifacts, and alarms |
 
-These are planning ranges, not a quote. The wide high-volume range accounts for
-the multilingual encoder, whose memory and duration are not selected yet.
+These are planning ranges, not a quote. App-side feature extraction has no AWS
+inference, container-storage, or model cold-start cost.
 
 ## Assumptions
 
 The usage estimate assumes, per eligible scan:
 
-- about 3.3 GB-seconds across publisher, feature, and clustering Lambda work;
-- three Lambda invocations;
-- 12 DynamoDB 1 KB write request units including index writes;
-- 20 DynamoDB eventually consistent read request units;
-- six SQS API requests across send, receive, and delete operations;
+- about 0.75 GB-seconds across publisher and clustering Lambda work;
+- two Lambda invocations;
+- eight DynamoDB 1 KB write request units including index writes;
+- 16 DynamoDB eventually consistent read request units;
+- four SQS API requests across send, receive, and delete operations;
 - one contributor `GenerateMac` plus bounded service-encryption KMS usage; and
 - approximately 3 KB of content-free logs.
 
-The estimate uses the higher x86 Lambda duration rate as a conservative baseline.
-Arm64 is preferred when the selected model supports it without reducing quality or
-increasing duration.
+The estimate uses the higher x86 Lambda duration rate as a conservative baseline;
+the deployed ZIP workers use Arm64.
 
 ## Fixed Cost
 
@@ -48,7 +47,6 @@ window.
 
 Other expected low-volume fixed or near-fixed costs are:
 
-- about $0.20 per environment for one retained 2 GB model image in ECR;
 - $0-$2 for standard CloudWatch alarms depending on how much of the account-level
   free tier is already consumed; and
 - pennies for small aggregate-table storage and PITR.
@@ -80,7 +78,6 @@ Reference rates used for the estimate:
 | DynamoDB on-demand writes | $0.625 per million 1 KB WRUs |
 | DynamoDB on-demand reads | $0.125 per million 4 KB RRUs |
 | Standard SQS | Approximately $0.40 per million requests; first million free |
-| ECR private storage | $0.10 per GB-month |
 | CloudWatch log ingestion | $0.50 per GB after account free tier |
 | Standard CloudWatch alarm metric | $0.10 per month after account free tier |
 | EventBridge Scheduler | First 14 million invocations per month free |
@@ -99,8 +96,8 @@ Rates can change. Recalculate them before approving UAT or Production.
 5. Use DynamoDB on-demand capacity with explicit maximum read/write throughput and
    CloudWatch throttling alarms. Raise caps only with measured demand.
 6. Cap Lambda reserved concurrency per stage. Do not enable provisioned concurrency.
-7. Package the model in ECR and retain only approved digests. Never download model
-   weights at runtime.
+7. Provision no server feature model, container image, ECR repository, or inference
+   runtime. Treat app-produced features as untrusted input.
 8. Use sampled, content-free logs and the shortest approved retention period.
 9. Keep at most 10 standard alarm metrics in the initial Dev package when practical.
 10. Create a $25 Dev monthly campaign budget and a $50 Production monthly campaign
@@ -135,7 +132,6 @@ gates pass; the ceiling does not itself authorize deployment.
 - [AWS Lambda pricing](https://aws.amazon.com/lambda/pricing/)
 - [Amazon DynamoDB pricing](https://aws.amazon.com/dynamodb/pricing/)
 - [Amazon SQS pricing](https://aws.amazon.com/sqs/pricing/)
-- [Amazon ECR pricing](https://aws.amazon.com/ecr/pricing/)
 - [Amazon CloudWatch pricing](https://aws.amazon.com/cloudwatch/pricing/)
 - [Amazon EventBridge pricing](https://aws.amazon.com/eventbridge/pricing/)
 - [AWS Budgets pricing](https://aws.amazon.com/aws-cost-management/aws-budgets/pricing/)

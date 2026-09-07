@@ -45,7 +45,6 @@ check "retention_contract" {
       var.source_queue_retention_seconds == 345600 &&
       var.dead_letter_queue_retention_seconds == 1209600 &&
       var.queue_max_receive_count == 5 &&
-      var.feature_queue_visibility_timeout_seconds >= 180 &&
       var.cluster_queue_visibility_timeout_seconds >= 180
     )
     error_message = "Campaign queue retention and redrive values must match the approved V1 contract."
@@ -404,45 +403,6 @@ resource "aws_dynamodb_resource_policy" "table_boundary" {
   policy       = data.aws_iam_policy_document.table_boundary[each.key].json
 }
 
-resource "aws_sqs_queue" "feature_dlq" {
-  count = local.enabled ? 1 : 0
-
-  name                      = "${local.name_prefix}-feature-dlq"
-  message_retention_seconds = var.dead_letter_queue_retention_seconds
-  kms_master_key_id         = aws_kms_key.transient[0].arn
-
-  tags = merge(local.common_tags, {
-    DataClass = "opaque-control-metadata"
-  })
-}
-
-resource "aws_sqs_queue" "feature" {
-  count = local.enabled ? 1 : 0
-
-  name                       = "${local.name_prefix}-feature"
-  message_retention_seconds  = var.source_queue_retention_seconds
-  visibility_timeout_seconds = var.feature_queue_visibility_timeout_seconds
-  kms_master_key_id          = aws_kms_key.transient[0].arn
-  redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.feature_dlq[0].arn
-    maxReceiveCount     = var.queue_max_receive_count
-  })
-
-  tags = merge(local.common_tags, {
-    DataClass = "opaque-control-metadata"
-  })
-}
-
-resource "aws_sqs_queue_redrive_allow_policy" "feature" {
-  count = local.enabled ? 1 : 0
-
-  queue_url = aws_sqs_queue.feature_dlq[0].id
-  redrive_allow_policy = jsonencode({
-    redrivePermission = "byQueue"
-    sourceQueueArns   = [aws_sqs_queue.feature[0].arn]
-  })
-}
-
 resource "aws_sqs_queue" "cluster_dlq" {
   count = local.enabled ? 1 : 0
 
@@ -484,14 +444,6 @@ resource "aws_sqs_queue_redrive_allow_policy" "cluster" {
 
 locals {
   campaign_queues = local.enabled ? {
-    feature = {
-      arn = aws_sqs_queue.feature[0].arn
-      url = aws_sqs_queue.feature[0].id
-    }
-    feature_dlq = {
-      arn = aws_sqs_queue.feature_dlq[0].arn
-      url = aws_sqs_queue.feature_dlq[0].id
-    }
     cluster = {
       arn = aws_sqs_queue.cluster[0].arn
       url = aws_sqs_queue.cluster[0].id
@@ -530,87 +482,6 @@ resource "aws_sqs_queue_policy" "transport" {
 
   queue_url = each.value.url
   policy    = data.aws_iam_policy_document.queue_transport[each.key].json
-}
-
-resource "aws_ecr_repository" "model" {
-  count = local.enabled ? 1 : 0
-
-  name                 = "${local.name_prefix}-model"
-  image_tag_mutability = "IMMUTABLE"
-  force_delete         = var.environment == "dev"
-
-  encryption_configuration {
-    encryption_type = "AES256"
-  }
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-
-  tags = merge(local.common_tags, {
-    ArtifactClass = "multilingual-model"
-  })
-}
-
-resource "aws_ecr_lifecycle_policy" "model" {
-  count = local.enabled ? 1 : 0
-
-  repository = aws_ecr_repository.model[0].name
-  policy = jsonencode({
-    rules = [
-      {
-        rulePriority = 1
-        description  = "Remove untagged images after seven days"
-        selection = {
-          tagStatus   = "untagged"
-          countType   = "sinceImagePushed"
-          countUnit   = "days"
-          countNumber = 7
-        }
-        action = { type = "expire" }
-      },
-      {
-        rulePriority = 2
-        description  = "Retain the five newest approved images"
-        selection = {
-          tagStatus   = "any"
-          countType   = "imageCountMoreThan"
-          countNumber = 5
-        }
-        action = { type = "expire" }
-      },
-    ]
-  })
-}
-
-data "aws_iam_policy_document" "model_repository" {
-  count = local.enabled ? 1 : 0
-
-  statement {
-    sid    = "AllowSameAccountLambdaPull"
-    effect = "Allow"
-    actions = [
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer",
-    ]
-    principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
-    }
-
-    condition {
-      test     = "ArnLike"
-      variable = "aws:SourceArn"
-      values   = ["arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:${local.name_prefix}-*"]
-    }
-  }
-}
-
-resource "aws_ecr_repository_policy" "model" {
-  count = local.enabled ? 1 : 0
-
-  repository = aws_ecr_repository.model[0].name
-  policy     = data.aws_iam_policy_document.model_repository[0].json
 }
 
 resource "aws_sns_topic" "budget" {

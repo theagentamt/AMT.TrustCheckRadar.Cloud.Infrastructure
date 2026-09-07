@@ -72,13 +72,16 @@ locals {
   web_risk_communication_artifact_key         = coalesce(var.web_risk_communication_lambda_s3_key, "${local.artifact_prefix}/web_risk_communication.zip")
   campaign_outbox_table_arn                   = var.campaign_intelligence_enabled ? local.campaign.outbox_table_arn : null
   campaign_outbox_table_name                  = var.campaign_intelligence_enabled ? local.campaign.outbox_table_name : null
-  analysis_transaction_resources = concat(
-    [
-      local.analysis_abuse_control_table_arn,
-      local.analysis_entitlements_table_arn,
-    ],
-    var.campaign_intelligence_enabled ? [local.campaign_outbox_table_arn] : [],
-  )
+  campaign_outbox_account_id                  = var.campaign_intelligence_enabled ? split(":", local.campaign.outbox_table_arn)[4] : null
+  campaign_outbox_write_actions               = ["dynamodb:PutItem"]
+  campaign_outbox_write_enclosing_operations  = ["TransactWriteItems"]
+  campaign_outbox_kms_actions = [
+    "kms:Decrypt",
+    "kms:DescribeKey",
+    "kms:Encrypt",
+    "kms:GenerateDataKey*",
+    "kms:ReEncrypt*",
+  ]
 
   common_tags = merge(var.tags, {
     Project     = var.project_name
@@ -304,23 +307,20 @@ data "aws_iam_policy_document" "analysis_runtime" {
     ]
   }
 
-  statement {
-    sid     = "AtomicAnalysisCommit"
-    effect  = "Allow"
-    actions = ["dynamodb:TransactWriteItems"]
-
-    resources = local.analysis_transaction_resources
-  }
-
   dynamic "statement" {
     for_each = var.campaign_intelligence_enabled ? [1] : []
 
     content {
-      sid     = "WriteCampaignOutbox"
-      effect  = "Allow"
-      actions = ["dynamodb:PutItem"]
-
+      sid       = "WriteCampaignOutboxTransactionally"
+      effect    = "Allow"
+      actions   = local.campaign_outbox_write_actions
       resources = [local.campaign_outbox_table_arn]
+
+      condition {
+        test     = "ForAnyValue:StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = local.campaign_outbox_write_enclosing_operations
+      }
     }
   }
 
@@ -328,15 +328,22 @@ data "aws_iam_policy_document" "analysis_runtime" {
     for_each = var.campaign_intelligence_enabled ? [1] : []
 
     content {
-      sid    = "UseCampaignOutboxEncryption"
-      effect = "Allow"
-      actions = [
-        "kms:Decrypt",
-        "kms:DescribeKey",
-        "kms:GenerateDataKey",
-      ]
-
+      sid       = "UseCampaignOutboxEncryptionThroughDynamoDB"
+      effect    = "Allow"
+      actions   = local.campaign_outbox_kms_actions
       resources = [local.campaign.transient_kms_key_arn]
+
+      condition {
+        test     = "StringEquals"
+        variable = "kms:CallerAccount"
+        values   = [local.campaign_outbox_account_id]
+      }
+
+      condition {
+        test     = "StringEquals"
+        variable = "kms:ViaService"
+        values   = ["dynamodb.${var.aws_region}.amazonaws.com"]
+      }
     }
   }
 

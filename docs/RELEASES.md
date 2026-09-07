@@ -26,11 +26,16 @@ releases/2026.09.03-1/campaign_trends.zip
 releases/2026.09.03-1/campaign_review.zip
 ```
 
-The multilingual feature extractor is a separate immutable ECR image. Its model
-checksum, image digest, license/provenance record, image size, memory/latency
-benchmarks, quality evidence, and measured cost must be accepted through
-`SECUR4ALL-214`. The image must target `linux/arm64`. Deployment references the
-digest, never a mutable tag.
+Feature extraction runs in the app. Infrastructure releases must not contain or
+reference a feature-extractor container image, model repository, or server-side
+model runtime. The app and Lambda owners must return a versioned, bounded feature
+contract before campaign processing is activated.
+
+Lambda source commit `9ef72258614ba9fc8639ee7c084c429cc454b33b` is the first
+validated server-side implementation of that contract. Its CI and local campaign
+evidence pass, but it is not a deployable release identifier until the Lambda
+release workflow uploads its immutable ZIPs and `SHA256SUMS` to the environment
+artifact bucket.
 
 Never overwrite an existing release object. Build once, verify checksums, and promote the same files to UAT and production.
 
@@ -44,8 +49,7 @@ aws s3 cp dist/age_attestation.zip \
 
 The infrastructure workflow verifies required objects with `HeadObject` before planning dependent stacks. A missing package stops the deployment before API resources change.
 
-When campaign processing is enabled, the workflow also verifies the approved ECR
-digest with `DescribeImages`. Campaign feature/model/reviewer inputs come from the
-protected GitHub environment, not committed `.tfvars` files.
+Campaign reviewer inputs come from the protected GitHub environment, not
+committed `.tfvars` files.
 
 For automatic development deployments, update the `ARTIFACT_RELEASE` variable in the GitHub `dev` environment before merging the infrastructure change. For UAT and production, supply the release identifier to the manual deployment workflow.

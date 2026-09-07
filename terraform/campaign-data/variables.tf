@@ -66,21 +66,15 @@ variable "intelligence_max_write_request_units" {
 }
 
 variable "source_queue_retention_seconds" {
-  description = "Retention for feature and clustering source queues"
+  description = "Retention for the clustering source queue"
   type        = number
   default     = 345600
 }
 
 variable "dead_letter_queue_retention_seconds" {
-  description = "Retention for feature and clustering dead-letter queues"
+  description = "Retention for the clustering dead-letter queue"
   type        = number
   default     = 1209600
-}
-
-variable "feature_queue_visibility_timeout_seconds" {
-  description = "Feature queue visibility timeout"
-  type        = number
-  default     = 180
 }
 
 variable "cluster_queue_visibility_timeout_seconds" {

@@ -54,7 +54,7 @@ The role trust policy matches the repository's immutable owner and repository ID
 The same stack creates a separate `lambda_publisher_role_arns` map for
 `AMT.TrustCheckRadar.Lambdas`. Configure each matching Lambda repository GitHub
 environment with that ARN. These roles can publish immutable release objects and
-the campaign feature image, but cannot deploy infrastructure.
+cannot deploy infrastructure.
 
 ## 3. Configure GitHub Environments
 
@@ -68,8 +68,6 @@ Create `dev`, `uat`, and `prod` under repository settings. Define these environm
 | `TF_STATE_KEY_PREFIX` | `trustcheckradar` |
 | `ARTIFACT_RELEASE` | Release deployed automatically to `dev` |
 | `CAMPAIGN_BUDGET_NOTIFICATION_EMAILS` | JSON list of budget recipients, for example `["owner@example.com"]` |
-| `CAMPAIGN_FEATURE_IMAGE_DIGEST` | Approved `sha256:` digest from `SECUR4ALL-214`; set only when campaign processing is enabled |
-| `CAMPAIGN_MODEL_VERSION` | Approved model version from `SECUR4ALL-214`; set only when campaign processing is enabled |
 
 Environment variables are configuration, not credentials. AWS authorization is exchanged through GitHub OIDC.
 

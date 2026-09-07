@@ -374,7 +374,6 @@ data "aws_iam_policy_document" "review_runtime" {
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:Query",
-      "dynamodb:TransactWriteItems",
       "dynamodb:UpdateItem",
     ]
     resources = [

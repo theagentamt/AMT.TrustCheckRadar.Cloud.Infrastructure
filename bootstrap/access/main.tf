@@ -222,26 +222,9 @@ data "aws_iam_policy_document" "github_deploy" {
   }
 
   statement {
-    sid    = "ManageCampaignMessagingAndArtifacts"
+    sid    = "ManageCampaignMessagingAndSchedules"
     effect = "Allow"
     actions = [
-      "ecr:BatchDeleteImage",
-      "ecr:CreateRepository",
-      "ecr:DeleteLifecyclePolicy",
-      "ecr:DeleteRepository",
-      "ecr:DeleteRepositoryPolicy",
-      "ecr:DescribeImages",
-      "ecr:DescribeRepositories",
-      "ecr:GetLifecyclePolicy",
-      "ecr:GetRepositoryPolicy",
-      "ecr:ListImages",
-      "ecr:ListTagsForResource",
-      "ecr:PutImageScanningConfiguration",
-      "ecr:PutImageTagMutability",
-      "ecr:PutLifecyclePolicy",
-      "ecr:SetRepositoryPolicy",
-      "ecr:TagResource",
-      "ecr:UntagResource",
       "scheduler:CreateSchedule",
       "scheduler:CreateScheduleGroup",
       "scheduler:DeleteSchedule",
@@ -275,19 +258,11 @@ data "aws_iam_policy_document" "github_deploy" {
       "sqs:UntagQueue",
     ]
     resources = [
-      "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.project_name}-${each.key}-campaign-*",
       "arn:aws:scheduler:${var.aws_region}:${data.aws_caller_identity.current.account_id}:schedule-group/${var.project_name}-${each.key}-campaign*",
       "arn:aws:scheduler:${var.aws_region}:${data.aws_caller_identity.current.account_id}:schedule/${var.project_name}-${each.key}-campaign*/*",
       "arn:aws:sns:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${var.project_name}-${each.key}-campaign-*",
       "arn:aws:sqs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:${var.project_name}-${each.key}-campaign-*",
     ]
-  }
-
-  statement {
-    sid       = "CampaignServiceDiscovery"
-    effect    = "Allow"
-    actions   = ["ecr:GetAuthorizationToken"]
-    resources = ["*"]
   }
 
   statement {
@@ -486,30 +461,6 @@ data "aws_iam_policy_document" "lambda_publish" {
       "s3:PutObject",
     ]
     resources = ["arn:aws:s3:::${var.project_name}-${each.key}-${data.aws_caller_identity.current.account_id}-artifacts/releases/*"]
-  }
-
-  statement {
-    sid       = "AuthenticateToEcr"
-    effect    = "Allow"
-    actions   = ["ecr:GetAuthorizationToken"]
-    resources = ["*"]
-  }
-
-  statement {
-    sid    = "PublishCampaignFeatureImage"
-    effect = "Allow"
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:CompleteLayerUpload",
-      "ecr:DescribeImages",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:InitiateLayerUpload",
-      "ecr:ListImages",
-      "ecr:PutImage",
-      "ecr:UploadLayerPart",
-    ]
-    resources = ["arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.project_name}-${each.key}-campaign-model"]
   }
 
   statement {

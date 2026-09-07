@@ -49,17 +49,18 @@ remain explicit:
 - Claims say `similar messages were submitted`; `participating accounts` is used
   only when privacy-preserving distinct counting passes the threshold.
 
-### Model and Cost Constraints
+### Feature and Cost Constraints
 
-Use a self-hosted open-source English/Spanish encoder. No third party processes
-submissions, no model is downloaded at runtime, and campaign processing remains
-asynchronous from user analysis. OpenSearch is excluded from V1. The Dev campaign
+Feature extraction always runs in the app. AWS must not host a feature model,
+container image, inference Lambda, GPU, SageMaker endpoint, Bedrock integration,
+or runtime model download. The app submits bounded versioned features with the
+already-sanitized opted-in analysis; the service validates them as untrusted
+input before asynchronous clustering. OpenSearch is excluded from V1.
+
+The app feature contract and quality evidence remain application-owner handoffs
+under `SECUR4ALL-205`, `SECUR4ALL-213`, and `SECUR4ALL-214`. The Dev campaign
 budget ceiling is $25 per month and the Production campaign budget ceiling is $50
 per month. Both use alerts at 50, 80, and 100 percent.
-
-The exact model remains an ML-owner decision under `SECUR4ALL-214`, constrained to
-the license, provenance, image-size, memory, latency, quality, and measured-cost
-rules in [Implementation Rules](IMPLEMENTATION-RULES.md).
 
 ### Similarity and Publication
 
@@ -99,5 +100,5 @@ review.
 
 There are no remaining product decisions for this baseline. Architecture approval
 still requires the versioned contract and taxonomy artifacts from `SECUR4ALL-213`,
-model calibration evidence from `SECUR4ALL-214`, and privacy/security approval
-from `SECUR4ALL-215`.
+app feature calibration evidence from `SECUR4ALL-205` and `SECUR4ALL-214`, and
+privacy/security approval from `SECUR4ALL-215`.

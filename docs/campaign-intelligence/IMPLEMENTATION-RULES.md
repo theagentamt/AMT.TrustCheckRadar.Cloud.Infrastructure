@@ -45,22 +45,44 @@ infrastructure portions of the rules.
 taxonomy fixtures. Infrastructure consumes those versioned artifacts but does not
 implement them here.
 
-## Model Runtime
+## App Feature Extraction
 
-- Use a self-hosted, open-source English/Spanish encoder with an Apache-2.0, MIT,
-  BSD, or explicitly approved permissive license.
-- V1 uses no Bedrock, external inference provider, GPU, SageMaker, or runtime model
-  download.
-- Pin the model checksum and container digest.
-- The model image must not exceed 2 GB and Lambda memory must not exceed 3 GB.
-- Warm p95 inference must be no more than 2 seconds; cold p95 must be no more than
-  10 seconds.
-- Model compute must cost no more than $100 per million eligible scans.
-- A lexical/taxonomy fallback is allowed but cannot automatically publish a
-  campaign.
+- Feature extraction always runs in the app, never in AWS server infrastructure.
+- The app sends a bounded, versioned feature object with the already-sanitized
+  text used by an opted-in analysis.
+- The service treats app-produced features as untrusted input and validates the
+  schema version, types, dimensions, numeric ranges, taxonomy identifiers, and
+  maximum serialized size before writing the outbox.
+- No feature-extractor Lambda, model container, ECR repository, Bedrock call,
+  SageMaker endpoint, GPU, or runtime model download is permitted.
+- App model/version metadata is transient provenance, not an infrastructure
+  deployment input and not a public campaign dimension.
+- A lexical/taxonomy fallback may create a review candidate but cannot
+  automatically publish a campaign.
 
-`SECUR4ALL-214` owns model selection, packaging, calibration, and evidence. No
-model or Lambda application code belongs in this repository.
+The V1 `appFeatures` object contains exactly these fields:
+
+| Field | V1 bound |
+| --- | --- |
+| `schemaVersion` | Integer `1` |
+| `extractorVersion` | Non-empty UTF-8 string, at most 64 bytes |
+| `languageId` | Stable `lower_snake_case` identifier, at most 64 characters |
+| `taxonomyBucket` | Stable `lower_snake_case` identifier, at most 64 characters |
+| `vector` | 1-384 finite numbers, each between `-1.0` and `1.0` |
+| `lexicalFingerprint` | At most 32 unique lowercase 16-character hexadecimal hashes |
+| `signalIds` | At most 16 unique stable identifiers |
+| `indicatorIds` | At most 16 unique opaque derived identifiers; never raw indicators |
+| `confidence` | Finite number between `0.0` and `1.0` |
+
+The canonical compact JSON representation must not exceed 32 KiB. Boolean
+values are not numbers. Missing or unknown fields, duplicate list values,
+unsupported versions, non-finite values, malformed identifiers, dimension
+mismatches, and out-of-range values fail closed. `sourceType=ocr` means only that
+OCR occurred locally in the app; images and raw OCR payloads never enter the API.
+
+`SECUR4ALL-205` owns app extraction and quality evidence. `SECUR4ALL-213` owns
+the canonical feature schema, and the Lambda owner validates and forwards only
+that allowlist. No application code belongs in this repository.
 
 ## Similarity and Promotion
 

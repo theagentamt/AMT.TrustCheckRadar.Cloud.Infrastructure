@@ -4,7 +4,7 @@ This directory contains the proposed AWS architecture package for
 `SECUR4ALL-202`. It defines the infrastructure boundary that must be approved
 before `SECUR4ALL-203` provisions resources.
 
-Status: **Dev data plane and campaign APIs deployed; worker activation blocked**
+Status: **Dev data plane and campaign APIs deployed; app-feature contract pending**
 
 The approved Dev deployment is limited to the resources recorded below. This
 document does not authorize worker activation or promotion to UAT or Production;
@@ -28,7 +28,7 @@ those actions remain subject to the deployment gates.
 - [Product Decisions](PRODUCT-DECISIONS.md) records the product-owner approvals
   for the V1 baseline.
 - [Implementation Rules](IMPLEMENTATION-RULES.md) is the normative rule set for
-  contracts, taxonomy, model runtime, similarity, privacy, retention, launch, and
+  contracts, taxonomy, app feature input, similarity, privacy, retention, launch, and
   cost validation.
 - [Deployment Gates](DEPLOYMENT-GATES.md) records the exact inputs, flag changes,
   ordering, tests, and promotion approvals required to activate an environment.
@@ -41,11 +41,11 @@ resources and the authenticated review/trend APIs are deployed. Dev source
 publishing and processing remain disabled, the processing kill switch is on, and
 UAT and Production remain disabled.
 
-The immutable worker ZIPs and model image are published. The model image is
-blocked from deployment because its compressed size is 4.41 GB, above the
-approved 2 GB guardrail. The Lambda/ML handoff must reduce that image before
-background worker infrastructure is enabled. See [Deployment Gates](DEPLOYMENT-GATES.md)
-for the pinned digest and current verification state.
+The server-side feature-extractor image is retired by product decision. Campaign
+processing now requires app-produced, versioned features to pass through the
+sanitized analysis/outbox contract before the publisher and clustering workers
+are enabled. See [Deployment Gates](DEPLOYMENT-GATES.md) for the current handoff
+state.
 
 ## Decision Summary
 
@@ -57,7 +57,7 @@ for the pinned digest and current verification state.
 | Contributor influence | One vector and at most three counted submissions per campaign and period |
 | Public small-cell rule | Suppress dimensions and campaigns below 10 contributors |
 | Public counts | Count bands, not exact contributor counts |
-| Sanitized observation retention | Delete after feature handoff plus 24 hours; hard TTL of 72 hours |
+| Sanitized observation retention | Delete after clustering handoff plus 24 hours; hard TTL of 72 hours |
 | Features, tokens, dedupe, and candidates | Period end plus 7 days; maximum 21 days |
 | Confirmed aggregates | 400 days, then delete unless a reviewed exception exists |
 | Queue payloads | Opaque event identifiers and control metadata only |
@@ -82,8 +82,8 @@ The following work is explicitly outside this repository:
   small-cell policy, and claims.
 - Canonical JSON Schema or OpenAPI definitions and service implementation.
 - Taxonomy localization and application presentation.
-- Encoder selection, similarity calibration, quality evaluation, and clustering
-  implementation.
+- App feature extraction, similarity calibration, quality evaluation, and
+  clustering implementation.
 - Android and iOS implementation.
 
 Those owners must return versioned artifacts through `SECUR4ALL-213`,
@@ -94,7 +94,8 @@ infrastructure contract before acceptance.
 
 1. Product/privacy approves the numeric policy and collection/deletion language.
 2. `SECUR4ALL-213` publishes canonical schemas and English/Spanish fixtures.
-3. `SECUR4ALL-214` publishes model provenance and calibrated quality evidence.
+3. `SECUR4ALL-205` and `SECUR4ALL-214` publish the app feature contract and
+   calibrated quality evidence.
 4. `SECUR4ALL-215` approves the threat model, re-identification review, and
    evidence plan.
 5. Infrastructure records the accepted ADR and only then begins

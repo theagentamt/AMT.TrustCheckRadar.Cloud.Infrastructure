@@ -38,15 +38,11 @@ locals {
     expiration_index_name   = "ExpirationIndex"
     intelligence_table_name = null
     intelligence_table_arn  = null
-    feature_queue_url       = null
-    feature_queue_arn       = null
-    feature_dlq_arn         = null
     cluster_queue_url       = null
     cluster_queue_arn       = null
     cluster_dlq_arn         = null
     transient_kms_key_arn   = null
     persistent_kms_key_arn  = null
-    model_repository_url    = null
     budget_alert_topic_arn  = null
   })
   enabled      = var.campaign_processing_enabled
@@ -61,7 +57,7 @@ locals {
       timeout     = var.publisher_timeout_seconds
       kms_key     = try(local.campaign.transient_kms_key_arn, null)
       artifact    = var.publisher_artifact_name
-      description = "Pseudonymizes opted-in completed analyses and publishes opaque feature work"
+      description = "Pseudonymizes opted-in app-featured analyses and publishes opaque clustering work"
     }
     cluster = {
       name        = "${local.name_prefix}-cluster-aggregator"
@@ -118,12 +114,10 @@ check "enabled_dependencies" {
         local.foundation.deletion_ledger_stream_arn != null &&
         local.campaign.outbox_stream_arn != null &&
         local.campaign.expiration_index_name == "ExpirationIndex" &&
-        var.artifact_release != null &&
-        var.feature_image_digest != null &&
-        var.model_version != null
+        var.artifact_release != null
       )
     )
-    error_message = "Enable campaign data and provide immutable worker/model artifacts before enabling processing."
+    error_message = "Enable campaign data and provide immutable worker artifacts before enabling processing."
   }
 }
 
@@ -140,15 +134,12 @@ check "runtime_bounds" {
       var.contract_schema_version == 1 &&
       var.publisher_memory_mb >= 128 &&
       var.publisher_memory_mb <= 1024 &&
-      var.feature_memory_mb >= 128 &&
-      var.feature_memory_mb <= 3072 &&
       var.cluster_memory_mb >= 128 &&
       var.cluster_memory_mb <= 2048 &&
       var.lifecycle_memory_mb >= 128 &&
       var.lifecycle_memory_mb <= 1024 &&
       var.deletion_memory_mb >= 128 &&
       var.deletion_memory_mb <= 1024 &&
-      var.feature_timeout_seconds <= 30 &&
       var.publisher_timeout_seconds <= 30 &&
       var.cluster_timeout_seconds <= 30 &&
       var.lifecycle_timeout_seconds <= 60 &&
@@ -209,18 +200,6 @@ resource "aws_cloudwatch_log_group" "worker" {
   })
 }
 
-resource "aws_cloudwatch_log_group" "feature" {
-  count = local.enabled ? 1 : 0
-
-  name              = "/aws/lambda/${local.name_prefix}-feature-extractor"
-  retention_in_days = var.log_retention_days
-
-  tags = merge(local.common_tags, {
-    Component = "feature"
-    DataClass = "content-free-operational"
-  })
-}
-
 data "aws_iam_policy_document" "worker_logging" {
   for_each = local.enabled ? local.functions : {}
 
@@ -256,52 +235,6 @@ resource "aws_iam_role_policy" "worker_logging" {
   policy = data.aws_iam_policy_document.worker_logging[each.key].json
 }
 
-resource "aws_iam_role" "feature" {
-  count = local.enabled ? 1 : 0
-
-  name               = "${local.name_prefix}-feature-extractor-role"
-  assume_role_policy = data.aws_iam_policy_document.lambda_assume.json
-
-  tags = merge(local.common_tags, {
-    Component = "feature"
-  })
-}
-
-data "aws_iam_policy_document" "feature_logging" {
-  count = local.enabled ? 1 : 0
-
-  statement {
-    sid    = "WriteOwnContentFreeLogs"
-    effect = "Allow"
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
-    resources = ["${aws_cloudwatch_log_group.feature[0].arn}:*"]
-  }
-
-  statement {
-    sid       = "PublishContentFreeMetrics"
-    effect    = "Allow"
-    actions   = ["cloudwatch:PutMetricData"]
-    resources = ["*"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "cloudwatch:namespace"
-      values   = ["TrustCheckRadar/Campaign"]
-    }
-  }
-}
-
-resource "aws_iam_role_policy" "feature_logging" {
-  count = local.enabled ? 1 : 0
-
-  name   = "content-free-logging"
-  role   = aws_iam_role.feature[0].id
-  policy = data.aws_iam_policy_document.feature_logging[0].json
-}
-
 data "aws_iam_policy_document" "publisher_runtime" {
   count = local.enabled ? 1 : 0
 
@@ -325,16 +258,15 @@ data "aws_iam_policy_document" "publisher_runtime" {
       "dynamodb:PutItem",
       "dynamodb:UpdateItem",
       "dynamodb:DeleteItem",
-      "dynamodb:TransactWriteItems",
     ]
     resources = [local.campaign.pipeline_table_arn]
   }
 
   statement {
-    sid       = "SendOpaqueFeatureWork"
+    sid       = "SendOpaqueClusterWork"
     effect    = "Allow"
     actions   = ["sqs:SendMessage"]
-    resources = [local.campaign.feature_queue_arn]
+    resources = [local.campaign.cluster_queue_arn]
   }
 
   statement {
@@ -382,61 +314,6 @@ resource "aws_iam_role_policy" "publisher_runtime" {
   policy = data.aws_iam_policy_document.publisher_runtime[0].json
 }
 
-data "aws_iam_policy_document" "feature_runtime" {
-  count = local.enabled ? 1 : 0
-
-  statement {
-    sid    = "ConsumeFeatureQueue"
-    effect = "Allow"
-    actions = [
-      "sqs:ChangeMessageVisibility",
-      "sqs:DeleteMessage",
-      "sqs:GetQueueAttributes",
-      "sqs:ReceiveMessage",
-    ]
-    resources = [local.campaign.feature_queue_arn]
-  }
-
-  statement {
-    sid    = "ReadWriteTransientFeatures"
-    effect = "Allow"
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:UpdateItem",
-      "dynamodb:DeleteItem",
-      "dynamodb:TransactWriteItems",
-    ]
-    resources = [local.campaign.pipeline_table_arn]
-  }
-
-  statement {
-    sid       = "SendOpaqueClusterWork"
-    effect    = "Allow"
-    actions   = ["sqs:SendMessage"]
-    resources = [local.campaign.cluster_queue_arn]
-  }
-
-  statement {
-    sid    = "UseTransientEncryption"
-    effect = "Allow"
-    actions = [
-      "kms:Decrypt",
-      "kms:DescribeKey",
-      "kms:GenerateDataKey",
-    ]
-    resources = [local.campaign.transient_kms_key_arn]
-  }
-}
-
-resource "aws_iam_role_policy" "feature_runtime" {
-  count = local.enabled ? 1 : 0
-
-  name   = "feature-runtime"
-  role   = aws_iam_role.feature[0].id
-  policy = data.aws_iam_policy_document.feature_runtime[0].json
-}
-
 data "aws_iam_policy_document" "cluster_runtime" {
   count = local.enabled ? 1 : 0
 
@@ -461,7 +338,6 @@ data "aws_iam_policy_document" "cluster_runtime" {
       "dynamodb:PutItem",
       "dynamodb:UpdateItem",
       "dynamodb:DeleteItem",
-      "dynamodb:TransactWriteItems",
     ]
     resources = [
       local.campaign.pipeline_table_arn,
@@ -477,7 +353,6 @@ data "aws_iam_policy_document" "cluster_runtime" {
       "dynamodb:Query",
       "dynamodb:PutItem",
       "dynamodb:UpdateItem",
-      "dynamodb:TransactWriteItems",
     ]
     resources = [
       local.campaign.intelligence_table_arn,
@@ -585,7 +460,6 @@ data "aws_iam_policy_document" "lifecycle_runtime" {
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:Query",
-      "dynamodb:TransactWriteItems",
       "dynamodb:UpdateItem",
     ]
     resources = [
@@ -768,7 +642,6 @@ resource "aws_lambda_function" "worker" {
       PIPELINE_TABLE_NAME         = local.campaign.pipeline_table_name
       EXPIRATION_INDEX_NAME       = local.campaign.expiration_index_name
       INTELLIGENCE_TABLE_NAME     = local.campaign.intelligence_table_name
-      FEATURE_QUEUE_URL           = local.campaign.feature_queue_url
       CLUSTER_QUEUE_URL           = local.campaign.cluster_queue_url
       CONTRIBUTOR_PERIOD_DAYS     = "14"
       CONTRIBUTOR_RECOVERY_DAYS   = "7"
@@ -787,42 +660,6 @@ resource "aws_lambda_function" "worker" {
 
   tags = merge(local.common_tags, {
     Component = each.key
-  })
-}
-
-resource "aws_lambda_function" "feature" {
-  count = local.enabled ? 1 : 0
-
-  function_name = "${local.name_prefix}-feature-extractor"
-  description   = "Extracts bounded multilingual features without external inference"
-  role          = aws_iam_role.feature[0].arn
-  package_type  = "Image"
-  image_uri     = "${local.campaign.model_repository_url}@${var.feature_image_digest}"
-
-  timeout                        = var.feature_timeout_seconds
-  memory_size                    = var.feature_memory_mb
-  architectures                  = ["arm64"]
-  reserved_concurrent_executions = var.reserved_concurrency
-
-  environment {
-    variables = {
-      APP_ENVIRONMENT             = var.environment
-      CAMPAIGN_SCHEMA_VERSION     = tostring(var.contract_schema_version)
-      PIPELINE_TABLE_NAME         = local.campaign.pipeline_table_name
-      CLUSTER_QUEUE_URL           = local.campaign.cluster_queue_url
-      MODEL_VERSION               = var.model_version
-      OBSERVATION_RETENTION_HOURS = "72"
-      TRANSIENT_RETENTION_DAYS    = "21"
-    }
-  }
-
-  depends_on = [
-    aws_cloudwatch_log_group.feature,
-    aws_iam_role_policy.feature_logging,
-  ]
-
-  tags = merge(local.common_tags, {
-    Component = "feature"
   })
 }
 
@@ -846,19 +683,6 @@ resource "aws_lambda_event_source_mapping" "publisher" {
   }
 
   depends_on = [aws_iam_role_policy.publisher_runtime]
-}
-
-resource "aws_lambda_event_source_mapping" "feature" {
-  count = local.enabled ? 1 : 0
-
-  event_source_arn = local.campaign.feature_queue_arn
-  function_name    = aws_lambda_function.feature[0].arn
-  batch_size       = var.queue_batch_size
-  enabled          = local.active
-
-  function_response_types = ["ReportBatchItemFailures"]
-
-  depends_on = [aws_iam_role_policy.feature_runtime]
 }
 
 resource "aws_lambda_event_source_mapping" "cluster" {
@@ -981,10 +805,7 @@ resource "aws_scheduler_schedule" "lifecycle" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "worker_errors" {
-  for_each = local.enabled ? merge(
-    { for key, value in local.functions : key => value.name },
-    { feature = "${local.name_prefix}-feature-extractor" },
-  ) : {}
+  for_each = local.enabled ? { for key, value in local.functions : key => value.name } : {}
 
   alarm_name          = "${each.value}-errors"
   alarm_description   = "Campaign worker errors; logs and notifications must remain content-free"
@@ -1007,7 +828,6 @@ resource "aws_cloudwatch_metric_alarm" "worker_errors" {
 
 resource "aws_cloudwatch_metric_alarm" "queue_age" {
   for_each = local.enabled ? {
-    feature = local.campaign.feature_queue_arn
     cluster = local.campaign.cluster_queue_arn
   } : {}
 
@@ -1032,7 +852,6 @@ resource "aws_cloudwatch_metric_alarm" "queue_age" {
 
 resource "aws_cloudwatch_metric_alarm" "dead_letter" {
   for_each = local.enabled ? {
-    feature = local.campaign.feature_dlq_arn
     cluster = local.campaign.cluster_dlq_arn
   } : {}
 
@@ -1148,8 +967,7 @@ resource "aws_cloudwatch_dashboard" "campaign" {
           stat   = "Maximum"
           period = 60
           metrics = [
-            ["AWS/SQS", "ApproximateAgeOfOldestMessage", "QueueName", element(reverse(split(":", local.campaign.feature_queue_arn)), 0)],
-            [".", ".", ".", element(reverse(split(":", local.campaign.cluster_queue_arn)), 0)],
+            ["AWS/SQS", "ApproximateAgeOfOldestMessage", "QueueName", element(reverse(split(":", local.campaign.cluster_queue_arn)), 0)],
           ]
         }
       },
@@ -1166,16 +984,10 @@ resource "aws_cloudwatch_dashboard" "campaign" {
           period = 300
           metrics = concat(
             [
-              for name in concat(
-                [for value in values(local.functions) : value.name],
-                ["${local.name_prefix}-feature-extractor"],
-              ) : ["AWS/Lambda", "Errors", "FunctionName", name]
+              for value in values(local.functions) : ["AWS/Lambda", "Errors", "FunctionName", value.name]
             ],
             [
-              for name in concat(
-                [for value in values(local.functions) : value.name],
-                ["${local.name_prefix}-feature-extractor"],
-              ) : ["AWS/Lambda", "Throttles", "FunctionName", name]
+              for value in values(local.functions) : ["AWS/Lambda", "Throttles", "FunctionName", value.name]
             ],
           )
         }
@@ -1213,7 +1025,7 @@ resource "aws_cloudwatch_dashboard" "campaign" {
         width  = 24
         height = 2
         properties = {
-          markdown = "Model version: `${var.model_version}` | Contract schema: `${var.contract_schema_version}`"
+          markdown = "Feature source: app | Contract schema: `${var.contract_schema_version}`"
         }
       },
     ]

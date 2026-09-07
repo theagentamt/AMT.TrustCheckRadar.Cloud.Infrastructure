@@ -76,7 +76,7 @@ After CLI identity verification, Codex:
 5. Reports the state bucket name and role ARN for each environment.
 
 After campaign infrastructure is merged, reapply `bootstrap/access` before
-enabling any campaign flag. The deployment roles need the tagged KMS, SQS, ECR,
+enabling any campaign flag. The deployment roles need the tagged KMS, SQS,
 EventBridge Scheduler, SNS, CloudWatch, and AWS Budgets permissions introduced by
 the campaign stacks.
 

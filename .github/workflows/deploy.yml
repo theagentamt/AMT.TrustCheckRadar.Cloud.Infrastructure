@@ -86,16 +86,8 @@ jobs:
 
       - name: Configure optional campaign inputs
         env:
-          CAMPAIGN_FEATURE_IMAGE_DIGEST: ${{ vars.CAMPAIGN_FEATURE_IMAGE_DIGEST }}
-          CAMPAIGN_MODEL_VERSION: ${{ vars.CAMPAIGN_MODEL_VERSION }}
           CAMPAIGN_REVIEWER_USERNAME: ${{ secrets.CAMPAIGN_REVIEWER_USERNAME }}
         run: |
-          if [[ -n "$CAMPAIGN_FEATURE_IMAGE_DIGEST" ]]; then
-            echo "TF_VAR_feature_image_digest=$CAMPAIGN_FEATURE_IMAGE_DIGEST" >> "$GITHUB_ENV"
-          fi
-          if [[ -n "$CAMPAIGN_MODEL_VERSION" ]]; then
-            echo "TF_VAR_model_version=$CAMPAIGN_MODEL_VERSION" >> "$GITHUB_ENV"
-          fi
           if [[ -n "$CAMPAIGN_REVIEWER_USERNAME" ]]; then
             echo "TF_VAR_campaign_reviewer_username=$CAMPAIGN_REVIEWER_USERNAME" >> "$GITHUB_ENV"
           fi
@@ -184,8 +176,6 @@ jobs:
           api_vars="environments/$DEPLOY_ENV/campaign-api.tfvars"
           if grep -Eq '^campaign_processing_enabled[[:space:]]*=[[:space:]]*true' "$processing_vars"; then
             test -n "$TF_VAR_artifact_release" || { echo "Campaign processing requires ARTIFACT_RELEASE"; exit 1; }
-            test -n "$TF_VAR_feature_image_digest" || { echo "Campaign processing requires CAMPAIGN_FEATURE_IMAGE_DIGEST"; exit 1; }
-            test -n "$TF_VAR_model_version" || { echo "Campaign processing requires CAMPAIGN_MODEL_VERSION"; exit 1; }
             artifact_bucket=$(terraform -chdir=terraform/foundation output -raw artifact_bucket_name)
             for artifact in \
               campaign_observation_publisher.zip \
@@ -197,20 +187,6 @@ jobs:
                 --bucket "$artifact_bucket" \
                 --key "releases/$TF_VAR_artifact_release/$artifact" >/dev/null
             done
-            repository_url=$(terraform -chdir=terraform/campaign-data output -json downstream_contract | jq -r .model_repository_url)
-            repository_name=${repository_url#*/}
-            aws ecr describe-images \
-              --repository-name "$repository_name" \
-              --image-ids "imageDigest=$TF_VAR_feature_image_digest" >/dev/null
-            image_size=$(aws ecr describe-images \
-              --repository-name "$repository_name" \
-              --image-ids "imageDigest=$TF_VAR_feature_image_digest" \
-              --query 'imageDetails[0].imageSizeInBytes' \
-              --output text)
-            [[ "$image_size" =~ ^[0-9]+$ && "$image_size" -le 2147483648 ]] || {
-              echo "Campaign feature image exceeds the approved 2 GB limit"
-              exit 1
-            }
           fi
           if grep -Eq '^campaign_api_enabled[[:space:]]*=[[:space:]]*true' "$api_vars"; then
             test -n "$TF_VAR_artifact_release" || { echo "Campaign API requires ARTIFACT_RELEASE"; exit 1; }

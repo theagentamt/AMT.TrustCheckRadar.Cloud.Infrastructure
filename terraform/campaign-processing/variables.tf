@@ -101,26 +101,6 @@ variable "deletion_artifact_name" {
   default     = "campaign_deletion_bridge.zip"
 }
 
-variable "feature_image_digest" {
-  description = "Approved immutable encoder image digest"
-  type        = string
-  default     = null
-
-  validation {
-    condition = (
-      var.feature_image_digest == null ||
-      can(regex("^sha256:[0-9a-f]{64}$", var.feature_image_digest))
-    )
-    error_message = "feature_image_digest must be a sha256 digest."
-  }
-}
-
-variable "model_version" {
-  description = "Approved model version recorded in content-free telemetry"
-  type        = string
-  default     = null
-}
-
 variable "contract_schema_version" {
   description = "Canonical campaign contract version"
   type        = number
@@ -137,12 +117,6 @@ variable "publisher_memory_mb" {
   description = "Observation publisher Lambda memory"
   type        = number
   default     = 256
-}
-
-variable "feature_memory_mb" {
-  description = "Feature extractor Lambda memory"
-  type        = number
-  default     = 2048
 }
 
 variable "cluster_memory_mb" {
@@ -165,12 +139,6 @@ variable "deletion_memory_mb" {
 
 variable "publisher_timeout_seconds" {
   description = "Observation publisher timeout"
-  type        = number
-  default     = 30
-}
-
-variable "feature_timeout_seconds" {
-  description = "Feature extractor timeout"
   type        = number
   default     = 30
 }

@@ -18,16 +18,11 @@ output "downstream_contract" {
     intelligence_table_name = local.enabled ? aws_dynamodb_table.intelligence[0].name : null
     intelligence_table_arn  = local.enabled ? aws_dynamodb_table.intelligence[0].arn : null
     publication_index_name  = "PublicationIndex"
-    feature_queue_url       = local.enabled ? aws_sqs_queue.feature[0].id : null
-    feature_queue_arn       = local.enabled ? aws_sqs_queue.feature[0].arn : null
-    feature_dlq_arn         = local.enabled ? aws_sqs_queue.feature_dlq[0].arn : null
     cluster_queue_url       = local.enabled ? aws_sqs_queue.cluster[0].id : null
     cluster_queue_arn       = local.enabled ? aws_sqs_queue.cluster[0].arn : null
     cluster_dlq_arn         = local.enabled ? aws_sqs_queue.cluster_dlq[0].arn : null
     transient_kms_key_arn   = local.enabled ? aws_kms_key.transient[0].arn : null
     persistent_kms_key_arn  = local.enabled ? aws_kms_key.persistent[0].arn : null
-    model_repository_arn    = local.enabled ? aws_ecr_repository.model[0].arn : null
-    model_repository_url    = local.enabled ? aws_ecr_repository.model[0].repository_url : null
     budget_alert_topic_arn  = local.enabled ? aws_sns_topic.budget[0].arn : null
     budget_limit_usd        = var.campaign_budget_limit_usd
   }

@@ -36,7 +36,6 @@ run "disabled_environment_creates_no_workers" {
   assert {
     condition = (
       length(aws_lambda_function.worker) == 0 &&
-      length(aws_lambda_function.feature) == 0 &&
       length(aws_scheduler_schedule.lifecycle) == 0
     )
     error_message = "A disabled campaign-processing environment must not create workers or schedules."
@@ -55,8 +54,6 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
     campaign_processing_enabled = true
     kill_switch_enabled         = true
     artifact_release            = "2026.09.06-1"
-    feature_image_digest        = "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-    model_version               = "test-model-v1"
     log_retention_days          = 14
   }
 
@@ -88,15 +85,11 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
           expiration_index_name   = "ExpirationIndex"
           intelligence_table_name = "campaign-intelligence"
           intelligence_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/campaign-intelligence"
-          feature_queue_url       = "https://sqs.us-east-1.amazonaws.com/107827791950/campaign-feature"
-          feature_queue_arn       = "arn:aws:sqs:us-east-1:107827791950:campaign-feature"
-          feature_dlq_arn         = "arn:aws:sqs:us-east-1:107827791950:campaign-feature-dlq"
           cluster_queue_url       = "https://sqs.us-east-1.amazonaws.com/107827791950/campaign-cluster"
           cluster_queue_arn       = "arn:aws:sqs:us-east-1:107827791950:campaign-cluster"
           cluster_dlq_arn         = "arn:aws:sqs:us-east-1:107827791950:campaign-cluster-dlq"
           transient_kms_key_arn   = "arn:aws:kms:us-east-1:107827791950:key/11111111-1111-1111-1111-111111111111"
           persistent_kms_key_arn  = "arn:aws:kms:us-east-1:107827791950:key/22222222-2222-2222-2222-222222222222"
-          model_repository_url    = "107827791950.dkr.ecr.us-east-1.amazonaws.com/campaign-model"
           budget_alert_topic_arn  = "arn:aws:sns:us-east-1:107827791950:campaign-alerts"
         }
       }
@@ -104,14 +97,13 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
   }
 
   assert {
-    condition     = length(aws_lambda_function.worker) == 4 && length(aws_lambda_function.feature) == 1
-    error_message = "Enabled Dev must create all five campaign workers."
+    condition     = length(aws_lambda_function.worker) == 4
+    error_message = "Enabled Dev must create the publisher, cluster, lifecycle, and deletion workers only."
   }
 
   assert {
     condition = (
       aws_lambda_event_source_mapping.publisher[0].enabled == false &&
-      aws_lambda_event_source_mapping.feature[0].enabled == false &&
       aws_lambda_event_source_mapping.cluster[0].enabled == false &&
       aws_lambda_event_source_mapping.deletion[0].enabled == false
     )
@@ -121,11 +113,6 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
   assert {
     condition     = alltrue([for schedule in aws_scheduler_schedule.lifecycle : schedule.state == "DISABLED"])
     error_message = "The kill switch must disable every campaign lifecycle schedule."
-  }
-
-  assert {
-    condition     = aws_lambda_function.feature[0].memory_size <= 3072 && aws_lambda_function.feature[0].package_type == "Image"
-    error_message = "The multilingual feature worker must stay within the approved Lambda runtime and packaging bounds."
   }
 
   assert {

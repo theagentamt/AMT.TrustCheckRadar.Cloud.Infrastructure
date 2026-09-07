@@ -8,7 +8,7 @@ Status: **Infrastructure controls implemented; `SECUR4ALL-215` review pending**
 - Account identity and participation privacy.
 - Temporary contributor-token unlinkability after period close.
 - Campaign aggregate integrity and publication correctness.
-- Environment isolation and model artifact integrity.
+- Environment isolation and app feature integrity.
 - Consent withdrawal and account-deletion guarantees.
 
 ## Threats and Required Controls
@@ -27,7 +27,7 @@ Status: **Infrastructure controls implemented; `SECUR4ALL-215` review pending**
 | Deletion races with processing | Tombstone-before-delete, consumers re-read current state, finalization blocked during cleanup | Concurrent deletion/feature/cluster time-travel tests |
 | Queue or backup resurrects deleted data | Opaque queue IDs; no transient backups; missing records are no-op | DLQ replay and restore tests |
 | Reviewer publishes unsafe cluster | Separate reviewer role, state machine, reason codes, append-only safe audit | Authorization and invalid-transition tests |
-| Runtime downloads altered model | Immutable digest, scanning/provenance, no runtime internet dependency | ECR policy and egress-negative tests |
+| Forged or malformed app features poison clusters | Strict versioned allowlist, numeric and size bounds, contributor caps, review-only publication | Contract-negative tests and coordinated-poisoning evaluation |
 | Cross-environment leakage | Separate resources/keys/roles/state and explicit source ARN conditions | IAM simulation and Dev/UAT/Production negative tests |
 | Compromised function pivots | Minimal role per stage, reserved concurrency, no wildcard data/KMS permissions | Effective-policy assertions and failure injection |
 | Cost exhaustion | Queue depth/concurrency bounds, DynamoDB on-demand alarms, budget alarms, bounded candidate retrieval | Burst/load test and alarm evidence |
@@ -36,10 +36,10 @@ Status: **Infrastructure controls implemented; `SECUR4ALL-215` review pending**
 
 - Security/privacy must validate the approved cohort threshold of 10 and count
   bands for the intended claims and jurisdictions.
-- ML/security must quantify inversion and membership-inference risk for the chosen
-  encoder and centroid method.
+- App/security must quantify inversion and membership-inference risk for submitted
+  feature vectors and the aggregate centroid method.
 - Backend/security must prove the completed-analysis event is committed once and
-  that consent state cannot be forged or become stale during replay.
+  that consent and app feature state cannot be forged or become stale during replay.
 - Account-deletion owners must define completion semantics when lifecycle cleanup
   is delayed or an AWS dependency is unavailable.
 - Operations must define authorized emergency suppression without exposing or
@@ -56,7 +56,7 @@ and an approved disposition in YouTrack.
 - Cross-account DynamoDB resource-policy denial plus exact-ARN runtime IAM.
 - Explicit campaign read/reviewer denies for transient tables, identity tables,
   and `kms:GenerateMac`.
-- Queue TLS-only policies, encrypted DLQs, bounded retention, and redrive limits.
+- Clustering queue TLS-only policy, encrypted DLQ, bounded retention, and redrive limits.
 - Content-free log groups and API access logs without source IP, Cognito subject,
   or request ID fields.
 - Reserved-concurrency caps, on-demand DynamoDB request caps, queue-age/DLQ/error

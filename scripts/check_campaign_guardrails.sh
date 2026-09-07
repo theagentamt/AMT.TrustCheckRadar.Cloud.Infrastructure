@@ -30,6 +30,23 @@ if search_with_lines \
   exit 1
 fi
 
+if search_with_lines \
+  'resource "aws_ecr_|resource "aws_lambda_function" "feature"|feature_queue_(arn|url|visibility)|model_repository_(arn|url)|feature_image_digest|CAMPAIGN_FEATURE_IMAGE_DIGEST|FEATURE_IMAGE_ECR_REPOSITORY' \
+  terraform/campaign-data \
+  terraform/campaign-processing \
+  .github/workflows/deploy.yml \
+  bootstrap/access/main.tf; then
+  echo "Campaign feature extraction must remain app-side; server feature runtimes and images are prohibited." >&2
+  exit 1
+fi
+
+if search_with_lines 'dynamodb:TransactWriteItems' \
+  "${campaign_paths[@]}" \
+  terraform/api; then
+  echo "DynamoDB transactions must grant the underlying item actions, not the nonexistent TransactWriteItems IAM action." >&2
+  exit 1
+fi
+
 if search_with_lines 'AWSLambdaBasicExecutionRole' \
   "${campaign_paths[@]}"; then
   echo "Campaign Lambdas must use exact logging/data resources and explicit denies." >&2

@@ -4,16 +4,13 @@ Status: **Proposed v1** for `SECUR4ALL-202`
 
 ```mermaid
 flowchart LR
+  M[App feature extraction] -->|bounded versioned features and sanitized text| A
   A[Completed analysis transaction] -->|outbox/stream record| P[Observation publisher]
   I[Account identity boundary] -->|in-memory token input only| P
   K[Period KMS HMAC key] -->|GenerateMac| P
-  P -->|sanitized transient record| T[(CampaignPipeline table)]
-  P -->|opaque event ID| Q1[Feature queue]
-  Q1 --> F[Feature extractor]
-  F -->|read observation by event ID| T
-  F -->|transient features| T
-  F -->|opaque event ID| Q2[Clustering queue]
-  Q2 --> C[Cluster aggregator]
+  P -->|sanitized transient record and app features| T[(CampaignPipeline table)]
+  P -->|opaque event ID| Q[Clustering queue]
+  Q --> C[Cluster aggregator]
   C -->|candidate lookup and contribution| T
   C -->|thresholded aggregate only| D[(CampaignIntelligence table)]
   D --> R[Authorized review]
@@ -30,13 +27,12 @@ flowchart LR
 | --- | --- | --- | --- |
 | Completed-analysis source | Existing authoritative result and one random statistics event ID | Governed by the source service contract | Source-service policy |
 | Publisher memory | Minimum sanitized input, account ID for token derivation, event ID | Logging or tracing any payload/identity | Released after invocation |
-| Feature/clustering queues and DLQs | Envelope version, operation, environment, random event ID, record version | Content, identity, token, indicator, vector | Queue retention; harmless after table deletion |
-| CampaignPipeline table | Sanitized observation, transient features, token, candidates, dedupe, expiry | Direct identity, source request ID, screenshot/OCR body, precise user timestamp | Explicit delete plus TTL safety net; no backup |
+| Clustering queue and DLQ | Envelope version, operation, environment, random event ID, record version | Content, identity, token, indicator, vector | Queue retention; harmless after table deletion |
+| CampaignPipeline table | Sanitized observation, validated app features, token, candidates, dedupe, expiry | Direct identity, source request ID, screenshot/OCR body, precise user timestamp | Explicit delete plus TTL safety net; no backup |
 | Lambda memory and `/tmp` | One bounded work item | Cross-invocation cache, logs, dumps | Clear files in `finally`; encrypted environment |
 | CampaignIntelligence table | Confirmed aggregate, clipped centroid, coarse periods/count bands, state, safe audit | Token, event ID, individual vector/content/identity | 400-day retention and reviewed suppression |
 | CloudWatch/X-Ray | Low-cardinality operation/result metrics and AWS trace IDs | Campaign/event/token/content/identity dimensions | Dev 14, UAT 30, Production 90 days |
 | Persistent backup | Confirmed aggregate table only | Any CampaignPipeline data | PITR window; normal aggregate retention still enforced |
-| ECR | Approved model image and provenance metadata | Runtime observations, fixtures containing user content | Lifecycle policy by immutable digest |
 
 ## Trust Boundaries
 
@@ -48,7 +44,7 @@ flowchart LR
    campaign data and cannot read account or transient identity mappings.
 4. **Publication boundary:** returns only confirmed, fresh, thresholded aggregates
    and count bands.
-5. **Environment boundary:** no event, role, key, queue, table, log, backup, or model
+5. **Environment boundary:** no event, role, key, queue, table, log, or backup
    deployment crosses Dev, UAT, and Production.
 
 ## Failure Rules
