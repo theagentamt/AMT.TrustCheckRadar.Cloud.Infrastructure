@@ -442,8 +442,8 @@ variable "campaign_participating_free_monthly_scan_limit" {
   default     = 15
 
   validation {
-    condition     = var.campaign_participating_free_monthly_scan_limit >= var.analysis_free_monthly_scan_limit
-    error_message = "The participating free scan limit cannot be lower than the base free scan limit."
+    condition     = var.campaign_participating_free_monthly_scan_limit > var.analysis_free_monthly_scan_limit
+    error_message = "The participating free scan limit must be higher than the base free scan limit."
   }
 }
 
