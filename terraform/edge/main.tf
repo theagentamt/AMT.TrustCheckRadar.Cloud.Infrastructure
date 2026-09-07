@@ -23,6 +23,7 @@ locals {
   endpoint_paths = var.api_mapping_enabled ? try(local.api.endpoint_paths, {
     age_attestation        = "/v1/users/age-attestation"
     analysis               = "/analysis"
+    campaign_participation = "/v1/users/campaign-participation"
     device_registration    = "/device-registration"
     device_recovery        = "/device-recovery"
     entitlement_snapshot   = "/entitlements/snapshot"

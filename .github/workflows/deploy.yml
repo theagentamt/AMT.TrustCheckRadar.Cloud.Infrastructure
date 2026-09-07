@@ -144,6 +144,7 @@ jobs:
             device_recovery.zip \
             purchase_handoff.zip \
             entitlement_snapshot.zip \
+            campaign_participation.zip \
             post_confirmation.zip \
             web_risk_communication.zip
           do

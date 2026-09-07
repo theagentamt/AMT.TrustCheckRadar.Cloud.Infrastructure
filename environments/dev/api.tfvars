@@ -4,6 +4,12 @@ environment  = "dev"
 
 campaign_intelligence_enabled = false
 
+campaign_participation_notice_version          = "2026-09-07"
+campaign_participation_policy_version          = "policy-1"
+campaign_participation_audit_retention_days    = 400
+campaign_participation_deletion_sla_hours      = 24
+campaign_participating_free_monthly_scan_limit = 15
+
 tags = {
   Application = "TrustCheckRadar"
   Owner       = "AMT"

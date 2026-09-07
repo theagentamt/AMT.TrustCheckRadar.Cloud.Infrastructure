@@ -11,6 +11,7 @@ releases/2026.09.03-1/device_registration.zip
 releases/2026.09.03-1/device_recovery.zip
 releases/2026.09.03-1/purchase_handoff.zip
 releases/2026.09.03-1/entitlement_snapshot.zip
+releases/2026.09.03-1/campaign_participation.zip
 releases/2026.09.03-1/post_confirmation.zip
 releases/2026.09.03-1/web_risk_communication.zip
 ```

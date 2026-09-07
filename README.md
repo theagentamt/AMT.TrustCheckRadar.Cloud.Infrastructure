@@ -66,6 +66,7 @@ scripts/
   its contract, artifact, reviewer, security, and budget inputs are accepted; UAT
   and Production also require promotion approval.
 - Environment endpoints are `api-dev.andmorethings.net`, `api-uat.andmorethings.net`, and `api.andmorethings.net`.
+- Each endpoint set includes authenticated campaign participation reads and changes at `/v1/users/campaign-participation`.
 - The pipeline verifies every required Lambda zip before changing API or identity resources.
 - Lambda objects live under `releases/<release-id>/` and are never overwritten.
 - Production applies should be protected by required reviewers in the GitHub `prod` environment.

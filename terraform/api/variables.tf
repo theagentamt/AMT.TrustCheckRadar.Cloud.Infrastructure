@@ -330,6 +330,123 @@ variable "analysis_pro_monthly_scan_limit" {
   default     = 1000
 }
 
+variable "campaign_participation_lambda_name" {
+  description = "Campaign participation Lambda function name"
+  type        = string
+  default     = null
+}
+
+variable "campaign_participation_lambda_s3_bucket" {
+  description = "S3 bucket containing the campaign participation Lambda zip. Defaults to the environment artifact bucket when null."
+  type        = string
+  default     = null
+}
+
+variable "campaign_participation_lambda_s3_key" {
+  description = "Optional S3 key override for the campaign participation Lambda zip"
+  type        = string
+  default     = null
+}
+
+variable "campaign_participation_lambda_s3_object_version" {
+  description = "Optional S3 object version for immutable campaign participation Lambda deployments"
+  type        = string
+  default     = null
+}
+
+variable "campaign_participation_lambda_runtime" {
+  description = "Campaign participation Lambda runtime"
+  type        = string
+  default     = "python3.13"
+}
+
+variable "campaign_participation_lambda_handler" {
+  description = "Campaign participation Lambda handler"
+  type        = string
+  default     = "app.lambda_handler"
+}
+
+variable "campaign_participation_lambda_timeout_seconds" {
+  description = "Campaign participation Lambda timeout in seconds"
+  type        = number
+  default     = 10
+}
+
+variable "campaign_participation_lambda_memory_mb" {
+  description = "Campaign participation Lambda memory size in MB"
+  type        = number
+  default     = 256
+}
+
+variable "campaign_participation_lambda_architectures" {
+  description = "Campaign participation Lambda architectures"
+  type        = list(string)
+  default     = ["arm64"]
+}
+
+variable "campaign_participation_lambda_reserved_concurrency" {
+  description = "Reserved concurrency cap for the campaign participation Lambda"
+  type        = number
+  default     = 5
+}
+
+variable "campaign_participation_lambda_env" {
+  description = "Additional environment variables for the campaign participation Lambda"
+  type        = map(string)
+  default     = {}
+}
+
+variable "campaign_participation_path" {
+  description = "Authenticated path for reading and changing campaign participation"
+  type        = string
+  default     = "/v1/users/campaign-participation"
+}
+
+variable "campaign_participation_notice_version" {
+  description = "Version of the plain-language campaign participation notice accepted by the user"
+  type        = string
+  default     = "2026-09-07"
+}
+
+variable "campaign_participation_policy_version" {
+  description = "Server policy version governing campaign participation records"
+  type        = string
+  default     = "policy-1"
+}
+
+variable "campaign_participation_audit_retention_days" {
+  description = "Retention period for privacy-safe campaign consent audit receipts"
+  type        = number
+  default     = 400
+
+  validation {
+    condition     = var.campaign_participation_audit_retention_days >= 365
+    error_message = "Campaign participation audit receipts must be retained for at least 365 days."
+  }
+}
+
+variable "campaign_participation_deletion_sla_hours" {
+  description = "Maximum hours to remove active or linkable campaign contributions after withdrawal"
+  type        = number
+  default     = 24
+
+  validation {
+    condition     = var.campaign_participation_deletion_sla_hours >= 1 && var.campaign_participation_deletion_sla_hours <= 24
+    error_message = "Campaign participation deletion SLA must be between 1 and 24 hours."
+  }
+}
+
+variable "campaign_participating_free_monthly_scan_limit" {
+  description = "Monthly scan quota for a free-tier user while actively enrolled in campaign participation"
+  type        = number
+  default     = 15
+
+  validation {
+    condition     = var.campaign_participating_free_monthly_scan_limit >= var.analysis_free_monthly_scan_limit
+    error_message = "The participating free scan limit cannot be lower than the base free scan limit."
+  }
+}
+
 variable "device_registration_lambda_name" {
   description = "Device registration Lambda function name"
   type        = string
@@ -781,5 +898,5 @@ variable "cors_allow_headers" {
 variable "cors_allow_methods" {
   description = "Allowed CORS methods for the HTTP API"
   type        = list(string)
-  default     = ["OPTIONS", "GET", "POST"]
+  default     = ["OPTIONS", "GET", "POST", "PUT"]
 }

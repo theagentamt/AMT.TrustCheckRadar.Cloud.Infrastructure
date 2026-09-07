@@ -415,6 +415,24 @@ data "aws_iam_policy_document" "deletion_runtime" {
   }
 
   statement {
+    sid    = "CompleteParticipationWithdrawal"
+    effect = "Allow"
+    actions = [
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+      "dynamodb:UpdateItem",
+    ]
+    resources = [local.foundation.users_table_arn]
+  }
+
+  statement {
+    sid       = "CompleteDeletionLedgerCommand"
+    effect    = "Allow"
+    actions   = ["dynamodb:UpdateItem"]
+    resources = [local.foundation.deletion_ledger_table_arn]
+  }
+
+  statement {
     sid       = "DeriveActivePeriodTokens"
     effect    = "Allow"
     actions   = ["kms:GenerateMac"]
@@ -635,7 +653,7 @@ resource "aws_lambda_function" "worker" {
   s3_key    = "${local.artifact_key}/${each.value.artifact}"
 
   environment {
-    variables = {
+    variables = merge({
       APP_ENVIRONMENT             = var.environment
       CAMPAIGN_SCHEMA_VERSION     = tostring(var.contract_schema_version)
       OUTBOX_TABLE_NAME           = local.campaign.outbox_table_name
@@ -650,7 +668,12 @@ resource "aws_lambda_function" "worker" {
       AGGREGATE_RETENTION_DAYS    = "400"
       MIN_CONTRIBUTOR_COUNT       = "10"
       MAX_CONTRIBUTOR_SUBMISSIONS = "3"
-    }
+      }, each.key == "deletion" ? {
+      USERS_TABLE_NAME           = local.foundation.users_table_name
+      DELETION_LEDGER_TABLE_NAME = local.foundation.deletion_ledger_table_name
+      PARTICIPATION_ITEM_SK      = "CAMPAIGN_PARTICIPATION"
+      PARTICIPATION_AUDIT_DAYS   = "400"
+    } : {})
   }
 
   depends_on = [

@@ -22,6 +22,8 @@ stories.
 | `SECUR4ALL-213` | Backend/API architecture handoff | Review returned contracts for transport, storage, IAM, encryption, lifecycle, and environment compatibility | Backend/API team owns canonical JSON Schema or OpenAPI artifacts, bilingual taxonomy fixtures, examples, and compatibility tests |
 | `SECUR4ALL-214` | App/ML quality handoff | Validate returned feature bounds and quality evidence against the infrastructure contract; no image or runtime resources | App/ML team owns extraction versioning, calibration, quality fixtures, platform benchmarks, and similarity evidence |
 | `SECUR4ALL-215` | Security/privacy/QA handoff | Supply infrastructure controls and evidence for review; no separate runtime resources | Security, privacy, product, and QA own threat-model approval, re-identification review, test evidence plan, and signoff |
+| `SECUR4ALL-217` | Shared infrastructure and Lambda implementation | Authenticated participation routes, Lambda shell, transactional IAM, users-table receipt TTL, deletion-ledger access, environment contracts, logs, release gate, and Terraform tests | Lambda team owns state transitions, consent receipts, entitlement adjustment, publication checks, deletion commands, and tests |
+| `SECUR4ALL-218` | Android implementation handoff; no AWS runtime | Supply environment endpoint, notice/version contract, quota values, and server status semantics | Android team owns enrollment prompts, settings and withdrawal UX, localization, accessibility, retry behavior, and app tests |
 
 ## Infrastructure Execution Set
 

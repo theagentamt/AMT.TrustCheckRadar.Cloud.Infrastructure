@@ -23,11 +23,67 @@ output "endpoint_paths" {
   value = {
     age_attestation        = "/v1/users/age-attestation"
     analysis               = var.analysis_primary_path
+    campaign_participation = var.campaign_participation_path
     device_registration    = var.device_registration_path
     device_recovery        = var.enable_device_recovery ? var.device_recovery_path : null
     entitlement_snapshot   = var.entitlement_snapshot_path
     purchase_handoff       = var.purchase_handoff_path
     web_risk_communication = var.enable_web_risk_communication ? var.web_risk_communication_path : null
+  }
+}
+
+output "campaign_participation_lambda_name" {
+  description = "Campaign participation Lambda function name"
+  value       = aws_lambda_function.campaign_participation.function_name
+}
+
+output "campaign_participation_lambda_arn" {
+  description = "Campaign participation Lambda function ARN"
+  value       = aws_lambda_function.campaign_participation.arn
+}
+
+output "campaign_participation_endpoint_path" {
+  description = "Authenticated path for campaign participation reads and changes"
+  value       = var.campaign_participation_path
+}
+
+output "campaign_participation_get_route_key" {
+  description = "GET route for campaign participation state"
+  value       = aws_apigatewayv2_route.campaign_participation_get.route_key
+}
+
+output "campaign_participation_put_route_key" {
+  description = "PUT route for campaign participation changes"
+  value       = aws_apigatewayv2_route.campaign_participation_put.route_key
+}
+
+output "campaign_participation_endpoint_url" {
+  description = "Full execute-api URL for campaign participation"
+  value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.campaign_participation_path}"
+}
+
+output "campaign_participation_backend_settings" {
+  description = "App-ready values for the campaign participation integration"
+  value = {
+    endpointUrl                       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.campaign_participation_path}"
+    readMethod                        = "GET"
+    updateMethod                      = "PUT"
+    authorizationType                 = "CognitoJWT"
+    authorizationHeader               = "Authorization: Bearer <access-token>"
+    audience                          = local.cognito_app_client_id
+    issuer                            = local.jwt_issuer
+    noticeVersion                     = var.campaign_participation_notice_version
+    policyVersion                     = var.campaign_participation_policy_version
+    auditRetentionDays                = var.campaign_participation_audit_retention_days
+    deletionSlaHours                  = var.campaign_participation_deletion_sla_hours
+    baseFreeMonthlyScanLimit          = var.analysis_free_monthly_scan_limit
+    participatingFreeMonthlyScanLimit = var.campaign_participating_free_monthly_scan_limit
+    proMonthlyScanLimit               = var.analysis_pro_monthly_scan_limit
+    usersTable                        = local.users_table_name
+    deletionLedgerTable               = local.deletion_ledger_table_name
+    entitlementsTable                 = local.purchase_entitlements_table_name
+    lambdaLogGroup                    = aws_cloudwatch_log_group.campaign_participation_lambda.name
+    apiAccessLogGroup                 = aws_cloudwatch_log_group.age_attestation_api.name
   }
 }
 

@@ -40,6 +40,8 @@ locals {
   purchase_handoff_artifact_bucket_name       = coalesce(var.purchase_handoff_lambda_s3_bucket, local.foundation.artifact_bucket_name)
   entitlement_snapshot_lambda_name            = coalesce(var.entitlement_snapshot_lambda_name, "${local.name_prefix}-entitlement-snapshot")
   entitlement_snapshot_artifact_bucket_name   = coalesce(var.entitlement_snapshot_lambda_s3_bucket, local.foundation.artifact_bucket_name)
+  campaign_participation_lambda_name          = coalesce(var.campaign_participation_lambda_name, "${local.name_prefix}-campaign-participation")
+  campaign_participation_artifact_bucket_name = coalesce(var.campaign_participation_lambda_s3_bucket, local.foundation.artifact_bucket_name)
   web_risk_communication_lambda_name          = coalesce(var.web_risk_communication_lambda_name, "${local.name_prefix}-web-risk-communication")
   web_risk_communication_artifact_bucket_name = coalesce(var.web_risk_communication_lambda_s3_bucket, local.foundation.artifact_bucket_name)
   openai_secret_name                          = coalesce(var.openai_secret_name, "${var.project_name}/${var.environment}/openai")
@@ -60,6 +62,8 @@ locals {
   device_bindings_table_name                  = local.foundation.device_bindings_table_name
   purchase_entitlements_table_arn             = local.foundation.purchase_entitlements_table_arn
   purchase_entitlements_table_name            = local.foundation.purchase_entitlements_table_name
+  deletion_ledger_table_arn                   = local.foundation.deletion_ledger_table_arn
+  deletion_ledger_table_name                  = local.foundation.deletion_ledger_table_name
   web_risk_cache_table_arn                    = local.foundation.web_risk_cache_table_arn
   web_risk_cache_table_name                   = local.foundation.web_risk_cache_table_name
   jwt_issuer                                  = "https://cognito-idp.${var.aws_region}.amazonaws.com/${local.cognito_user_pool_id}"
@@ -69,6 +73,7 @@ locals {
   device_recovery_artifact_key                = coalesce(var.device_recovery_lambda_s3_key, "${local.artifact_prefix}/device_recovery.zip")
   purchase_handoff_artifact_key               = coalesce(var.purchase_handoff_lambda_s3_key, "${local.artifact_prefix}/purchase_handoff.zip")
   entitlement_snapshot_artifact_key           = coalesce(var.entitlement_snapshot_lambda_s3_key, "${local.artifact_prefix}/entitlement_snapshot.zip")
+  campaign_participation_artifact_key         = coalesce(var.campaign_participation_lambda_s3_key, "${local.artifact_prefix}/campaign_participation.zip")
   web_risk_communication_artifact_key         = coalesce(var.web_risk_communication_lambda_s3_key, "${local.artifact_prefix}/web_risk_communication.zip")
   campaign_outbox_table_arn                   = var.campaign_intelligence_enabled ? local.campaign.outbox_table_arn : null
   campaign_outbox_table_name                  = var.campaign_intelligence_enabled ? local.campaign.outbox_table_name : null
@@ -221,6 +226,13 @@ resource "aws_iam_role" "entitlement_snapshot" {
   tags = local.common_tags
 }
 
+resource "aws_iam_role" "campaign_participation" {
+  name               = "${local.campaign_participation_lambda_name}-role"
+  assume_role_policy = data.aws_iam_policy_document.age_attestation_assume_role.json
+
+  tags = local.common_tags
+}
+
 resource "aws_iam_role" "web_risk_communication" {
   count              = var.enable_web_risk_communication ? 1 : 0
   name               = "${local.web_risk_communication_lambda_name}-role"
@@ -255,6 +267,11 @@ resource "aws_iam_role_policy_attachment" "entitlement_snapshot_basic_execution"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_role_policy_attachment" "campaign_participation_basic_execution" {
+  role       = aws_iam_role.campaign_participation.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
 resource "aws_iam_role_policy_attachment" "web_risk_communication_basic_execution" {
   count      = var.enable_web_risk_communication ? 1 : 0
   role       = aws_iam_role.web_risk_communication[0].name
@@ -266,6 +283,7 @@ data "aws_iam_policy_document" "analysis_runtime" {
     sid    = "UsersTableReadWrite"
     effect = "Allow"
     actions = [
+      "dynamodb:ConditionCheckItem",
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:UpdateItem",
@@ -351,8 +369,7 @@ data "aws_iam_policy_document" "analysis_runtime" {
     sid    = "DeviceBindingsReadOnly"
     effect = "Allow"
     actions = [
-      "dynamodb:GetItem",
-      "dynamodb:Query"
+      "dynamodb:GetItem"
     ]
 
     resources = [
@@ -469,6 +486,13 @@ data "aws_iam_policy_document" "purchase_handoff_runtime" {
   }
 
   statement {
+    sid       = "CampaignParticipationReadOnly"
+    effect    = "Allow"
+    actions   = ["dynamodb:GetItem"]
+    resources = [local.users_table_arn]
+  }
+
+  statement {
     sid    = "ReadGooglePlaySecret"
     effect = "Allow"
     actions = [
@@ -506,6 +530,13 @@ data "aws_iam_policy_document" "entitlement_snapshot_runtime" {
       "${local.purchase_entitlements_table_arn}/index/*"
     ]
   }
+
+  statement {
+    sid       = "CampaignParticipationReadOnly"
+    effect    = "Allow"
+    actions   = ["dynamodb:GetItem"]
+    resources = [local.users_table_arn]
+  }
 }
 
 resource "aws_iam_policy" "entitlement_snapshot_runtime" {
@@ -518,6 +549,50 @@ resource "aws_iam_policy" "entitlement_snapshot_runtime" {
 resource "aws_iam_role_policy_attachment" "entitlement_snapshot_runtime" {
   role       = aws_iam_role.entitlement_snapshot.name
   policy_arn = aws_iam_policy.entitlement_snapshot_runtime.arn
+}
+
+data "aws_iam_policy_document" "campaign_participation_runtime" {
+  statement {
+    sid     = "ReadParticipationAndEntitlements"
+    effect  = "Allow"
+    actions = ["dynamodb:GetItem"]
+
+    resources = [
+      local.users_table_arn,
+      local.purchase_entitlements_table_arn,
+      "${local.purchase_entitlements_table_arn}/index/*"
+    ]
+  }
+
+  statement {
+    sid     = "WriteParticipationTransaction"
+    effect  = "Allow"
+    actions = ["dynamodb:PutItem"]
+
+    resources = [
+      local.users_table_arn,
+      local.purchase_entitlements_table_arn,
+      local.deletion_ledger_table_arn
+    ]
+
+    condition {
+      test     = "ForAnyValue:StringEquals"
+      variable = "dynamodb:EnclosingOperation"
+      values   = ["TransactWriteItems"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "campaign_participation_runtime" {
+  name   = "${local.campaign_participation_lambda_name}-runtime"
+  policy = data.aws_iam_policy_document.campaign_participation_runtime.json
+
+  tags = local.common_tags
+}
+
+resource "aws_iam_role_policy_attachment" "campaign_participation_runtime" {
+  role       = aws_iam_role.campaign_participation.name
+  policy_arn = aws_iam_policy.campaign_participation_runtime.arn
 }
 
 data "aws_iam_policy_document" "web_risk_communication_runtime" {
@@ -602,6 +677,13 @@ resource "aws_cloudwatch_log_group" "entitlement_snapshot_lambda" {
   tags = local.common_tags
 }
 
+resource "aws_cloudwatch_log_group" "campaign_participation_lambda" {
+  name              = "/aws/lambda/${local.campaign_participation_lambda_name}"
+  retention_in_days = var.age_attestation_log_retention_days
+
+  tags = local.common_tags
+}
+
 resource "aws_cloudwatch_log_group" "web_risk_communication_lambda" {
   count             = var.enable_web_risk_communication ? 1 : 0
   name              = "/aws/lambda/${local.web_risk_communication_lambda_name}"
@@ -666,7 +748,9 @@ resource "aws_lambda_function" "analysis" {
       SCAN_RATE_LIMIT_WINDOW_SECONDS        = tostring(var.analysis_scan_rate_limit_window_seconds)
       SCAN_RATE_LIMIT_MAX_REQUESTS          = tostring(var.analysis_scan_rate_limit_max_requests)
       FREE_MONTHLY_SCAN_LIMIT               = tostring(var.analysis_free_monthly_scan_limit)
+      PARTICIPATING_FREE_MONTHLY_SCAN_LIMIT = tostring(var.campaign_participating_free_monthly_scan_limit)
       PRO_MONTHLY_SCAN_LIMIT                = tostring(var.analysis_pro_monthly_scan_limit)
+      CAMPAIGN_PARTICIPATION_ITEM_SK        = "CAMPAIGN_PARTICIPATION"
       PURCHASE_USAGE_COUNTER_RETENTION_DAYS = tostring(var.purchase_usage_counter_retention_days)
       ENTITLEMENT_DEFAULT_TIER              = var.entitlement_default_tier
       ENTITLEMENT_PREMIUM_TIER              = var.entitlement_premium_tier
@@ -774,11 +858,61 @@ resource "aws_lambda_function" "entitlement_snapshot" {
       ENTITLEMENT_PLATFORM                  = "google_play"
       ENTITLEMENT_PRODUCT_ID                = var.google_play_subscription_product_id
       FREE_MONTHLY_SCAN_LIMIT               = tostring(var.analysis_free_monthly_scan_limit)
+      PARTICIPATING_FREE_MONTHLY_SCAN_LIMIT = tostring(var.campaign_participating_free_monthly_scan_limit)
       PRO_MONTHLY_SCAN_LIMIT                = tostring(var.analysis_pro_monthly_scan_limit)
+      USERS_TABLE_NAME                      = local.users_table_name
+      CAMPAIGN_PARTICIPATION_ITEM_SK        = "CAMPAIGN_PARTICIPATION"
     })
   }
 
   depends_on = [aws_cloudwatch_log_group.entitlement_snapshot_lambda]
+
+  tags = local.common_tags
+}
+
+resource "aws_lambda_function" "campaign_participation" {
+  function_name = local.campaign_participation_lambda_name
+  role          = aws_iam_role.campaign_participation.arn
+  runtime       = var.campaign_participation_lambda_runtime
+  handler       = var.campaign_participation_lambda_handler
+
+  timeout                        = var.campaign_participation_lambda_timeout_seconds
+  memory_size                    = var.campaign_participation_lambda_memory_mb
+  architectures                  = var.campaign_participation_lambda_architectures
+  reserved_concurrent_executions = var.campaign_participation_lambda_reserved_concurrency
+
+  s3_bucket         = local.campaign_participation_artifact_bucket_name
+  s3_key            = local.campaign_participation_artifact_key
+  s3_object_version = var.campaign_participation_lambda_s3_object_version
+
+  environment {
+    variables = merge(var.campaign_participation_lambda_env, {
+      USERS_TABLE_ARN                             = local.users_table_arn
+      USERS_TABLE_NAME                            = local.users_table_name
+      ENTITLEMENTS_TABLE_ARN                      = local.purchase_entitlements_table_arn
+      ENTITLEMENTS_TABLE_NAME                     = local.purchase_entitlements_table_name
+      DELETION_LEDGER_TABLE_ARN                   = local.deletion_ledger_table_arn
+      DELETION_LEDGER_TABLE_NAME                  = local.deletion_ledger_table_name
+      ENVIRONMENT                                 = var.environment
+      CAMPAIGN_PARTICIPATION_NOTICE_VERSION       = var.campaign_participation_notice_version
+      CAMPAIGN_PARTICIPATION_POLICY_VERSION       = var.campaign_participation_policy_version
+      CAMPAIGN_PARTICIPATION_AUDIT_RETENTION_DAYS = tostring(var.campaign_participation_audit_retention_days)
+      CAMPAIGN_PARTICIPATION_DELETION_SLA_HOURS   = tostring(var.campaign_participation_deletion_sla_hours)
+      FREE_MONTHLY_SCAN_LIMIT                     = tostring(var.analysis_free_monthly_scan_limit)
+      PARTICIPATING_FREE_MONTHLY_SCAN_LIMIT       = tostring(var.campaign_participating_free_monthly_scan_limit)
+      PRO_MONTHLY_SCAN_LIMIT                      = tostring(var.analysis_pro_monthly_scan_limit)
+      PURCHASE_USAGE_COUNTER_RETENTION_DAYS       = tostring(var.purchase_usage_counter_retention_days)
+      ENTITLEMENT_DEFAULT_TIER                    = var.entitlement_default_tier
+      ENTITLEMENT_PREMIUM_TIER                    = var.entitlement_premium_tier
+      ENTITLEMENT_USAGE_PERIOD_MODE               = var.entitlement_usage_period_mode
+      ENTITLEMENT_ACCESS_GRANTING_STATUSES        = jsonencode(var.entitlement_access_granting_statuses)
+      ENTITLEMENT_NONTERMINAL_STATUSES            = jsonencode(var.entitlement_nonterminal_statuses)
+      ENTITLEMENT_PLATFORM                        = "google_play"
+      ENTITLEMENT_PRODUCT_ID                      = var.google_play_subscription_product_id
+    })
+  }
+
+  depends_on = [aws_cloudwatch_log_group.campaign_participation_lambda]
 
   tags = local.common_tags
 }
@@ -818,6 +952,11 @@ resource "aws_lambda_function" "purchase_handoff" {
       GOOGLE_PLAY_PACKAGE_NAME              = var.google_play_package_name
       GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_ID   = var.google_play_subscription_product_id
       GOOGLE_PLAY_PRO_PRODUCT_ID            = var.google_play_subscription_product_id
+      USERS_TABLE_NAME                      = local.users_table_name
+      CAMPAIGN_PARTICIPATION_ITEM_SK        = "CAMPAIGN_PARTICIPATION"
+      FREE_MONTHLY_SCAN_LIMIT               = tostring(var.analysis_free_monthly_scan_limit)
+      PARTICIPATING_FREE_MONTHLY_SCAN_LIMIT = tostring(var.campaign_participating_free_monthly_scan_limit)
+      PRO_MONTHLY_SCAN_LIMIT                = tostring(var.analysis_pro_monthly_scan_limit)
     })
   }
 
@@ -1022,6 +1161,31 @@ resource "aws_apigatewayv2_route" "entitlement_snapshot" {
   authorizer_id      = aws_apigatewayv2_authorizer.cognito_jwt.id
 }
 
+resource "aws_apigatewayv2_integration" "campaign_participation_lambda" {
+  api_id                 = aws_apigatewayv2_api.age_attestation.id
+  integration_type       = "AWS_PROXY"
+  integration_uri        = aws_lambda_function.campaign_participation.invoke_arn
+  integration_method     = "POST"
+  payload_format_version = "2.0"
+  timeout_milliseconds   = 10000
+}
+
+resource "aws_apigatewayv2_route" "campaign_participation_get" {
+  api_id             = aws_apigatewayv2_api.age_attestation.id
+  route_key          = "GET ${var.campaign_participation_path}"
+  target             = "integrations/${aws_apigatewayv2_integration.campaign_participation_lambda.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito_jwt.id
+}
+
+resource "aws_apigatewayv2_route" "campaign_participation_put" {
+  api_id             = aws_apigatewayv2_api.age_attestation.id
+  route_key          = "PUT ${var.campaign_participation_path}"
+  target             = "integrations/${aws_apigatewayv2_integration.campaign_participation_lambda.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito_jwt.id
+}
+
 resource "aws_apigatewayv2_stage" "age_attestation" {
   api_id      = aws_apigatewayv2_api.age_attestation.id
   name        = var.api_stage_name
@@ -1109,6 +1273,14 @@ resource "aws_lambda_permission" "allow_api_gateway_invoke_entitlement_snapshot"
   statement_id  = "AllowExecutionFromApiGatewayEntitlementSnapshot"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.entitlement_snapshot.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.age_attestation.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "allow_api_gateway_invoke_campaign_participation" {
+  statement_id  = "AllowExecutionFromApiGatewayCampaignParticipation"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.campaign_participation.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.age_attestation.execution_arn}/*/*"
 }

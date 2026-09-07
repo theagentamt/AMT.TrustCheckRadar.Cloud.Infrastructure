@@ -65,6 +65,10 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
           schema_version             = 1
           artifact_bucket_name       = "artifact-example"
           deletion_ledger_stream_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/deletion-ledger/stream/1"
+          deletion_ledger_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/deletion-ledger"
+          deletion_ledger_table_name = "deletion-ledger"
+          users_table_arn            = "arn:aws:dynamodb:us-east-1:107827791950:table/users"
+          users_table_name           = "users"
         }
       }
     }
@@ -118,5 +122,14 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
   assert {
     condition     = aws_lambda_function.worker["lifecycle"].environment[0].variables["EXPIRATION_INDEX_NAME"] == "ExpirationIndex"
     error_message = "The lifecycle worker must receive the explicit-expiration index contract."
+  }
+
+  assert {
+    condition = (
+      aws_lambda_function.worker["deletion"].environment[0].variables["USERS_TABLE_NAME"] == "users" &&
+      aws_lambda_function.worker["deletion"].environment[0].variables["DELETION_LEDGER_TABLE_NAME"] == "deletion-ledger" &&
+      aws_lambda_function.worker["deletion"].environment[0].variables["PARTICIPATION_ITEM_SK"] == "CAMPAIGN_PARTICIPATION"
+    )
+    error_message = "The deletion bridge must be able to complete participation status and its ledger command."
   }
 }
