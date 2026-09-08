@@ -128,6 +128,13 @@ check "environment_promotion_gate" {
   }
 }
 
+check "kill_switch_release_gate" {
+  assert {
+    condition     = var.kill_switch_enabled || (local.enabled && var.activation_approved)
+    error_message = "Releasing the campaign processing kill switch requires enabled processing and activation_approved=true."
+  }
+}
+
 check "runtime_bounds" {
   assert {
     condition = (

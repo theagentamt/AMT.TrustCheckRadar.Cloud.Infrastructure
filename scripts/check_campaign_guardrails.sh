@@ -70,6 +70,8 @@ for environment in uat prod; do
     "environments/$environment/campaign-processing.tfvars"
   file_matches '^kill_switch_enabled[[:space:]]*=[[:space:]]*true$' \
     "environments/$environment/campaign-processing.tfvars"
+  file_matches '^activation_approved[[:space:]]*=[[:space:]]*false$' \
+    "environments/$environment/campaign-processing.tfvars"
   file_matches '^campaign_api_enabled[[:space:]]*=[[:space:]]*false$' \
     "environments/$environment/campaign-api.tfvars"
   file_matches '^campaign_review_api_enabled[[:space:]]*=[[:space:]]*false$' \
@@ -80,6 +82,8 @@ dev_foundation_enabled=false
 dev_data_enabled=false
 dev_api_data_enabled=false
 dev_processing_enabled=false
+dev_kill_switch_enabled=false
+dev_activation_approved=false
 dev_trends_enabled=false
 dev_review_enabled=false
 
@@ -91,6 +95,10 @@ file_matches '^campaign_intelligence_enabled[[:space:]]*=[[:space:]]*true$' \
   environments/dev/api.tfvars && dev_api_data_enabled=true
 file_matches '^campaign_processing_enabled[[:space:]]*=[[:space:]]*true$' \
   environments/dev/campaign-processing.tfvars && dev_processing_enabled=true
+file_matches '^kill_switch_enabled[[:space:]]*=[[:space:]]*true$' \
+  environments/dev/campaign-processing.tfvars && dev_kill_switch_enabled=true
+file_matches '^activation_approved[[:space:]]*=[[:space:]]*true$' \
+  environments/dev/campaign-processing.tfvars && dev_activation_approved=true
 file_matches '^campaign_api_enabled[[:space:]]*=[[:space:]]*true$' \
   environments/dev/campaign-api.tfvars && dev_trends_enabled=true
 file_matches '^campaign_review_api_enabled[[:space:]]*=[[:space:]]*true$' \
@@ -115,7 +123,11 @@ if [[ "$dev_trends_enabled" == true || "$dev_review_enabled" == true ]]; then
   }
 fi
 
-file_matches '^kill_switch_enabled[[:space:]]*=[[:space:]]*true$' \
-  environments/dev/campaign-processing.tfvars
+if [[ "$dev_kill_switch_enabled" == false ]]; then
+  [[ "$dev_processing_enabled" == true && "$dev_activation_approved" == true ]] || {
+    echo "Releasing the Dev campaign kill switch requires enabled processing and explicit activation approval." >&2
+    exit 1
+  }
+fi
 
 echo "Campaign V1 infrastructure guardrails passed."

@@ -80,7 +80,8 @@ Use staged reviewed changes:
    requests return `401`, while authenticated tests remain pending the reviewer's
    first-password change.
 6. Set `kill_switch_enabled=false` only after deletion, suppression, retry, and
-   privacy-negative tests pass.
+   privacy-negative tests pass, and record the release with
+   `activation_approved=true`.
 
 The budget email subscription must be confirmed by its recipient before the kill
 switch is released. The `CostCategory=campaign-intelligence` cost-allocation tag

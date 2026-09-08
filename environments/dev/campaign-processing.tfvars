@@ -6,6 +6,7 @@ environment  = "dev"
 campaign_processing_enabled = true
 promotion_approved          = false
 kill_switch_enabled         = false
+activation_approved         = true
 log_retention_days          = 14
 
 tags = {

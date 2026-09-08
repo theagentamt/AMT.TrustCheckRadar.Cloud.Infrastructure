@@ -63,6 +63,12 @@ variable "kill_switch_enabled" {
   default     = true
 }
 
+variable "activation_approved" {
+  description = "Explicit approval required before releasing the campaign processing kill switch"
+  type        = bool
+  default     = false
+}
+
 variable "artifact_release" {
   description = "Immutable release identifier containing campaign worker zip artifacts"
   type        = string

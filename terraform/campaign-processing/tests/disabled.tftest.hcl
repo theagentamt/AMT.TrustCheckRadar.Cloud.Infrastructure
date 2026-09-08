@@ -145,6 +145,7 @@ run "active_dev_enables_every_event_source_and_schedule" {
     state_bucket_region         = "us-east-1"
     campaign_processing_enabled = true
     kill_switch_enabled         = false
+    activation_approved         = true
     artifact_release            = "2026.09.08-1"
     log_retention_days          = 14
   }
@@ -205,4 +206,35 @@ run "active_dev_enables_every_event_source_and_schedule" {
     condition     = alltrue([for schedule in aws_scheduler_schedule.lifecycle : schedule.state == "ENABLED"])
     error_message = "Active Dev must enable every campaign lifecycle schedule."
   }
+}
+
+run "kill_switch_release_requires_explicit_approval" {
+  command = plan
+
+  variables {
+    aws_region                  = "us-east-1"
+    project_name                = "trustcheckradar"
+    environment                 = "dev"
+    state_bucket_name           = "terraform-state-example"
+    state_bucket_region         = "us-east-1"
+    campaign_processing_enabled = false
+    kill_switch_enabled         = false
+    activation_approved         = false
+    log_retention_days          = 14
+  }
+
+  override_data {
+    target = data.terraform_remote_state.foundation
+    values = {
+      outputs = {
+        downstream_contract = {
+          schema_version             = 1
+          artifact_bucket_name       = "artifact-example"
+          deletion_ledger_stream_arn = null
+        }
+      }
+    }
+  }
+
+  expect_failures = [check.kill_switch_release_gate]
 }

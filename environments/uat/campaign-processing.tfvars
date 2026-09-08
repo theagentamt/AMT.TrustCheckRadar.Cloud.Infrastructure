@@ -5,6 +5,7 @@ environment  = "uat"
 campaign_processing_enabled = false
 promotion_approved          = false
 kill_switch_enabled         = true
+activation_approved         = false
 log_retention_days          = 30
 
 tags = {
