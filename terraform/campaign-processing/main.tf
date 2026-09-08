@@ -270,6 +270,38 @@ data "aws_iam_policy_document" "publisher_runtime" {
   }
 
   statement {
+    sid       = "ReadParticipationState"
+    effect    = "Allow"
+    actions   = ["dynamodb:GetItem"]
+    resources = [local.foundation.users_table_arn]
+
+    condition {
+      test     = "ForAllValues:StringLike"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["USER#*"]
+    }
+  }
+
+  statement {
+    sid       = "CheckParticipationStateInTransaction"
+    effect    = "Allow"
+    actions   = ["dynamodb:ConditionCheckItem"]
+    resources = [local.foundation.users_table_arn]
+
+    condition {
+      test     = "StringEquals"
+      variable = "dynamodb:EnclosingOperation"
+      values   = ["TransactWriteItems"]
+    }
+
+    condition {
+      test     = "ForAllValues:StringLike"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["USER#*"]
+    }
+  }
+
+  statement {
     sid       = "SendOpaqueClusterWork"
     effect    = "Allow"
     actions   = ["sqs:SendMessage"]
@@ -675,7 +707,9 @@ resource "aws_lambda_function" "worker" {
       AGGREGATE_RETENTION_DAYS    = "400"
       MIN_CONTRIBUTOR_COUNT       = "10"
       MAX_CONTRIBUTOR_SUBMISSIONS = "3"
-      }, each.key == "deletion" ? {
+      }, each.key == "publisher" ? {
+      USERS_TABLE_NAME = local.foundation.users_table_name
+      } : {}, each.key == "deletion" ? {
       USERS_TABLE_NAME           = local.foundation.users_table_name
       DELETION_LEDGER_TABLE_NAME = local.foundation.deletion_ledger_table_name
       PARTICIPATION_ITEM_SK      = "CAMPAIGN_PARTICIPATION"

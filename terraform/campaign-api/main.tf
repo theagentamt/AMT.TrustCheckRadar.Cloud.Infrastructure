@@ -164,6 +164,18 @@ data "aws_iam_policy_document" "lambda_assume" {
   }
 }
 
+resource "random_password" "pagination_token" {
+  count = local.enabled ? 1 : 0
+
+  length  = 64
+  special = false
+
+  keepers = {
+    environment    = var.environment
+    schema_version = "1"
+  }
+}
+
 resource "aws_cognito_user_group" "campaign_reviewer" {
   count = var.campaign_review_api_enabled ? 1 : 0
 
@@ -301,6 +313,7 @@ resource "aws_lambda_function" "trends" {
       MIN_CONTRIBUTOR_COUNT     = "10"
       MAXIMUM_PAGE_SIZE         = tostring(var.maximum_page_size)
       PAGINATION_TOKEN_TTL_SECS = tostring(var.pagination_token_ttl_seconds)
+      PAGINATION_TOKEN_SECRET   = random_password.pagination_token[0].result
       PUBLIC_COUNT_BANDS        = "10-24,25-49,50-99,100-249,250+"
     }
   }

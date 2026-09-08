@@ -55,6 +55,7 @@ run "disabled_environment_creates_no_routes" {
     condition = (
       length(aws_lambda_function.trends) == 0 &&
       length(aws_lambda_function.review) == 0 &&
+      length(random_password.pagination_token) == 0 &&
       length(aws_apigatewayv2_route.trends) == 0 &&
       length(aws_apigatewayv2_route.review) == 0
     )
@@ -142,5 +143,14 @@ run "enabled_dev_uses_existing_authenticated_api" {
   assert {
     condition     = aws_lambda_function.trends[0].reserved_concurrent_executions <= 10
     error_message = "Campaign API concurrency must remain bounded."
+  }
+
+  assert {
+    condition = (
+      length(random_password.pagination_token) == 1 &&
+      random_password.pagination_token[0].length == 64 &&
+      random_password.pagination_token[0].special == false
+    )
+    error_message = "Campaign pagination must use a 64-character generated environment-scoped signing secret."
   }
 }

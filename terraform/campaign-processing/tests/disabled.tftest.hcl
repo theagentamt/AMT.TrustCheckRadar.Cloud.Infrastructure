@@ -125,6 +125,11 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
   }
 
   assert {
+    condition     = aws_lambda_function.worker["publisher"].environment[0].variables["USERS_TABLE_NAME"] == "users"
+    error_message = "The publisher must receive the authoritative participation table contract."
+  }
+
+  assert {
     condition = (
       aws_lambda_function.worker["deletion"].environment[0].variables["USERS_TABLE_NAME"] == "users" &&
       aws_lambda_function.worker["deletion"].environment[0].variables["DELETION_LEDGER_TABLE_NAME"] == "deletion-ledger" &&
