@@ -133,3 +133,76 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
     error_message = "The deletion bridge must be able to complete participation status and its ledger command."
   }
 }
+
+run "active_dev_enables_every_event_source_and_schedule" {
+  command = plan
+
+  variables {
+    aws_region                  = "us-east-1"
+    project_name                = "trustcheckradar"
+    environment                 = "dev"
+    state_bucket_name           = "terraform-state-example"
+    state_bucket_region         = "us-east-1"
+    campaign_processing_enabled = true
+    kill_switch_enabled         = false
+    artifact_release            = "2026.09.08-1"
+    log_retention_days          = 14
+  }
+
+  override_data {
+    target = data.terraform_remote_state.foundation
+    values = {
+      outputs = {
+        downstream_contract = {
+          schema_version             = 1
+          artifact_bucket_name       = "artifact-example"
+          deletion_ledger_stream_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/deletion-ledger/stream/1"
+          deletion_ledger_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/deletion-ledger"
+          deletion_ledger_table_name = "deletion-ledger"
+          users_table_arn            = "arn:aws:dynamodb:us-east-1:107827791950:table/users"
+          users_table_name           = "users"
+        }
+      }
+    }
+  }
+
+  override_data {
+    target = data.terraform_remote_state.campaign_data[0]
+    values = {
+      outputs = {
+        downstream_contract = {
+          schema_version          = 1
+          environment             = "dev"
+          enabled                 = true
+          outbox_table_name       = "campaign-outbox"
+          outbox_stream_arn       = "arn:aws:dynamodb:us-east-1:107827791950:table/campaign-outbox/stream/1"
+          pipeline_table_name     = "campaign-pipeline"
+          pipeline_table_arn      = "arn:aws:dynamodb:us-east-1:107827791950:table/campaign-pipeline"
+          expiration_index_name   = "ExpirationIndex"
+          intelligence_table_name = "campaign-intelligence"
+          intelligence_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/campaign-intelligence"
+          cluster_queue_url       = "https://sqs.us-east-1.amazonaws.com/107827791950/campaign-cluster"
+          cluster_queue_arn       = "arn:aws:sqs:us-east-1:107827791950:campaign-cluster"
+          cluster_dlq_arn         = "arn:aws:sqs:us-east-1:107827791950:campaign-cluster-dlq"
+          transient_kms_key_arn   = "arn:aws:kms:us-east-1:107827791950:key/11111111-1111-1111-1111-111111111111"
+          persistent_kms_key_arn  = "arn:aws:kms:us-east-1:107827791950:key/22222222-2222-2222-2222-222222222222"
+          budget_alert_topic_arn  = "arn:aws:sns:us-east-1:107827791950:campaign-alerts"
+        }
+      }
+    }
+  }
+
+  assert {
+    condition = (
+      aws_lambda_event_source_mapping.publisher[0].enabled == true &&
+      aws_lambda_event_source_mapping.cluster[0].enabled == true &&
+      aws_lambda_event_source_mapping.deletion[0].enabled == true
+    )
+    error_message = "Active Dev must enable every campaign event-source mapping."
+  }
+
+  assert {
+    condition     = alltrue([for schedule in aws_scheduler_schedule.lifecycle : schedule.state == "ENABLED"])
+    error_message = "Active Dev must enable every campaign lifecycle schedule."
+  }
+}
