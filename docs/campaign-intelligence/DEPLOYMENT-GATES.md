@@ -23,16 +23,18 @@ workers, event-source mappings, and lifecycle schedules with the kill switch on;
 the second apply enabled all three mappings and all three schedules and released
 the kill switch. No feature image may be deployed or replaced.
 
-Lambda release `e0d3811ee0358cf064a5d325ad0c0d8e5b5bf7a8` was published and
-deployed to the Dev API stack on 2026-09-07. It contains the server side of the
-app-feature contract plus the campaign-participation Lambda. The JWT-protected
-`GET` and `PUT /v1/users/campaign-participation` routes are available at
-`api-dev.andmorethings.net`; unauthenticated smoke requests return `401` as
-expected. Authenticated participation, quota, publication, withdrawal, and
-deletion smoke tests remain pending an app or test-user JWT. Before activation,
-the complete Lambda suite, campaign evidence gate, Terraform contracts, package
-integrity checks, and staged infrastructure plans passed. The product owner
-authorized Dev activation with that remaining app-level validation recorded.
+Lambda release `e7b9e84211406cc6e1587f86ac0bd0a67af4d3c2` was published and
+deployed to every enabled Dev campaign Lambda on 2026-09-08. It contains the
+canonical contract package, server-side app-feature validation, participation
+revalidation at publication time, signed trend pagination, and explicit indexed
+expiration for transient pipeline records. The JWT-protected campaign
+participation, trends, and review routes are available at
+`api-dev.andmorethings.net`; post-deployment unauthenticated smoke requests return
+`401` as expected. Authenticated participation, quota, publication, withdrawal,
+and deletion smoke tests remain pending an app or test-user JWT. The complete
+Lambda suite, campaign evidence gate, Terraform contracts, package integrity
+checks, infrastructure CI, and Dev apply passed. The product owner authorized Dev
+activation with that remaining app-level validation recorded.
 
 UAT and Production remain disabled. CI continues to exercise disabled,
 kill-switched, and active configurations.
