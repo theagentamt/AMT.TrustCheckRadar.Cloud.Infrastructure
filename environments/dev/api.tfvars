@@ -2,7 +2,7 @@ aws_region   = "us-east-1"
 project_name = "trustcheckradar"
 environment  = "dev"
 
-campaign_intelligence_enabled = false
+campaign_intelligence_enabled = true
 
 campaign_participation_notice_version          = "2026-09-07"
 campaign_participation_policy_version          = "policy-1"
