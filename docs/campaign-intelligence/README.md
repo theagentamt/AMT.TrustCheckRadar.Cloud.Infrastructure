@@ -4,7 +4,7 @@ This directory contains the proposed AWS architecture package for
 `SECUR4ALL-202`. It defines the infrastructure boundary that must be approved
 before `SECUR4ALL-203` provisions resources.
 
-Status: **Dev data plane and campaign APIs deployed; app-feature contract pending**
+Status: **Dev campaign pipeline active; authenticated app validation pending**
 
 The approved Dev deployment is limited to the resources recorded below. This
 document does not authorize worker activation or promotion to UAT or Production;
@@ -37,9 +37,9 @@ those actions remain subject to the deployment gates.
 
 The `campaign-data`, `campaign-processing`, and `campaign-api` Terraform stacks
 are implemented with environment gates and native contract tests. Dev data
-resources and the authenticated review/trend APIs are deployed. Dev source
-publishing and processing remain disabled, the processing kill switch is on, and
-UAT and Production remain disabled.
+resources, source publishing, background workers, lifecycle schedules, and the
+authenticated review/trend APIs are active. The processing kill switch is off in
+Dev; UAT and Production remain disabled.
 
 The server-side feature-extractor image is retired by product decision. Campaign
 processing now requires app-produced, versioned features to pass through the

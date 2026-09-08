@@ -17,9 +17,11 @@ authenticated review and trend routes are available through
 The campaign budget email subscription for `support@andmorethings.com` is
 confirmed.
 
-Campaign source publishing and all background workers remain disabled. The
-processing kill switch remains enabled and AWS has no campaign event-source
-mappings or lifecycle schedules. No feature image may be deployed or replaced.
+Campaign source publishing and all four background workers were activated in
+Dev on 2026-09-08 after a staged deployment. The first apply provisioned the
+workers, event-source mappings, and lifecycle schedules with the kill switch on;
+the second apply enabled all three mappings and all three schedules and released
+the kill switch. No feature image may be deployed or replaced.
 
 Lambda release `e0d3811ee0358cf064a5d325ad0c0d8e5b5bf7a8` was published and
 deployed to the Dev API stack on 2026-09-07. It contains the server side of the
@@ -27,12 +29,13 @@ app-feature contract plus the campaign-participation Lambda. The JWT-protected
 `GET` and `PUT /v1/users/campaign-participation` routes are available at
 `api-dev.andmorethings.net`; unauthenticated smoke requests return `401` as
 expected. Authenticated participation, quota, publication, withdrawal, and
-deletion smoke tests remain pending an app or test-user JWT. The campaign worker
-artifacts are published, but their resources remain gated off as described
-above.
+deletion smoke tests remain pending an app or test-user JWT. Before activation,
+the complete Lambda suite, campaign evidence gate, Terraform contracts, package
+integrity checks, and staged infrastructure plans passed. The product owner
+authorized Dev activation with that remaining app-level validation recorded.
 
-UAT and Production remain disabled. CI continues to exercise both disabled
-configurations and mocked enabled configurations.
+UAT and Production remain disabled. CI continues to exercise disabled,
+kill-switched, and active configurations.
 
 ## Dev Activation Inputs
 
