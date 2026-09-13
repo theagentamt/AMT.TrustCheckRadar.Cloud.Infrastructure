@@ -42,6 +42,25 @@ override_data {
   }
 }
 
+run "analysis_can_query_device_bindings_indexes" {
+  command = plan
+
+  # Inspect configured statements: the mock provider replaces the rendered JSON.
+  assert {
+    condition = length([
+      for statement in data.aws_iam_policy_document.analysis_runtime.statement : statement
+      if statement.sid == "DeviceBindingsReadOnly" &&
+      statement.effect == "Allow" &&
+      toset(statement.actions) == toset(["dynamodb:GetItem", "dynamodb:Query"]) &&
+      toset(statement.resources) == toset([
+        "arn:aws:dynamodb:us-east-1:107827791950:table/device-bindings",
+        "arn:aws:dynamodb:us-east-1:107827791950:table/device-bindings/index/*",
+      ])
+    ]) == 1
+    error_message = "The conversation-analysis runtime policy must allow GetItem and Query on its device-bindings table and indexes (including GSI1), without broader actions or resources."
+  }
+}
+
 run "disabled_analysis_has_no_campaign_access" {
   command = plan
 

@@ -369,7 +369,8 @@ data "aws_iam_policy_document" "analysis_runtime" {
     sid    = "DeviceBindingsReadOnly"
     effect = "Allow"
     actions = [
-      "dynamodb:GetItem"
+      "dynamodb:GetItem",
+      "dynamodb:Query"
     ]
 
     resources = [
