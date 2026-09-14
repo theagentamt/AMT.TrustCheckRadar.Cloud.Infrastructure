@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "Usage: $0 <init|plan|apply|output> <dev|uat|prod> <foundation|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows> [artifact-release]" >&2
+  echo "Usage: $0 <init|plan|apply|output> <dev|uat|prod> <foundation|history-data|history-processing|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows> [artifact-release]" >&2
   exit 2
 }
 
@@ -24,7 +24,7 @@ case "$environment" in
 esac
 
 case "$stack" in
-  foundation|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows) ;;
+  foundation|history-data|history-processing|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows) ;;
   *) usage ;;
 esac
 
@@ -36,6 +36,7 @@ var_file="../../environments/$environment/$stack.tfvars"
 
 export TF_VAR_state_bucket_name="$TF_STATE_BUCKET"
 export TF_VAR_state_bucket_region="$aws_region"
+export TF_VAR_state_key_prefix="$state_key_prefix"
 
 if [[ ("$stack" == "api" || "$stack" == "identity-workflows") && ("$operation" == "plan" || "$operation" == "apply") ]]; then
   : "${artifact_release:?Pass an artifact release or set ARTIFACT_RELEASE}"

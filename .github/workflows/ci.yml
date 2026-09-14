@@ -58,6 +58,20 @@ jobs:
           terraform validate
           terraform test
 
+      - name: Validate History data
+        working-directory: terraform/history-data
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
+      - name: Validate History processing
+        working-directory: terraform/history-processing
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
       - name: Validate campaign processing
         working-directory: terraform/campaign-processing
         run: |
@@ -94,3 +108,6 @@ jobs:
 
       - name: Check campaign infrastructure guardrails
         run: scripts/check_campaign_guardrails.sh
+
+      - name: Test Terraform helper routing without AWS
+        run: python3 -m unittest discover -s scripts/tests -p 'test_*.py'

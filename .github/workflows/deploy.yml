@@ -22,7 +22,7 @@ on:
         required: false
         type: string
       deployment_scope:
-        description: Deploy only the foundation or the complete environment
+        description: Select the complete environment or an isolated stack
         required: true
         default: all
         type: choice
@@ -30,6 +30,8 @@ on:
           - all
           - foundation
           - campaign-data
+          - history-data
+          - history-processing
       execution_mode:
         description: Generate plans only or apply them
         required: true
@@ -64,6 +66,7 @@ jobs:
       TF_INPUT: "false"
       TF_VAR_state_bucket_name: ${{ vars.TF_STATE_BUCKET }}
       TF_VAR_state_bucket_region: ${{ vars.AWS_REGION }}
+      TF_VAR_state_key_prefix: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
       TF_VAR_artifact_release: ${{ github.event_name == 'workflow_dispatch' && inputs.artifact_release || vars.ARTIFACT_RELEASE }}
       TF_VAR_budget_notification_emails: ${{ vars.CAMPAIGN_BUDGET_NOTIFICATION_EMAILS || '[]' }}
 
@@ -115,6 +118,40 @@ jobs:
       - name: Apply foundation
         if: env.EXECUTION_MODE == 'apply'
         run: terraform -chdir=terraform/foundation apply -auto-approve foundation.tfplan
+
+      - name: Plan History data
+        if: env.DEPLOY_SCOPE == 'all' || env.DEPLOY_SCOPE == 'history-data'
+        run: |
+          terraform -chdir=terraform/history-data init -reconfigure \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=$STATE_KEY_PREFIX/$DEPLOY_ENV/history-data.tfstate" \
+            -backend-config="region=$TF_VAR_state_bucket_region" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+          terraform -chdir=terraform/history-data plan \
+            -var-file="../../environments/$DEPLOY_ENV/history-data.tfvars" \
+            -out=history-data.tfplan
+
+      - name: Apply History data
+        if: (env.DEPLOY_SCOPE == 'all' || env.DEPLOY_SCOPE == 'history-data') && env.EXECUTION_MODE == 'apply'
+        run: terraform -chdir=terraform/history-data apply -auto-approve history-data.tfplan
+
+      - name: Plan History processing
+        if: env.DEPLOY_SCOPE == 'all' || env.DEPLOY_SCOPE == 'history-processing'
+        run: |
+          terraform -chdir=terraform/history-processing init -reconfigure \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=$STATE_KEY_PREFIX/$DEPLOY_ENV/history-processing.tfstate" \
+            -backend-config="region=$TF_VAR_state_bucket_region" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+          terraform -chdir=terraform/history-processing plan \
+            -var-file="../../environments/$DEPLOY_ENV/history-processing.tfvars" \
+            -out=history-processing.tfplan
+
+      - name: Apply History processing
+        if: (env.DEPLOY_SCOPE == 'all' || env.DEPLOY_SCOPE == 'history-processing') && env.EXECUTION_MODE == 'apply'
+        run: terraform -chdir=terraform/history-processing apply -auto-approve history-processing.tfplan
 
       - name: Plan campaign data
         if: env.DEPLOY_SCOPE == 'all' || env.DEPLOY_SCOPE == 'campaign-data'
