@@ -40,6 +40,22 @@ override_data {
     device_bindings_table_arn         = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-bindings"
     web_risk_cache_table_name         = "web-risk-cache"
     web_risk_cache_table_arn          = "arn:aws:dynamodb:us-east-1:107827791950:table/web-risk-cache"
+    device_recovery_control = {
+      schema_version = 1
+      enabled        = true
+      environment    = "dev"
+      table_name     = "trustcheckradar-dev-device-recovery-control"
+      table_arn      = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-recovery-control"
+      ttl_attribute  = "expiresAt"
+      policy = {
+        approved               = true
+        approval_reference     = "synthetic-test-not-user-approval"
+        audit_retention_days   = 90
+        receipt_retention_days = 7
+        rate_retention_hours   = 24
+        pitr_days              = 7
+      }
+    }
   } } }
 }
 
@@ -108,7 +124,7 @@ run "account_data_permissions_scope_device_cleanup_and_reconciliation" {
   assert {
     condition = alltrue([for statement in data.aws_iam_policy_document.account_data[0].statement :
       (!contains(statement.actions, "dynamodb:Scan") || (statement.sid == "ReconcileMissedRevocations" && statement.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]))) &&
-      (!contains(statement.actions, "dynamodb:DeleteItem") || contains(["EraseFencedUserDeviceBindings", "ReadCommandAndWriteRevocationReceipt"], statement.sid)) &&
+      (!contains(statement.actions, "dynamodb:DeleteItem") || contains(["EraseFencedUserDeviceBindings", "ReadCommandAndWriteRevocationReceipt", "MinimizeFencedUserRecoveryEvidence"], statement.sid)) &&
       !contains(statement.actions, "cognito-idp:AdminDeleteUser") && !contains(statement.actions, "*")
       ]) && (
       one([for statement in data.aws_iam_policy_document.account_data[0].statement : statement if statement.sid == "RevokeSessionsInOwnPool"]).resources == toset(["arn:aws:cognito-idp:us-east-1:107827791950:userpool/us-east-1_example"]) &&
@@ -137,6 +153,27 @@ run "account_reconciliation_remains_disabled_and_bounded" {
       one([for statement in data.aws_iam_policy_document.account_data[0].statement : statement if statement.sid == "EraseFencedUserDeviceBindings"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-bindings"])
     )
     error_message = "Reconciliation must stay disabled, bounded, and limited to its own device table and deletion ledger."
+  }
+}
+
+run "recovery_cleanup_has_exact_scope_and_approved_retention" {
+  command = plan
+  assert {
+    condition = (
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "MinimizeFencedUserRecoveryEvidence"]).actions == toset(["dynamodb:Query", "dynamodb:PutItem", "dynamodb:DeleteItem"]) &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "MinimizeFencedUserRecoveryEvidence"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-recovery-control"]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "MinimizeFencedUserRecoveryEvidence"]).condition :
+        c.test == "ForAllValues:StringLike" && c.variable == "dynamodb:LeadingKeys" && toset(c.values) == toset(["USER#*"])
+      ]) &&
+      aws_lambda_function.account_data[0].environment[0].variables["DEVICE_RECOVERY_CONTROL_TABLE_NAME"] == "trustcheckradar-dev-device-recovery-control" &&
+      aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_RECOVERY_DELETE_PAGE_SIZE"] == "100" &&
+      aws_lambda_function.account_data[0].environment[0].variables["DEVICE_RECOVERY_RECEIPT_RETENTION_DAYS"] == "7" &&
+      aws_lambda_function.account_data[0].environment[0].variables["DEVICE_RECOVERY_AUDIT_RETENTION_DAYS"] == "90" &&
+      aws_lambda_function.account_data[0].environment[0].variables["DEVICE_RECOVERY_RATE_STATE_TTL_SECONDS"] == "86400" &&
+      aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_RECEIPT_RETENTION_DAYS"] == "120" &&
+      aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_ENABLED"] == "false"
+    )
+    error_message = "Recovery cleanup needs bounded USER-partition access and approved retention without activating deletion."
   }
 }
 
@@ -199,4 +236,11 @@ run "another_environment_cannot_use_dev_account_data" {
     }
   }
   expect_failures = [aws_lambda_function.account_data]
+  assert {
+    condition = (
+      aws_lambda_function.account_data[0].environment[0].variables["DEVICE_RECOVERY_CONTROL_TABLE_NAME"] == "" &&
+      alltrue([for s in data.aws_iam_policy_document.account_data[0].statement : s.sid != "MinimizeFencedUserRecoveryEvidence"])
+    )
+    error_message = "Invalid recovery storage must not supply a table name or cleanup IAM grant."
+  }
 }

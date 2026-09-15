@@ -8,6 +8,10 @@ Prepared infrastructure was committed as `297b654` on
 [ACCOUNT-DATA-INVENTORY.md](ACCOUNT-DATA-INVENTORY.md). No main merge or
 deployment is authorized by the follow-up instruction to commit and continue.
 
+Latest reviewed recovery-cleanup source publication and infrastructure inputs:
+[RECOVERY-CLEANUP-SOURCE-HANDOFF.md](RECOVERY-CLEANUP-SOURCE-HANDOFF.md).
+This supersedes the earlier recovery component gap, not overall completion.
+
 ## Ownership
 
 Infrastructure changes belong to this repository. Application behavior, request
@@ -140,7 +144,7 @@ mobile change has been performed in this orchestration work.
 
 ## Local Verification
 
-73 mocked Terraform tests pass cumulatively across the continued preparation: API 36,
+74 mocked Terraform tests pass cumulatively across the continued preparation: API 37,
 identity-workflows 5, History-processing 19, foundation 5, campaign-processing 4
 and focused bootstrap/access 4. The 12 helper-script tests also pass.
 All affected Terraform roots validate; recursive formatting and whitespace

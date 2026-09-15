@@ -59,9 +59,10 @@ locals {
     local.recovery_storage.table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-device-recovery-control" &&
     local.recovery_storage.ttl_attribute == "expiresAt" &&
     local.recovery_storage.policy.approved && length(trimspace(local.recovery_storage.policy.approval_reference)) > 0 &&
-    contains([30, 90], local.recovery_storage.policy.audit_retention_days) &&
+    local.recovery_storage.policy.audit_retention_days == 90 &&
     local.recovery_storage.policy.receipt_retention_days == 7 &&
-    local.recovery_storage.policy.rate_retention_hours == 24,
+    local.recovery_storage.policy.rate_retention_hours == 24 &&
+    local.recovery_storage.policy.pitr_days == 7,
     false
   )
   device_identity_env = var.device_recovery_deployment == null ? {} : {

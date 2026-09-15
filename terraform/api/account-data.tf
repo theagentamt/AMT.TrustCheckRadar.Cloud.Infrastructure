@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "account_data" {
     }
   }
   # IAM LeadingKeys constrains PK, not SK. The reviewed handler must enforce
-  # ACCOUNT_DELETION commands and SESSION_REVOCATION-only receipt writes.
+  # Fixed ACCOUNT_DELETION commands and the reviewed component/progress keys.
   statement {
     sid       = "ReadCommandAndWriteRevocationReceipt"
     actions   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem"]
@@ -83,6 +83,19 @@ data "aws_iam_policy_document" "account_data" {
     sid       = "ReconcileMissedRevocations"
     actions   = ["dynamodb:Scan"]
     resources = [local.deletion_ledger_table_arn]
+  }
+  dynamic "statement" {
+    for_each = local.recovery_storage_valid ? [1] : []
+    content {
+      sid       = "MinimizeFencedUserRecoveryEvidence"
+      actions   = ["dynamodb:Query", "dynamodb:PutItem", "dynamodb:DeleteItem"]
+      resources = [local.recovery_storage.table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+    }
   }
   statement {
     sid       = "PersistOwnReconciliationCheckpoint"
@@ -138,6 +151,12 @@ resource "aws_lambda_function" "account_data" {
       USERS_TABLE_NAME                           = local.users_table_name
       DELETION_LEDGER_TABLE_NAME                 = local.deletion_ledger_table_name
       DEVICE_BINDINGS_TABLE_NAME                 = local.device_bindings_table_name
+      DEVICE_RECOVERY_CONTROL_TABLE_NAME         = local.recovery_storage_valid ? local.recovery_storage.table_name : ""
+      ACCOUNT_DELETION_RECOVERY_DELETE_PAGE_SIZE = "100"
+      DEVICE_RECOVERY_RECEIPT_RETENTION_DAYS     = "7"
+      DEVICE_RECOVERY_AUDIT_RETENTION_DAYS       = "90"
+      DEVICE_RECOVERY_RATE_STATE_TTL_SECONDS     = "86400"
+      ACCOUNT_DELETION_RECEIPT_RETENTION_DAYS    = "120"
       COGNITO_ISSUER                             = local.jwt_issuer
       COGNITO_APP_CLIENT_ID                      = local.cognito_app_client_id
       COGNITO_USER_POOL_ID                       = local.cognito_user_pool_id
