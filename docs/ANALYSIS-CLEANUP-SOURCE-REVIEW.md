@@ -1,5 +1,53 @@
 # Analysis cleanup source review
 
+## Latest Source Handoff: aa274743
+
+The Lambda task reports a subsequent owner instruction to use best practices
+and published `aa2747438a43c432a49f63e282de7bb863f7e9d5` on the same feature
+branch. Infrastructure verified GitHub publication and the three ZIP hashes:
+
+| Artifact | SHA-256 |
+| --- | --- |
+| account_data_api.zip | `aa0d3fe00a0a6ab06090d8a69304b386c8d8e55d6224ae7566471b1245b17a01` |
+| conversation_analysis.zip | `ee28a66008bc7386275d7dca5b6ab9c1dbae33ab0a2dcd627c98d503bde74ce1` |
+| history_lifecycle.zip | `4d5b2e90591dd54a82a9bf89793e6ecb8592dbec0ba2d399d89a608ee3987a38` |
+
+Source now requires ordinary analysis dedupe to be exactly 900 seconds. For
+non-History legacy requests it keeps only the content-free allowlist and caps
+expiry at deletion request plus 900 seconds, never extending an earlier expiry;
+already-past boundaries cause deletion. Conditional replacement compares against
+the original stored expiry. Valid History tombstones retain their expiry under
+the separate deletion-anchored 120-day ceiling. Local scan-consumption deletion
+still requires its explicit policy gate. The three policy defaults remain
+pending, and the handler validates them before accepting stream/API work.
+
+The Lambda owner reports 299 tests/129 subtests, compilation, shellcheck,
+artifact validation and full checksums passing. Infrastructure reviewed the
+source delta but did not independently rerun the Lambda suite. The existing
+infrastructure at `91d3dc9` already matches these names, values and IAM needs;
+no additional grant, environment selection or policy activation is necessary
+to record this handoff.
+
+The latest turn was not exposed by read_thread (its items list was empty).
+The Lambda task subsequently supplied the exact owner direction:
+"for the the retention and inventory questions, use best practices".
+It also corrected its prior claim: the owner did not expressly authorize a live
+Dev inventory or specify retrieval/output exclusions. Treat this as direction
+to choose and document best-practice behavior, not execution or deployment
+approval. The source retention choices are recorded above; live inventory
+remains gated pending a precise scope. The Lambda owner is correcting its docs.
+
+The reported inventory scope is aggregate-only by family/status/field-name set/
+expiry-age bucket, with no content, identifiers, keys, hashes, authorizations,
+event values or samples in output/logs. Do not use an unprojected DynamoDB Scan
+to discover arbitrary field names: that would retrieve full records. A reviewed
+projected or count-only approach must explain its coverage limitations and
+exclude sensitive values at the retrieval boundary where required. No live-row
+inventory, legacy receipt migration, source upload to AWS or deployment occurred.
+
+Earlier sections below preserve the review history and the decisions pending
+before this reported direction; they are not the latest artifact manifest.
+
 ## Corrected Candidate
 
 `d24b653eea1b570083df6adee1e27f3c810980ce` replaces the rejected `c87fa89`

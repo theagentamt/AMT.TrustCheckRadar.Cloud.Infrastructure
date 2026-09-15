@@ -14,8 +14,10 @@ This supersedes the earlier recovery component gap, not overall completion.
 
 The subsequent published analysis-cleanup candidate was corrected after review:
 [ANALYSIS-CLEANUP-SOURCE-REVIEW.md](ANALYSIS-CLEANUP-SOURCE-REVIEW.md).
-Use corrected source `d24b653`, never rejected `c87fa89`. Three analysis policy
-decisions and live legacy inventory remain pending; no rollout is approved.
+The latest source is `aa274743`, following the owner's direction to use best
+practices; never select rejected `c87fa89`. Exact retention choices and the
+remaining live-inventory authorization are recorded in the linked review.
+All three runtime policy gates remain pending; no rollout is approved.
 
 ## Ownership
 
