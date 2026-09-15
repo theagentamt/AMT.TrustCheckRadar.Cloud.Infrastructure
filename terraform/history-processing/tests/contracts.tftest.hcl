@@ -161,6 +161,15 @@ run "account_deletion_candidate_is_disabled_scoped_and_filtered" {
     ]) == 1
     error_message = "The lifecycle worker must persist a component receipt without overall-command update permission."
   }
+  assert {
+    condition = anytrue([for statement in data.aws_iam_policy_document.runtime[0].statement :
+      statement.sid == "ReplayContentErasure" &&
+      toset(statement.actions) == toset(["dynamodb:Query", "dynamodb:UpdateItem", "dynamodb:PutItem"]) &&
+      toset(statement.resources) == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control"]) &&
+      anytrue([for c in statement.condition : c.test == "ForAllValues:StringLike" && c.variable == "dynamodb:LeadingKeys" && toset(c.values) == toset(["ANALYSIS#REQUEST#*"])])
+    ])
+    error_message = "Paired account cleanup requires exact request-family replacement permission, not access to other abuse records."
+  }
 }
 
 run "account_deletion_cannot_activate_without_cleanup" {

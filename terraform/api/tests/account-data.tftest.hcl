@@ -32,8 +32,8 @@ override_data {
     deletion_ledger_table_name        = "trustcheckradar-dev-deletion-ledger"
     deletion_ledger_table_arn         = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
     deletion_ledger_stream_arn        = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-14T00:00:00.000"
-    analysis_abuse_control_table_name = "analysis-abuse"
-    analysis_abuse_control_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/analysis-abuse"
+    analysis_abuse_control_table_name = "trustcheckradar-dev-analysis-abuse-control"
+    analysis_abuse_control_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control"
     purchase_entitlements_table_name  = "entitlements"
     purchase_entitlements_table_arn   = "arn:aws:dynamodb:us-east-1:107827791950:table/entitlements"
     device_bindings_table_name        = "trustcheckradar-dev-device-bindings"
@@ -124,7 +124,7 @@ run "account_data_permissions_scope_device_cleanup_and_reconciliation" {
   assert {
     condition = alltrue([for statement in data.aws_iam_policy_document.account_data[0].statement :
       (!contains(statement.actions, "dynamodb:Scan") || (statement.sid == "ReconcileMissedRevocations" && statement.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]))) &&
-      (!contains(statement.actions, "dynamodb:DeleteItem") || contains(["EraseFencedUserDeviceBindings", "ReadCommandAndWriteRevocationReceipt", "MinimizeFencedUserRecoveryEvidence"], statement.sid)) &&
+      (!contains(statement.actions, "dynamodb:DeleteItem") || contains(["EraseFencedUserDeviceBindings", "ReadCommandAndWriteRevocationReceipt", "MinimizeFencedUserRecoveryEvidence", "EnumerateAndEraseFencedAnalysisState"], statement.sid)) &&
       !contains(statement.actions, "cognito-idp:AdminDeleteUser") && !contains(statement.actions, "*")
       ]) && (
       one([for statement in data.aws_iam_policy_document.account_data[0].statement : statement if statement.sid == "RevokeSessionsInOwnPool"]).resources == toset(["arn:aws:cognito-idp:us-east-1:107827791950:userpool/us-east-1_example"]) &&
@@ -174,6 +174,33 @@ run "recovery_cleanup_has_exact_scope_and_approved_retention" {
       aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_ENABLED"] == "false"
     )
     error_message = "Recovery cleanup needs bounded USER-partition access and approved retention without activating deletion."
+  }
+}
+
+run "analysis_cleanup_permissions_and_policy_gates_are_separate" {
+  command = plan
+  assert {
+    condition = (
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "EnumerateAndEraseFencedAnalysisState"]).actions == toset(["dynamodb:Query", "dynamodb:DeleteItem"]) &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "MinimizeAnalysisRequestContent"]).actions == toset(["dynamodb:PutItem"]) &&
+      alltrue([for s in data.aws_iam_policy_document.account_data[0].statement :
+        !contains(["EnumerateAndEraseFencedAnalysisState", "MinimizeAnalysisRequestContent"], s.sid) ? true :
+        s.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control"]) &&
+        anytrue([for c in s.condition :
+          c.test == "ForAllValues:StringLike" && c.variable == "dynamodb:LeadingKeys" &&
+          toset(c.values) == (s.sid == "MinimizeAnalysisRequestContent" ? toset(["ANALYSIS#REQUEST#*"]) : toset(["ANALYSIS#REQUEST#*", "ANALYSIS#RATE#*", "ANALYSIS#SCAN_RATE#*", "ANALYSIS#CONSUMPTION#*"]))
+        ])
+      ]) &&
+      aws_lambda_function.account_data[0].environment[0].variables["ANALYSIS_ABUSE_TABLE_NAME"] == "trustcheckradar-dev-analysis-abuse-control" &&
+      aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_ANALYSIS_ABUSE_PAGE_SIZE"] == "100" &&
+      aws_lambda_function.account_data[0].environment[0].variables["ANALYSIS_REQUEST_ID_TTL_SECONDS"] == "900" &&
+      aws_lambda_function.account_data[0].environment[0].variables["HISTORY_DEDUP_RETENTION_DAYS"] == "120" &&
+      alltrue([for key in ["ANALYSIS_REQUEST_DEDUPE_POLICY_STATUS", "ANALYSIS_LEGACY_REQUEST_RETENTION_POLICY_STATUS", "ANALYSIS_CONSUMPTION_DELETION_POLICY_STATUS"] :
+        aws_lambda_function.account_data[0].environment[0].variables[key] == "pending"
+      ]) &&
+      aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_ENABLED"] == "false"
+    )
+    error_message = "Analysis cleanup needs exact family-scoped IAM while independent unapproved policies remain pending."
   }
 }
 

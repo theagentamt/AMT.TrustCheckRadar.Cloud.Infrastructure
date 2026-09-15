@@ -12,10 +12,10 @@ Latest reviewed recovery-cleanup source publication and infrastructure inputs:
 [RECOVERY-CLEANUP-SOURCE-HANDOFF.md](RECOVERY-CLEANUP-SOURCE-HANDOFF.md).
 This supersedes the earlier recovery component gap, not overall completion.
 
-The subsequent published analysis-cleanup candidate is blocked by source review:
+The subsequent published analysis-cleanup candidate was corrected after review:
 [ANALYSIS-CLEANUP-SOURCE-REVIEW.md](ANALYSIS-CLEANUP-SOURCE-REVIEW.md).
-Do not select it for rollout until History marker compatibility and policy
-attribution/defaults are corrected by the Lambda owner.
+Use corrected source `d24b653`, never rejected `c87fa89`. Three analysis policy
+decisions and live legacy inventory remain pending; no rollout is approved.
 
 ## Ownership
 
@@ -149,7 +149,7 @@ mobile change has been performed in this orchestration work.
 
 ## Local Verification
 
-74 mocked Terraform tests pass cumulatively across the continued preparation: API 37,
+75 mocked Terraform tests pass cumulatively across the continued preparation: API 38,
 identity-workflows 5, History-processing 19, foundation 5, campaign-processing 4
 and focused bootstrap/access 4. The 12 helper-script tests also pass.
 All affected Terraform roots validate; recursive formatting and whitespace

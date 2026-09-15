@@ -98,6 +98,26 @@ data "aws_iam_policy_document" "account_data" {
     }
   }
   statement {
+    sid       = "EnumerateAndEraseFencedAnalysisState"
+    actions   = ["dynamodb:Query", "dynamodb:DeleteItem"]
+    resources = [local.analysis_abuse_control_table_arn]
+    condition {
+      test     = "ForAllValues:StringLike"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["ANALYSIS#REQUEST#*", "ANALYSIS#RATE#*", "ANALYSIS#SCAN_RATE#*", "ANALYSIS#CONSUMPTION#*"]
+    }
+  }
+  statement {
+    sid       = "MinimizeAnalysisRequestContent"
+    actions   = ["dynamodb:PutItem"]
+    resources = [local.analysis_abuse_control_table_arn]
+    condition {
+      test     = "ForAllValues:StringLike"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["ANALYSIS#REQUEST#*"]
+    }
+  }
+  statement {
     sid       = "PersistOwnReconciliationCheckpoint"
     actions   = ["dynamodb:GetItem", "dynamodb:PutItem"]
     resources = [local.deletion_ledger_table_arn]
@@ -147,31 +167,38 @@ resource "aws_lambda_function" "account_data" {
   source_code_hash               = var.account_data_deployment.source_hash
   environment {
     variables = {
-      APP_ENVIRONMENT                            = var.environment
-      USERS_TABLE_NAME                           = local.users_table_name
-      DELETION_LEDGER_TABLE_NAME                 = local.deletion_ledger_table_name
-      DEVICE_BINDINGS_TABLE_NAME                 = local.device_bindings_table_name
-      DEVICE_RECOVERY_CONTROL_TABLE_NAME         = local.recovery_storage_valid ? local.recovery_storage.table_name : ""
-      ACCOUNT_DELETION_RECOVERY_DELETE_PAGE_SIZE = "100"
-      DEVICE_RECOVERY_RECEIPT_RETENTION_DAYS     = "7"
-      DEVICE_RECOVERY_AUDIT_RETENTION_DAYS       = "90"
-      DEVICE_RECOVERY_RATE_STATE_TTL_SECONDS     = "86400"
-      ACCOUNT_DELETION_RECEIPT_RETENTION_DAYS    = "120"
-      COGNITO_ISSUER                             = local.jwt_issuer
-      COGNITO_APP_CLIENT_ID                      = local.cognito_app_client_id
-      COGNITO_USER_POOL_ID                       = local.cognito_user_pool_id
-      COGNITO_REQUIRED_SCOPE                     = "aws.cognito.signin.user.admin"
-      COGNITO_USERNAME_IS_SUB                    = "false"
-      ACCOUNT_DELETION_ENABLED                   = "false"
-      ACCOUNT_DELETION_POLICY_STATUS             = "pending"
-      ACCOUNT_DELETION_COMPLETION_STATUS         = "incomplete"
-      ACCOUNT_DELETION_RECONCILIATION_SCAN_LIMIT = "100"
-      ACCOUNT_DELETION_RECONCILIATION_MAX_PAGES  = "10"
-      ACCOUNT_DELETION_DEVICE_DELETE_PAGE_SIZE   = "100"
-      ACCOUNT_DATA_INVENTORY_STATUS              = "pending"
-      ACCOUNT_DELETION_REQUIRED_COMPONENTS_JSON  = "[]"
-      ACCOUNT_DELETION_MAX_REAUTH_AGE_SECONDS    = "300"
-      ACCOUNT_DELETION_SLA_HOURS                 = "24"
+      APP_ENVIRONMENT                                 = var.environment
+      USERS_TABLE_NAME                                = local.users_table_name
+      DELETION_LEDGER_TABLE_NAME                      = local.deletion_ledger_table_name
+      DEVICE_BINDINGS_TABLE_NAME                      = local.device_bindings_table_name
+      DEVICE_RECOVERY_CONTROL_TABLE_NAME              = local.recovery_storage_valid ? local.recovery_storage.table_name : ""
+      ACCOUNT_DELETION_RECOVERY_DELETE_PAGE_SIZE      = "100"
+      DEVICE_RECOVERY_RECEIPT_RETENTION_DAYS          = "7"
+      DEVICE_RECOVERY_AUDIT_RETENTION_DAYS            = "90"
+      DEVICE_RECOVERY_RATE_STATE_TTL_SECONDS          = "86400"
+      ACCOUNT_DELETION_RECEIPT_RETENTION_DAYS         = "120"
+      ANALYSIS_ABUSE_TABLE_NAME                       = local.analysis_abuse_control_table_name
+      ACCOUNT_DELETION_ANALYSIS_ABUSE_PAGE_SIZE       = "100"
+      ANALYSIS_REQUEST_ID_TTL_SECONDS                 = "900"
+      ANALYSIS_REQUEST_DEDUPE_POLICY_STATUS           = "pending"
+      ANALYSIS_LEGACY_REQUEST_RETENTION_POLICY_STATUS = "pending"
+      ANALYSIS_CONSUMPTION_DELETION_POLICY_STATUS     = "pending"
+      HISTORY_DEDUP_RETENTION_DAYS                    = "120"
+      COGNITO_ISSUER                                  = local.jwt_issuer
+      COGNITO_APP_CLIENT_ID                           = local.cognito_app_client_id
+      COGNITO_USER_POOL_ID                            = local.cognito_user_pool_id
+      COGNITO_REQUIRED_SCOPE                          = "aws.cognito.signin.user.admin"
+      COGNITO_USERNAME_IS_SUB                         = "false"
+      ACCOUNT_DELETION_ENABLED                        = "false"
+      ACCOUNT_DELETION_POLICY_STATUS                  = "pending"
+      ACCOUNT_DELETION_COMPLETION_STATUS              = "incomplete"
+      ACCOUNT_DELETION_RECONCILIATION_SCAN_LIMIT      = "100"
+      ACCOUNT_DELETION_RECONCILIATION_MAX_PAGES       = "10"
+      ACCOUNT_DELETION_DEVICE_DELETE_PAGE_SIZE        = "100"
+      ACCOUNT_DATA_INVENTORY_STATUS                   = "pending"
+      ACCOUNT_DELETION_REQUIRED_COMPONENTS_JSON       = "[]"
+      ACCOUNT_DELETION_MAX_REAUTH_AGE_SECONDS         = "300"
+      ACCOUNT_DELETION_SLA_HOURS                      = "24"
     }
   }
   lifecycle {
@@ -180,6 +207,8 @@ resource "aws_lambda_function" "account_data" {
         local.users_table_name == "${local.name_prefix}-users" &&
         local.deletion_ledger_table_name == "${local.name_prefix}-deletion-ledger" &&
         local.device_bindings_table_name == "${local.name_prefix}-device-bindings" &&
+        local.analysis_abuse_control_table_name == "${local.name_prefix}-analysis-abuse-control" &&
+        local.analysis_abuse_control_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.analysis_abuse_control_table_name}" &&
         local.device_bindings_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.device_bindings_table_name}" &&
         local.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.users_table_name}" &&
         local.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.deletion_ledger_table_name}" &&

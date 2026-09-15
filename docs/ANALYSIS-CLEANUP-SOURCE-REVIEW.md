@@ -1,5 +1,65 @@
 # Analysis cleanup source review
 
+## Corrected Candidate
+
+`d24b653eea1b570083df6adee1e27f3c810980ce` replaces the rejected `c87fa89`
+candidate below. GitHub feature-branch publication and these local artifact
+hashes were verified; neither candidate has been selected or deployed:
+
+| Artifact | SHA-256 |
+| --- | --- |
+| account_data_api.zip | `9b10d12e9fcd72e837b7f4a7812b1df96c2a1453306a7a4f04ba2656400c6bb3` |
+| conversation_analysis.zip | `ee28a66008bc7386275d7dca5b6ab9c1dbae33ab0a2dcd627c98d503bde74ce1` |
+| history_lifecycle.zip | `4d5b2e90591dd54a82a9bf89793e6ecb8592dbec0ba2d399d89a608ee3987a38` |
+
+Source restores the ordinary request default to 900 seconds, removes the unsafe
+abuse-table fallback, and distinguishes History's approved 120-day markers.
+History account cleanup uses exact content-free conditional replacement with
+retention anchored to the deletion request, not each retry. The Lambda owner
+reports tests for both cleanup orders and 296 tests/129 subtests passing.
+Infrastructure reviewed the changed code but did not rerun the Lambda suite.
+
+Three independent gates remain pending: ANALYSIS_REQUEST_DEDUPE_POLICY_STATUS,
+ANALYSIS_LEGACY_REQUEST_RETENTION_POLICY_STATUS and
+ANALYSIS_CONSUMPTION_DELETION_POLICY_STATUS. Consumption is not queried/deleted
+while its gate is pending, and no ANALYSIS_ABUSE receipt can mark the component
+complete while a required decision is unresolved. Longer-lived unknown request
+records can be stripped of content without silently shortening their expiry;
+their policy/provenance still blocks completion. This is source behavior only.
+
+Infrastructure now prepares exact four-family Query/DeleteItem and REQUEST-only
+PutItem for the disabled account-data candidate, authoritative abuse table name,
+page size 100, prior-source ordinary TTL 900, separate History retention 120,
+and all three gates explicitly pending. Resource preconditions reject wrong
+environment/account/Region abuse tables. The ordinary analysis Lambda's deployed
+environment/default is not changed by this preparation.
+
+History runtime gains REQUEST-only PutItem only when the paired account-deletion
+candidate is selected. Existing lifecycle deployments without that candidate
+retain their old actions. No resource, artifact version or activation is selected.
+API tests: 38 passed. History-processing tests: 19 passed. Both roots validate.
+
+### Remaining Owner Decisions
+
+Recommendations, not approvals:
+
+1. Keep ordinary request retry/deduplication at the prior 900-second (15-minute)
+   source default. This is separate from History retention and is not an account
+   token lifetime or a guarantee that all retry protection expires at 15 minutes.
+2. Delete local ANALYSIS#CONSUMPTION scan-event rows on account deletion unless
+   a concrete security/charge-dispute purpose requires a separately approved
+   minimal record. This decision does not authorize deleting purchase-token
+   anti-replay records or changing usage policy for active accounts.
+3. Inventory legacy record types/expiry metadata and old component-receipt
+   schema read-only, reporting aggregate counts/expiry ranges without submitted
+   text, responses, credentials or user identifiers. Use that evidence to resolve
+   exceptional legacy retention rather than approving unknown indefinite expiry.
+
+No live-row inventory has been performed. All activation and policy gates remain
+closed. Other missing account-data components still require implementation.
+
+## Rejected Candidate Record
+
 ## Publication Is Not Release Approval
 
 Lambda feature branch `codex/sprint-7-history-badges` is published at

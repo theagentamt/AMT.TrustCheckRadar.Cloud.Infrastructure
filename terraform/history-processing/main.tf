@@ -84,7 +84,7 @@ data "aws_iam_policy_document" "runtime" {
   }
   statement {
     sid       = "ReplayContentErasure"
-    actions   = ["dynamodb:Query", "dynamodb:UpdateItem"]
+    actions   = concat(["dynamodb:Query", "dynamodb:UpdateItem"], local.account_deletion_deployed ? ["dynamodb:PutItem"] : [])
     resources = [local.foundation.analysis_abuse_control_table_arn]
     condition {
       test     = "ForAllValues:StringLike"
