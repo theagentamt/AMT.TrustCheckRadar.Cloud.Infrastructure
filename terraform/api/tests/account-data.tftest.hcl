@@ -238,7 +238,7 @@ run "another_environment_cannot_use_dev_account_data" {
   expect_failures = [aws_lambda_function.account_data]
   assert {
     condition = (
-      aws_lambda_function.account_data[0].environment[0].variables["DEVICE_RECOVERY_CONTROL_TABLE_NAME"] == "" &&
+      !local.recovery_storage_valid &&
       alltrue([for s in data.aws_iam_policy_document.account_data[0].statement : s.sid != "MinimizeFencedUserRecoveryEvidence"])
     )
     error_message = "Invalid recovery storage must not supply a table name or cleanup IAM grant."
