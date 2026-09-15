@@ -3,6 +3,11 @@
 Status: infrastructure preparation and Lambda implementation in progress.
 No changes in this document are evidence of a live deployment or activation.
 
+Prepared infrastructure was committed as `297b654` on
+`codex/history-badges-activation`. Continued inventory and policy gaps are in
+[ACCOUNT-DATA-INVENTORY.md](ACCOUNT-DATA-INVENTORY.md). No main merge or
+deployment is authorized by the follow-up instruction to commit and continue.
+
 ## Ownership
 
 Infrastructure changes belong to this repository. Application behavior, request
