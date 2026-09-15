@@ -12,6 +12,11 @@ Latest reviewed recovery-cleanup source publication and infrastructure inputs:
 [RECOVERY-CLEANUP-SOURCE-HANDOFF.md](RECOVERY-CLEANUP-SOURCE-HANDOFF.md).
 This supersedes the earlier recovery component gap, not overall completion.
 
+The subsequent published analysis-cleanup candidate is blocked by source review:
+[ANALYSIS-CLEANUP-SOURCE-REVIEW.md](ANALYSIS-CLEANUP-SOURCE-REVIEW.md).
+Do not select it for rollout until History marker compatibility and policy
+attribution/defaults are corrected by the Lambda owner.
+
 ## Ownership
 
 Infrastructure changes belong to this repository. Application behavior, request
