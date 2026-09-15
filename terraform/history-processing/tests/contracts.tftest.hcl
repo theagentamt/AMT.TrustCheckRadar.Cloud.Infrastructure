@@ -25,6 +25,9 @@ override_data {
     outputs = { downstream_contract = {
       schema_version                    = 1
       artifact_bucket_name              = "synthetic-dev-artifacts"
+      deletion_ledger_table_name        = "trustcheckradar-dev-deletion-ledger"
+      deletion_ledger_table_arn         = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+      deletion_ledger_stream_arn        = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-14T00:00:00.000"
       device_bindings_table_name        = "trustcheckradar-dev-device-bindings"
       analysis_abuse_control_table_name = "trustcheckradar-dev-analysis-abuse-control"
       analysis_abuse_control_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control"
@@ -89,11 +92,144 @@ run "disabled_creates_no_resources_or_remote_dependencies" {
       !output.lifecycle_contract.deployed && !output.lifecycle_contract.active &&
       length(data.terraform_remote_state.upstream) == 0 &&
       length(aws_lambda_function.lifecycle) == 0 && length(aws_iam_role.lifecycle) == 0 &&
+      length(aws_lambda_function.account_deletion) == 0 && length(aws_lambda_event_source_mapping.account_deletion) == 0 &&
       length(aws_cloudwatch_log_group.lifecycle) == 0 && length(aws_cloudwatch_event_rule.sweep) == 0 &&
       length(aws_cloudwatch_metric_alarm.lifecycle) == 0 && length(aws_cloudwatch_metric_alarm.function) == 0
     )
     error_message = "Disabled environments must create no paid resources, IAM, schedules or remote-state dependencies."
   }
+}
+
+run "account_deletion_candidate_is_disabled_scoped_and_filtered" {
+  command = apply
+  variables {
+    lifecycle_deployment_enabled = true
+    account_deletion_artifact = {
+      release_id = "synthetic-test-only", object_version = "bridge-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  assert {
+    condition = (
+      !aws_lambda_event_source_mapping.account_deletion[0].enabled &&
+      aws_cloudwatch_event_rule.account_deletion_reconcile[0].state == "DISABLED" &&
+      jsondecode(aws_cloudwatch_event_target.account_deletion_reconcile[0].input) == { schemaVersion = 1, operation = "reconcile" } &&
+      aws_lambda_function.account_deletion[0].environment[0].variables.HISTORY_ACCOUNT_DELETION_RECONCILIATION_SCAN_LIMIT == "100" &&
+      aws_lambda_function.account_deletion[0].environment[0].variables.HISTORY_ACCOUNT_DELETION_RECONCILIATION_MAX_PAGES == "10" &&
+      aws_lambda_event_source_mapping.account_deletion[0].starting_position == "TRIM_HORIZON" &&
+      aws_lambda_function.account_deletion[0].environment[0].variables.HISTORY_ACCOUNT_DELETION_ENABLED == "false" &&
+      aws_lambda_function.account_deletion[0].s3_object_version == "bridge-version" &&
+      aws_lambda_function.account_deletion[0].s3_key == "releases/synthetic-test-only/history_account_deletion_bridge.zip" &&
+      aws_lambda_function.lifecycle[0].environment[0].variables.DELETION_LEDGER_TABLE_NAME == "trustcheckradar-dev-deletion-ledger"
+    )
+    error_message = "The bridge must be disabled on deployment and share the lifecycle release and deletion ledger."
+  }
+  assert {
+    condition = alltrue([for criteria in aws_lambda_event_source_mapping.account_deletion[0].filter_criteria :
+      alltrue([for filter in criteria.filter :
+        jsondecode(filter.pattern) == {
+          eventName = ["INSERT", "MODIFY"]
+          dynamodb = { NewImage = {
+            PK            = { S = [{ prefix = "ACCOUNT#" }] }
+            SK            = { S = ["ACCOUNT_DELETION"] }
+            eventType     = { S = ["account.deletion.requested"] }
+            environment   = { S = ["dev"] }
+            schemaVersion = { N = ["1"] }
+            status        = { S = ["REQUESTED"] }
+          } }
+        }
+      ])
+    ])
+    error_message = "The bridge filter must exclude component receipts, campaign withdrawals and other environments."
+  }
+  assert {
+    condition = length([for statement in data.aws_iam_policy_document.account_deletion[0].statement : statement
+      if statement.sid == "ConsumeOnlyDeletionLedgerStream" &&
+      toset(statement.resources) == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-14T00:00:00.000"])
+      ]) == 1 && alltrue([for statement in data.aws_iam_policy_document.account_deletion[0].statement :
+      !contains(statement.resources, "*") && (
+        !contains(statement.actions, "dynamodb:Scan") || (statement.sid == "ReconcileDurableDeletionFences" &&
+        toset(statement.resources) == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]))
+      )
+    ])
+    error_message = "Only bounded recovery may scan the exact deletion ledger; the bridge must not scan History content or use account-wide resources."
+  }
+  assert {
+    condition = length([for statement in data.aws_iam_policy_document.runtime[0].statement : statement
+      if statement.sid == "HistoryComponentCompletionReceipt" &&
+      toset(statement.actions) == toset(["dynamodb:GetItem", "dynamodb:PutItem"]) &&
+      toset(statement.resources) == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"])
+    ]) == 1
+    error_message = "The lifecycle worker must persist a component receipt without overall-command update permission."
+  }
+}
+
+run "account_deletion_cannot_activate_without_cleanup" {
+  command = plan
+  variables {
+    lifecycle_deployment_enabled = true
+    account_deletion_active      = true
+    account_deletion_artifact = {
+      release_id = "synthetic-test-only", object_version = "bridge-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  expect_failures = [var.account_deletion_active]
+}
+
+run "account_deletion_requires_verified_reconciliation_observability" {
+  command = plan
+  variables {
+    lifecycle_deployment_enabled = true
+    lifecycle_active             = true
+    account_deletion_active      = true
+    alarm_topic_arn              = "arn:aws:sns:us-east-1:107827791950:synthetic"
+    account_deletion_artifact = {
+      release_id = "synthetic-test-only", object_version = "bridge-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  expect_failures = [var.account_deletion_active]
+}
+
+run "reconciliation_alarms_cover_missing_first_pass_and_stalled_progress" {
+  command = plan
+  variables {
+    lifecycle_deployment_enabled            = true
+    lifecycle_active                        = true
+    account_deletion_active                 = true
+    account_deletion_observability_approved = true
+    alarm_topic_arn                         = "arn:aws:sns:us-east-1:107827791950:synthetic"
+    account_deletion_artifact = {
+      release_id = "synthetic-test-only", object_version = "bridge-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  assert {
+    condition = (
+      length(aws_cloudwatch_metric_alarm.account_reconciliation) == 4 &&
+      aws_cloudwatch_metric_alarm.account_reconciliation["heartbeat"].metric_name == "AccountDeletionReconciliationSuccess" &&
+      aws_cloudwatch_metric_alarm.account_reconciliation["heartbeat"].treat_missing_data == "breaching" &&
+      aws_cloudwatch_metric_alarm.account_reconciliation["heartbeat"].evaluation_periods == 3 &&
+      aws_cloudwatch_metric_alarm.account_reconciliation["no_full_pass"].metric_name == "AccountDeletionReconciliationFullPassCompleted" &&
+      aws_cloudwatch_metric_alarm.account_reconciliation["no_full_pass"].period == 21600 &&
+      aws_cloudwatch_metric_alarm.account_reconciliation["no_full_pass"].treat_missing_data == "breaching" &&
+      aws_cloudwatch_metric_alarm.account_reconciliation["stale_full_pass"].metric_name == "AccountDeletionReconciliationFullPassAgeSeconds" &&
+      aws_cloudwatch_metric_alarm.account_reconciliation["stale_full_pass"].threshold == 21600 &&
+      alltrue([for alarm in aws_cloudwatch_metric_alarm.account_reconciliation :
+        alarm.namespace == "AMT/TrustCheckRadar/History" && alarm.dimensions == tomap({ Environment = "dev" }) &&
+        toset(alarm.alarm_actions) == toset([var.alarm_topic_arn])
+      ])
+    )
+    error_message = "Reconciliation requires privacy-safe heartbeat, failure and full-pass alarms, including the never-completed-first-pass case."
+  }
+}
+
+run "account_deletion_rejects_mixed_releases" {
+  command = plan
+  variables {
+    lifecycle_deployment_enabled = true
+    account_deletion_artifact = {
+      release_id = "different-release", object_version = "bridge-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  expect_failures = [var.account_deletion_artifact]
 }
 
 run "artifact_required_for_deployment" {

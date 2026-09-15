@@ -321,7 +321,7 @@ output "device_recovery_route_key" {
 }
 
 output "device_recovery_http_method" {
-  description = "HTTP method the mobile app should use for the device recovery endpoint"
+  description = "HTTP method for the operator-only recovery endpoint; not a mobile consumer API"
   value       = "POST"
 }
 
@@ -346,14 +346,13 @@ output "device_recovery_lambda_log_group_name" {
 }
 
 output "device_recovery_backend_settings" {
-  description = "App-ready values for device recovery integration"
+  description = "Operator-only recovery settings. Consumer Cognito tokens must not invoke this endpoint."
   value = var.enable_device_recovery ? {
     endpointUrl           = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.device_recovery_path}"
     method                = "POST"
-    authorizationType     = "CognitoJWT"
-    authorizationHeader   = "Authorization: Bearer <access-token>"
-    audience              = local.cognito_app_client_id
-    issuer                = local.jwt_issuer
+    authorizationType     = "AWS_IAM"
+    authorizationHeader   = "AWS Signature Version 4 with authorized operator credentials"
+    consumerSupported     = false
     timeoutMs             = aws_apigatewayv2_integration.device_recovery_lambda[0].timeout_milliseconds
     routeKey              = aws_apigatewayv2_route.device_recovery[0].route_key
     deviceBindingsTable   = local.device_bindings_table_name

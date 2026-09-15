@@ -592,9 +592,13 @@ variable "device_recovery_lambda_env" {
 }
 
 variable "device_recovery_path" {
-  description = "Primary public path for the device recovery endpoint"
+  description = "Static path for the IAM-authorized operator recovery endpoint, not consumer self-service"
   type        = string
   default     = "/device-recovery"
+  validation {
+    condition     = can(regex("^/[A-Za-z0-9][A-Za-z0-9/_-]*$", var.device_recovery_path)) && var.device_recovery_path != "/v1/users/device-recovery"
+    error_message = "The operator recovery path must be static and distinct from consumer recovery, without wildcards, path parameters or query strings."
+  }
 }
 
 variable "purchase_handoff_lambda_name" {

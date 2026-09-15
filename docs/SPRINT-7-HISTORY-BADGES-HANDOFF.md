@@ -1,5 +1,11 @@
 # Sprint 7 History and Badges: AWS ownership and Lambda handoff
 
+Latest decision update (2026-09-14): the owner authorized the recommended Dev
+contract choices and full activation once dependencies pass. See
+[HISTORY-CLIENT-CONTRACT.md](HISTORY-CLIENT-CONTRACT.md) for identity, paging,
+retention, catalog and route requirements. Its current status overrides older
+pending-decision text below; approval is not evidence of deployment.
+
 Date: 2026-09-13; deployment update 2026-09-14. Product baseline and Dev retention
 settings are approved; remaining contract gates are open. The owner authorized
 Dev deployment/activation, but activation is blocked by incomplete dependencies.

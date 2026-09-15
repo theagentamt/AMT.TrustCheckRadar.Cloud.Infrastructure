@@ -92,6 +92,32 @@ data "aws_iam_policy_document" "runtime" {
       values   = ["ANALYSIS#REQUEST#*"]
     }
   }
+  dynamic "statement" {
+    for_each = local.account_deletion_deployed ? [1] : []
+    content {
+      sid       = "EnumerateAllAccountGenerations"
+      actions   = ["dynamodb:Query"]
+      resources = [local.history.control_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = local.account_deletion_deployed ? [1] : []
+    content {
+      sid       = "HistoryComponentCompletionReceipt"
+      actions   = ["dynamodb:GetItem", "dynamodb:PutItem"]
+      resources = [local.foundation.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+    }
+  }
   statement {
     sid     = "BoundedLifecycleIndexQueries"
     actions = ["dynamodb:Query"]
@@ -136,7 +162,9 @@ resource "aws_lambda_function" "lifecycle" {
   source_code_hash               = var.artifact.source_hash
 
   environment {
-    variables = merge(local.runtime_env, {
+    variables = merge(local.runtime_env, local.account_deletion_deployed ? {
+      DELETION_LEDGER_TABLE_NAME = local.foundation.deletion_ledger_table_name
+      } : {}, {
       APP_ENVIRONMENT                           = var.environment
       HISTORY_CONTENT_TABLE_NAME                = local.history.content_table_name
       HISTORY_CONTROL_TABLE_NAME                = local.history.control_table_name

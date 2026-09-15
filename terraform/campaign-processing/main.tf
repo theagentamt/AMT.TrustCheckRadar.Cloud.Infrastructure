@@ -688,8 +688,10 @@ resource "aws_lambda_function" "worker" {
   architectures                  = ["arm64"]
   reserved_concurrent_executions = var.reserved_concurrency
 
-  s3_bucket = local.foundation.artifact_bucket_name
-  s3_key    = "${local.artifact_key}/${each.value.artifact}"
+  s3_bucket         = local.foundation.artifact_bucket_name
+  s3_key            = each.key == "deletion" && var.deletion_bridge_artifact != null ? "releases/${var.deletion_bridge_artifact.release_id}/campaign_deletion_bridge.zip" : "${local.artifact_key}/${each.value.artifact}"
+  s3_object_version = each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.object_version : null
+  source_code_hash  = each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.source_hash : null
 
   environment {
     variables = merge({

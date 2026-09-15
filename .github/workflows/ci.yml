@@ -44,6 +44,7 @@ jobs:
         run: |
           terraform init -backend=false -input=false
           terraform validate
+          terraform test
 
       - name: Validate campaign data
         working-directory: terraform/campaign-data

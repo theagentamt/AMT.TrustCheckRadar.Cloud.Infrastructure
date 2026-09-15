@@ -68,7 +68,7 @@ locals {
   web_risk_cache_table_name                   = local.foundation.web_risk_cache_table_name
   jwt_issuer                                  = "https://cognito-idp.${var.aws_region}.amazonaws.com/${local.cognito_user_pool_id}"
   age_attestation_artifact_key                = coalesce(var.age_attestation_lambda_s3_key, "${local.artifact_prefix}/age_attestation.zip")
-  analysis_artifact_key                       = coalesce(var.analysis_lambda_s3_key, "${local.artifact_prefix}/conversation_analysis.zip")
+  analysis_artifact_key                       = var.history_deployment != null ? "releases/${var.history_deployment.release_id}/conversation_analysis.zip" : coalesce(var.analysis_lambda_s3_key, "${local.artifact_prefix}/conversation_analysis.zip")
   device_registration_artifact_key            = coalesce(var.device_registration_lambda_s3_key, "${local.artifact_prefix}/device_registration.zip")
   device_recovery_artifact_key                = coalesce(var.device_recovery_lambda_s3_key, "${local.artifact_prefix}/device_recovery.zip")
   purchase_handoff_artifact_key               = coalesce(var.purchase_handoff_lambda_s3_key, "${local.artifact_prefix}/purchase_handoff.zip")
@@ -733,7 +733,8 @@ resource "aws_lambda_function" "analysis" {
 
   s3_bucket         = local.analysis_artifact_bucket_name
   s3_key            = local.analysis_artifact_key
-  s3_object_version = var.analysis_lambda_s3_object_version
+  s3_object_version = var.history_deployment != null ? var.history_deployment.artifacts["analysis"].object_version : var.analysis_lambda_s3_object_version
+  source_code_hash  = var.history_deployment != null ? var.history_deployment.artifacts["analysis"].source_hash : null
 
   environment {
     variables = merge(var.analysis_lambda_env, {
@@ -767,7 +768,7 @@ resource "aws_lambda_function" "analysis" {
       CAMPAIGN_OUTBOX_TABLE_ARN  = local.campaign_outbox_table_arn
       CAMPAIGN_OUTBOX_TABLE_NAME = local.campaign_outbox_table_name
       CAMPAIGN_SCHEMA_VERSION    = "1"
-    } : {})
+    } : {}, local.history_analysis_env)
   }
 
   depends_on = [aws_cloudwatch_log_group.analysis_lambda]
@@ -787,18 +788,19 @@ resource "aws_lambda_function" "device_registration" {
   reserved_concurrent_executions = var.device_registration_lambda_reserved_concurrency
 
   s3_bucket         = local.device_registration_artifact_bucket_name
-  s3_key            = local.device_registration_artifact_key
-  s3_object_version = var.device_registration_lambda_s3_object_version
+  s3_key            = var.device_recovery_deployment == null ? local.device_registration_artifact_key : "releases/${var.device_recovery_deployment.release_id}/device_registration.zip"
+  s3_object_version = var.device_recovery_deployment == null ? var.device_registration_lambda_s3_object_version : var.device_recovery_deployment.artifacts.registration.object_version
+  source_code_hash  = var.device_recovery_deployment == null ? null : var.device_recovery_deployment.artifacts.registration.source_hash
 
   environment {
-    variables = merge(var.device_registration_lambda_env, {
+    variables = merge(var.device_registration_lambda_env, local.device_identity_env, {
       DEVICE_BINDINGS_TABLE_ARN               = local.device_bindings_table_arn
       DEVICE_BINDINGS_TABLE_NAME              = local.device_bindings_table_name
       DEVICE_BINDINGS_INACTIVE_RETENTION_DAYS = tostring(var.device_bindings_inactive_retention_days)
     })
   }
 
-  depends_on = [aws_cloudwatch_log_group.device_registration_lambda]
+  depends_on = [aws_cloudwatch_log_group.device_registration_lambda, aws_iam_role_policy.device_identity]
 
   tags = local.common_tags
 }
@@ -816,17 +818,19 @@ resource "aws_lambda_function" "device_recovery" {
   reserved_concurrent_executions = var.device_recovery_lambda_reserved_concurrency
 
   s3_bucket         = local.device_recovery_artifact_bucket_name
-  s3_key            = local.device_recovery_artifact_key
-  s3_object_version = var.device_recovery_lambda_s3_object_version
+  s3_key            = var.device_recovery_deployment == null ? local.device_recovery_artifact_key : "releases/${var.device_recovery_deployment.release_id}/device_recovery.zip"
+  s3_object_version = var.device_recovery_deployment == null ? var.device_recovery_lambda_s3_object_version : var.device_recovery_deployment.artifacts.recovery.object_version
+  source_code_hash  = var.device_recovery_deployment == null ? null : var.device_recovery_deployment.artifacts.recovery.source_hash
 
   environment {
-    variables = merge(var.device_recovery_lambda_env, {
-      DEVICE_BINDINGS_TABLE_NAME              = local.device_bindings_table_name
-      DEVICE_BINDINGS_INACTIVE_RETENTION_DAYS = tostring(var.device_bindings_inactive_retention_days)
+    variables = merge(var.device_recovery_lambda_env, local.device_identity_env, local.device_consumer_recovery_env, {
+      DEVICE_RECOVERY_ALLOWED_PRINCIPAL_ARNS_JSON = jsonencode(sort(tolist(var.device_recovery_allowed_principal_arns)))
+      DEVICE_BINDINGS_TABLE_NAME                  = local.device_bindings_table_name
+      DEVICE_BINDINGS_INACTIVE_RETENTION_DAYS     = tostring(var.device_bindings_inactive_retention_days)
     })
   }
 
-  depends_on = [aws_cloudwatch_log_group.device_recovery_lambda]
+  depends_on = [aws_cloudwatch_log_group.device_recovery_lambda, aws_iam_role_policy.device_identity, aws_iam_role_policy.device_recovery_control]
 
   tags = local.common_tags
 }
@@ -1105,8 +1109,7 @@ resource "aws_apigatewayv2_route" "device_recovery" {
   api_id             = aws_apigatewayv2_api.age_attestation.id
   route_key          = "POST ${var.device_recovery_path}"
   target             = "integrations/${aws_apigatewayv2_integration.device_recovery_lambda[0].id}"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.cognito_jwt.id
+  authorization_type = "AWS_IAM"
 }
 
 resource "aws_apigatewayv2_integration" "purchase_handoff_lambda" {
@@ -1212,6 +1215,16 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
     }
   }
 
+  dynamic "route_settings" {
+    for_each = var.device_self_recovery_enabled ? ["POST /v1/users/device-recovery"] : []
+    content {
+      route_key                = route_settings.value
+      detailed_metrics_enabled = true
+      throttling_burst_limit   = 4
+      throttling_rate_limit    = 2
+    }
+  }
+
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.age_attestation_api.arn
     format = jsonencode({
@@ -1259,7 +1272,7 @@ resource "aws_lambda_permission" "allow_api_gateway_invoke_device_recovery" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.device_recovery[0].function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.age_attestation.execution_arn}/*/*"
+  source_arn    = "${aws_apigatewayv2_api.age_attestation.execution_arn}/*/POST${var.device_recovery_path}"
 }
 
 resource "aws_lambda_permission" "allow_api_gateway_invoke_purchase_handoff" {

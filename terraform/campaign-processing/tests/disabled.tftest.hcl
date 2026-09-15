@@ -54,7 +54,12 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
     campaign_processing_enabled = true
     kill_switch_enabled         = true
     artifact_release            = "2026.09.06-1"
-    log_retention_days          = 14
+    deletion_bridge_artifact = {
+      release_id     = "history-compatibility-patch"
+      object_version = "deletion-version"
+      source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+    log_retention_days = 14
   }
 
   override_data {
@@ -103,6 +108,17 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
   assert {
     condition     = length(aws_lambda_function.worker) == 4
     error_message = "Enabled Dev must create the publisher, cluster, lifecycle, and deletion workers only."
+  }
+  assert {
+    condition = (
+      aws_lambda_function.worker["deletion"].s3_key == "releases/history-compatibility-patch/campaign_deletion_bridge.zip" &&
+      aws_lambda_function.worker["deletion"].s3_object_version == "deletion-version" &&
+      aws_lambda_function.worker["deletion"].source_code_hash == var.deletion_bridge_artifact.source_hash &&
+      aws_lambda_function.worker["publisher"].s3_key == "releases/2026.09.06-1/campaign_observation_publisher.zip" &&
+      aws_lambda_function.worker["cluster"].s3_key == "releases/2026.09.06-1/campaign_cluster_aggregator.zip" &&
+      aws_lambda_function.worker["lifecycle"].s3_key == "releases/2026.09.06-1/campaign_lifecycle.zip"
+    )
+    error_message = "A shared-ledger compatibility patch must pin only the deletion bridge and leave other campaign packages unchanged."
   }
 
   assert {
