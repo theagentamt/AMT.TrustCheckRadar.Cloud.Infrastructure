@@ -11,8 +11,10 @@ activation, unrestricted field discovery or reads of unrelated inventory familie
 107827791950, Region us-east-1 and only the Dev analysis-abuse-control and
 deletion-ledger tables. STS and both table ARNs are checked before any scan.
 
-All scans use Select=COUNT, service-side filters and explicit pagination. The
-CLI receives pagination keys through stdin, not command arguments or files.
+All scans use Select=COUNT, service-side filters and explicit pagination. A
+private worker uses the SDK bundled with the installed Python-based AWS CLI
+and its authenticated profile. It receives pagination keys through stdin,
+not command arguments or files; logging is disabled and CLI history is bypassed.
 No Items are requested or accepted. Unexpected response shapes fail closed.
 Only fixed labels, counts, expiry buckets and operational scan metadata can
 reach the report. CLI stdout/stderr and exception details are never forwarded.
@@ -35,29 +37,42 @@ Unknown fields and unknown component keys are not discovered.
 Bounds: 25 evaluated items/page, 10 pages/aggregation, 80 scan calls, 300 seconds,
 and stop before another page after 64 consumed read-capacity units. A time or
 capacity threshold can be exceeded by one bounded in-flight call/page. Calls
-are sequential with a delay and CLI retries disabled. Incomplete counts are
+are sequential with a delay and SDK retries disabled. Incomplete counts are
 labeled partial, never represented as complete. Count-only filters still consume
 read capacity: [AWS Scan reference](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Scan.html).
 
 ## Execution Status
 
-The first live attempt on 2026-09-15 failed before record scans. A separate STS
-diagnostic confirmed the SSO token had expired and refresh failed. No live
-record counts or absence claims are inferred from that failed attempt.
+After the owner renewed SSO, direct STS verification succeeded. The retry
+exposed a separate helper bug: the installed CLI's parameter handlers read
+file:///dev/stdin more than once, causing invalid JSON before the request.
+The helper now uses the installed CLI's bundled SDK with private stdin input.
+Its verified max_attempts=1 configuration means one total attempt in that SDK.
+No dependency installation, login automation or credential output was needed.
 
-The owner must renew the session:
+The completed count-only inventory has asOfEpoch `1789507599` (2026-09-15):
 
-```sh
-aws sso login --profile trustcheckradar
-```
+| Scope | Count | Complete |
+| --- | --- | --- |
+| Analysis REQUEST | 0 | Yes |
+| Analysis RATE | 0 | Yes |
+| Analysis SCAN_RATE | 0 | Yes |
+| Analysis CONSUMPTION | 0 | Yes |
+| Six known account-deletion component receipt keys | 0 | Yes |
 
-Then rerun:
+Five scans, 10 consumed read-capacity units, no continuation keys returned.
+Each scan reported ScannedCount=0. Detailed expiry/status scans were skipped
+because no records were observed. No legacy request rows or known old component
+receipts requiring migration were observed in this scope at execution time.
+This does not prove future absence, backup absence or readiness for deployment.
+
+To repeat the same approved scope with a valid session:
 
 ```sh
 python3 scripts/audit_analysis_record_counts.py
 ```
 
-No login automation, AWS changes, row mutations or activation occurred.
-The full helper suite passes 24 tests, including 12 count-inventory tests for
+No AWS changes, row mutations or activation occurred. The full helper suite
+passes 27 tests, including 15 count-inventory tests for
 scope guards, pagination privacy, response rejection, bounded execution and
 redacted errors. These are local synthetic tests, not live inventory evidence.

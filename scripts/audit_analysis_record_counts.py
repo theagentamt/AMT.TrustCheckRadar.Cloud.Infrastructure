@@ -5,6 +5,8 @@ import argparse
 import json
 import math
 import os
+from pathlib import Path
+import shutil
 import subprocess
 import sys
 import time
@@ -19,11 +21,68 @@ COMPONENTS = ("SESSION_REVOCATION", "DEVICE_BINDINGS", "DEVICE_RECOVERY",
               "ANALYSIS_ABUSE", "HISTORY", "CAMPAIGN")
 STATUSES = ("PROCESSING", "RETRYABLE", "RESULT_READY", "COMPLETED", "COMPLETED_ERASED")
 
+# Use the SDK bundled with the installed Python AWS CLI. The CLI's parameter
+# handlers can read file:///dev/stdin twice; SDK calls avoid that and CLI history.
+SDK_WORKER = r'''
+import json, logging, sys
+logging.disable(logging.CRITICAL)
+try:
+    from awscli.botocore.session import Session
+    from awscli.botocore.config import Config
+    request = json.load(sys.stdin)
+    operations = {("sts", "get-caller-identity"): "GetCallerIdentity",
+                  ("dynamodb", "describe-table"): "DescribeTable",
+                  ("dynamodb", "scan"): "Scan"}
+    service, operation = request["service"], request["operation"]
+    payload = request["payload"]
+    if service == "dynamodb" and payload.get("TableName") not in (
+        "trustcheckradar-dev-analysis-abuse-control", "trustcheckradar-dev-deletion-ledger"
+    ):
+        raise ValueError("Scope")
+    if operation == "scan" and (payload.get("Select") != "COUNT" or payload.get("Limit") != 25
+            or "ProjectionExpression" in payload or "IndexName" in payload):
+        raise ValueError("Scope")
+    session = Session(profile=request["profile"])
+    client = session.create_client(service, region_name="us-east-1", config=Config(
+        retries={"max_attempts": 1}, connect_timeout=5, read_timeout=20))
+    response = client._make_api_call(operations[(service, operation)], payload)
+    if service == "sts":
+        response = {"Account": response.get("Account")}
+    elif operation == "describe-table":
+        response = {"Table": {"TableArn": response.get("Table", {}).get("TableArn")}}
+    else:
+        response.pop("ResponseMetadata", None)
+        if set(response) - {"Count", "ScannedCount", "ConsumedCapacity", "LastEvaluatedKey"}:
+            raise ValueError("Unexpected response")
+    print(json.dumps(response))
+except Exception as error:
+    code = "aws_read_failed"
+    if type(error).__name__ in {"UnauthorizedSSOTokenError", "SSOTokenLoadError", "TokenRetrievalError"}:
+        code = "aws_session_expired"
+    elif getattr(error, "response", {}).get("Error", {}).get("Code") in {"AccessDenied", "AccessDeniedException"}:
+        code = "aws_read_denied"
+    elif type(error).__name__ in {"EndpointConnectionError", "ConnectTimeoutError", "ReadTimeoutError"}:
+        code = "aws_connectivity"
+    print(json.dumps({"auditError": code}))
+'''
+
 
 class AuditError(RuntimeError):
     def __init__(self, message, *, code="audit_guard"):
         super().__init__(message)
         self.code = code
+
+
+def sdk_python():
+    executable = shutil.which("aws")
+    if not executable:
+        raise AuditError("AWS CLI is unavailable.")
+    with Path(executable).resolve().open("rb") as script:
+        header = script.readline(512).decode("utf-8", errors="strict").strip()
+    interpreter = header.removeprefix("#!")
+    if not header.startswith("#!/") or "python" not in Path(interpreter).name or not Path(interpreter).is_file():
+        raise AuditError("A Python-based AWS CLI runtime is required for private SDK input.")
+    return interpreter
 
 
 def aws_reader(profile):
@@ -42,11 +101,11 @@ def aws_reader(profile):
         ):
             raise AuditError("Scan must be bounded, table-only and count-only.")
         # Pass pagination keys through stdin, never command arguments or files.
-        command = ["aws", "--profile", profile, "--region", REGION,
-                   "--no-cli-pager", "--no-paginate", service, operation,
-                   "--cli-input-json", "file:///dev/stdin", "--output", "json"]
+        command = [sdk_python(), "-c", SDK_WORKER]
         result = subprocess.run(
-            command, input=json.dumps(payload), capture_output=True, text=True,
+            command, input=json.dumps({"profile": profile, "service": service,
+                                      "operation": operation, "payload": payload}),
+            capture_output=True, text=True,
             timeout=30, env={**os.environ, "AWS_MAX_ATTEMPTS": "1", "AWS_PAGER": ""},
         )
         if result.returncode:
@@ -58,7 +117,10 @@ def aws_reader(profile):
             elif "Could not connect to the endpoint" in result.stderr:
                 code = "aws_connectivity"
             raise AuditError("AWS read failed; no raw CLI output is emitted.", code=code)
-        return json.loads(result.stdout)
+        response = json.loads(result.stdout)
+        if isinstance(response, dict) and "auditError" in response:
+            raise AuditError("AWS SDK read failed; details suppressed.", code=response["auditError"])
+        return response
     return read
 
 

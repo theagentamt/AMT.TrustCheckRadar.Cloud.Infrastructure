@@ -1,6 +1,8 @@
 import importlib.util
 import io
 import json
+import logging
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
@@ -105,17 +107,63 @@ class CountAuditTests(unittest.TestCase):
                 with self.assertRaises(audit.AuditError):
                     self.counter(lambda *_: response).count(audit.TABLES[0], "x", {}, {})
 
-    def test_cli_uses_stdin_count_only_and_no_automatic_pagination(self):
+    def test_sdk_uses_stdin_count_only_and_no_cli_history(self):
         payload = {"TableName": audit.TABLES[0], "Select": "COUNT", "Limit": 25,
                    "ConsistentRead": False, "ExclusiveStartKey": {"PK": {"S": "PRIVATE"}, "SK": {"S": "key"}}}
-        with patch.object(audit.subprocess, "run", return_value=SimpleNamespace(returncode=0, stdout=json.dumps(page()), stderr="")) as run:
-            audit.aws_reader("trustcheckradar")("dynamodb", "scan", payload)
+        with patch.object(audit, "sdk_python", return_value="/approved/python"):
+            with patch.object(audit.subprocess, "run", return_value=SimpleNamespace(returncode=0, stdout=json.dumps(page()), stderr="")) as run:
+                audit.aws_reader("trustcheckradar")("dynamodb", "scan", payload)
         argv = run.call_args.args[0]
-        self.assertIn("--no-paginate", argv)
-        self.assertIn("file:///dev/stdin", argv)
+        self.assertEqual(argv, ["/approved/python", "-c", audit.SDK_WORKER])
         self.assertNotIn("PRIVATE", " ".join(argv))
-        self.assertEqual(json.loads(run.call_args.kwargs["input"]), payload)
+        self.assertEqual(json.loads(run.call_args.kwargs["input"])["payload"], payload)
         self.assertEqual(run.call_args.kwargs["env"]["AWS_MAX_ATTEMPTS"], "1")
+
+    def test_sdk_authentication_error_is_classified_without_raw_details(self):
+        with patch.object(audit, "sdk_python", return_value="/approved/python"):
+            with patch.object(audit.subprocess, "run", return_value=SimpleNamespace(
+                    returncode=0, stdout='{"auditError":"aws_session_expired"}', stderr="PRIVATE")):
+                with self.assertRaises(audit.AuditError) as caught:
+                    audit.aws_reader("trustcheckradar")("sts", "get-caller-identity", {})
+        self.assertEqual(caught.exception.code, "aws_session_expired")
+        self.assertNotIn("PRIVATE", str(caught.exception))
+
+    def run_sdk_worker(self, response):
+        calls = []
+        def config(**kwargs):
+            self.assertEqual(kwargs["retries"], {"max_attempts": 1})
+            return kwargs
+        def api_call(operation, payload):
+            calls.append((operation, payload))
+            return response
+        session = SimpleNamespace(create_client=lambda *args, **kwargs: SimpleNamespace(_make_api_call=api_call))
+        modules = {
+            "awscli.botocore.session": SimpleNamespace(Session=lambda **kwargs: session),
+            "awscli.botocore.config": SimpleNamespace(Config=config),
+        }
+        request = {"profile": "test", "service": "dynamodb", "operation": "scan", "payload": {
+            "TableName": audit.TABLES[0], "Select": "COUNT", "Limit": 25,
+        }}
+        output = io.StringIO()
+        previous_logging = logging.root.manager.disable
+        try:
+            with patch.dict(sys.modules, modules), patch.object(sys, "stdin", io.StringIO(json.dumps(request))):
+                with redirect_stdout(output):
+                    exec(audit.SDK_WORKER, {})
+        finally:
+            logging.disable(previous_logging)
+        self.assertEqual(calls[0][0], "Scan")
+        return output.getvalue()
+
+    def test_worker_suppresses_item_contents_before_parent_process(self):
+        result = self.run_sdk_worker({**page(), "Items": [{"response": "PRIVATE"}]})
+        self.assertNotIn("PRIVATE", result)
+        self.assertEqual(json.loads(result), {"auditError": "aws_read_failed"})
+
+    def test_worker_returns_counts_without_sdk_response_metadata(self):
+        result = self.run_sdk_worker({**page(1, 1), "ResponseMetadata": {"RequestId": "PRIVATE"}})
+        self.assertEqual(json.loads(result), page(1, 1))
+        self.assertNotIn("PRIVATE", result)
 
     def test_mutation_wrong_table_and_full_scan_are_rejected_before_cli(self):
         with patch.object(audit.subprocess, "run") as run:
