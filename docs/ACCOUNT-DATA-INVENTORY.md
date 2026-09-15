@@ -1,7 +1,8 @@
 # Account-data inventory and completion requirements
 
-Status: infrastructure and Lambda source inventories reconciled; policy and live
-AWS audit remain pending. This is not activation approval.
+Status: infrastructure and Lambda source inventories reconciled. Dev policy
+decisions are recorded in [ACCOUNT-DATA-POLICY-DECISIONS.md](ACCOUNT-DATA-POLICY-DECISIONS.md);
+live coverage verification and implementation remain incomplete. This is not activation approval.
 Infrastructure baseline: `297b654`; Lambda baseline:
 `195859848cde7de04b26da83f2fa34b9ff5922f4`.
 The feature branch is committed; `main` and deployed resources are unchanged.
@@ -60,7 +61,7 @@ retention and restore/replay treatment.
 | Purchase replay records | Baseline writer does not set expiresAt; table TTL cannot expire those records |
 | Participation audit | Dev explicitly configures 400 days; do not replace it with History's 120 days |
 | History | Approved 90-day content, 24-hour active-data erasure deadline, 7-day PITR, 120-day minimal metadata and 7-day mutation receipts |
-| Recovery control | No approved policy selected; proposed audit 30/90 days, receipts 7 days, rate state 24 hours; PITR decision also pending |
+| Recovery control | Owner approved 90-day audit, 7-day receipts, 24-hour rate state and 7-day PITR on 2026-09-14; provisioning remains disabled |
 | Campaign outbox/pipeline | Declared maximums 72 hours/21 days; PITR disabled; validate actual item expiry and worker deletion separately |
 | Campaign intelligence | Declared maximum 400 days; PITR enabled with unspecified window |
 | Campaign SQS | Source queue 4 days, DLQ 14 days; no account-specific queue purge is implied |
@@ -153,24 +154,25 @@ records, internal abuse rules and security secrets. Report which sections are
 complete, unavailable or intentionally retained; History export is not a full
 account export. Resolve legacy token-keyed ownership before claiming completeness.
 
-## Decisions Needed From The Owner
+## Remaining Policy And Coverage Work
 
-The inventory and missing writer/cleanup work are engineering responsibilities,
-not questions the owner should have to answer without evidence. Present a final
-short decision list after the Lambda inventory reconciliation:
+The owner's [2026-09-14 decisions](ACCOUNT-DATA-POLICY-DECISIONS.md)
+resolve the proposed Dev retention and export-order choices. Inventory and
+missing writer/cleanup work remain engineering responsibilities:
 
-- Minimal deletion evidence: fields, duration, user-visible promise and restore
-  horizon. Do not adopt 120 days for every store just because History uses it.
+- Minimal deletion evidence: implement the approved 120-day minimal receipt
+  policy only after verifying suppression coverage across backup/replay horizons.
 - Purchase/billing replay evidence: exact retained minimum and duration; existing
   configuration is not proof that all billing records must be kept that long.
-- Consent/security audits: which fields survive account deletion, whether links
-  are removed, and how existing 400-day consent audit policy interacts with it.
-- Recovery audit/receipt/rate and backup periods, still awaiting approval.
+- Consent/security audits: implement minimal evidence under the confirmed
+  400-day consent and 90-day recovery audit policies; verify retained projections.
+- Recovery audit/receipt/rate and backup periods are approved; cleanup,
+  logical expiry, restore treatment and deployed acceptance still need proof.
 - Backup/log/external-provider treatment: understandable exclusions and maximums
   backed by verified configuration, not an unqualified "everything is gone".
 
-No new retention policy, live cleanup, index, store, public route or deployment
-has been approved by this inventory document.
+The linked owner decision record supplies policy approval. No live cleanup,
+index, store, public route or deployment is authorized by this inventory.
 
 ## Inventory-Phase Source Handback
 
@@ -219,8 +221,8 @@ Post-confirmation additionally requires `post_confirmation_log_policy` with a
 finite retention period and approval reference. Default null leaves the
 existing log group/retention untouched. Inspect and import an existing group
 before applying the managed resource; never destroy/recreate logs to adopt it.
-Fourteen days matches the current other Dev Lambda defaults, but it has not
-been selected or approved for this unmanaged group.
+Fourteen days was approved on 2026-09-14, but has not been selected for this
+unmanaged group pending live inspection and reviewed import/rollout.
 
 URL-risk deployment can use the existing explicit S3 key/object-version inputs
 for that function alone. Terraform already provides the dedicated
@@ -254,8 +256,22 @@ Custom-name resources, historical tables/backups and other AWS accounts are not
 discovered by this helper. The five focused audit tests run without AWS and are
 included in the existing helper-script CI test discovery.
 
-The attempted Dev metadata audit stopped at STS before storage queries. Direct
-CLI diagnostics confirmed the SSO token had expired and refresh failed. The
-owner must renew the session with `aws sso login --profile trustcheckradar`;
-this task did not attempt browser login. No live inventory facts were inferred
-from the failed audit.
+The initial audit failed because the SSO session had expired. After the owner
+renewed it, the 2026-09-14 read-only audit succeeded outside the network sandbox
+and verified account `107827791950`, region `us-east-1`:
+
+- Eleven default-name tables exist and are ACTIVE; recovery control does not
+  exist yet.
+- All six foundation tables and campaign intelligence have 35-day PITR.
+  Both History tables have 7-day PITR. Campaign outbox/pipeline PITR is disabled.
+- The deletion ledger has TTL disabled and a NEW_IMAGE stream. The other ten
+  observed tables have expiresAt TTL enabled; item expiry coverage was not read.
+- The existing `/aws/lambda/trustcheckradar-dev-post-confirmation` log group
+  has no explicit retention. The other 15 matching Lambda groups and one API
+  log group have 14-day retention. Import/adoption review is required before
+  applying the approved post-confirmation log policy.
+
+No table items, log events or identity attributes were read and no resources
+changed. On-demand/AWS Backup copies, S3 versions, queue replay and external
+copies remain unverified. The observed PITR windows alone do not authorize
+retiring deletion fences at 120 days or certify account-deletion readiness.

@@ -38,7 +38,8 @@ not evidence that backend acceptance is complete. No YouTrack updates were made.
   burst of 4; this is not a substitute for the Lambda's per-subject rate limit.
 
 All new deployment inputs remain null, storage remains opt-in, and consumer
-activation remains false. No environment tfvars were changed. The legacy
+activation remains false. Dev foundation tfvars now record the approved recovery
+policy with provisioning explicitly false. The legacy
 authorization correction itself changes the existing route when applied; review
 its plan and coordinate the corrected operator handler before any apply.
 
@@ -62,10 +63,12 @@ manifest is still pending; this is not yet an approved mobile release contract.
 | Audit expiry | `DEVICE_RECOVERY_AUDIT_RETENTION_DAYS=0` until approved |
 | Operator authorization | `DEVICE_RECOVERY_ALLOWED_PRINCIPAL_ARNS_JSON=[]` until exact operators are configured |
 
-User approval is pending for 30/90-day minimal audit records, 7-day receipts and
-24-hour rate records. Recovery backup retention also requires an explicit choice;
-the approved History backup policy does not automatically cover this new table.
-Synthetic test values are not approvals. TTL cleanup is eventual; handlers must
+The owner approved 90-day minimal audit records, 7-day receipts, 24-hour rate
+records and 7-day recovery PITR on 2026-09-14. See the full
+[decision record](ACCOUNT-DATA-POLICY-DECISIONS.md), including deletion receipts,
+consent evidence and export cancellation. Runtime defaults above remain gated
+until approved storage and a reviewed release are selected.
+TTL cleanup is eventual; handlers must
 enforce logical expiry and distinguish an expired receipt from a valid retry.
 
 Current source uses recovery control PK `USER#<sub>` and SK
@@ -122,7 +125,8 @@ permission. See [AWS transaction IAM documentation](https://docs.aws.amazon.com/
 ## Release Sequence
 
 1. Reconcile final source contracts, tests and immutable artifact manifest.
-2. Obtain pending retention/backup decisions and any operator principal list.
+2. Implement the approved Dev policy; verify backup/replay coverage, resolve
+   remaining purchase anti-replay treatment and obtain any operator principal list.
 3. Finish exact account-data/cleanup/metrics infrastructure from that handback.
 4. Restore AWS CLI authentication when deployment is requested; no browser
    login automation. Review foundation/API/processing/bootstrap plans scoped
@@ -136,8 +140,8 @@ mobile change has been performed in this orchestration work.
 
 ## Local Verification
 
-72 mocked Terraform tests pass across the continued preparation: API 36,
-identity-workflows 5, History-processing 19, foundation 4, campaign-processing 4
+73 mocked Terraform tests pass cumulatively across the continued preparation: API 36,
+identity-workflows 5, History-processing 19, foundation 5, campaign-processing 4
 and focused bootstrap/access 4. The 12 helper-script tests also pass.
 All affected Terraform roots validate; recursive formatting and whitespace
 checks pass. These tests prove configuration guardrails, not live identity,

@@ -25,8 +25,34 @@ run "recovery_storage_is_opt_in" {
 
 run "recovery_storage_requires_its_own_policy" {
   command = plan
-  variables { device_recovery_control_enabled = true }
+  variables {
+    device_recovery_control_enabled = true
+    device_recovery_policy          = null
+  }
   expect_failures = [var.device_recovery_control_enabled]
+}
+
+run "policy_approval_does_not_provision_recovery_storage" {
+  command = plan
+  variables {
+    device_recovery_control_enabled = false
+    device_recovery_policy = {
+      approved               = true
+      approval_reference     = "docs/ACCOUNT-DATA-POLICY-DECISIONS.md#owner-approval-2026-09-14"
+      audit_retention_days   = 90
+      receipt_retention_days = 7
+      rate_retention_hours   = 24
+      pitr_days              = 7
+    }
+  }
+  assert {
+    condition = (
+      length(aws_dynamodb_table.device_recovery_control) == 0 &&
+      !output.device_recovery_control_contract.enabled &&
+      output.device_recovery_control_contract.policy == null
+    )
+    error_message = "Approved retention must not create recovery storage or advertise an active recovery policy to consumers."
+  }
 }
 
 run "recovery_storage_has_exact_keys_retention_and_cost_caps" {
