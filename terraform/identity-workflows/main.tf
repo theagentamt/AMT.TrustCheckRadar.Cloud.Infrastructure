@@ -66,13 +66,47 @@ data "aws_iam_policy_document" "post_confirmation_dynamodb" {
   statement {
     sid    = "UsersTableWrite"
     effect = "Allow"
-    actions = [
+    actions = var.profile_fence_deployment != null ? ["dynamodb:PutItem"] : [
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:UpdateItem"
     ]
 
     resources = [local.foundation.users_table_arn]
+    dynamic "condition" {
+      for_each = var.profile_fence_deployment != null ? [1] : []
+      content {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+    dynamic "condition" {
+      for_each = var.profile_fence_deployment != null ? [1] : []
+      content {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.profile_fence_deployment != null ? [1] : []
+    content {
+      sid       = "PreventDeletedProfileRecreation"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.foundation.deletion_ledger_table_arn]
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+    }
   }
 }
 
@@ -99,16 +133,30 @@ resource "aws_lambda_function" "post_confirmation" {
   architectures = var.post_confirmation_lambda_architectures
 
   s3_bucket         = local.artifact_bucket_name
-  s3_key            = local.artifact_key
-  s3_object_version = var.post_confirmation_lambda_s3_object_version
+  s3_key            = var.profile_fence_deployment == null ? local.artifact_key : "releases/${var.profile_fence_deployment.release_id}/post_confirmation.zip"
+  s3_object_version = var.profile_fence_deployment == null ? var.post_confirmation_lambda_s3_object_version : var.profile_fence_deployment.object_version
+  source_code_hash  = var.profile_fence_deployment == null ? null : var.profile_fence_deployment.source_hash
 
   environment {
-    variables = merge(var.post_confirmation_lambda_env, {
+    variables = merge(var.post_confirmation_lambda_env, var.profile_fence_deployment == null ? {} : {
+      DELETION_LEDGER_TABLE_NAME = local.foundation.deletion_ledger_table_name
+      }, {
       USERS_TABLE_ARN = local.foundation.users_table_arn
     })
   }
 
-  tags = local.common_tags
+  lifecycle {
+    precondition {
+      condition = var.profile_fence_deployment == null ? true : (
+        local.foundation.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.name_prefix}-deletion-ledger" &&
+        local.foundation.deletion_ledger_table_name == "${local.name_prefix}-deletion-ledger" &&
+        local.foundation.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.name_prefix}-users"
+      )
+      error_message = "Post-confirmation fencing requires its own account, Region and environment tables."
+    }
+  }
+  depends_on = [aws_iam_role_policy_attachment.post_confirmation_dynamodb, aws_cloudwatch_log_group.post_confirmation]
+  tags       = local.common_tags
 }
 
 resource "aws_lambda_permission" "allow_cognito_invoke_post_confirmation" {
@@ -127,7 +175,7 @@ resource "terraform_data" "configure_user_pool_post_confirmation" {
     lambda_config  = jsonencode(local.user_pool_lambda_config)
     lambda_arn     = aws_lambda_function.post_confirmation.arn
     source_arn     = aws_lambda_permission.allow_cognito_invoke_post_confirmation.source_arn
-    source_version = coalesce(var.post_confirmation_lambda_s3_object_version, "unversioned")
+    source_version = coalesce(aws_lambda_function.post_confirmation.s3_object_version, "unversioned")
     aws_region     = var.aws_region
     aws_profile    = var.aws_cli_profile != null ? var.aws_cli_profile : ""
   }

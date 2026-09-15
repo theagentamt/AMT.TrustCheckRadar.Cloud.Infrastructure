@@ -136,9 +136,10 @@ mobile change has been performed in this orchestration work.
 
 ## Local Verification
 
-2026-09-14: 65 mocked Terraform tests pass: API 34, History-processing 19,
-foundation 4, campaign-processing 4 and focused bootstrap/access 4.
-All five affected Terraform roots validate; recursive formatting and whitespace
+72 mocked Terraform tests pass across the continued preparation: API 36,
+identity-workflows 5, History-processing 19, foundation 4, campaign-processing 4
+and focused bootstrap/access 4. The 12 helper-script tests also pass.
+All affected Terraform roots validate; recursive formatting and whitespace
 checks pass. These tests prove configuration guardrails, not live identity,
 transaction behavior, erasure deadlines or alert delivery. Recovery source and
 staged checksums are verified below; account-data work is still in progress.

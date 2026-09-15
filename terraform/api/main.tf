@@ -169,12 +169,46 @@ data "aws_iam_policy_document" "age_attestation_dynamodb" {
   statement {
     sid    = "UsersTableReadUpdate"
     effect = "Allow"
-    actions = [
+    actions = var.profile_fence_deployment != null ? ["dynamodb:UpdateItem"] : [
       "dynamodb:GetItem",
       "dynamodb:UpdateItem"
     ]
 
     resources = [local.users_table_arn]
+    dynamic "condition" {
+      for_each = var.profile_fence_deployment != null ? [1] : []
+      content {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+    dynamic "condition" {
+      for_each = var.profile_fence_deployment != null ? [1] : []
+      content {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.profile_fence_deployment != null ? [1] : []
+    content {
+      sid       = "PreventDeletedProfileReactivation"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.deletion_ledger_table_arn]
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+    }
   }
 }
 
@@ -705,17 +739,31 @@ resource "aws_lambda_function" "age_attestation" {
   reserved_concurrent_executions = var.age_attestation_lambda_reserved_concurrency
 
   s3_bucket         = local.artifact_bucket_name
-  s3_key            = local.age_attestation_artifact_key
-  s3_object_version = var.age_attestation_lambda_s3_object_version
+  s3_key            = var.profile_fence_deployment == null ? local.age_attestation_artifact_key : "releases/${var.profile_fence_deployment.release_id}/age_attestation.zip"
+  s3_object_version = var.profile_fence_deployment == null ? var.age_attestation_lambda_s3_object_version : var.profile_fence_deployment.object_version
+  source_code_hash  = var.profile_fence_deployment == null ? null : var.profile_fence_deployment.source_hash
 
   environment {
-    variables = merge(var.age_attestation_lambda_env, {
+    variables = merge(var.age_attestation_lambda_env, var.profile_fence_deployment == null ? {} : {
+      DELETION_LEDGER_TABLE_NAME = local.deletion_ledger_table_name
+      }, {
       USERS_TABLE_ARN  = local.users_table_arn
       USERS_TABLE_NAME = local.users_table_name
     })
   }
 
-  depends_on = [aws_cloudwatch_log_group.age_attestation_lambda]
+  lifecycle {
+    precondition {
+      condition = var.profile_fence_deployment == null ? true : (
+        local.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-deletion-ledger" &&
+        local.deletion_ledger_table_name == "${local.name_prefix}-deletion-ledger" &&
+        local.users_table_name == "${local.name_prefix}-users" &&
+        local.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-users"
+      )
+      error_message = "Profile fencing requires the same account, Region and environment deletion ledger."
+    }
+  }
+  depends_on = [aws_cloudwatch_log_group.age_attestation_lambda, aws_iam_role_policy_attachment.age_attestation_dynamodb]
 
   tags = local.common_tags
 }

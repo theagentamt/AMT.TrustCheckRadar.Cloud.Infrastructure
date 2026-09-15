@@ -140,6 +140,44 @@ run "account_reconciliation_remains_disabled_and_bounded" {
   }
 }
 
+run "age_attestation_candidate_is_pinned_with_atomic_ledger_fence" {
+  command = plan
+  variables {
+    account_data_deployment = null
+    profile_fence_deployment = {
+      release_id         = "profile-candidate", object_version = "age-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      approval_reference = "synthetic-test", promotion_approved = false
+    }
+    age_attestation_lambda_env = { DELETION_LEDGER_TABLE_NAME = "wrong-table" }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.age_attestation.s3_key == "releases/profile-candidate/age_attestation.zip" &&
+      aws_lambda_function.age_attestation.s3_object_version == "age-version" &&
+      aws_lambda_function.age_attestation.source_code_hash == var.profile_fence_deployment.source_hash &&
+      aws_lambda_function.age_attestation.environment[0].variables["DELETION_LEDGER_TABLE_NAME"] == "trustcheckradar-dev-deletion-ledger" &&
+      one([for statement in data.aws_iam_policy_document.age_attestation_dynamodb.statement : statement if statement.sid == "UsersTableReadUpdate"]).actions == toset(["dynamodb:UpdateItem"]) &&
+      one([for statement in data.aws_iam_policy_document.age_attestation_dynamodb.statement : statement if statement.sid == "PreventDeletedProfileReactivation"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]) &&
+      alltrue([for statement in data.aws_iam_policy_document.age_attestation_dynamodb.statement :
+        anytrue([for condition in statement.condition : condition.variable == "dynamodb:EnclosingOperation" && toset(condition.values) == toset(["TransactWriteItems"])])
+      ])
+    )
+    error_message = "Age attestation must update the profile only transactionally with the authoritative deletion fence and pinned corrected package."
+  }
+}
+
+run "default_age_attestation_remains_unchanged" {
+  command = plan
+  assert {
+    condition = (
+      aws_lambda_function.age_attestation.s3_key == "releases/existing-release/age_attestation.zip" &&
+      length(data.aws_iam_policy_document.age_attestation_dynamodb.statement) == 1 &&
+      !output.profile_fence_contract.age_attestation_fenced
+    )
+    error_message = "Adding the candidate must not silently migrate the existing age-attestation writer."
+  }
+}
+
 run "mutable_account_data_artifact_is_rejected" {
   command = plan
   variables {

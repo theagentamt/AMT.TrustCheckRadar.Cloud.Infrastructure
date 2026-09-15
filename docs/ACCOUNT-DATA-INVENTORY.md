@@ -1,10 +1,15 @@
 # Account-data inventory and completion requirements
 
-Status: source-backed inventory draft, not policy approval or a live AWS audit.
+Status: infrastructure and Lambda source inventories reconciled; policy and live
+AWS audit remain pending. This is not activation approval.
 Infrastructure baseline: `297b654`; Lambda baseline:
 `195859848cde7de04b26da83f2fa34b9ff5922f4`.
 The feature branch is committed; `main` and deployed resources are unchanged.
 Account deletion/export and consumer recovery remain gated.
+
+The following matrix records baseline behavior. Source fixes verified in the
+subsequent Lambda commit `960282963443ccf257e135dbcd6f2e8429ba0312` are described
+under "Inventory-phase source handback" below; they are not deployed fixes.
 
 ## Scope And Evidence
 
@@ -166,6 +171,67 @@ short decision list after the Lambda inventory reconciliation:
 
 No new retention policy, live cleanup, index, store, public route or deployment
 has been approved by this inventory document.
+
+## Inventory-Phase Source Handback
+
+The Lambda task's [full record-family matrix](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/blob/960282963443ccf257e135dbcd6f2e8429ba0312/docs/account-data-inventory.md)
+matches the infrastructure findings. The actual implementation commit is
+`43300440b611c018fe8c44e4410f93e4117097de`; documentation alignment is
+`960282963443ccf257e135dbcd6f2e8429ba0312`, verified on GitHub.
+
+Source changes now remove `uri` from new URL-cache records and suppress legacy
+URI values on reads. They do not erase historical rows or backups. Signup
+profile creation and age-attestation writes now check the fixed deletion fence
+inside the same transaction; age attestation cannot reactivate a deleting
+profile. All other uncovered producer paths still need review.
+
+Verified local ZIP hashes in the Lambda repository's current `dist` directory:
+
+| Artifact | SHA-256 |
+| --- | --- |
+| age_attestation.zip | `fd7e2045fb57cf0683251752b840b6dbd4a55adb2432a9c789b1cbe6550ef545` |
+| post_confirmation.zip | `b988dc830a77aa332d036ba6e1325295ede9cd33d514c9cd59ed380e55ba593b` |
+| web_risk_communication.zip | `7aa2701f77c05db23f9ac45ba7ac9765a5d47246e0858983027ace8fca26361e` |
+
+Lambda reports 284 tests and 129 subtests passing, compilation, shellcheck and
+campaign evidence validation. Infrastructure did not rerun the Lambda suite.
+The older `/tmp/amt-lambda-release-1958598` staged set remains unchanged and
+must not be relabeled as this release.
+
+## Prepared Profile-Writer Integration
+
+`profile_fence_deployment` is a separate null-by-default candidate input in
+both `terraform/api` (age attestation) and `terraform/identity-workflows`
+(post-confirmation). Each requires the same reviewed release ID but its own
+ZIP's S3 object version and source hash, an approval reference and separate
+UAT/Prod promotion approval. No S3 object versions have been invented.
+
+Selecting a candidate provides the authoritative ledger environment variable,
+transaction-only profile UpdateItem/PutItem and ledger ConditionCheckItem,
+scoped to the environment tables and USER#/ACCOUNT# partition families. IAM
+does not enforce SK values; exact PROFILE and ACCOUNT_DELETION keys are checked
+by the Lambda implementation. IAM attachment ordering precedes the function
+update, but AWS code/config/IAM changes are not a single atomic operation.
+Plan a controlled rollout: old code can fail closed while permissions are
+tightened; do not promise a zero-interruption switch.
+
+Post-confirmation additionally requires `post_confirmation_log_policy` with a
+finite retention period and approval reference. Default null leaves the
+existing log group/retention untouched. Inspect and import an existing group
+before applying the managed resource; never destroy/recreate logs to adopt it.
+Fourteen days matches the current other Dev Lambda defaults, but it has not
+been selected or approved for this unmanaged group.
+
+URL-risk deployment can use the existing explicit S3 key/object-version inputs
+for that function alone. Terraform already provides the dedicated
+WEB_RISK_TABLE_NAME and table-scoped IAM. Do not switch the global artifact
+release just to publish this one fix or rely on the legacy users-table fallback.
+Reverify its checksum before future publication.
+
+No profile candidate or log policy is selected in environment tfvars. Both
+writers and every remaining inventory component must pass deployed acceptance
+before account deletion can activate. CI now includes plan-only mocked identity
+tests; none runs the Cognito-update provisioner or touches AWS.
 
 ## Read-Only Metadata Verification
 
