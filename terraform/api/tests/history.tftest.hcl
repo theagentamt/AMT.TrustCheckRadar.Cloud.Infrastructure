@@ -159,13 +159,63 @@ run "candidate_is_pinned_disabled_and_access_token_only" {
 
 run "runtime_permissions_are_scoped" {
   command = plan
+  # Resolve generated ARNs so the complete resource boundary is testable at plan.
+  override_resource {
+    target          = aws_cloudwatch_log_group.history_api["read"]
+    override_during = plan
+    values          = { arn = "arn:aws:logs:us-east-1:107827791950:log-group:/aws/lambda/test-history-read" }
+  }
+  override_resource {
+    target          = aws_cloudwatch_log_group.history_api["mutation"]
+    override_during = plan
+    values          = { arn = "arn:aws:logs:us-east-1:107827791950:log-group:/aws/lambda/test-history-mutation" }
+  }
+  override_resource {
+    target          = aws_secretsmanager_secret.history_cursor[0]
+    override_during = plan
+    values          = { arn = "arn:aws:secretsmanager:us-east-1:107827791950:secret:test-history-cursor-ABC123" }
+  }
+  assert {
+    condition = alltrue([for policy in data.aws_iam_policy_document.history_api : length([
+      for statement in policy.statement : statement if statement.sid == "ReadAuthoritativeDeviceBinding" &&
+      toset(statement.actions) == toset(["dynamodb:GetItem"]) &&
+      toset(statement.resources) == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/device-bindings"]) &&
+      length(statement.condition) == 1 &&
+      alltrue([for condition in statement.condition :
+        condition.test == "ForAllValues:StringLike" &&
+        condition.variable == "dynamodb:LeadingKeys" &&
+        toset(condition.values) == toset(["USER#*"])
+      ])
+    ]) == 1])
+    error_message = "Both History handlers must read the authoritative ACTIVE_BINDING pointer and DEVICE row only in user-keyed device bindings."
+  }
   assert {
     condition = alltrue([for policy in data.aws_iam_policy_document.history_api : length([
       for statement in policy.statement : statement if statement.sid == "VerifyActiveDeviceBinding" &&
       toset(statement.actions) == toset(["dynamodb:Query"]) &&
-      toset(statement.resources) == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/device-bindings/index/GSI1"])
+      toset(statement.resources) == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/device-bindings/index/GSI1"]) &&
+      length(statement.condition) == 1 &&
+      alltrue([for condition in statement.condition :
+        condition.test == "ForAllValues:StringLike" &&
+        condition.variable == "dynamodb:LeadingKeys" &&
+        toset(condition.values) == toset(["USER#*#ACTIVE"])
+      ])
     ]) == 1])
-    error_message = "Both handlers need Query on only the active-device index."
+    error_message = "Both handlers must retain Query only on the legacy active-device index with active-user keys."
+  }
+  assert {
+    condition = alltrue([for policy in data.aws_iam_policy_document.history_api :
+      length([for statement in policy.statement : statement if
+        anytrue([for resource in statement.resources : strcontains(resource, "device-bindings")])
+      ]) == 2 &&
+      alltrue([for statement in policy.statement :
+        !contains(statement.resources, "*") &&
+        alltrue([for resource in statement.resources : !strcontains(resource, "device-bindings") ||
+          !strcontains(resource, "*")
+        ])
+      ])
+    ])
+    error_message = "History binding access must contain exactly the scoped table read and index query, without wildcard resource grants."
   }
   assert {
     condition = length([for statement in data.aws_iam_policy_document.history_api["mutation"].statement : statement

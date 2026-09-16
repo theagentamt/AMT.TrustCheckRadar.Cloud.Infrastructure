@@ -28,21 +28,21 @@ api_throttle_rate_limit  = 10
 
 # Owner-authorized Dev deployment; activation requires live acceptance separately.
 history_deployment = {
-  release_id         = "8d25e19b691d82caf630edc7ebd84c0b45de0c5c"
-  approval_reference = "docs/HISTORY-DEV-RELEASE-2026-09-16.md"
+  release_id         = "c0396535d7ebe2f9f60a98b6c62f48ea1981b3ca"
+  approval_reference = "docs/HISTORY-DEV-CORRECTION-2026-09-16.md"
   promotion_approved = false
   artifacts = {
     read = {
-      object_version = "u04P8w6W2JYl.KRGzimBmTv41OxpEp4D"
+      object_version = "Ki9acQ0La1lmYO2LVH2gVe5fzKphJADt"
       source_hash    = "1fc+oH3pVjk3L/dyVlX9fy9tXgNWjlmpQonAml9SaLg="
     }
     mutation = {
-      object_version = "WMThHcecTd6ncm2QfXcJbp76.mN30hFF"
+      object_version = "lPScl1FCImts92iSt3qy9DfCToBUIwxN"
       source_hash    = "dRT2+7WAc/AX7WRk3RGkZCxNiYv8ierMMXw8x5T2VnU="
     }
     analysis = {
-      object_version = "Cx14E6dwXcnL5d.VduhOr2kgE3_MH7.X"
-      source_hash    = "HYPqkq+XAQ0xR2HwJkJqxRFKiVxnsGzU3TI1kQuFIUQ="
+      object_version = "mq8Y2J5qJTbXdVHet3DKRFezoBnpTm1z"
+      source_hash    = "b1Qzzpm5PcJl/3jkTPrK1soU833O7N/hw6040QUTZ5o="
     }
   }
 }

@@ -136,6 +136,16 @@ data "aws_iam_policy_document" "history_api" {
     }
   }
   statement {
+    sid       = "ReadAuthoritativeDeviceBinding"
+    actions   = ["dynamodb:GetItem"]
+    resources = [local.device_bindings_table_arn]
+    condition {
+      test     = "ForAllValues:StringLike"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["USER#*"]
+    }
+  }
+  statement {
     sid       = "VerifyActiveDeviceBinding"
     actions   = ["dynamodb:Query"]
     resources = ["${local.device_bindings_table_arn}/index/GSI1"]
