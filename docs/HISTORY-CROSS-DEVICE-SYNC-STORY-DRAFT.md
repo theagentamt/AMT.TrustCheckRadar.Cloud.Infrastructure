@@ -108,3 +108,96 @@ backend-dependent criterion open or explicitly blocked; do not silently narrow i
 Local schema, deterministic fake-clock, transactional and cross-user cursor tests
 need no new AWS resources. Actual API/IAM/cleanup and cross-device convergence
 acceptance remains separate, with ITCR-78 setup and linked mobile/backend tests.
+
+## Ready-to-Create Implementation Issue
+
+Title: Define and implement versioned History deletion synchronization
+
+Project: SECUR4ALL. Type: development story. Initial state: Open.
+Owner: backend/Lambda owner to be assigned by the project owner; infrastructure
+changes remain owned by infrastructure. No assignee or sprint is presumed here.
+
+Description:
+ITCR-38 requires cross-device deletion notices and deterministic refresh/paging.
+Published History V1/c0396535 cannot provide them: delete-one does not change
+historyGeneration, private deletion locators are not returned, and cursors do
+not bind a collection revision. Implement an explicitly versioned compatible
+contract after the decisions below. Do not infer remote deletion from omission,
+alter frozen V1 responses, expose private database rows, or treat this story as
+approval to activate Dev or provision the temporary acceptance environment.
+
+Required decisions before implementation:
+- Public tombstone/offline recovery duration, token lifetime, purge grace and
+  explicit reset behavior. Seven days is a suggestion only, not approved policy.
+- Version negotiation/routes and preservation of all previously accepted IDs.
+- Separate change partition versus same-key tombstones, including mixed-version
+  rollout and V1 serializer behavior; do not assume an index is unnecessary.
+- Revision/recoverability-floor rules, logical expiry cutoff and atomic local
+  replacement semantics. Approve restart-on-change rather than snapshot promises.
+
+Acceptance criteria:
+1. Publish schemas, examples and errors for the approved version; V1 fixtures
+   remain byte-identical and old accepted request IDs remain addressable.
+2. Completion/delete metadata and revision transitions are atomic and replay-safe;
+   clear and badge reset retain their separate effects. No duplicate quota use.
+3. Public deletion notices contain no assessment or submitted content. Their
+   finite retention and the supported offline window are explicit.
+4. Pre/post-read authority/revision fences detect mid-page mutations. Clock-based
+   expiry is handled even before cleanup; no mixed traversal is called a snapshot.
+5. Token expiry/gaps require explicit reset. TTL-first removal cannot silently
+   defeat the recoverability floor; failed purge/floor updates fail closed.
+6. Authenticated subject/binding scope is enforced for pages and changes. Foreign,
+   tampered, expired and wrong-version/query tokens cannot return user data.
+7. Stale responses cannot resurrect deleted content; baseline replacement occurs
+   only after successful complete traversal and final consistency validation.
+8. Query/transaction cost is bounded; document exact storage, IAM, TTL/index and
+   route changes for infrastructure. No Scan or search service without new review.
+9. The linked backend testing story contains case-level evidence. Source/local
+   completion is distinct from deployed/live acceptance and mobile activation.
+
+Requested links (to be created only when issue writes are authorized):
+- This implementation blocks the backend-dependent sync criterion in ITCR-38.
+- Relates to SECUR4ALL-223, SECUR4ALL-224, SECUR4ALL-225, SECUR4ALL-226 and
+  SECUR4ALL-196; these are ownership references, not exact-scope replacements.
+- Is tested by the testing issue below. ITCR-78 gates live setup only, not local
+  design/implementation. Record the eventual real issue IDs before handoff.
+
+## Ready-to-Create Testing Issue
+
+Title: Verify versioned History deletion convergence and pagination isolation
+
+Project: SECUR4ALL. Type: testing story. Initial state: Open.
+Owner: backend QA owner to be assigned by the project owner.
+
+Description:
+Validate the preceding implementation against its owner-approved contract,
+including privacy, backward compatibility, races and bounded retention. Link
+this issue to the actual implementation issue once created; do not fabricate an
+ID. Relate to SECUR4ALL-196 and ITCR-38. Live cases depend on authorized isolated
+setup tracked by ITCR-78; no shared-user destructive testing is permitted.
+
+Required evidence/checklist:
+1. Schema positives/negatives, frozen V1 fixture parity and mixed reader/writer
+   rollout: tombstones are never passed to the old full-item serializer.
+2. Mutations between state/Query/post-state reads, after the final fence, and
+   between pages; equal timestamps, page limits, inserts, deletes and clear.
+3. Clock expiry before worker deletion, offline/token expiry, tombstone gaps,
+   delayed TTL, floor/purge transaction failure and recovery.
+4. Delete on one authorized device, reactivate the other and reconcile; delayed
+   responses cannot restore the deleted item. Inactive binding access fails.
+5. Cross-account/tampered cursor and change-token rejection; no caller-selected
+   account or assessment/secret/subject leakage in evidence or metrics.
+6. Idempotent writer/mutation retries, quota invariance, clear preserving badges,
+   and recognition reset leaving History intact.
+7. Partial rebuild/network failure does not establish deletion by omission;
+   only a completed, validated baseline replaces local state.
+8. Report local unit/contract, synthetic fixture and live API results separately.
+   Include exact source/deployment/contract identifiers, pass/fail/blocked cases,
+   bounded cost/query counts and cleanup evidence; no credentials or raw content.
+
+Exit rule: close only when the agreed scope has evidence and residual risks are
+recorded. Provisioning approval, runtime activation, mobile acceptance and owner
+policy decisions cannot be inferred from passing local tests.
+
+These issue bodies are prepared, not created. The infrastructure workspace's
+YouTrack write restriction remains in force and must not be bypassed/delegated.
