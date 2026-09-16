@@ -132,7 +132,7 @@ Progress uses the common read envelope plus `qualifyingChecks`,
 `awardedBadgeIds` and `badges`. Each of the three badge objects contains `id`,
 `threshold`, `titleKey`, `descriptionKey` and boolean `awarded`.
 
-A clear-History acknowledgment can be:
+A clear-History acknowledgment from published Lambda `c0396535` is:
 
 ```json
 {
@@ -140,15 +140,78 @@ A clear-History acknowledgment can be:
   "contractVersion": "1.0.0",
   "operationId": "b564f1ae-d21b-4c4b-9a18-9b8584a168fc",
   "operation": "clear_history",
-  "status": "PENDING",
-  "acceptedAtEpoch": 1789420800,
+  "status": "COMPLETE",
+  "completedAtEpoch": 1789420800,
   "historyGeneration": 1
 }
 ```
 
-Mutation `PENDING` returns HTTP 202; `COMPLETE` returns HTTP 200. Acceptance
-does not assert that physical cleanup already completed. Retrying must preserve
-the operation ID and exact operation/target, not generate a fresh UUID.
+The three deployed mutation operations return HTTP 200 / `COMPLETE`. For clear,
+this acknowledges a generation change and queued erasure, not physical cleanup.
+The source-only History account-data deletion operation can return 202/PENDING;
+it is not exposed by this infrastructure and is not full-account deletion.
+Retries preserve the operation ID and exact operation/target, subject to the
+receipt-retention limitation below. Do not invent a status polling endpoint.
+
+### Published mutation behavior and gaps
+
+Verified against Lambda main `c0396535d7ebe2f9f60a98b6c62f48ea1981b3ca` and
+V1 contractVersion `1.0.0`; these are source observations, not live acceptance.
+
+| Operation | Fields emitted beyond the common receipt | Meaning of COMPLETE |
+| --- | --- | --- |
+| `delete_one` | `completedAtEpoch`, `targetRequestId` | Current active locator content/replay erased atomically, or a no-op when absent/non-current; not a full-storage erasure audit |
+| `clear_history` | `completedAtEpoch`, `historyGeneration` | History generation advanced and erasure job queued; badges preserved |
+| `reset_progress` | `completedAtEpoch`, `recognitionGeneration` | New empty recognition generation; History preserved |
+
+Common fields are schemaVersion, contractVersion, operationId, operation and
+status. The frozen JSON schema requires only those common fields: it does not
+conditionally require timestamps, target or generation. Do not describe the
+stronger source behavior as a schema guarantee. Mobile can conservatively reject
+an incomplete/mismatched receipt as unconfirmed; it must not invent missing
+values, declare physical purge, or issue a replacement mutation automatically.
+
+History read/export/bootstrap/delete/clear/reset enforce valid access-token
+claims, active eligible profile, deletion fence and active binding. They do not
+currently require a recent `auth_time`. A confirmation dialog or device biometric
+is not server fresh-auth proof. The separate, disabled consumer recovery and
+account-deletion request candidates check signed `auth_time` within 300 seconds,
+plus `iat` consistency and bounded future skew. That rule is not an approved
+History requirement or a working full-account export contract. Token refresh
+does not substitute for a new sign-in satisfying the server freshness rule.
+
+Same-subject operation-ID replay returns the original stored receipt for the
+same operation/target; a different operation/target conflicts. Replayed times
+and generations describe the original result, not current account state. Never
+roll back fresher local generations from an old receipt. Current `_receipt`
+does not check expiresAt: an expired-but-present receipt can replay, while a
+physically removed seven-day receipt makes the ID look new. Reusing it can
+clear/reset newer data. Stop automatic recovery at the conservative receipt
+window; retain the uncertain outcome and require explicit resolution/new intent.
+There is no public mutation-status API or expired-ID rejection guarantee.
+
+The accepted requestId pattern permits literal `export`. GET
+`/v1/users/history/export` is the static export route, so that ID cannot be
+retrieved through the existing detail URL. URL encoding is not a supported
+workaround. [API Gateway selects the most-specific route](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html).
+New mobile IDs can use UUIDs, but that does not fix already accepted IDs or
+change the server contract. Do not relabel/delete legacy IDs.
+
+Proposals, NOT published contract changes: add operation/status-conditional
+receipt schemas; define safe expired-operation handling and recovery; add an
+unambiguous detail route such as `/v1/users/history/items/{requestId}` while
+preserving legacy routes. The route requires coordinated Lambda dispatch,
+Terraform route/invoke permission and consumer-contract changes before use.
+Any new History fresh-auth requirement needs its own approved policy and contract.
+These source/schema/fixture changes can be developed locally without provisioning
+the temporary acceptance environment, but must not be reported deployed or tested
+against real users until separately released and accepted.
+
+Source references:
+[mutation service](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/blob/c0396535d7ebe2f9f60a98b6c62f48ea1981b3ca/src/history_mutation_api/service.py),
+[mutation handler](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/blob/c0396535d7ebe2f9f60a98b6c62f48ea1981b3ca/src/history_mutation_api/app.py),
+[published schema](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/blob/c0396535d7ebe2f9f60a98b6c62f48ea1981b3ca/contracts/history/v1/api-schemas.json),
+[History authorization](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/blob/c0396535d7ebe2f9f60a98b6c62f48ea1981b3ca/src/shared_history/security.py).
 
 Lambda error envelope:
 

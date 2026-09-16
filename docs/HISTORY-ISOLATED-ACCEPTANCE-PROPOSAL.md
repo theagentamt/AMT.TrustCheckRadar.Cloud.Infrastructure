@@ -3,6 +3,10 @@
 Planning only, September 16, 2026. No provisioning, accounts, activation or paid
 calls are authorized by this document. Shared Dev remains unchanged.
 
+Owner setup story: [ITCR-78](https://andmorethings.youtrack.cloud/issue/ITCR-78)
+(Open, assigned admin, Sprint 3A; created by the iOS owner). ITCR-77 live
+verification depends on that setup. Story creation is not provisioning approval.
+
 ## Bounded Footprint
 
 One run in account 107827791950/us-east-1, uniquely prefixed and tagged with
