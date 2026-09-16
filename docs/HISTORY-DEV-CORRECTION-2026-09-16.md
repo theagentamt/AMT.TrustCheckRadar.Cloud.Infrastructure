@@ -1,7 +1,7 @@
 # Dev History correction and testing handoff
 
-Status: verified source prepared for the existing Dev release workflow. This is
-not feature activation or authenticated mobile acceptance.
+Status: deployed and live-verified in Dev through the existing release workflow.
+This is not feature activation or authenticated mobile acceptance.
 
 ## Scope
 
@@ -45,10 +45,12 @@ mutations, or paid analysis calls are included.
 
 ## Testing Handoff
 
-Implementation/testing issue IDs for this correction are not yet verified.
-YouTrack write restrictions remain in effect; this document does not substitute
-for a linked testing story or authorize story closure. ITCR-77 is the existing
-iOS testing story, not a claimed backend testing story.
+The iOS owner verified SECUR4ALL-223 (infrastructure, In Progress) and
+SECUR4ALL-224/225/226 (Lambda, To Do) read-only in YouTrack. Each relates to
+SECUR4ALL-196 (cross-account/object-isolation tests), but coverage for this exact
+correction is not verified. YouTrack write restrictions remain in effect; this
+document does not substitute for linked testing coverage or authorize closure.
+ITCR-77 is the existing iOS testing story, not a backend testing story.
 
 1. Run `terraform -chdir=terraform/api test -no-color`, validation, formatting
    and diff checks. Expect all 55 API tests to pass, including both IAM roles.
@@ -86,3 +88,31 @@ Full-account export/deletion and consumer recovery remain outside this release.
 
 Activation still requires approved test accounts, release-scope confirmation,
 cleanup/reconciliation and alert acceptance. No such acceptance is asserted here.
+
+## Deployment Result
+
+[PR 5](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/pull/5)
+merged as `a0967f266ee8f6a06ff44ae6bc7456e07afb195e` after
+[PR CI](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35151338982)
+passed. [Main CI](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35151701150)
+and [Dev deployment](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35151701123)
+also succeeded. The API stack applied exactly five updates, no additions or
+deletions; every other stack reported zero changes.
+
+Post-deployment AWS CLI verification on September 16 confirmed:
+
+- Both inline policies contain the exact scoped GetItem and GSI1 Query grants.
+- Separate single-resource IAM simulations allowed table GetItem for `USER#*`
+  and GSI1 Query for active-user keys. Table Query, Scan and binding writes were
+  denied; non-user table keys were denied. These are synthetic policy tests,
+  not proof of cross-user handler isolation or real DynamoDB access.
+- Analysis, History read and History mutation are Active/Successful, with
+  CodeSha256 equal to their pins. Analysis is
+  `b1Qzzpm5PcJl/3jkTPrK1soU833O7N/hw6040QUTZ5o=`.
+- All relevant History/recognition/replay feature flags remain false. Both
+  EventBridge cleanup rules and the account-deletion event source remain disabled.
+- Unauthenticated GET History and GET Progress each return HTTP 401.
+
+No customer records were read or changed, no test identities were created,
+and no paid model calls or authenticated acceptance tests ran. Infrastructure
+and Lambda corrections are deployed; mobile feature readiness is still gated.
