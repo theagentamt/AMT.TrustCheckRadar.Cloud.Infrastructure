@@ -245,6 +245,38 @@ resource "aws_iam_role_policy" "worker_logging" {
 data "aws_iam_policy_document" "publisher_runtime" {
   count = local.enabled ? 1 : 0
 
+  dynamic "statement" {
+    for_each = var.publisher_fence_artifact == null ? [] : [1]
+    content {
+      sid       = "ReadFixedAccountDeletionFence"
+      actions   = ["dynamodb:GetItem"]
+      resources = [local.foundation.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.publisher_fence_artifact == null ? [] : [1]
+    content {
+      sid       = "CheckFixedAccountDeletionFenceTransactionally"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.foundation.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
   statement {
     sid    = "ReadCampaignOutboxStream"
     effect = "Allow"
@@ -260,13 +292,26 @@ data "aws_iam_policy_document" "publisher_runtime" {
   statement {
     sid    = "WriteTransientPipeline"
     effect = "Allow"
-    actions = [
+    actions = var.publisher_fence_artifact != null ? ["dynamodb:GetItem"] : [
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:UpdateItem",
       "dynamodb:DeleteItem",
     ]
     resources = [local.campaign.pipeline_table_arn]
+  }
+  dynamic "statement" {
+    for_each = var.publisher_fence_artifact == null ? [] : [1]
+    content {
+      sid       = "WriteFencedTransientPipeline"
+      actions   = ["dynamodb:PutItem", "dynamodb:UpdateItem"]
+      resources = [local.campaign.pipeline_table_arn]
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
   }
 
   statement {
@@ -688,10 +733,16 @@ resource "aws_lambda_function" "worker" {
   architectures                  = ["arm64"]
   reserved_concurrent_executions = var.reserved_concurrency
 
-  s3_bucket         = local.foundation.artifact_bucket_name
-  s3_key            = each.key == "deletion" && var.deletion_bridge_artifact != null ? "releases/${var.deletion_bridge_artifact.release_id}/campaign_deletion_bridge.zip" : "${local.artifact_key}/${each.value.artifact}"
-  s3_object_version = each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.object_version : null
-  source_code_hash  = each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.source_hash : null
+  s3_bucket = local.foundation.artifact_bucket_name
+  s3_key = each.key == "publisher" && var.publisher_fence_artifact != null ? "releases/${var.publisher_fence_artifact.release_id}/campaign_observation_publisher.zip" : (
+    each.key == "deletion" && var.deletion_bridge_artifact != null ? "releases/${var.deletion_bridge_artifact.release_id}/campaign_deletion_bridge.zip" : "${local.artifact_key}/${each.value.artifact}"
+  )
+  s3_object_version = each.key == "publisher" && var.publisher_fence_artifact != null ? var.publisher_fence_artifact.object_version : (
+    each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.object_version : null
+  )
+  source_code_hash = each.key == "publisher" && var.publisher_fence_artifact != null ? var.publisher_fence_artifact.source_hash : (
+    each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.source_hash : null
+  )
 
   environment {
     variables = merge({
@@ -711,6 +762,8 @@ resource "aws_lambda_function" "worker" {
       MAX_CONTRIBUTOR_SUBMISSIONS = "3"
       }, each.key == "publisher" ? {
       USERS_TABLE_NAME = local.foundation.users_table_name
+      } : {}, each.key == "publisher" && var.publisher_fence_artifact != null ? {
+      DELETION_LEDGER_TABLE_NAME = local.foundation.deletion_ledger_table_name
       } : {}, each.key == "deletion" ? {
       USERS_TABLE_NAME           = local.foundation.users_table_name
       DELETION_LEDGER_TABLE_NAME = local.foundation.deletion_ledger_table_name
@@ -719,9 +772,23 @@ resource "aws_lambda_function" "worker" {
     } : {})
   }
 
+  lifecycle {
+    precondition {
+      condition = each.key != "publisher" || var.publisher_fence_artifact == null ? true : try(
+        split(":", local.foundation.users_table_arn)[4] == data.aws_caller_identity.current.account_id &&
+        local.foundation.users_table_name == "${var.project_name}-${var.environment}-users" &&
+        local.foundation.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.foundation.users_table_arn)[4]}:table/${local.foundation.users_table_name}" &&
+        local.foundation.deletion_ledger_table_name == "${var.project_name}-${var.environment}-deletion-ledger" &&
+        local.foundation.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.foundation.users_table_arn)[4]}:table/${local.foundation.deletion_ledger_table_name}", false
+      )
+      error_message = "Publisher fencing requires exact same-account/Region/environment users and deletion-ledger tables."
+    }
+  }
+
   depends_on = [
     aws_cloudwatch_log_group.worker,
     aws_iam_role_policy.worker_logging,
+    aws_iam_role_policy.publisher_runtime,
   ]
 
   tags = merge(local.common_tags, {

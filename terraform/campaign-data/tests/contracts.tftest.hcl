@@ -85,6 +85,22 @@ run "enabled_dev_contract" {
     condition     = aws_budgets_budget.campaign[0].limit_amount == "25"
     error_message = "The Dev campaign budget must be $25 per month."
   }
+  assert {
+    condition = (
+      one([for s in data.aws_iam_policy_document.budget_topic[0].statement : s if s.sid == "AllowCloudWatchPublish"]).actions == toset(["sns:Publish"]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.budget_topic[0].statement : s if s.sid == "AllowCloudWatchPublish"]).condition :
+        c.test == "StringEquals" && c.variable == "aws:SourceAccount" && toset(c.values) == toset(["107827791950"])
+      ]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.budget_topic[0].statement : s if s.sid == "AllowCloudWatchPublish"]).condition :
+        c.test == "ArnLike" && c.variable == "aws:SourceArn" && toset(c.values) == toset([
+          "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-campaign-*",
+          "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-history-*",
+          "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-*",
+        ])
+      ])
+    )
+    error_message = "The existing alert topic must accept only same-account/Region/environment campaign, History and account-data alarms."
+  }
 }
 
 run "uat_requires_promotion" {

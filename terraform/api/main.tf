@@ -503,10 +503,44 @@ resource "aws_iam_role_policy_attachment" "device_recovery_runtime" {
 }
 
 data "aws_iam_policy_document" "purchase_handoff_runtime" {
+  dynamic "statement" {
+    for_each = var.purchase_handoff_fence_deployment == null ? {} : {
+      Users  = { arn = local.users_table_arn, keys = ["USER#*"] }
+      Ledger = { arn = local.deletion_ledger_table_arn, keys = ["ACCOUNT#*"] }
+    }
+    content {
+      sid       = "CheckPurchaseAuthority${statement.key}"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [statement.value.arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = statement.value.keys
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.purchase_handoff_fence_deployment == null ? [] : [1]
+    content {
+      sid       = "ReadPurchaseDeletionFence"
+      actions   = ["dynamodb:GetItem"]
+      resources = [local.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+    }
+  }
   statement {
     sid    = "PurchaseEntitlementsReadWrite"
     effect = "Allow"
-    actions = [
+    actions = var.purchase_handoff_fence_deployment != null ? ["dynamodb:GetItem"] : [
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:UpdateItem",
@@ -514,10 +548,36 @@ data "aws_iam_policy_document" "purchase_handoff_runtime" {
       "dynamodb:Query"
     ]
 
-    resources = [
+    resources = var.purchase_handoff_fence_deployment != null ? [local.purchase_entitlements_table_arn] : [
       local.purchase_entitlements_table_arn,
       "${local.purchase_entitlements_table_arn}/index/*"
     ]
+    dynamic "condition" {
+      for_each = var.purchase_handoff_fence_deployment == null ? [] : [1]
+      content {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*", "TOKEN#*"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.purchase_handoff_fence_deployment == null ? [] : [1]
+    content {
+      sid       = "WriteFencedPurchaseTransaction"
+      actions   = ["dynamodb:PutItem"]
+      resources = [local.purchase_entitlements_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*", "TOKEN#*"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
   }
 
   statement {
@@ -587,6 +647,40 @@ resource "aws_iam_role_policy_attachment" "entitlement_snapshot_runtime" {
 }
 
 data "aws_iam_policy_document" "campaign_participation_runtime" {
+  dynamic "statement" {
+    for_each = var.campaign_participation_fence_deployment == null ? {} : {
+      users  = { arn = local.users_table_arn, keys = ["USER#*"] }
+      ledger = { arn = local.deletion_ledger_table_arn, keys = ["ACCOUNT#*"] }
+    }
+    content {
+      sid       = "CheckParticipationAuthority${title(statement.key)}"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [statement.value.arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = statement.value.keys
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.campaign_participation_fence_deployment == null ? [] : [1]
+    content {
+      sid       = "ReadParticipationDeletionFence"
+      actions   = ["dynamodb:GetItem"]
+      resources = [local.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+    }
+  }
   statement {
     sid     = "ReadParticipationAndEntitlements"
     effect  = "Allow"
@@ -599,21 +693,32 @@ data "aws_iam_policy_document" "campaign_participation_runtime" {
     ]
   }
 
-  statement {
-    sid     = "WriteParticipationTransaction"
-    effect  = "Allow"
-    actions = ["dynamodb:PutItem"]
-
-    resources = [
-      local.users_table_arn,
-      local.purchase_entitlements_table_arn,
-      local.deletion_ledger_table_arn
-    ]
-
-    condition {
-      test     = "ForAnyValue:StringEquals"
-      variable = "dynamodb:EnclosingOperation"
-      values   = ["TransactWriteItems"]
+  dynamic "statement" {
+    for_each = var.campaign_participation_fence_deployment == null ? {
+      Legacy = { resources = [local.users_table_arn, local.purchase_entitlements_table_arn, local.deletion_ledger_table_arn], keys = [] }
+      } : {
+      Users        = { resources = [local.users_table_arn], keys = ["USER#*"] }
+      Entitlements = { resources = [local.purchase_entitlements_table_arn], keys = ["USER#*"] }
+      Ledger       = { resources = [local.deletion_ledger_table_arn], keys = ["ACCOUNT#*"] }
+    }
+    content {
+      sid       = statement.key == "Legacy" ? "WriteParticipationTransaction" : "WriteParticipationTransaction${statement.key}"
+      effect    = "Allow"
+      actions   = ["dynamodb:PutItem"]
+      resources = statement.value.resources
+      condition {
+        test     = "ForAnyValue:StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+      dynamic "condition" {
+        for_each = length(statement.value.keys) == 0 ? [] : [1]
+        content {
+          test     = "ForAllValues:StringLike"
+          variable = "dynamodb:LeadingKeys"
+          values   = statement.value.keys
+        }
+      }
     }
   }
 }
@@ -819,7 +924,7 @@ resource "aws_lambda_function" "analysis" {
     } : {}, local.history_analysis_env)
   }
 
-  depends_on = [aws_cloudwatch_log_group.analysis_lambda]
+  depends_on = [aws_cloudwatch_log_group.analysis_lambda, aws_iam_role_policy.history_analysis, aws_iam_role_policy_attachment.analysis_runtime]
 
   tags = local.common_tags
 }
@@ -934,9 +1039,10 @@ resource "aws_lambda_function" "campaign_participation" {
   architectures                  = var.campaign_participation_lambda_architectures
   reserved_concurrent_executions = var.campaign_participation_lambda_reserved_concurrency
 
-  s3_bucket         = local.campaign_participation_artifact_bucket_name
-  s3_key            = local.campaign_participation_artifact_key
-  s3_object_version = var.campaign_participation_lambda_s3_object_version
+  s3_bucket         = var.campaign_participation_fence_deployment == null ? local.campaign_participation_artifact_bucket_name : local.foundation.artifact_bucket_name
+  s3_key            = var.campaign_participation_fence_deployment == null ? local.campaign_participation_artifact_key : "releases/${var.campaign_participation_fence_deployment.release_id}/campaign_participation.zip"
+  s3_object_version = var.campaign_participation_fence_deployment == null ? var.campaign_participation_lambda_s3_object_version : var.campaign_participation_fence_deployment.object_version
+  source_code_hash  = var.campaign_participation_fence_deployment == null ? null : var.campaign_participation_fence_deployment.source_hash
 
   environment {
     variables = merge(var.campaign_participation_lambda_env, {
@@ -965,7 +1071,19 @@ resource "aws_lambda_function" "campaign_participation" {
     })
   }
 
-  depends_on = [aws_cloudwatch_log_group.campaign_participation_lambda]
+  lifecycle {
+    precondition {
+      condition = var.campaign_participation_fence_deployment == null ? true : (
+        split(":", local.users_table_arn)[4] == data.aws_caller_identity.account_fence[0].account_id &&
+        local.users_table_name == "${local.name_prefix}-users" &&
+        local.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-users" &&
+        local.deletion_ledger_table_name == "${local.name_prefix}-deletion-ledger" &&
+        local.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-deletion-ledger"
+      )
+      error_message = "Participation fencing requires exact same-account/Region/environment users and deletion-ledger tables."
+    }
+  }
+  depends_on = [aws_cloudwatch_log_group.campaign_participation_lambda, aws_iam_role_policy_attachment.campaign_participation_runtime]
 
   tags = local.common_tags
 }
@@ -981,12 +1099,15 @@ resource "aws_lambda_function" "purchase_handoff" {
   architectures                  = var.purchase_handoff_lambda_architectures
   reserved_concurrent_executions = var.purchase_handoff_lambda_reserved_concurrency
 
-  s3_bucket         = local.purchase_handoff_artifact_bucket_name
-  s3_key            = local.purchase_handoff_artifact_key
-  s3_object_version = var.purchase_handoff_lambda_s3_object_version
+  s3_bucket         = var.purchase_handoff_fence_deployment == null ? local.purchase_handoff_artifact_bucket_name : local.foundation.artifact_bucket_name
+  s3_key            = var.purchase_handoff_fence_deployment == null ? local.purchase_handoff_artifact_key : "releases/${var.purchase_handoff_fence_deployment.release_id}/purchase_handoff.zip"
+  s3_object_version = var.purchase_handoff_fence_deployment == null ? var.purchase_handoff_lambda_s3_object_version : var.purchase_handoff_fence_deployment.object_version
+  source_code_hash  = var.purchase_handoff_fence_deployment == null ? null : var.purchase_handoff_fence_deployment.source_hash
 
   environment {
-    variables = merge(var.purchase_handoff_lambda_env, {
+    variables = merge(var.purchase_handoff_lambda_env, var.purchase_handoff_fence_deployment == null ? {} : {
+      DELETION_LEDGER_TABLE_NAME = local.deletion_ledger_table_name
+      }, {
       PURCHASE_ENTITLEMENTS_TABLE_ARN       = local.purchase_entitlements_table_arn
       PURCHASE_ENTITLEMENTS_TABLE_NAME      = local.purchase_entitlements_table_name
       ENTITLEMENTS_TABLE_ARN                = local.purchase_entitlements_table_arn
@@ -1015,7 +1136,21 @@ resource "aws_lambda_function" "purchase_handoff" {
 
   depends_on = [
     aws_cloudwatch_log_group.purchase_handoff_lambda,
+    aws_iam_role_policy_attachment.purchase_handoff_runtime,
   ]
+
+  lifecycle {
+    precondition {
+      condition = var.purchase_handoff_fence_deployment == null ? true : (
+        split(":", local.users_table_arn)[4] == data.aws_caller_identity.account_fence[0].account_id &&
+        local.users_table_name == "${local.name_prefix}-users" &&
+        local.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-users" &&
+        local.deletion_ledger_table_name == "${local.name_prefix}-deletion-ledger" &&
+        local.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-deletion-ledger"
+      )
+      error_message = "Purchase fencing requires exact same-account/Region/environment users and deletion-ledger tables."
+    }
+  }
 
   tags = local.common_tags
 }

@@ -15,9 +15,113 @@ This supersedes the earlier recovery component gap, not overall completion.
 The subsequent published analysis-cleanup candidate was corrected after review:
 [ANALYSIS-CLEANUP-SOURCE-REVIEW.md](ANALYSIS-CLEANUP-SOURCE-REVIEW.md).
 The latest source is `aa274743`, following the owner's direction to use best
-practices; never select rejected `c87fa89`. Exact retention choices and the
-remaining live-inventory authorization are recorded in the linked review.
+practices; never select rejected `c87fa89`. Exact retention choices are recorded
+in the linked review. The separately authorized count-only Dev inventory is now
+complete; see [DEV-ANALYSIS-COUNT-INVENTORY.md](DEV-ANALYSIS-COUNT-INVENTORY.md).
+Its empty scoped result is not proof of full-account inventory or erasure.
 All three runtime policy gates remain pending; no rollout is approved.
+
+## Follow-up source corrections (2026-09-15)
+
+The owner authorized fixing the remaining History/Badges blockers. Lambda work
+was dispatched to the existing Lambda task; infrastructure changes stay here.
+This authorizes source work/tests, not AWS deployment or activation.
+
+The readiness review found that `shared_history/security.py` rejected a valid
+DynamoDB Number returned as `Decimal` for `ACTIVE_BINDING.stateVersion`.
+The Lambda task has now corrected it with SDK-realistic values,
+invalid/non-finite/fractional versions, old-device rejection and both History
+APIs covered in its reported tests. The reviewed source handback is
+`8d25e19b691d82caf630edc7ebd84c0b45de0c5c`, following `f33f3b8`.
+The final publisher correction makes its post-send status update transactional
+with participation/deletion authority and an existing PENDING target condition.
+Late deletion/withdrawal suppresses the status write. Use this successor, not
+the earlier standalone-update publisher, with the transaction-only IAM.
+
+Lambda reports 318 passing tests plus 139 subtests, compileall/shellcheck and
+package validation. Infrastructure independently verified local HEAD and all
+22 `dist/SHA256SUMS` entries. These are local artifact checks, not immutable S3
+versions or live acceptance. No new package was uploaded to AWS.
+
+Infrastructure now prepares optional account-data monitoring for runtime/stream
+failures, reconciliation heartbeat/full-pass progress and policy-blocked cleanup.
+The eleven alarms use the handler's exact low-cardinality metrics. Missing
+scheduled heartbeat actions stay disabled with the candidate schedule; no
+monitoring destination is selected. See [HISTORY-OPERATIONS.md](HISTORY-OPERATIONS.md).
+Source changes and mocked tests do not satisfy live notification delivery or
+24-hour cleanup acceptance. Full-account component/finalizer work remains a
+separate Lambda handback prerequisite.
+
+Three additional nullable release inputs prepare the late-writer corrections:
+
+- API `campaign_participation_fence_deployment`: release ID, S3 object version,
+  SHA-256 (base64), approval reference and non-Dev promotion approval. The
+  candidate receives transaction-only ConditionCheckItem on users `USER#*` and
+  deletion-ledger `ACCOUNT#*`, plus a scoped ledger GetItem. Existing
+  authoritative table env values cannot be overridden. Null preserves the
+  existing package and permissions.
+- API `purchase_handoff_fence_deployment`: the same immutable fields for
+  `purchase_handoff.zip`. It adds a scoped ledger GetItem, transaction-only
+  users/ledger ConditionCheckItem, and the authoritative deletion-ledger env
+  value. Pinned entitlement access is limited to GetItem and transaction-only
+  PutItem on `USER#*`/`TOKEN#*`; standalone mutations and index access are removed.
+  The Lambda commits
+  its entitlement and token ownership writes in the same fenced transaction.
+  This does not approve entitlement deletion or any anti-replay retention policy.
+- Campaign-processing `publisher_fence_artifact`: the same immutable fields,
+  applied only to `campaign_observation_publisher.zip`. It adds the exact
+  deletion-ledger env value and scoped GetItem/transaction ConditionCheckItem
+  on `ACCOUNT#*`. Pipeline access separates GetItem from transaction-only
+  PutItem/UpdateItem, without DeleteItem. Other worker packages and the kill switch remain
+  unchanged. The candidate must understand outbox locator records before an
+  analysis writer begins producing them.
+
+All three pinned functions validate that the authoritative users and deletion-ledger
+tables match the deploying STS account, Region and environment. Account-data
+outbox/KMS and monitoring guards also reject another deploying account. Pinned
+participation writes are split into exact table/partition-family statements.
+Their IAM updates precede
+the Lambda configuration update, but IAM/code rollout is not atomic; plan a
+controlled fail-closed release and test permission propagation before activation.
+No artifact input has been populated and no package uploaded.
+
+The candidate account-data worker also receives outbox cleanup wiring when
+campaign storage validates against the exact environment/account/Region table
+and transient CMK. The source contract uses:
+
+| Setting | Prepared value |
+| --- | --- |
+| `CAMPAIGN_OUTBOX_TABLE_NAME` | Exact validated outbox table; empty when campaign storage is disabled |
+| `ACCOUNT_DELETION_CAMPAIGN_OUTBOX_PAGE_SIZE` | `100` |
+| `CAMPAIGN_OUTBOX_LOCATOR_COVERAGE_STATUS` | `pending` |
+
+IAM separates Query on `ACCOUNT#*`, GetItem on `EVENT#*`, and DeleteItem on
+both families in only the outbox table. There is no outbox Scan, index access,
+PutItem or UpdateItem grant. The Lambda validates the locator's environment,
+account hash and event ID, reads the target's owning account, and conditionally
+deletes it before deleting the locator. IAM leading keys do not enforce
+cross-item ownership or sort keys; those checks require Lambda tests.
+CMK Decrypt/DescribeKey are restricted to the exact transient key, caller account
+and DynamoDB service. Encrypted-table access must pass a deployment smoke test;
+see [DynamoDB encryption usage notes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/encryption.usagenotes.html).
+
+No new index, table, KMS key or queue is needed. New source writes a minimal
+same-table account locator alongside the event. Older events may lack locators,
+and DynamoDB TTL does not guarantee physical deletion order. Coverage remains
+pending until legacy inventory, coordinated writer rollout, expiry and restore
+tests establish that no content-bearing event can be stranded. The prior empty
+analysis inventory says nothing about this outbox. No live outbox inventory has
+yet been executed in this follow-up, and complete account erasure is not claimed.
+
+The account-data candidate also has Query/DeleteItem on users `USER#*`, with
+`USER_PROFILE_DELETION_POLICY_STATUS=pending`. The source must refuse profile
+cleanup until the fixed prerequisites have valid operation-bound receipts,
+including ENTITLEMENTS and CAMPAIGN_OUTBOX. It may then conditionally remove the
+deletion-requested profile/current participation/operation state and preserve
+validated minimal 400-day consent audit evidence. IAM cannot constrain these
+sort-key values; the Lambda's exact allowlist and rejection of unknown families
+are mandatory. No users Scan/PutItem permission or Cognito AdminDeleteUser is
+added. Profile policy, overall completion and activation remain unapproved.
 
 ## Ownership
 
@@ -151,13 +255,12 @@ mobile change has been performed in this orchestration work.
 
 ## Local Verification
 
-75 mocked Terraform tests pass cumulatively across the continued preparation: API 38,
-identity-workflows 5, History-processing 19, foundation 5, campaign-processing 4
-and focused bootstrap/access 4. The 12 helper-script tests also pass.
-All affected Terraform roots validate; recursive formatting and whitespace
-checks pass. These tests prove configuration guardrails, not live identity,
-transaction behavior, erasure deadlines or alert delivery. Recovery source and
-staged checksums are verified below; account-data work is still in progress.
+The 2026-09-15 follow-up passes 55 mocked API tests and 4 campaign-processing
+tests. Both edited roots validate; recursive formatting and whitespace checks
+pass. Earlier verification of unchanged roots remains historical evidence, not
+a claim that every stack was rerun in this follow-up. These tests prove
+configuration guardrails, not live identity, transaction behavior, erasure
+deadlines or alert delivery. Full-account work remains incomplete.
 
 ## Recovery Source Handback
 

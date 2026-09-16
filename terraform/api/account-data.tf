@@ -24,6 +24,13 @@ locals {
   account_data_name       = "${local.name_prefix}-account-data-api"
   account_data_pool_arn   = "arn:aws:cognito-idp:${var.aws_region}:${split(":", local.users_table_arn)[4]}:userpool/${local.cognito_user_pool_id}"
   account_data_stream_arn = try(local.foundation.deletion_ledger_stream_arn, null)
+  account_data_outbox_storage_valid = var.campaign_intelligence_enabled && try(
+    split(":", local.users_table_arn)[4] == data.aws_caller_identity.account_fence[0].account_id &&
+    local.campaign.schema_version == 1 && local.campaign.enabled && local.campaign.environment == var.environment &&
+    local.campaign_outbox_table_name == "${local.name_prefix}-campaign-outbox" &&
+    local.campaign_outbox_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-campaign-outbox" &&
+    can(regex("^arn:aws:kms:${var.aws_region}:${split(":", local.users_table_arn)[4]}:key/[0-9a-f-]{36}$", local.campaign.transient_kms_key_arn)), false
+  )
 }
 
 resource "aws_cloudwatch_log_group" "account_data" {
@@ -84,6 +91,16 @@ data "aws_iam_policy_document" "account_data" {
     actions   = ["dynamodb:Scan"]
     resources = [local.deletion_ledger_table_arn]
   }
+  statement {
+    sid       = "EraseFencedUserProfileState"
+    actions   = ["dynamodb:Query", "dynamodb:DeleteItem"]
+    resources = [local.users_table_arn]
+    condition {
+      test     = "ForAllValues:StringLike"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["USER#*"]
+    }
+  }
   dynamic "statement" {
     for_each = local.recovery_storage_valid ? [1] : []
     content {
@@ -125,6 +142,41 @@ data "aws_iam_policy_document" "account_data" {
       test     = "ForAllValues:StringLike"
       variable = "dynamodb:LeadingKeys"
       values   = ["LIFECYCLE#${var.environment}"]
+    }
+  }
+  dynamic "statement" {
+    for_each = local.account_data_outbox_storage_valid ? {
+      EnumerateAccountOutboxLocators = { actions = ["dynamodb:Query"], keys = ["ACCOUNT#*"] }
+      ReadAccountOutboxTarget        = { actions = ["dynamodb:GetItem"], keys = ["EVENT#*"] }
+      EraseAccountOutboxContent      = { actions = ["dynamodb:DeleteItem"], keys = ["ACCOUNT#*", "EVENT#*"] }
+    } : {}
+    content {
+      sid       = statement.key
+      actions   = statement.value.actions
+      resources = [local.campaign_outbox_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = statement.value.keys
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = local.account_data_outbox_storage_valid ? [1] : []
+    content {
+      sid       = "DecryptAccountOutboxThroughDynamoDB"
+      actions   = ["kms:Decrypt", "kms:DescribeKey"]
+      resources = [local.campaign.transient_kms_key_arn]
+      condition {
+        test     = "StringEquals"
+        variable = "kms:CallerAccount"
+        values   = [split(":", local.users_table_arn)[4]]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "kms:ViaService"
+        values   = ["dynamodb.${var.aws_region}.amazonaws.com"]
+      }
     }
   }
   statement {
@@ -179,6 +231,9 @@ resource "aws_lambda_function" "account_data" {
       ACCOUNT_DELETION_RECEIPT_RETENTION_DAYS         = "120"
       ANALYSIS_ABUSE_TABLE_NAME                       = local.analysis_abuse_control_table_name
       ACCOUNT_DELETION_ANALYSIS_ABUSE_PAGE_SIZE       = "100"
+      CAMPAIGN_OUTBOX_TABLE_NAME                      = local.account_data_outbox_storage_valid ? local.campaign_outbox_table_name : ""
+      ACCOUNT_DELETION_CAMPAIGN_OUTBOX_PAGE_SIZE      = "100"
+      CAMPAIGN_OUTBOX_LOCATOR_COVERAGE_STATUS         = "pending"
       ANALYSIS_REQUEST_ID_TTL_SECONDS                 = "900"
       ANALYSIS_REQUEST_DEDUPE_POLICY_STATUS           = "pending"
       ANALYSIS_LEGACY_REQUEST_RETENTION_POLICY_STATUS = "pending"
@@ -192,6 +247,7 @@ resource "aws_lambda_function" "account_data" {
       ACCOUNT_DELETION_ENABLED                        = "false"
       ACCOUNT_DELETION_POLICY_STATUS                  = "pending"
       ACCOUNT_DELETION_COMPLETION_STATUS              = "incomplete"
+      USER_PROFILE_DELETION_POLICY_STATUS             = "pending"
       ACCOUNT_DELETION_RECONCILIATION_SCAN_LIMIT      = "100"
       ACCOUNT_DELETION_RECONCILIATION_MAX_PAGES       = "10"
       ACCOUNT_DELETION_DEVICE_DELETE_PAGE_SIZE        = "100"
@@ -203,7 +259,12 @@ resource "aws_lambda_function" "account_data" {
   }
   lifecycle {
     precondition {
+      condition     = !var.campaign_intelligence_enabled || local.account_data_outbox_storage_valid
+      error_message = "Account-data outbox cleanup requires the exact same-environment/account/Region outbox table and transient KMS key."
+    }
+    precondition {
       condition = try(
+        split(":", local.users_table_arn)[4] == data.aws_caller_identity.account_fence[0].account_id &&
         local.users_table_name == "${local.name_prefix}-users" &&
         local.deletion_ledger_table_name == "${local.name_prefix}-deletion-ledger" &&
         local.device_bindings_table_name == "${local.name_prefix}-device-bindings" &&

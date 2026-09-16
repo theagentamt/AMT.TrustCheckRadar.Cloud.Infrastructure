@@ -190,23 +190,6 @@ jobs:
               --key "releases/$TF_VAR_artifact_release/$artifact" >/dev/null
           done
 
-      - name: Plan API
-        if: env.DEPLOY_SCOPE == 'all'
-        run: |
-          terraform -chdir=terraform/api init -reconfigure \
-            -backend-config="bucket=$TF_VAR_state_bucket_name" \
-            -backend-config="key=$STATE_KEY_PREFIX/$DEPLOY_ENV/api.tfstate" \
-            -backend-config="region=$TF_VAR_state_bucket_region" \
-            -backend-config="encrypt=true" \
-            -backend-config="use_lockfile=true"
-          terraform -chdir=terraform/api plan \
-            -var-file="../../environments/$DEPLOY_ENV/api.tfvars" \
-            -out=api.tfplan
-
-      - name: Apply API
-        if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
-        run: terraform -chdir=terraform/api apply -auto-approve api.tfplan
-
       - name: Verify immutable campaign artifacts
         if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
         run: |
@@ -257,6 +240,24 @@ jobs:
       - name: Apply campaign processing
         if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
         run: terraform -chdir=terraform/campaign-processing apply -auto-approve campaign-processing.tfplan
+
+      # Upgrade the outbox consumer before analysis can emit new locator records.
+      - name: Plan API
+        if: env.DEPLOY_SCOPE == 'all'
+        run: |
+          terraform -chdir=terraform/api init -reconfigure \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=$STATE_KEY_PREFIX/$DEPLOY_ENV/api.tfstate" \
+            -backend-config="region=$TF_VAR_state_bucket_region" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+          terraform -chdir=terraform/api plan \
+            -var-file="../../environments/$DEPLOY_ENV/api.tfvars" \
+            -out=api.tfplan
+
+      - name: Apply API
+        if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'
+        run: terraform -chdir=terraform/api apply -auto-approve api.tfplan
 
       - name: Plan campaign API
         if: env.DEPLOY_SCOPE == 'all'

@@ -1,4 +1,7 @@
 mock_provider "aws" {
+  mock_data "aws_caller_identity" {
+    defaults = { account_id = "107827791950" }
+  }
   mock_data "aws_iam_policy_document" {
     defaults = {
       json = "{\"Version\":\"2012-10-17\",\"Statement\":[]}"
@@ -59,6 +62,10 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
       object_version = "deletion-version"
       source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
     }
+    publisher_fence_artifact = {
+      release_id         = "account-fence-patch", object_version = "publisher-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      approval_reference = "synthetic-test-not-user-approval", promotion_approved = false
+    }
     log_retention_days = 14
   }
 
@@ -69,11 +76,11 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
         downstream_contract = {
           schema_version             = 1
           artifact_bucket_name       = "artifact-example"
-          deletion_ledger_stream_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/deletion-ledger/stream/1"
-          deletion_ledger_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/deletion-ledger"
-          deletion_ledger_table_name = "deletion-ledger"
-          users_table_arn            = "arn:aws:dynamodb:us-east-1:107827791950:table/users"
-          users_table_name           = "users"
+          deletion_ledger_stream_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/1"
+          deletion_ledger_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+          deletion_ledger_table_name = "trustcheckradar-dev-deletion-ledger"
+          users_table_arn            = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+          users_table_name           = "trustcheckradar-dev-users"
         }
       }
     }
@@ -114,11 +121,13 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
       aws_lambda_function.worker["deletion"].s3_key == "releases/history-compatibility-patch/campaign_deletion_bridge.zip" &&
       aws_lambda_function.worker["deletion"].s3_object_version == "deletion-version" &&
       aws_lambda_function.worker["deletion"].source_code_hash == var.deletion_bridge_artifact.source_hash &&
-      aws_lambda_function.worker["publisher"].s3_key == "releases/2026.09.06-1/campaign_observation_publisher.zip" &&
+      aws_lambda_function.worker["publisher"].s3_key == "releases/account-fence-patch/campaign_observation_publisher.zip" &&
+      aws_lambda_function.worker["publisher"].s3_object_version == "publisher-version" &&
+      aws_lambda_function.worker["publisher"].source_code_hash == var.publisher_fence_artifact.source_hash &&
       aws_lambda_function.worker["cluster"].s3_key == "releases/2026.09.06-1/campaign_cluster_aggregator.zip" &&
       aws_lambda_function.worker["lifecycle"].s3_key == "releases/2026.09.06-1/campaign_lifecycle.zip"
     )
-    error_message = "A shared-ledger compatibility patch must pin only the deletion bridge and leave other campaign packages unchanged."
+    error_message = "Separate publisher/deletion pins must leave cluster and lifecycle packages unchanged."
   }
 
   assert {
@@ -141,17 +150,49 @@ run "enabled_dev_respects_kill_switch_and_runtime_bounds" {
   }
 
   assert {
-    condition     = aws_lambda_function.worker["publisher"].environment[0].variables["USERS_TABLE_NAME"] == "users"
+    condition = (
+      aws_lambda_function.worker["publisher"].environment[0].variables["USERS_TABLE_NAME"] == "trustcheckradar-dev-users" &&
+      aws_lambda_function.worker["publisher"].environment[0].variables["DELETION_LEDGER_TABLE_NAME"] == "trustcheckradar-dev-deletion-ledger"
+    )
     error_message = "The publisher must receive the authoritative participation table contract."
   }
 
   assert {
     condition = (
-      aws_lambda_function.worker["deletion"].environment[0].variables["USERS_TABLE_NAME"] == "users" &&
-      aws_lambda_function.worker["deletion"].environment[0].variables["DELETION_LEDGER_TABLE_NAME"] == "deletion-ledger" &&
+      aws_lambda_function.worker["deletion"].environment[0].variables["USERS_TABLE_NAME"] == "trustcheckradar-dev-users" &&
+      aws_lambda_function.worker["deletion"].environment[0].variables["DELETION_LEDGER_TABLE_NAME"] == "trustcheckradar-dev-deletion-ledger" &&
       aws_lambda_function.worker["deletion"].environment[0].variables["PARTICIPATION_ITEM_SK"] == "CAMPAIGN_PARTICIPATION"
     )
     error_message = "The deletion bridge must be able to complete participation status and its ledger command."
+  }
+  assert {
+    condition = (
+      alltrue([for s in data.aws_iam_policy_document.publisher_runtime[0].statement :
+        !contains(["ReadFixedAccountDeletionFence", "CheckFixedAccountDeletionFenceTransactionally"], s.sid) ? true :
+        s.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]) &&
+        anytrue([for c in s.condition : c.variable == "dynamodb:LeadingKeys" && c.test == "ForAllValues:StringLike" && toset(c.values) == toset(["ACCOUNT#*"])])
+      ]) &&
+      one([for s in data.aws_iam_policy_document.publisher_runtime[0].statement : s if s.sid == "ReadFixedAccountDeletionFence"]).actions == toset(["dynamodb:GetItem"]) &&
+      one([for s in data.aws_iam_policy_document.publisher_runtime[0].statement : s if s.sid == "CheckFixedAccountDeletionFenceTransactionally"]).actions == toset(["dynamodb:ConditionCheckItem"]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.publisher_runtime[0].statement : s if s.sid == "CheckFixedAccountDeletionFenceTransactionally"]).condition :
+        c.variable == "dynamodb:EnclosingOperation" && c.test == "StringEquals" && toset(c.values) == toset(["TransactWriteItems"])
+      ])
+    )
+    error_message = "Publisher may read and transactionally check only its exact account-deletion ledger partition, not mutate or scan it."
+  }
+  assert {
+    condition = (
+      one([for s in data.aws_iam_policy_document.publisher_runtime[0].statement : s if s.sid == "WriteTransientPipeline"]).actions == toset(["dynamodb:GetItem"]) &&
+      one([for s in data.aws_iam_policy_document.publisher_runtime[0].statement : s if s.sid == "WriteFencedTransientPipeline"]).actions == toset(["dynamodb:PutItem", "dynamodb:UpdateItem"]) &&
+      alltrue([for s in data.aws_iam_policy_document.publisher_runtime[0].statement :
+        !contains(s.actions, "dynamodb:DeleteItem") &&
+        (!(contains(s.actions, "dynamodb:PutItem") || contains(s.actions, "dynamodb:UpdateItem")) || (
+          s.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/campaign-pipeline"]) &&
+          anytrue([for c in s.condition : c.test == "StringEquals" && c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])
+        ))
+      ])
+    )
+    error_message = "Pinned publisher pipeline writes must all require transactions; standalone mutations cannot bypass the deletion fence."
   }
 }
 
@@ -226,6 +267,16 @@ run "active_dev_enables_every_event_source_and_schedule" {
   assert {
     condition     = alltrue([for schedule in aws_scheduler_schedule.lifecycle : schedule.state == "ENABLED"])
     error_message = "Active Dev must enable every campaign lifecycle schedule."
+  }
+  assert {
+    condition = (
+      aws_lambda_function.worker["publisher"].s3_key == "releases/2026.09.08-1/campaign_observation_publisher.zip" &&
+      !contains(keys(aws_lambda_function.worker["publisher"].environment[0].variables), "DELETION_LEDGER_TABLE_NAME") &&
+      alltrue([for s in data.aws_iam_policy_document.publisher_runtime[0].statement :
+        !contains(["ReadFixedAccountDeletionFence", "CheckFixedAccountDeletionFenceTransactionally"], s.sid)
+      ])
+    )
+    error_message = "Default publisher artifact, environment and permissions must remain unchanged without a selected fence release."
   }
 }
 

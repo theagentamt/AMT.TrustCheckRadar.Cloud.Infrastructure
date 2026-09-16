@@ -166,6 +166,48 @@ payload and retention explicitly. Never invent a projector lag metric.
 
 ## Erasure or expiration incident
 
+### Account-data worker monitoring
+
+`terraform/api` accepts optional
+`account_data_monitoring = { alarm_topic_arn = "<approved standard SNS ARN>" }`.
+It requires a pinned account-data candidate and a topic in the same account and
+Region. Null adds no alarms or cost. It neither provisions a topic/subscription
+nor enables the worker, schedule, public routes or feature flags.
+
+The opt-in configuration adds eleven standard-resolution metric alarms:
+
+- Three function alarms: Errors, Throttles, and IteratorAge above 300,000
+  milliseconds. Missing idle-function data is non-breaching.
+- Seven reconciliation alarms in `AMT/TrustCheckRadar/AccountData`, with only
+  Environment as a dimension: missing success for three five-minute periods,
+  reported failure, no completed full pass within six hours, full-pass age at
+  least six hours, analysis cleanup blocked by its runtime policy, and campaign
+  outbox cleanup blocked by unverified locator coverage, and profile cleanup
+  blocked by its policy or incomplete prerequisite components.
+- One `AccountDeletionFailure` alarm with Environment and the exact Operation
+  `session-revocation`. It covers reported stream partial-batch failures that
+  do not necessarily increment the Lambda Errors metric.
+
+Metric names match the reviewed account-data handler, not the separate History
+bridge namespace. Full-pass success means a completed scan, not proof that every
+account component has been erased. Policy-blocked cleanup must never be treated
+as overall completion.
+
+The three scheduled heartbeat/full-pass alarm actions are disabled and missing
+data is non-breaching while the reconciliation schedule is disabled. Failure
+signals still notify for explicitly invoked candidate tests. A future activation
+must review schedule and alarm changes together, confirm first-run/full-pass
+metrics, and test notification delivery/recovery. Enabling an already-breaching
+alarm is not delivery proof: CloudWatch normally invokes actions on a state
+transition. See [CloudWatch alarm behavior](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Alarms.html)
+and [Lambda metric definitions](https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics-types.html).
+
+These alarms are prepared only. No monitoring input has been selected, no SNS
+notification has been sent, and no alert-delivery acceptance is claimed. Include
+all eleven alarms and the emitted custom metrics in the deployment cost review.
+
+### Response procedure
+
 1. Preserve the immediate account/generation write fence and read exclusion.
    Stop new writes to an affected account when required; do not reopen deleted
    content merely to make a replay succeed.
