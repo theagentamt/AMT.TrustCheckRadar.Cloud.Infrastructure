@@ -1,6 +1,6 @@
 # Dev History and Badges release
 
-Status: deployment preparation, not mobile acceptance.
+Status: deployed to Dev with feature gates disabled; not mobile acceptance.
 
 The owner authorized Lambda deployment and main publication on September 15
 (America/Chicago). This release targets account 107827791950, us-east-1, Dev only.
@@ -72,6 +72,32 @@ The runtime-policy input remains null pending the live activation sequence.
 The Lambda smoke harness is available on its feature branch at `69e8b6b`.
 Its plan-only mode makes no network calls. Execution and synthetic accounts
 remain unapproved; no authenticated acceptance result is claimed here.
+
+## Live deployment result
+
+Infrastructure main `78f91826cd08df1d7e5754d6b900c7735126d61b` passed
+[Terraform CI](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35044287557).
+The complete [Dev deployment](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35044287567)
+succeeded. The narrowly scoped bootstrap prerequisites and publisher were also
+applied successfully before the workflow updated analysis.
+
+All eight selected functions reported Active / Successful and CodeSha256 equal
+to their pinned artifacts: publisher, analysis, device registration, operator
+recovery, History read, History mutation, lifecycle and History deletion bridge.
+The eight History/Progress routes exist under `https://api-dev.andmorethings.net`,
+using Cognito authorizer `jmi5hk` and access-token scope
+`aws.cognito.signin.user.admin`. An unauthenticated request to each returned 401.
+This proves the unauthenticated boundary, not authenticated account isolation.
+
+The cursor secret was initialized directly through Secrets Manager; its value
+was neither displayed nor put in Git or Terraform state. Three bridge failure
+alarms are deployed to the approved SNS topic. No synthetic delivery test ran.
+
+All History feature flags remain false, both cleanup schedules are DISABLED,
+and the deletion-ledger event source is Disabled. No authenticated test accounts
+were created and no customer records or paid model calls were used. Full-account
+export/deletion and consumer device recovery remain unavailable. Mobile must
+keep its feature gate closed until the remaining acceptance steps pass.
 
 ## Remaining acceptance
 

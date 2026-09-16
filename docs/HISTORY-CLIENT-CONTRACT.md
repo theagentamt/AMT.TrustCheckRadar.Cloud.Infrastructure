@@ -1,11 +1,11 @@
 # History and Badges client contract
 
 Decision date: 2026-09-14. Scope: Dev. Approved product/security requirements;
-not yet deployed endpoints. Lambda owns the versioned JSON schemas; infrastructure
+Dev endpoints are deployed but feature-gated off. Lambda owns the versioned JSON schemas; infrastructure
 owns routing, IAM, storage and release. Candidate contract 1.0.0 is published in
-Lambda source commit `d93d56cdba1632264f1fd0f0fa7ba090310aec05`:
-[route/catalog manifest](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/blob/d93d56cdba1632264f1fd0f0fa7ba090310aec05/contracts/history/v1/contract-set.json)
-and [JSON schemas](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/blob/d93d56cdba1632264f1fd0f0fa7ba090310aec05/contracts/history/v1/api-schemas.json).
+Lambda release `8d25e19b691d82caf630edc7ebd84c0b45de0c5c`:
+[route/catalog manifest](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/blob/8d25e19b691d82caf630edc7ebd84c0b45de0c5c/contracts/history/v1/contract-set.json)
+and [JSON schemas](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/blob/8d25e19b691d82caf630edc7ebd84c0b45de0c5c/contracts/history/v1/api-schemas.json).
 Dev integration acceptance is still required before shipping mobile calls.
 
 ## Identity and authorization
@@ -43,7 +43,8 @@ credentials, direct database access or tokens in URLs/logs are permitted.
 ## Routes
 
 Existing Dev base: `https://api-dev.andmorethings.net`. These additional History
-routes remain pending deployment and authenticated tests.
+routes were deployed on September 16 UTC but remain disabled pending authenticated
+tests and cleanup acceptance. See HISTORY-DEV-RELEASE-2026-09-16.md.
 
 | Method | Path | Purpose |
 | --- | --- | --- |
@@ -208,5 +209,7 @@ lifecycle, not the content expiry clock.
 5. Disposable-user authenticated tests: cross-subject isolation, token checks,
    device binding, retries, reset/delete races and erasure.
 
-AWS SSO expired during this work. No activation has been performed under this
-approval yet; user sign-in renewal is needed before deployment can continue.
+AWS CLI authentication was renewed and deployment completed. No activation has
+been performed. Approval to release History/Badges separately from incomplete
+full-account data management, disposable-account tests and live cleanup/alert
+acceptance remain outstanding.

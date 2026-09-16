@@ -1,9 +1,11 @@
 # History and Badges operations
 
 Owner: SECUR4ALL-223 (infrastructure), with SECUR4ALL-224/225/226 (Lambda).
-Status: Dev storage and a disabled lifecycle worker were deployed on 2026-09-14;
-see HISTORY-DEV-DEPLOYMENT.md. No live feature/erasure acceptance or activation
-is claimed. Monitoring is not deployed; UAT/Prod remain disabled.
+Status: Dev APIs and compatible functions were deployed on 2026-09-16 UTC with
+feature flags and cleanup triggers disabled; see HISTORY-DEV-RELEASE-2026-09-16.md.
+Three bridge alarms are deployed, but live feature/erasure acceptance and alert
+delivery are not claimed. UAT/Prod remain unchanged. Historical preparation notes
+below are superseded by the dated deployment record where they differ.
 
 Current Dev approval: both tables use 7-day PITR; minimal dedup/deletion metadata
 has an approved 120-day lifetime; mutation receipts are approved for 7 days.
