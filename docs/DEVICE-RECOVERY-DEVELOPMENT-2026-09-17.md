@@ -41,11 +41,55 @@ by this checkpoint.
 
 ## Lambda implementation handoff
 
-The existing Lambda task is developing on
-`codex/itcr59-device-recovery-contract` and will return an immutable local commit,
-exact contract/fixture paths and test evidence. Scope includes complete receipt
-validation, historical-outcome versus current-binding semantics, logical expiry,
-conditional-write/race/isolation tests and versioned consumer schemas/fixtures.
+The existing Lambda task completed a local source checkpoint on
+`codex/itcr59-device-recovery-contract`, commit
+`a5ae99efdd80b8c308a79d1fe756739fb9d07e2f`. This supersedes the reviewed preliminary
+`4ee95b3` candidate. Neither commit was pushed, uploaded or deployed.
+
+Implementation validates the complete receipt shape, ownership, operation,
+payload hash, requested fingerprint, integral timestamps and logical expiry.
+Both the initial read and transaction-cancellation replay use that validation.
+Expired-but-present receipts fail closed with existing `SERVER_UNAVAILABLE`;
+historical success is not current binding authority. Request parsing rejects
+boolean `schemaVersion`, with a schema/runtime fixture regression. Normal
+registration remains unchanged. No new Lambda environment variables or IAM
+actions are required; control writes remain transactional.
+
+Versioned source paths within the Lambda repository:
+
+- `contracts/device-recovery/v1/contract-set.json`
+- `contracts/device-recovery/v1/contract-manifest.json`
+- `contracts/device-recovery/v1/self-recovery-request.schema.json`
+- `contracts/device-recovery/v1/self-recovery-success.schema.json`
+- `contracts/device-recovery/v1/error-response.schema.json`
+- `contracts/device-recovery/v1/receipt-record.schema.json`
+- `contracts/device-recovery/v1/fixtures/manifest.json` and its JSON fixtures
+- `contracts/device-recovery/v1/README.md`
+
+`status-route.proposed.json` is unsupported owner-pending design only; there is
+no new GET handler, route, environment variable or IAM permission.
+
+Independently verified local SHA-256 values:
+
+| File | SHA-256 |
+| --- | --- |
+| Root `contract-set.json` | `e5d09ff748ce5f6e2f0ad6d97dd2ce38723709e3e620365218dc20ff9c509050` |
+| `contract-manifest.json` | `504a3b4d2667c35357b33d495543efc8d5304bea4655564e8eada60707c48884` |
+| `device-recovery-contracts-1.0.0.zip` | `383729f8fdd261b935f9b8a35cb3399d66725e6325b304167838488e53856f21` |
+| `device_recovery.zip` | `04efadd6e65e49c25421a6389a4c01d83a31cec661bfcabd45ec94745f8fae25` |
+| Unchanged `device_registration.zip` | `e38e0ff68a0eddc7ea194325206144557221d98cee46457195ac3b79d1e385e6` |
+
+The root embeds the manifest digest; every listed supporting source file passed
+an independent checksum check. Lambda tests additionally verify exact path-set
+completeness. Local builds are in `/tmp/itcr59-device-recovery-amended-dist`, not
+the older repository `dist` outputs. Its full `SHA256SUMS` check passed for 23
+ZIPs. These are no-dependency build checks, not CI/S3 version or deployment
+evidence. Do not copy these values into deployment pins without approved
+publication and independent S3 artifact verification.
+
+The root digest is the future `device_self_recovery_acceptance.contract_sha256`
+value for this exact candidate, not the ZIP digest. No acceptance input has been
+set or approved. Revisions to the contract require a new reviewed digest.
 
 Do not represent condition-enforcing local fakes as live DynamoDB acceptance.
 Keep candidate/new wire behavior unsupported until approved. Registration's
@@ -107,6 +151,14 @@ Infrastructure local verification on 2026-09-17:
 - New tests cover missing/unapproved/mismatched acceptance, malformed evidence,
   transaction-only recovery-control writes, protected environment settings,
   unchanged normal registration and absent operator outputs when unprovisioned.
+
+Lambda owner reported final post-commit results: 342 tests and 208 subtests
+passed; compileall, shellcheck and diff checks passed, with two independent
+no-dependency builds byte-identical. Its new stateful, condition-enforcing
+simulator checks pointer-CAS and deletion-fence rollback, including rate, audit
+and receipt state. This is local simulation, not real DynamoDB/API Gateway
+acceptance. Infrastructure independently inspected the reviewed fixes and
+verified the source/build hashes above; it did not rerun the Lambda full suite.
 
 Previous Dev device deployment is the 8d25e19b source pin, with consumer recovery
 disabled. Current development is not live readiness. A local branch or passing
