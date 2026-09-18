@@ -326,8 +326,8 @@ output "device_recovery_http_method" {
 }
 
 output "device_recovery_endpoint_path" {
-  description = "Primary path the mobile app should call for device recovery"
-  value       = var.device_recovery_path
+  description = "Operator-only AWS_IAM recovery path, not a mobile endpoint; null when unprovisioned"
+  value       = var.enable_device_recovery ? var.device_recovery_path : null
 }
 
 output "device_recovery_integration_timeout_ms" {
@@ -336,8 +336,8 @@ output "device_recovery_integration_timeout_ms" {
 }
 
 output "device_recovery_endpoint_url" {
-  description = "Full execute-api URL for device recovery"
-  value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.device_recovery_path}"
+  description = "Operator-only AWS_IAM recovery URL, not a mobile endpoint; null when unprovisioned"
+  value       = var.enable_device_recovery ? "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.device_recovery_path}" : null
 }
 
 output "device_recovery_lambda_log_group_name" {
