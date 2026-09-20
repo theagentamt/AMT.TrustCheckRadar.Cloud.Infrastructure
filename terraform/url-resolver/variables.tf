@@ -76,7 +76,7 @@ variable "reserved_concurrency" {
 }
 
 variable "alarm_action_arns" {
-  description = "Existing notification destinations; empty means alarms have no notification delivery configured."
+  description = "Additional notification destinations beyond the dedicated resolver SNS topic."
   type        = list(string)
   default     = []
 }
