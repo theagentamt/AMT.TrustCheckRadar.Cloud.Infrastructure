@@ -104,17 +104,18 @@ resource "aws_lambda_function" "runtime" {
       STAGE                = var.environment
       AUTHORITY_TABLE_NAME = split("/", local.authority_arn)[1]
       }, each.key != "recovery" ? {
-      CONSUMER_ENABLED           = "false"
-      AUTHORITY_ENABLED          = "false"
-      V1_ENTITLEMENTS_ENABLED    = "false"
-      USERS_TABLE_NAME           = split("/", var.deployment.users_table_arn)[1]
-      DEVICE_BINDINGS_TABLE_NAME = split("/", var.deployment.devices_table_arn)[1]
-      DELETION_LEDGER_TABLE_NAME = split("/", var.deployment.deletion_table_arn)[1]
-      COGNITO_ISSUER             = var.deployment.cognito_issuer
-      COGNITO_APP_CLIENT_ID      = var.deployment.cognito_app_client_id
-      COGNITO_REQUIRED_SCOPE     = "aws.cognito.signin.user.admin"
-      AUTHORITY_HMAC_SECRET_ARN  = aws_secretsmanager_secret.authority_hmac[0].arn
-      AUTHORITY_POLICY_VERSION   = "owner-2026-09-20-v1"
+      CONSUMER_ENABLED                   = "false"
+      AUTHORITY_ENABLED                  = "false"
+      V1_ENTITLEMENTS_ENABLED            = "false"
+      TRIAL_AUTHORITY_RETENTION_APPROVED = "false"
+      USERS_TABLE_NAME                   = split("/", var.deployment.users_table_arn)[1]
+      DEVICE_BINDINGS_TABLE_NAME         = split("/", var.deployment.devices_table_arn)[1]
+      DELETION_LEDGER_TABLE_NAME         = split("/", var.deployment.deletion_table_arn)[1]
+      COGNITO_ISSUER                     = var.deployment.cognito_issuer
+      COGNITO_APP_CLIENT_ID              = var.deployment.cognito_app_client_id
+      COGNITO_REQUIRED_SCOPE             = "aws.cognito.signin.user.admin"
+      AUTHORITY_HMAC_SECRET_ARN          = aws_secretsmanager_secret.authority_hmac[0].arn
+      AUTHORITY_POLICY_VERSION           = "owner-2026-09-20-v1"
       } : {
       LEASE_SWEEP_ENABLED = "false"
     }, each.key == "consumer" ? { URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn } : {})

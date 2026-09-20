@@ -61,7 +61,7 @@ run "candidate_is_isolated_and_inactive" {
     error_message = "Runtime must be pinned and provider/recovery concurrency bounded."
   }
   assert {
-    condition     = aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" && aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "false" && !output.candidate_contract.recovery_enabled && !output.candidate_contract.consumer_enabled
+    condition     = aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" && aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "false" && aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "false" && !output.candidate_contract.recovery_enabled && !output.candidate_contract.consumer_enabled
     error_message = "Provisioning must not silently activate data writes, provider access, or cleanup."
   }
   assert {
