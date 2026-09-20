@@ -1,6 +1,6 @@
 # V1 URL consumer candidate
 
-This independent, disabled-by-default Dev stack is the infrastructure candidate for the authenticated URL-check journey. It is not an active endpoint. Every environment file has `enabled = false`; no AWS deployment has been performed for this stack.
+This independent stack provisions the inactive Dev candidate for the authenticated URL-check journey. Dev was manually provisioned on 2026-09-20 with all runtime gates false; UAT and Production remain unprovisioned. It is not an active endpoint. See [manual deployment evidence](../../docs/URL-CONSUMER-MANUAL-DEV-2026-09-20.md).
 
 The three Python 3.14 ARM64 functions have separate roles:
 
