@@ -67,6 +67,14 @@ class TerraformHelperTests(unittest.TestCase):
                 self.assertIn("-backend-config=use_lockfile=true", calls[0])
                 self.assertEqual(calls[1], ["-chdir=terraform/history-data", "plan", f"-var-file=../../environments/{environment}/history-data.tfvars"])
 
+    def test_assessment_plan_uses_independent_state_without_legacy_artifacts(self):
+        result, calls = self.invoke("plan", "dev", "url-assessment")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(len(calls), 2)
+        self.assertIn("-backend-config=key=trustcheckradar/dev/url-assessment.tfstate", calls[0])
+        self.assertEqual(calls[1], ["-chdir=terraform/url-assessment", "plan", "-var-file=../../environments/dev/url-assessment.tfvars"])
+        self.assertNotIn("TF_VAR_artifact_release", json.loads(self.environment_log.read_text()))
+
     def test_custom_state_prefix_and_region_are_used(self):
         self.env.update(TF_STATE_KEY_PREFIX="isolated", AWS_REGION="us-west-2")
         result, calls = self.invoke("plan", "uat", "history-data")

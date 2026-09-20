@@ -9,7 +9,9 @@ on:
       # Resolver has its own reviewed release workflow. Workflow-only changes
       # require an explicit dispatch rather than applying every legacy stack.
       - "!terraform/url-resolver/**"
+      - "!terraform/url-assessment/**"
       - "!environments/*/url-resolver.tfvars"
+      - "!environments/*/url-assessment.tfvars"
   workflow_dispatch:
     inputs:
       environment:

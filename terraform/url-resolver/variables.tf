@@ -102,3 +102,14 @@ variable "dev_test_principal_arn" {
     error_message = "The optional smoke principal must be an exact IAM role ARN and is allowed only in Dev."
   }
 }
+
+variable "assessment_alarm_notifications_enabled" {
+  description = "Allow only the three named private Dev URL-assessment alarms to use the confirmed resolver topic."
+  type        = bool
+  default     = false
+  nullable    = false
+  validation {
+    condition     = !var.assessment_alarm_notifications_enabled || var.environment == "dev"
+    error_message = "Private assessment alarm integration is Dev-only."
+  }
+}

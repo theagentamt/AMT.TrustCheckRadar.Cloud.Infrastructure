@@ -174,3 +174,21 @@ run "no_root_smoke_principal" {
   }
   expect_failures = [var.dev_test_principal_arn]
 }
+
+run "assessment_topic_grant_is_exact_and_optional" {
+  command = apply
+  variables {
+    enabled                                = true
+    assessment_alarm_notifications_enabled = true
+    artifact = {
+      bucket         = "test-bucket"
+      key            = "releases/test/url_redirect_resolver.zip"
+      object_version = "test-version"
+      source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  assert {
+    condition     = length(jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"]) == 6 && contains(jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"], "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-url-assessment-dependency-failures")
+    error_message = "Shared topic must allow exactly the existing resolver alarms and three named assessment alarms."
+  }
+}
