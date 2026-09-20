@@ -170,5 +170,17 @@ workflow. The HMAC key ring/inventory remain available for future approved work.
 Ten sanitized machine-readable reports are in
 [evidence/v1-engineering-2026-09-20](evidence/v1-engineering-2026-09-20/).
 No UAT/Production change, general customer activation, GitHub push or workflow
-execution is included. The broad infrastructure, entitlement and Android stories
-remain In Progress until their remaining acceptance criteria are met.
+execution is included. The broad infrastructure and entitlement stories remain
+In Progress until their remaining acceptance criteria are met.
+
+On 2026-09-20, the owner explicitly accepted Android implementation completion and
+requested that device testing follow V1 implementation. [ATCR-124](https://andmorethings.youtrack.cloud/issue/ATCR-124)
+is Done with local Android commit `2f952870512e3fd7e85bd33d5ac6a9aa5dfdb899`.
+Outstanding physical-device, actual TalkBack and store/live-service acceptance is
+tracked by [ATCR-148](https://andmorethings.youtrack.cloud/issue/ATCR-148), an Open
+User Story in **Android V1-5 - Release qualification**. It depends on the 15 current
+V1-0 through V1-4 implementation/refinement stories and environment-readiness story
+ATCR-71. Its entry gate also requires any newly added V1 implementation work and
+required Lambda/infrastructure dependencies to be complete. It reuses the ATCR-62
+QA umbrella, which remains Open. These pending tests have not been reported as
+passed; this disposition does not activate any feature or publish code.

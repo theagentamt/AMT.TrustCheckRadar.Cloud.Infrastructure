@@ -30,5 +30,16 @@
     "Signed physical-device and store-sandbox qualification",
     "Actual native journey against verified paid/complimentary authority and broader customer deletion lifecycle"
   ],
-  "backendClosureCaveat": "The first live reconciliation assertion failed without retaining its response; subsequent diagnostic and exact duplicate checks passed. Initial cause remains unproven."
+  "backendClosureCaveat": "The first live reconciliation assertion failed without retaining its response; subsequent diagnostic and exact duplicate checks passed. Initial cause remains unproven.",
+  "trackingDisposition": {
+    "implementationStory": "ATCR-124",
+    "implementationState": "Done",
+    "ownerApprovedDeferredDeviceAcceptance": true,
+    "deviceTestingStory": "ATCR-148",
+    "deviceTestingState": "Open",
+    "deviceTestingSprint": "Android V1-5 - Release qualification",
+    "entryGate": "Complete all V1 implementation stories, including additions, and required Lambda/infrastructure and environment readiness before device testing.",
+    "qaUmbrella": "ATCR-62",
+    "deviceAcceptancePassed": false
+  }
 }
