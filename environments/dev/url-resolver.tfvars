@@ -1,6 +1,7 @@
-aws_region   = "us-east-1"
-project_name = "trustcheckradar"
-environment  = "dev"
+aws_region         = "us-east-1"
+project_name       = "trustcheckradar"
+environment        = "dev"
+notification_email = "support@andmorethings.com"
 
 # Owner-authorized Dev deployment, 2026-09-20. Independent of the URL analyzer.
 enabled                = true

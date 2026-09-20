@@ -1,6 +1,6 @@
 # URL resolver Dev deployment — 2026-09-20
 
-Status: deployed and verified in Dev. The resolver is independently callable through its restricted test role; it is not connected to the consumer URL analyzer. Email alert delivery is pending an owner-selected, confirmed recipient.
+Status: deployed and verified in Dev. The resolver is independently callable through its restricted test role; it is not connected to the consumer URL analyzer. Email alert delivery is pending confirmation of the owner-selected `support@andmorethings.com` recipient and a delivery test.
 
 ## Ownership and scope
 
@@ -43,7 +43,7 @@ After testing, a reviewed cleanup plan destroyed only that instance and its secu
 
 ## Remaining work and limits
 
-1. Supply `notification_email`, apply that isolated subscription change and complete AWS SNS confirmation. At verification there were **zero confirmed and zero pending subscriptions**; no email delivery is claimed. Topic/alarms are deployed, but operational notification delivery is not complete.
+1. The owner specified `support@andmorethings.com` for all alerts. A follow-up local Terraform apply added only the Dev email subscription (one addition, no changes or deletions); AWS readback verified the endpoint and `PendingConfirmation=true`. Subscription ID: `12a4aaad-33da-4afa-af2c-7698bfe9a8ef`. Complete the AWS confirmation email, then test delivery. UAT/Prod tfvars record the same recipient but remain disabled and were not deployed. Operational notification delivery is not yet complete.
 2. The Lambda agent's next separate work is analyzer integration: Google Lookup, authenticated access/allowance/idempotency, response interpretation, preserved threat evidence and English/Spanish consumer messaging. Infrastructure supplies only the required invocation/monitoring changes. No Google key is required by the resolver.
 3. HTTP-chain completion is not a safety verdict or a browser-final-destination guarantee. IPv6-only links, nonstandard ports, JavaScript/interactive navigation and some sensitive links remain unsupported. The EN/ES inspection notice is drafted; consumer privacy integration is not deployed.
 4. Owned live TLS-failure and DNS-rebinding fixtures were not run; those paths have local tests. Application-level blocking and configuration inspection are not blanket proof of every independent network-layer attack path. This is Dev qualification, not a production launch sign-off.
@@ -51,6 +51,6 @@ After testing, a reviewed cleanup plan destroyed only that instance and its secu
 
 Source, Dev tfvars and sanitized evidence are included in infrastructure implementation commit `3e8370d8faf3db2bff7c4e45e1108c970030d0e0` on `codex/url-resolver-dev`. The corresponding Lambda commit is `c6507610639f233aee1b0287f4e03c769da2d783` on the same branch name in its repository. These are local commits; no push is included.
 
-After the user requested committing and tracker synchronization, [SECUR4ALL-112](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-112) and [SECUR4ALL-242](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-242) were updated with those commits, artifact identity, local/live verification, cleanup and remaining work. Both states were set to **In Progress**, and saved comments `7-1101` and `7-1102` were read back and verified. The resolver still needs consumer integration, and the broader infrastructure story includes undelivered entitlement work. Neither is claimed Done; notification recipient setup remains pending.
+After the user requested committing and tracker synchronization, [SECUR4ALL-112](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-112) and [SECUR4ALL-242](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-242) were updated with those commits, artifact identity, local/live verification, cleanup and remaining work. Both states were set to **In Progress**, and saved comments `7-1101` and `7-1102` were read back and verified. The resolver still needs consumer integration, and the broader infrastructure story includes undelivered entitlement work. Neither is claimed Done; SNS recipient confirmation and delivery testing remain pending.
 
 Do not reset `enabled=false` merely to pause traffic: that would request resource destruction. UAT and Prod remain disabled.
