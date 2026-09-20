@@ -6,7 +6,7 @@ The initial resolver deployment used Python 3.13. Dev now runs **Python 3.14 ARM
 
 ## Scope and artifact
 
-The reviewed local Terraform migration applied **zero additions, two in-place updates, zero deletions**: resolver function runtime/artifact and its live alias. Networking, IAM, alerting, existing analyzer and UAT/Prod were unchanged. This was a local CLI deployment, not a GitHub Actions run. The separate Dev GitHub read-permission policy remains unapplied pending explicit approval.
+The reviewed local Terraform migration applied **zero additions, two in-place updates, zero deletions**: resolver function runtime/artifact and its live alias. Networking, IAM, alerting, existing analyzer and UAT/Prod were unchanged. This was a local CLI deployment, not a GitHub Actions run. The separate Dev GitHub read-permission policy was later explicitly approved and applied; see [remaining acceptance](V1-INFRASTRUCTURE-REMAINING-ACCEPTANCE.md).
 
 - Bucket: `trustcheckradar-dev-107827791950-artifacts`.
 - Key: `releases/url-resolver-py314-dev-20260920-d107988b4412/url_redirect_resolver.zip`.
