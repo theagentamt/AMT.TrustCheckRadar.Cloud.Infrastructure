@@ -85,7 +85,7 @@ This path is deliberately limited to updates of the existing function's pinned a
 
 Before first use:
 
-1. Review/merge the implementation. `workflow_dispatch` must exist on the default branch, and existing OIDC trust requires `main`. Do not weaken branch/environment trust to execute a feature branch. Review the separate existing automatic Dev deployment that a main merge may trigger.
+1. Review/merge the implementation. `workflow_dispatch` must exist on the default branch, and existing OIDC trust requires `main`. Do not weaken branch/environment trust to execute a feature branch. Resolver-only paths are excluded from the broad main-push deployment trigger. Workflow-only changes require explicit dispatch. A merge containing other legacy stack changes can still trigger the broader deployment and must be reviewed for that scope.
 2. The owner explicitly approved and applied the Dev-only `read-existing-url-resolver` policy supplement in `bootstrap/access/url-resolver.tf`. It grants bounded network, SNS and alarm inspection for refresh, with no new network writes. Existing deploy-role Lambda/IAM/S3/log permissions remain unchanged. Live readback matches the reviewed one-resource apply, the policy has no drift, and seven custom-policy simulations passed. Actual OIDC execution remains pending review/merge; simulations do not establish the entire role's effective privileges.
 3. Confirm GitHub Dev variables: `AWS_ROLE_ARN`, `AWS_REGION=us-east-1`, `TF_STATE_BUCKET=amt-trustcheckradar-107827791950-tfstate`, and `TF_STATE_KEY_PREFIX=trustcheckradar` (or unset for that default).
 

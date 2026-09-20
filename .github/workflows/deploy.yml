@@ -6,7 +6,10 @@ on:
     paths:
       - "terraform/**"
       - "environments/**"
-      - ".github/workflows/deploy.yml"
+      # Resolver has its own reviewed release workflow. Workflow-only changes
+      # require an explicit dispatch rather than applying every legacy stack.
+      - "!terraform/url-resolver/**"
+      - "!environments/*/url-resolver.tfvars"
   workflow_dispatch:
     inputs:
       environment:
