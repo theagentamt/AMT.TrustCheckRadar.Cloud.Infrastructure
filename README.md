@@ -117,3 +117,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for design decisions, [docs/OPE
 The proposed AWS architecture and infrastructure contracts for privacy-preserving
 campaign intelligence are documented in
 [docs/campaign-intelligence/README.md](docs/campaign-intelligence/README.md).
+
+## Operational alert recipient
+
+Use `support@andmorethings.com` for infrastructure alerts, as specified by the owner. Email SNS subscriptions require recipient confirmation and a delivery test before alert delivery is considered operational. Configuring the address for UAT/Prod does not authorize enabling or deploying those environments.
