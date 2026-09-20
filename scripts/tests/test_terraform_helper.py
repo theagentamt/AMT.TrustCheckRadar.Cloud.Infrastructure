@@ -75,6 +75,17 @@ class TerraformHelperTests(unittest.TestCase):
         self.assertEqual(calls[1], ["-chdir=terraform/url-assessment", "plan", "-var-file=../../environments/dev/url-assessment.tfvars"])
         self.assertNotIn("TF_VAR_artifact_release", json.loads(self.environment_log.read_text()))
 
+    def test_consumer_candidate_never_routes_to_legacy_state(self):
+        for environment in ("dev", "uat", "prod"):
+            with self.subTest(environment=environment):
+                self.log.unlink(missing_ok=True)
+                result, calls = self.invoke("plan", environment, "url-consumer")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(len(calls), 2)
+                self.assertIn(f"-backend-config=key=trustcheckradar/{environment}/url-consumer.tfstate", calls[0])
+                self.assertEqual(calls[1], ["-chdir=terraform/url-consumer", "plan", f"-var-file=../../environments/{environment}/url-consumer.tfvars"])
+                self.assertNotIn("TF_VAR_artifact_release", json.loads(self.environment_log.read_text()))
+
     def test_custom_state_prefix_and_region_are_used(self):
         self.env.update(TF_STATE_KEY_PREFIX="isolated", AWS_REGION="us-west-2")
         result, calls = self.invoke("plan", "uat", "history-data")

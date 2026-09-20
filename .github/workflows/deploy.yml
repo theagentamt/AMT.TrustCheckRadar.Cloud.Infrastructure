@@ -10,8 +10,10 @@ on:
       # require an explicit dispatch rather than applying every legacy stack.
       - "!terraform/url-resolver/**"
       - "!terraform/url-assessment/**"
+      - "!terraform/url-consumer/**"
       - "!environments/*/url-resolver.tfvars"
       - "!environments/*/url-assessment.tfvars"
+      - "!environments/*/url-consumer.tfvars"
   workflow_dispatch:
     inputs:
       environment:
