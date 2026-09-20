@@ -47,7 +47,7 @@ resource "aws_iam_role_policy" "consumer" {
     Statement = [
       { Sid = "OwnLogs", Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.runtime["consumer"].arn}:*" },
       { Sid = "ReadIdentityFences", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:ConditionCheckItem"], Resource = local.identity_arns },
-      { Sid = "ReadAuthority", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:Query"], Resource = local.authority_arn,
+      { Sid = "ReadAuthority", Effect = "Allow", Action = ["dynamodb:GetItem"], Resource = local.authority_arn,
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*"] } } },
       { Sid = "AtomicAuthorityMutations", Effect = "Allow", Action = ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:ConditionCheckItem"], Resource = local.authority_arn,
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
@@ -77,7 +77,7 @@ resource "aws_iam_role_policy" "recovery" {
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*"] } } },
       { Sid = "FindExpiredLeases", Effect = "Allow", Action = "dynamodb:Query", Resource = "${local.authority_arn}/index/GSI1",
       Condition = { "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["V1_PENDING"] } } },
-      { Sid = "AtomicLeaseCleanup", Effect = "Allow", Action = ["dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:ConditionCheckItem"], Resource = local.authority_arn,
+      { Sid = "AtomicLeaseCleanup", Effect = "Allow", Action = ["dynamodb:UpdateItem", "dynamodb:ConditionCheckItem"], Resource = local.authority_arn,
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
       { Sid = "NoProviderIdentitySecretsOrInvocation", Effect = "Deny", Action = ["secretsmanager:*", "lambda:InvokeFunction", "s3:*", "ssm:*", "sts:AssumeRole"], Resource = "*" }
     ]

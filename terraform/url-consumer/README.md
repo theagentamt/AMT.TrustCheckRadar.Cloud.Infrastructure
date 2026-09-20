@@ -37,3 +37,37 @@ Until those gates are met, no public endpoint or Android external capability is 
 ## Local verification
 
 `terraform init -backend=false`, `terraform validate` and `terraform test` validate this root with a mocked AWS provider. Mock test applies create no AWS resources. The helper's routing tests confirm independent state and no legacy artifact-release input. CI includes both checks.
+
+## Manual Dev release procedure
+
+GitHub Actions is not required for a reviewed Dev candidate deployment. Use the
+same immutable source and local validation; a manual deployment does not merge a
+pending Android pull request or satisfy its missing acceptance evidence.
+
+1. Confirm the AWS profile resolves to account `107827791950` in `us-east-1`.
+   Renew SSO interactively if expired. Read dependency metadata only; never read
+   the Web Risk secret value. Capture the current resolver, assessment and legacy
+   Web Risk versions/configuration so their unchanged state can be verified.
+2. Build the three packages from one full reviewed Lambda commit. Verify ZIP
+   structure, Python 3.14 ARM64 dependencies and SHA-256 locally. Upload only those
+   exact files to the versioned Dev artifact bucket, using full commit release
+   paths. Record the returned object versions and verify object checksums.
+3. Supply the exact live dependency ARNs/Cognito identifiers and immutable artifact
+   references in a reviewed Dev variable file. `enabled = true` provisions the
+   candidate only: all five runtime approval/activation flags remain false.
+4. Initialize only `terraform/url-consumer` with the independent encrypted remote
+   state and locking. Save and inspect the plan. Expect only this root's three
+   functions, separate roles/policies/log groups, aliases/invocation settings and
+   the empty HMAC secret container. Reject unrelated updates or deletions.
+5. Apply that exact saved plan. Verify published versions, code hashes, ARM64,
+   Python runtime, timeouts/concurrency and false flags. Invoke each disabled
+   handler with an empty synthetic event: consumer/access must return unavailable,
+   recovery must report disabled, and no provider call or authority write is
+   expected. This checks actual Lambda package loading, not enabled integration.
+6. Verify the legacy endpoint, private assessment and resolver are unchanged; run
+   a final no-drift plan using the same reviewed inputs. Record hashes, versions,
+   local test evidence and the remaining activation gates in the relevant stories.
+
+Do not generate HMAC key material, add public routes/schedules, or grant real trial
+or paid access as part of this inactive provisioning procedure. Complete the
+activation prerequisites above in a separately reviewed change.
