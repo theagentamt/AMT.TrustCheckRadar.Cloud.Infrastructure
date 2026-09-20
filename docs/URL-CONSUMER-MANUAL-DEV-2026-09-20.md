@@ -22,14 +22,16 @@ Only these three packages were uploaded; each object checksum was read back.
 
 ## Deployment and validation
 
-- Saved Terraform plan and apply: 19 added, zero changed, zero destroyed.
+- Initial saved Terraform plan and apply: 19 added, zero changed, zero destroyed.
+  A reviewed follow-up changed only the new consumer role policy to remove its
+  unused `DeleteItem` permission; zero resources added or destroyed.
 - Independent encrypted, locked remote state:
   `trustcheckradar/dev/url-consumer.tfstate`.
 - Three function aliases point to version 1, Python 3.14 ARM64, 256 MiB.
   Consumer: 29 seconds/concurrency 2; access/trial: 10 seconds/concurrency 2;
   lease recovery: 15 seconds/concurrency 1. Code hashes match the artifacts.
 - Four local mocked Terraform scenarios passed. Configuration validation and
-  formatting passed. Fifteen read-only IAM simulations passed, including
+  formatting passed. Sixteen read-only IAM simulations passed, including
   transaction-only writes, namespace restrictions, removed enumeration/deletion
   grants, and denied unrelated provider/secret access.
 - Actual AWS disabled-handler invocations passed: consumer returned HTTP 503
