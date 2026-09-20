@@ -1,0 +1,9 @@
+{
+  "unqualifiedInvocationDenied": true,
+  "runtimePolicyExact": true,
+  "operatorAliasOnly": true,
+  "publicFunctionUrl": false,
+  "resourceInvocationPolicy": false,
+  "eventSources": 0,
+  "legacyReservedConcurrency": 5
+}

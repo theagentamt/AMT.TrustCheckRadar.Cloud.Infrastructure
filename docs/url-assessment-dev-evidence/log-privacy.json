@@ -1,0 +1,55 @@
+{
+  "applicationEvents": 8,
+  "allowlistFieldsVerified": true,
+  "noUrlsKeysOrCheckIds": true,
+  "outcomes": [
+    {
+      "status": "blocked",
+      "verdict": "unknown",
+      "reason": "NON_PUBLIC_DESTINATION",
+      "providerCallCount": 0
+    },
+    {
+      "status": "blocked",
+      "verdict": "unknown",
+      "reason": "NON_PUBLIC_DESTINATION",
+      "providerCallCount": 0
+    },
+    {
+      "status": "invalid_input",
+      "verdict": "unknown",
+      "reason": "INVALID_AUTHORITY",
+      "providerCallCount": 0
+    },
+    {
+      "status": "invalid_input",
+      "verdict": "unknown",
+      "reason": "INVALID_URL_ENCODING",
+      "providerCallCount": 0
+    },
+    {
+      "status": "blocked",
+      "verdict": "unknown",
+      "reason": "SENSITIVE_LINK_NOT_FETCHED",
+      "providerCallCount": 0
+    },
+    {
+      "status": "blocked",
+      "verdict": "unknown",
+      "reason": "UNSUPPORTED_SCHEME",
+      "providerCallCount": 0
+    },
+    {
+      "status": "complete",
+      "verdict": "no_known_threat_detected",
+      "reason": "NO_LIST_MATCH",
+      "providerCallCount": 1
+    },
+    {
+      "status": "partial",
+      "verdict": "high_risk",
+      "reason": "KNOWN_THREAT_MATCH",
+      "providerCallCount": 1
+    }
+  ]
+}

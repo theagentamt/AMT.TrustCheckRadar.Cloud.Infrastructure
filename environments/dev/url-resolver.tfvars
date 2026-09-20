@@ -20,3 +20,5 @@ tags = {
   Owner       = "AMT"
   CostCenter  = "TrustCheckRadar"
 }
+
+assessment_alarm_notifications_enabled = true

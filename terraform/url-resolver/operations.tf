@@ -1,8 +1,12 @@
 locals {
   alert_actions = var.enabled ? distinct(concat([aws_sns_topic.operations[0].arn], var.alarm_action_arns)) : []
-  alarm_arns = [for suffix in ["partial", "errors", "throttles"] :
+  resolver_alarm_arns = [for suffix in ["partial", "errors", "throttles"] :
     "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${local.name}-${suffix}"
   ]
+  alarm_arns = concat(local.resolver_alarm_arns, var.assessment_alarm_notifications_enabled ? [
+    for suffix in ["errors", "throttles", "dependency-failures"] :
+    "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-url-assessment-${suffix}"
+  ] : [])
 }
 
 resource "aws_sns_topic" "operations" {
@@ -28,7 +32,7 @@ resource "aws_sns_topic_policy" "operations" {
         Resource  = aws_sns_topic.operations[0].arn
       },
       {
-        Sid       = "OnlyResolverAlarms", Effect = "Allow", Action = "sns:Publish",
+        Sid       = "OnlyApprovedSafetyAlarms", Effect = "Allow", Action = "sns:Publish",
         Principal = { Service = "cloudwatch.amazonaws.com" },
         Resource  = aws_sns_topic.operations[0].arn,
         Condition = {
