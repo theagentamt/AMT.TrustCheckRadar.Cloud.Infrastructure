@@ -72,8 +72,11 @@ def review(plan, revision):
             raise ValueError(f'Out-of-scope configuration change: {address}.')
     if not function_seen or not alias_seen:
         raise ValueError('An existing Dev function and live alias are required.')
-    # Include refreshed state and unknowns, but omit volatile plan timestamps.
-    reviewed = {k: plan.get(k) for k in ('terraform_version', 'variables', 'resource_changes', 'resource_drift', 'output_changes', 'checks')}
+    # Include managed state/unknowns, but omit transient discovery data such as
+    # the caller-identity ARN, whose role session differs between workflow runs.
+    reviewed = {k: plan.get(k) for k in ('terraform_version', 'variables', 'output_changes', 'checks')}
+    for key in ('resource_changes', 'resource_drift'):
+        reviewed[key] = [r for r in plan.get(key, []) if r.get('mode') == 'managed']
     reviewed['revision'] = revision
     fingerprint = hashlib.sha256(json.dumps(reviewed, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     return artifact, fingerprint

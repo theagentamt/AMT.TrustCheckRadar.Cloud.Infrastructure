@@ -33,6 +33,16 @@ class ResolverReleaseTests(unittest.TestCase):
         self.assertEqual(len(digest), 64)
         self.assertNotEqual(release.review(plan, 'b' * 40)[1], digest)
 
+    def test_different_oidc_sessions_preserve_review_but_managed_changes_do_not(self):
+        plan = fixture()
+        before = release.review(plan, REVISION)[1]
+        plan["resource_changes"].append({"mode": "data", "address": "data.aws_caller_identity.current", "change": {"actions": ["read"], "after": {"arn": "arn:aws:sts::107827791950:assumed-role/deployer/different-run"}}})
+        self.assertEqual(release.review(plan, REVISION)[1], before)
+        change = plan["resource_changes"][0]["change"]
+        change["actions"] = ["update"]
+        change["after"]["reserved_concurrent_executions"] = 0
+        self.assertNotEqual(release.review(plan, REVISION)[1], before)
+
     def test_code_roll_forward_and_rollback_are_supported(self):
         for version in ('previous-reviewed-version', 'new-reviewed-version'):
             plan = fixture()
