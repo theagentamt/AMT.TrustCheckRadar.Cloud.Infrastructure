@@ -1,6 +1,6 @@
 # V1 URL rules and separate resolver proposal
 
-Status: design recorded 2026-09-19; separate Lambda and Terraform implementation added and deployed to Dev on 2026-09-20 after user authorization. Live resolver acceptance passed; SNS is confirmed for `support@andmorethings.com`; recipient receipt of the test alert and analyzer integration remain pending. YouTrack remains the authoritative implementation tracker: SECUR4ALL-112 and SECUR4ALL-242 now contain verified deployment/commit evidence and are In Progress. See the [completed deployment report](../../URL-RESOLVER-DEV-DEPLOYMENT-2026-09-20.md).
+Status: design recorded 2026-09-19; separate Lambda and Terraform implementation added and deployed to Dev on 2026-09-20 after user authorization. Live resolver acceptance passed; SNS is confirmed for `support@andmorethings.com`; the owner confirmed receipt of the test alert, completing the SNS email-delivery check. Analyzer integration remains pending. YouTrack remains the authoritative implementation tracker: SECUR4ALL-112 and SECUR4ALL-242 now contain verified deployment/commit evidence and are In Progress. See the [completed deployment report](../../URL-RESOLVER-DEV-DEPLOYMENT-2026-09-20.md).
 
 ## Delivery order
 
