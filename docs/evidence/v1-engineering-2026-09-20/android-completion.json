@@ -1,0 +1,34 @@
+{
+  "androidCommit": "2f952870512e3fd7e85bd33d5ac6a9aa5dfdb899",
+  "runtimeContractCommit": "84733306d62dd57df883b4425fa5305db6c4a62d",
+  "readmeOnlyCommit": "2f277a1eda6e9cb89678903d0e18b68ddb521f6e",
+  "exactOwnerApprovalReceived": true,
+  "contractFilesByteVerified": 11,
+  "consumerFixtures": 20,
+  "qualityGatePassed": true,
+  "qualityGateTasks": 452,
+  "unitTests": {
+    "dev": 347,
+    "uat": 335,
+    "production": 335
+  },
+  "coverage": {
+    "linePercent": 92.12,
+    "branchPercent": 85.27,
+    "requiredLinePercent": 90,
+    "requiredBranchPercent": 85
+  },
+  "priorEmulatorTests": 26,
+  "uiOrStorageChangedAfterEmulatorRun": false,
+  "crossContractReviewFindings": 0,
+  "stagedDiffSecretScanFindings": 0,
+  "apkSha256": "72ce7e53a7290ad677b021e9ffa241301090c7084bf4adf02a6d7b21603acf08",
+  "externalFeatureEnabled": false,
+  "githubPublicationPerformed": false,
+  "remainingAcceptance": [
+    "Actual TalkBack spoken output and focus order",
+    "Signed physical-device and store-sandbox qualification",
+    "Actual native journey against verified paid/complimentary authority and broader customer deletion lifecycle"
+  ],
+  "backendClosureCaveat": "The first live reconciliation assertion failed without retaining its response; subsequent diagnostic and exact duplicate checks passed. Initial cause remains unproven."
+}

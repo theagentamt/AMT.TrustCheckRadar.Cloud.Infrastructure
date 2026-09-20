@@ -122,19 +122,35 @@ inventory preserved. The stream and scheduled workers were not directly invoked
 for this verification. This validates only the V1 component; legacy ENTITLEMENTS,
 identity finalization and full account-deletion acceptance remain open.
 
-## Android handoff and pending approval
+## Android handoff
 
-The local Android native integration passed 345 Dev, 333 UAT and 333 Production
-unit tests, 26 emulator tests, manifest hardening and all flavor builds. Its
-external feature remains disabled. The old contract snapshot is unchanged.
+The owner explicitly approved the exact Android contract update on 2026-09-20,
+resolving the automatic approval-review block. The snapshot now pins runtime and
+schema/fixtures `84733306d62dd57df883b4425fa5305db6c4a62d`, with README-only source
+`2f277a1eda6e9cb89678903d0e18b68ddb521f6e`. Its external feature remains disabled.
+This approval covers the contract update and local completion, not publication or
+customer activation. The final required Android quality gate passed all 452 tasks:
+347 Dev, 335 UAT and 335 Production unit tests, 92.12% line coverage and 85.27%
+branch coverage against unchanged 90%/85% requirements. Earlier emulator evidence
+remains 26 passing tests, with manifest hardening and all flavor builds also
+passing. The contract-only follow-up did not change UI or storage behavior.
 
-Automatic approval review rejected the exact contract snapshot update twice,
-including after live evidence, and explicitly required user approval for runtime
-and schema/fixtures `84733306d62dd57df883b4425fa5305db6c4a62d` plus README-only
-`2f277a1eda6e9cb89678903d0e18b68ddb521f6e`. The owner has been asked. Pending approval,
-no snapshot update, dependent closure tests or Android commit is claimed. Current
-coverage is 92.03% lines and 84.33% branches, below the 85% branch requirement;
-thresholds were not lowered. No GitHub publication or workflow run occurred.
+New regressions verify that a generic expired response retains uncertain recovery
+state, while an exact matching authoritative zero-charge closure clears the
+minimal receipt after a process-style restart without replaying the URL. All 20
+consumer fixtures pass. Root independently verified that all 11 vendored contract
+files match their recorded SHA-256 and approved immutable Lambda source bytes.
+
+Android implementation and the approved contract follow-up are committed locally as
+`2f952870512e3fd7e85bd33d5ac6a9aa5dfdb899`. The worktree is clean. A bounded independent
+cross-contract review found no issues, and the staged-diff secret scan found no
+secrets. The closure-assertion caveat remains in the live evidence.
+
+The disabled Dev debug APK SHA-256 is
+`72ce7e53a7290ad677b021e9ffa241301090c7084bf4adf02a6d7b21603acf08`.
+Real TalkBack spoken output/focus, signed physical-device/store-sandbox acceptance,
+and broader paid/complimentary/deletion readiness remain tracked acceptance work;
+the local quality gate does not substitute for that evidence.
 
 ## Final deployed state
 
@@ -151,7 +167,7 @@ credentials, access token, receipt proofs and expiry-state files were removed.
 This operator teardown does not substitute for the unfinished customer deletion
 workflow. The HMAC key ring/inventory remain available for future approved work.
 
-Nine sanitized machine-readable reports are in
+Ten sanitized machine-readable reports are in
 [evidence/v1-engineering-2026-09-20](evidence/v1-engineering-2026-09-20/).
 No UAT/Production change, general customer activation, GitHub push or workflow
 execution is included. The broad infrastructure, entitlement and Android stories
