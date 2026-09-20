@@ -1,0 +1,30 @@
+{
+  "environment": "dev",
+  "account": "107827791950",
+  "region": "us-east-1",
+  "function": "trustcheckradar-dev-url-resolver",
+  "alias": "live",
+  "version": "1",
+  "runtime": "python3.13",
+  "codeSha256": "0QeYi0QSW0hfQ5Z4stNK5968KHovT00yoXq1MrBmbmw=",
+  "artifactVersion": "WEvxJt8eMNpmlnqfliCyw_SSncSAKaOT",
+  "state": "Active",
+  "lastUpdateStatus": "Successful",
+  "persistentManagedResources": 44,
+  "postApplyDrift": false,
+  "reservedConcurrency": 5,
+  "functionUrls": 0,
+  "eventSourceMappings": 0,
+  "networkAclNonpublicDenies": 15,
+  "egressPorts": [
+    80,
+    443
+  ],
+  "confirmedAlertSubscriptions": 0,
+  "pendingAlertSubscriptions": 0,
+  "notes": [
+    "SNS wildcard action rejected on first apply; explicit supported actions applied successfully.",
+    "IAM simulator explicitly denied secrets, consumer data, role assumption, and EC2 management in function-code context.",
+    "Network rules inspected; fixture application blocking does not prove every independent network path."
+  ]
+}

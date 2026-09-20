@@ -1,0 +1,7 @@
+# Disposable Dev HTTP fixture
+
+Separate local-state Terraform root for controlled resolver acceptance. It is not part of the persistent resolver stack or deployment workflow. Creates one small ARM64 EC2 instance and one restricted security group; no IAM role, key pair or SSH access. HTTP ingress is restricted to the resolver's exact NAT public IPv4 address. All responses come from the Lambda agent's reviewed synthetic fixture script. IMDSv2 is temporarily enabled so cloud-init can retrieve user-data; set `bootstrap_metadata_enabled=false` after the ready marker appears in the instance console. No IAM credentials are available through metadata at any time.
+
+Use a temporary working copy and a private input file containing the deployed Dev VPC/public-subnet IDs, NAT IPv4, verified AL2023 ARM64 AMI ID, and the Lambda-agent user-data script. These are infrastructure metadata and synthetic test data, not consumer URLs or credentials. Inspect the two-resource plan before applying. Do not use UAT/Prod networks. Retain the local Terraform state until cleanup has been verified.
+
+After testing, destroy this isolated fixture root and confirm the instance is terminated, its root volume deleted and its security group removed. The script should also schedule instance shutdown as a backstop; self-termination does not remove the security group, so Terraform cleanup remains required. EC2, its public IPv4 address and storage incur charges while present. This fixture covers HTTP behavior only; do not claim owned HTTPS or DNS-rebinding coverage from it.

@@ -4,7 +4,7 @@ Terraform infrastructure for TrustCheckRadar, organized for isolated `dev`, `uat
 
 ## Architecture
 
-Each environment has seven independently locked remote states:
+Each environment uses independently locked remote states:
 
 1. `foundation` creates Cognito, DynamoDB, the versioned Lambda artifact bucket, and shared IAM roles.
 2. `campaign-data` creates the gated campaign KMS keys, DynamoDB tables, queues, model repository, and budget controls.
@@ -13,6 +13,7 @@ Each environment has seven independently locked remote states:
 5. `campaign-api` adds gated trends and reviewer integrations to the existing environment API.
 6. `edge` reads the API contract and creates the environment hostname, certificate, DNS alias, and root API mapping.
 7. `identity-workflows` reads the foundation contract and creates the Cognito PostConfirmation Lambda and trigger binding.
+8. `url-resolver` creates the separate, privately invoked redirect resolver and isolated outbound network. It is disabled by default and deployed independently through the local helper; see [its deployment and security contract](terraform/url-resolver/README.md).
 
 State object keys follow this convention:
 
@@ -24,6 +25,7 @@ trustcheckradar/<environment>/campaign-processing.tfstate
 trustcheckradar/<environment>/campaign-api.tfstate
 trustcheckradar/<environment>/edge.tfstate
 trustcheckradar/<environment>/identity-workflows.tfstate
+trustcheckradar/<environment>/url-resolver.tfstate
 ```
 
 Foundation outputs are passed to downstream stacks through a versioned remote-state contract. Resource IDs are not duplicated in environment variable files.
@@ -46,6 +48,7 @@ terraform/
   campaign-api/
   edge/
   identity-workflows/
+  url-resolver/
 scripts/
   terraform.sh           # Consistent local Terraform entry point
 .github/workflows/
