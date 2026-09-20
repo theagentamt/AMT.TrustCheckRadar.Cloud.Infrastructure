@@ -1,6 +1,6 @@
 # Standalone URL redirect resolver
 
-Independent infrastructure for `url_redirect_resolver.zip` from the Lambda repository. It does not modify the API stack, URL analyzer, mobile routes, Google credentials or existing secrets. Dev was deployed and verified on 2026-09-20; its version-pinned configuration is enabled, with only a restricted Dev test caller. UAT and Prod remain disabled. See [deployment evidence and remaining work](../../docs/URL-RESOLVER-DEV-DEPLOYMENT-2026-09-20.md).
+Independent infrastructure for `url_redirect_resolver.zip` from the Lambda repository. It does not modify the API stack, URL analyzer, mobile routes, Google credentials or existing secrets. Dev was deployed and verified on 2026-09-20; its version-pinned configuration is enabled, with only a restricted Dev test caller. UAT and Prod remain disabled. See [initial deployment evidence](../../docs/URL-RESOLVER-DEV-DEPLOYMENT-2026-09-20.md) and [current Python 3.14 migration](../../docs/URL-RESOLVER-PYTHON314-MIGRATION.md).
 
 ## Resources and security boundary
 
@@ -8,7 +8,7 @@ Independent infrastructure for `url_redirect_resolver.zip` from the Lambda repos
 - Private subnet ACL denies 15 conservative non-public/special-use destination ranges before allowing TCP 80/443. Security group has no ingress and only those outbound ports. NAT provides internet access and a stable public IPv4 address. No IPv6 route or grant exists; the Lambda reports IPv6-only destinations as unsupported.
 - AWS-managed VPC DNS is used by the bounded resolver. Security groups/ACLs do not filter AmazonProvidedDNS or all link-local service traffic; application validation remains mandatory. Do not present the ACL alone as complete SSRF protection. The execution role has no user data or provider secret access; explicit denies also protect those services from accidental later grants.
 - Lambda ENI management permissions are required for VPC attachment. A `lambda:SourceFunctionArn` deny prevents function code from exercising those EC2 permissions while permitting Lambda service operations.
-- Python 3.13 ARM64, 256 MiB, 12-second timeout; application deadline ten seconds, five redirects/six requests, 16 KiB bounded header reads. Reserved concurrency defaults to five and can be set to zero to pause invocation.
+- Python 3.14 ARM64, 256 MiB, 12-second timeout; application deadline ten seconds, five redirects/six requests, 16 KiB bounded header reads. Reserved concurrency defaults to five and can be set to zero to pause invocation.
 - Version-pinned S3 ZIP plus source SHA256; published Lambda version behind `live` alias. Selected same-account roles receive only `lambda:InvokeFunction` on that alias. Empty caller list creates no grants. This does not revoke existing administrator or wildcard IAM grants elsewhere in the account; audit caller access before release.
 - Callers must invoke synchronously with SDK retries disabled. Async error retries on the alias are disabled as defense in depth, but Lambda can still deliver asynchronous events more than once. Do not use async invocation for URL inspection; caller idempotency remains required.
 - Fourteen-day logs contain outcome codes and counts, not URLs. Runtime errors/throttles and partial-result metrics have alarms routed to a dedicated SNS topic. Its CloudWatch publishing policy accepts only this account's three resolver alarm ARNs. `alarm_action_arns` can add existing destinations; `notification_email` adds the owner's chosen email subscription, which requires SNS confirmation before delivery. No address is invented when it is unset. No raw event tracing, asynchronous payload destinations or request logging is provisioned.
@@ -23,7 +23,7 @@ For us-east-1, budget about $36.50 per 730-hour month for NAT ($0.045/hour) and 
 Build the artifact in the Lambda repository:
 
 ```sh
-bash scripts/build_lambda_zip.sh --function url_redirect_resolver --python-version 3.13 --arch arm64
+bash scripts/build_lambda_zip.sh --function url_redirect_resolver --python-version 3.14 --arch arm64
 ```
 
 Publish it under an immutable `releases/<release>/url_redirect_resolver.zip` key in the existing versioned artifact bucket, using the repository's publishing process (or an explicitly reviewed single-artifact upload). Record the returned S3 version and base64 ZIP SHA256. Do not redeploy the analyzer merely to publish this separate artifact.

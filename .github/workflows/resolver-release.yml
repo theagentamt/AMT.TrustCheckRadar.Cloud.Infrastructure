@@ -43,6 +43,9 @@ jobs:
       REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
     steps:
       - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
       - name: Verify release selection
         run: |
           test "$GITHUB_SHA" = "$EXPECTED_REVISION"

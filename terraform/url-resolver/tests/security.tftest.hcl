@@ -80,6 +80,7 @@ run "security_boundary" {
   }
   assert {
     condition = (
+      aws_lambda_function.resolver[0].runtime == "python3.14" &&
       aws_lambda_function.resolver[0].timeout == 12 &&
       aws_lambda_function.resolver[0].reserved_concurrent_executions == 5 &&
       aws_lambda_function.resolver[0].s3_object_version == "immutable-test-version" &&

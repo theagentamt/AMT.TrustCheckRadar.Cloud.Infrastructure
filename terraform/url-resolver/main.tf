@@ -207,7 +207,7 @@ resource "aws_lambda_function" "resolver" {
   count                          = var.enabled ? 1 : 0
   function_name                  = local.name
   role                           = aws_iam_role.resolver[0].arn
-  runtime                        = "python3.13"
+  runtime                        = "python3.14"
   architectures                  = ["arm64"]
   handler                        = "app.lambda_handler"
   memory_size                    = 256

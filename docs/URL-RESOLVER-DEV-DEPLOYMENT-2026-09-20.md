@@ -1,5 +1,7 @@
 # URL resolver Dev deployment — 2026-09-20
 
+This records the initial Python 3.13/version 1 deployment. The [subsequent Python 3.14 migration](URL-RESOLVER-PYTHON314-MIGRATION.md) records current Dev version 2 and its separate verification.
+
 Status: deployed and verified in Dev. The resolver is independently callable through its restricted test role; it is not connected to the consumer URL analyzer. The owner-selected `support@andmorethings.com` subscription is confirmed. SNS accepted one labeled test alert, and the owner confirmed receipt. The SNS email-delivery check is complete.
 
 ## Ownership and scope

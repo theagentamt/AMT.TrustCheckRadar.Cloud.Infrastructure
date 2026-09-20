@@ -17,6 +17,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6.0.2
 
+      - name: Install Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v4.0.1
         with:

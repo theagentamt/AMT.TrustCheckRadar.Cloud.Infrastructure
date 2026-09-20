@@ -121,3 +121,7 @@ campaign intelligence are documented in
 ## Operational alert recipient
 
 Use `support@andmorethings.com` for infrastructure alerts, as specified by the owner. Email SNS subscriptions require recipient confirmation and a delivery test before alert delivery is considered operational. Configuring the address for UAT/Prod does not authorize enabling or deploying those environments.
+
+## Python runtime baseline
+
+Use the latest generally available Python runtime supported by AWS Lambda for new work, currently Python 3.14 (AWS documentation checked 2026-09-20). Exclude preview runtimes. Pin build/test/runtime versions together, verify dependencies and review a separate migration plan before changing an existing function. Older stacks still need their own migrations; the resolver is the first scoped update. AWS manages runtime patch updates; this preference does not enable automatic major-version migrations.
