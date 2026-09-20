@@ -1,0 +1,15 @@
+{
+  "created": 3,
+  "inconclusive": false,
+  "indexVisible": 0,
+  "inventoryPreserved": true,
+  "originalRowsPreserved": true,
+  "physicalDeletesVerified": 3,
+  "qualified": true,
+  "readyForObservation": false,
+  "remaining": 0,
+  "scheduledLogCount": 2,
+  "stage": 0,
+  "workerFailures": 0,
+  "workerReportedDeletes": 3
+}

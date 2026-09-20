@@ -61,7 +61,7 @@ run "candidate_is_isolated_and_inactive" {
     error_message = "Runtime must be pinned and provider/recovery concurrency bounded."
   }
   assert {
-    condition     = aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" && aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "false" && aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "false" && !output.candidate_contract.recovery_enabled && !output.candidate_contract.consumer_enabled
+    condition     = aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" && aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "false" && aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "true" && !output.candidate_contract.recovery_enabled && !output.candidate_contract.consumer_enabled
     error_message = "Provisioning must not silently activate data writes, provider access, or cleanup."
   }
   assert {
@@ -69,7 +69,7 @@ run "candidate_is_isolated_and_inactive" {
     error_message = "Consumer must mutate atomically and access only its HMAC secret and private assessment alias."
   }
   assert {
-    condition     = jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[2].Resource == "${var.deployment.authority_table_arn}/index/GSI1" && jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[2].Condition["ForAllValues:StringEquals"]["dynamodb:LeadingKeys"] == ["V1_PENDING"] && jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[4].Effect == "Deny" && contains(jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[4].Action, "lambda:InvokeFunction") && !contains(keys(aws_lambda_function.runtime["recovery"].environment[0].variables), "AUTHORITY_HMAC_SECRET_ARN")
+    condition     = jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[2].Resource == "${var.deployment.authority_table_arn}/index/GSI1" && jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[2].Condition["ForAllValues:StringEquals"]["dynamodb:LeadingKeys"] == ["V1_PENDING", "V1_EXPIRING"] && jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[5].Effect == "Deny" && contains(jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[5].Action, "lambda:InvokeFunction") && !contains(keys(aws_lambda_function.runtime["recovery"].environment[0].variables), "AUTHORITY_HMAC_SECRET_ARN")
     error_message = "Cleanup must use only pending ledger records and cannot invoke providers or retrieve secrets."
   }
   assert {

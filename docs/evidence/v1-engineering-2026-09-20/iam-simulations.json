@@ -1,0 +1,538 @@
+[
+  {
+    "role": "consumer",
+    "action": "dynamodb:PutItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#k1#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "allowed"
+  },
+  {
+    "role": "consumer",
+    "action": "dynamodb:PutItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#k1#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "consumer",
+    "action": "dynamodb:DeleteItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#k1#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "consumer",
+    "action": "dynamodb:GetItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "USER#unrelated"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "consumer",
+    "action": "dynamodb:ConditionCheckItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#CONTROL"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "allowed"
+  },
+  {
+    "role": "entitlements",
+    "action": "dynamodb:PutItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#k1#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "allowed"
+  },
+  {
+    "role": "entitlements",
+    "action": "dynamodb:PutItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#k1#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "entitlements",
+    "action": "dynamodb:DeleteItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#k1#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "entitlements",
+    "action": "dynamodb:GetItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "USER#unrelated"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "entitlements",
+    "action": "dynamodb:ConditionCheckItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#CONTROL"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "allowed"
+  },
+  {
+    "role": "consumer",
+    "action": "lambda:InvokeFunction",
+    "resource": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-assessment:live",
+    "context": [],
+    "decision": "allowed"
+  },
+  {
+    "role": "consumer",
+    "action": "lambda:InvokeFunction",
+    "resource": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-web-risk-communication",
+    "context": [],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "entitlements",
+    "action": "lambda:InvokeFunction",
+    "resource": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-assessment:live",
+    "context": [],
+    "decision": "explicitDeny"
+  },
+  {
+    "role": "recovery",
+    "action": "dynamodb:Query",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements/index/GSI1",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1_PENDING"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "allowed"
+  },
+  {
+    "role": "recovery",
+    "action": "dynamodb:Query",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements/index/GSI1",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1_EXPIRING"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "allowed"
+  },
+  {
+    "role": "recovery",
+    "action": "dynamodb:DeleteItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#k1#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "allowed"
+  },
+  {
+    "role": "recovery",
+    "action": "dynamodb:DeleteItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#CONTROL"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "recovery",
+    "action": "dynamodb:DeleteItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#k1#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "recovery",
+    "action": "dynamodb:DeleteItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "USER#unrelated"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "recovery",
+    "action": "lambda:InvokeFunction",
+    "resource": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-assessment:live",
+    "context": [],
+    "decision": "explicitDeny"
+  },
+  {
+    "role": "deletion",
+    "action": "dynamodb:DeleteItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#k1#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "allowed"
+  },
+  {
+    "role": "deletion",
+    "action": "dynamodb:DeleteItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#CONTROL"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "deletion",
+    "action": "dynamodb:DeleteItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#k1#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "deletion",
+    "action": "dynamodb:DeleteItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "USER#unrelated"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "deletion",
+    "action": "lambda:InvokeFunction",
+    "resource": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-assessment:live",
+    "context": [],
+    "decision": "explicitDeny"
+  },
+  {
+    "role": "recovery",
+    "action": "dynamodb:UpdateItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#CONTROL"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "allowed"
+  },
+  {
+    "role": "recovery",
+    "action": "dynamodb:Query",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#k1#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  },
+  {
+    "role": "recovery",
+    "action": "secretsmanager:GetSecretValue",
+    "resource": "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/v1-authority-hmac-C7v1hG",
+    "context": [],
+    "decision": "explicitDeny"
+  },
+  {
+    "role": "deletion",
+    "action": "dynamodb:Scan",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+    "context": [],
+    "decision": "allowed"
+  },
+  {
+    "role": "deletion",
+    "action": "dynamodb:UpdateItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "V1#CONTROL"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "allowed"
+  },
+  {
+    "role": "deletion",
+    "action": "dynamodb:PutItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "ACCOUNT#synthetic"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "allowed"
+  },
+  {
+    "role": "deletion",
+    "action": "dynamodb:PutItem",
+    "resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+    "context": [
+      {
+        "ContextKeyName": "dynamodb:LeadingKeys",
+        "ContextKeyValues": [
+          "UNRELATED"
+        ],
+        "ContextKeyType": "stringList"
+      },
+      {
+        "ContextKeyName": "dynamodb:EnclosingOperation",
+        "ContextKeyValues": [
+          "TransactWriteItems"
+        ],
+        "ContextKeyType": "stringList"
+      }
+    ],
+    "decision": "implicitDeny"
+  }
+]
