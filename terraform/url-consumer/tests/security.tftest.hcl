@@ -76,6 +76,10 @@ run "candidate_is_isolated_and_inactive" {
     condition     = alltrue([for f in aws_lambda_function_event_invoke_config.no_async_retries : f.maximum_retry_attempts == 0]) && !output.candidate_contract.secret_value_in_state
     error_message = "No automatic asynchronous retries or Terraform-managed secret values."
   }
+  assert {
+    condition     = !contains(jsondecode(aws_iam_role_policy.entitlements[0].policy).Statement[2].Action, "dynamodb:Query") && jsondecode(aws_iam_role_policy.entitlements[0].policy).Statement[5].Effect == "Deny" && contains(jsondecode(aws_iam_role_policy.entitlements[0].policy).Statement[5].Action, "lambda:InvokeFunction") && !contains(keys(aws_lambda_function.runtime["entitlements"].environment[0].variables), "URL_ASSESSMENT_FUNCTION_ARN") && aws_lambda_function.runtime["entitlements"].environment[0].variables.AUTHORITY_ENABLED == "false"
+    error_message = "Access and trial handlers cannot enumerate authority, invoke providers, or activate authority implicitly."
+  }
 }
 run "uat_provisioning_rejected" {
   command = plan
