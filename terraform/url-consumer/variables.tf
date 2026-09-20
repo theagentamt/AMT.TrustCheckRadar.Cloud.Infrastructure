@@ -22,8 +22,8 @@ variable "enabled" {
   type        = bool
   default     = false
   validation {
-    condition     = !var.enabled || (var.environment == "dev" && var.deployment != null)
-    error_message = "Only a version-pinned Dev candidate can be provisioned."
+    condition     = !var.enabled || (var.environment == "dev" && var.project_name == "trustcheckradar" && var.aws_region == "us-east-1" && var.deployment != null)
+    error_message = "Only a version-pinned TrustCheckRadar Dev candidate in us-east-1 can be provisioned."
   }
 }
 variable "deployment" {
