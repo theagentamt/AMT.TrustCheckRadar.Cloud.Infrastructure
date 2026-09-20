@@ -76,3 +76,23 @@ The later analyzer integration owns account access, allowances, retries/idempote
 The [disposable acceptance fixture](acceptance-fixture/README.md) is a separate local-state root. It can exercise owned HTTP redirects with ingress restricted to the resolver EIP. The Lambda agent owns the fixture script and live smoke harness in the Lambda repository. Remove the fixture immediately after testing and verify cleanup; it is not part of ongoing service infrastructure.
 
 References: [AWS Lambda VPC and execution-role guidance](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html), [AWS network ACL limitations](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html), [OWASP SSRF guidance](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html).
+
+## Reviewed Dev releases through GitHub
+
+`.github/workflows/resolver-release.yml` supplies a manually dispatched **Dev code-release** path. It runs only on `main`, uses the existing `dev` GitHub environment and OIDC role, and shares `terraform-dev` concurrency with the environment deployment workflow. It operates only on the independent resolver state. The existing automatic environment workflow still does not deploy the resolver.
+
+This path is deliberately limited to updates of the existing function's pinned artifact, its `live` version and reserved concurrency. It rejects initial creation, deletion/replacement, IAM, networking, runtime configuration and other resource changes. Those need a separately reviewed infrastructure plan; this workflow is not a general provisioning or UAT/Prod promotion tool.
+
+Before first use:
+
+1. Review/merge the implementation. `workflow_dispatch` must exist on the default branch, and existing OIDC trust requires `main`. Do not weaken branch/environment trust to execute a feature branch. Review the separate existing automatic Dev deployment that a main merge may trigger.
+2. Review and apply the Dev-only `read-existing-url-resolver` policy supplement in `bootstrap/access/url-resolver.tf`. It grants bounded network, SNS and alarm inspection for refresh, with no new network writes. Existing deploy-role Lambda/IAM/S3/log permissions remain unchanged. This supplement has source/mock validation only until its approved bootstrap apply and actual OIDC run are recorded.
+3. Confirm GitHub Dev variables: `AWS_ROLE_ARN`, `AWS_REGION=us-east-1`, `TF_STATE_BUCKET=amt-trustcheckradar-107827791950-tfstate`, and `TF_STATE_KEY_PREFIX=trustcheckradar` (or unset for that default).
+
+For each release, commit the exact artifact bucket/key/S3 version/SHA256 to Dev tfvars. Dispatch **plan** with the full reviewed main SHA. The verifier checks the account, planned function's artifact mapping and actual downloaded versioned ZIP bytes; it reports `reviewedPlanDigest`. Review the Terraform plan, artifact provenance and digest. Dispatch **apply** at the same SHA with that digest. It re-plans, rejects changed state/intent, then applies that exact saved plan and checks drift. Plans/JSON are temporary runner files and are removed rather than uploaded as artifacts. The digest is a change-consistency check, not independent human approval or a replacement for GitHub access controls.
+
+Rollback is the same process with a previously qualified resolver artifact tuple, committed to Dev tfvars. Never select an unqualified binary just because it exists in S3. This resolver returns traversal facts and has no entitlement authority. A future analyzer/entitlement rollback must separately validate authority, accounting, cache and schema compatibility; legacy FREE/research-bonus binaries are not approved V1 rollback targets. Use concurrency zero, not `enabled=false`, to pause invocation while preserving infrastructure. The dedicated workflow supports that bounded concurrency update after plan review.
+
+Validation: 39 Python helper tests (including 11 release guardrail tests), Actionlint, a real read-only Dev no-change plan and exact-version artifact hash verification. No GitHub release, bootstrap policy apply, production rollout or rollback execution is implied by these checks.
+
+References: [GitHub manual workflow triggers](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow), [GitHub environment protections](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments), [EC2 authorization reference](https://docs.aws.amazon.com/service-authorization/latest/reference/list_ec2.html), [SNS authorization reference](https://docs.aws.amazon.com/service-authorization/latest/reference/list_sns.html).

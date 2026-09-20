@@ -13,7 +13,7 @@ Each environment uses independently locked remote states:
 5. `campaign-api` adds gated trends and reviewer integrations to the existing environment API.
 6. `edge` reads the API contract and creates the environment hostname, certificate, DNS alias, and root API mapping.
 7. `identity-workflows` reads the foundation contract and creates the Cognito PostConfirmation Lambda and trigger binding.
-8. `url-resolver` creates the separate, privately invoked redirect resolver and isolated outbound network. It is disabled by default and deployed independently through the local helper; see [its deployment and security contract](terraform/url-resolver/README.md).
+8. `url-resolver` creates the separate, privately invoked redirect resolver and isolated outbound network. It is disabled by default and provisioned independently through the local helper, with a separate reviewed Dev code-release workflow; see [its deployment and security contract](terraform/url-resolver/README.md).
 
 State object keys follow this convention:
 
