@@ -17,6 +17,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6.0.2
 
+      - name: Install Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v4.0.1
         with:
@@ -93,6 +98,20 @@ jobs:
         run: |
           terraform init -backend=false -input=false
           terraform validate
+
+      - name: Validate URL resolver
+        working-directory: terraform/url-resolver
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
+      - name: Validate disposable URL resolver fixture
+        working-directory: terraform/url-resolver/acceptance-fixture
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
 
       - name: Validate identity workflows
         working-directory: terraform/identity-workflows

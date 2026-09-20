@@ -1,0 +1,98 @@
+name: Release Dev URL resolver
+
+on:
+  workflow_dispatch:
+    inputs:
+      execution_mode:
+        description: Plan first; apply only the reviewed code/concurrency change
+        type: choice
+        options: [plan, apply]
+        default: plan
+        required: true
+      expected_revision:
+        description: Full main commit SHA reviewed for this release
+        type: string
+        required: true
+      reviewed_plan_digest:
+        description: For apply, paste reviewedPlanDigest from a successful plan at this revision
+        type: string
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: dev
+    env:
+      TF_IN_AUTOMATION: 'true'
+      TF_INPUT: 'false'
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
+    steps:
+      - uses: actions/checkout@v6.0.2
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+      - name: Verify release selection
+        run: |
+          test "$GITHUB_SHA" = "$EXPECTED_REVISION"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
+          test "$AWS_REGION" = us-east-1
+          test "$TF_STATE_BUCKET" = amt-trustcheckradar-107827791950-tfstate
+          test "$TF_STATE_KEY_PREFIX" = trustcheckradar
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            test -n "$REVIEWED_PLAN_DIGEST"
+          fi
+      - uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+      - uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          allowed-account-ids: '107827791950'
+          role-session-name: resolver-release-${{ github.run_id }}
+      - name: Plan only the independent resolver state
+        run: |
+          bash scripts/terraform.sh init dev url-resolver
+          terraform -chdir=terraform/url-resolver plan \
+            -var-file=../../environments/dev/url-resolver.tfvars \
+            -out="$RUNNER_TEMP/resolver.tfplan"
+          terraform -chdir=terraform/url-resolver show -json "$RUNNER_TEMP/resolver.tfplan" > "$RUNNER_TEMP/resolver-plan.json"
+      - name: Verify scope, pinned artifact and reviewed plan
+        run: |
+          args=(--revision "$EXPECTED_REVISION")
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            args+=(--apply --expected-digest "$REVIEWED_PLAN_DIGEST")
+          fi
+          python3 scripts/verify_resolver_release.py "$RUNNER_TEMP/resolver-plan.json" "${args[@]}" | tee "$RUNNER_TEMP/resolver-review.json"
+          {
+            echo '### Dev resolver release review'
+            echo '```json'
+            cat "$RUNNER_TEMP/resolver-review.json"
+            echo '```'
+            echo 'Only existing resolver code/version and concurrency updates are eligible. No network, IAM, UAT or Prod changes.'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Apply the verified saved plan
+        if: inputs.execution_mode == 'apply'
+        run: terraform -chdir=terraform/url-resolver apply -input=false "$RUNNER_TEMP/resolver.tfplan"
+      - name: Check drift after apply
+        if: inputs.execution_mode == 'apply'
+        run: terraform -chdir=terraform/url-resolver plan -var-file=../../environments/dev/url-resolver.tfvars -detailed-exitcode
+      - name: Remove temporary plan and state projections
+        if: always()
+        run: rm -f "$RUNNER_TEMP/resolver.tfplan" "$RUNNER_TEMP/resolver-plan.json" "$RUNNER_TEMP/resolver-review.json"

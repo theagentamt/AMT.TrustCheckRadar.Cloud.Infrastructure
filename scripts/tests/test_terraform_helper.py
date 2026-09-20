@@ -92,6 +92,16 @@ class TerraformHelperTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(calls[-1], ["-chdir=terraform/history-data", "output"])
 
+    def test_resolver_has_separate_state_and_no_legacy_analyzer_release(self):
+        for environment in ("dev", "uat", "prod"):
+            with self.subTest(environment=environment):
+                self.log.unlink(missing_ok=True)
+                result, calls = self.invoke("plan", environment, "url-resolver")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn(f"-backend-config=key=trustcheckradar/{environment}/url-resolver.tfstate", calls[0])
+                self.assertEqual(calls[1], ["-chdir=terraform/url-resolver", "plan", f"-var-file=../../environments/{environment}/url-resolver.tfvars"])
+                self.assertNotIn("TF_VAR_artifact_release", json.loads(self.environment_log.read_text()))
+
     def test_invalid_operation_environment_or_stack_never_runs_terraform(self):
         for args in (("destroy", "dev", "history-data"), ("plan", "live", "history-data"), ("plan", "dev", "unknown")):
             with self.subTest(args=args):
