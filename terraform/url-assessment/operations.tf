@@ -9,7 +9,7 @@ resource "aws_cloudwatch_log_metric_filter" "dependency_failures" {
   count          = var.enabled ? 1 : 0
   name           = "${local.name}-dependency-failures"
   log_group_name = aws_cloudwatch_log_group.assessment[0].name
-  pattern        = "{ $.event = \"private_url_assessment\" && (${join(" || ", [for reason in local.failure_reasons : "$.reason = ${jsonencode(reason)}"])}) }"
+  pattern        = "{ $.event = \"private_url_assessment\" && ($.status = \"unavailable\" || ${join(" || ", [for reason in local.failure_reasons : "$.reason = ${jsonencode(reason)}"])}) }"
   metric_transformation {
     name          = "DependencyFailures"
     namespace     = "AMT/URLAssessment/${var.environment}"

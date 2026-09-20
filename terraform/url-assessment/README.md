@@ -16,7 +16,7 @@ This independent stack runs the IAM-only `url_assessment` Lambda on Python 3.14 
 
 Three alarms (errors, throttles, handled dependency failures) use the existing resolver SNS topic and confirmed `support@andmorethings.com` subscription. Each alarms on one event in five minutes and notifies recovery; missing data is non-breaching. The resolver root's `assessment_alarm_notifications_enabled` allows only the three named assessment alarm ARNs in addition to its existing alarms. Apply that narrowly reviewed topic-policy update before enabling the assessment alarms. It does not change resolver runtime/network/caller grants.
 
-The dependency metric consumes only the fixed `private_url_assessment` event and allowlisted `reason` codes; unsafe input and threat verdicts are not infrastructure failures. Provider-attempt counters are operational counts, not charges or logical user checks. [AWS JSON metric-filter syntax](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html) supports the compound condition used here.
+The dependency metric consumes only the fixed `private_url_assessment` event and either an `unavailable` status or allowlisted operational `reason` codes; unsafe input and threat verdicts are not infrastructure failures. Provider-attempt counters are operational counts, not charges or logical user checks. [AWS JSON metric-filter syntax](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html) supports the compound condition used here.
 
 ## Manual Dev deployment
 
