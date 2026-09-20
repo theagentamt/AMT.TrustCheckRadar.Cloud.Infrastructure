@@ -6,7 +6,7 @@ Status: deployed and verified in Dev. The resolver is independently callable thr
 
 The user authorized addressing gaps and deploying infrastructure and Lambda. The Lambda agent owned source hardening, testing, packaging, immutable publication, the fixture server, live smoke and log-privacy checks. This task owned Terraform, AWS deployment, IAM/network verification, monitoring and fixture cleanup.
 
-Verified account `107827791950`, region `us-east-1`, using the existing `trustcheckradar` SSO administrator session. No broad bootstrap apply, existing analyzer modification, mobile integration, Google API call, UAT/Prod change, Git push or YouTrack mutation occurred.
+Verified account `107827791950`, region `us-east-1`, using the existing `trustcheckradar` SSO administrator session. No broad bootstrap apply, existing analyzer modification, mobile integration, Google API call, UAT/Prod change or Git push occurred. YouTrack was updated afterward at the user's request; see the tracking record below.
 
 ## Deployed service
 
@@ -49,6 +49,8 @@ After testing, a reviewed cleanup plan destroyed only that instance and its secu
 4. Owned live TLS-failure and DNS-rebinding fixtures were not run; those paths have local tests. Application-level blocking and configuration inspection are not blanket proof of every independent network-layer attack path. This is Dev qualification, not a production launch sign-off.
 5. The persistent single-AZ NAT/public IPv4 baseline is about **$36.50/month**, plus traffic and service usage. Setting Lambda concurrency to zero does not stop network charges. See [deployment/security contract](../terraform/url-resolver/README.md) for cost sources and operation details.
 
-Source, Dev tfvars and sanitized evidence are included in the scoped infrastructure commit on `codex/url-resolver-dev`. The corresponding Lambda commit is `c6507610639f233aee1b0287f4e03c769da2d783` on the same branch name in its repository. These are local commits; no push is included. YouTrack follow-up targets are SECUR4ALL-112 (resolver) and SECUR4ALL-242 (broader infrastructure); the latter remains incomplete because this deployment covers only its resolver portion. Tracker updates must record the pending notification recipient and analyzer integration, not imply full V1 completion.
+Source, Dev tfvars and sanitized evidence are included in infrastructure implementation commit `3e8370d8faf3db2bff7c4e45e1108c970030d0e0` on `codex/url-resolver-dev`. The corresponding Lambda commit is `c6507610639f233aee1b0287f4e03c769da2d783` on the same branch name in its repository. These are local commits; no push is included.
+
+After the user requested committing and tracker synchronization, [SECUR4ALL-112](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-112) and [SECUR4ALL-242](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-242) were updated with those commits, artifact identity, local/live verification, cleanup and remaining work. Both states were set to **In Progress**, and saved comments `7-1101` and `7-1102` were read back and verified. The resolver still needs consumer integration, and the broader infrastructure story includes undelivered entitlement work. Neither is claimed Done; notification recipient setup remains pending.
 
 Do not reset `enabled=false` merely to pause traffic: that would request resource destruction. UAT and Prod remain disabled.
