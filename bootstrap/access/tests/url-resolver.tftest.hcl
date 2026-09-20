@@ -25,6 +25,7 @@ run "only_dev_existing_resources_can_be_inspected" {
       alltrue([for statement in jsondecode(aws_iam_role_policy.resolver_release_reads["dev"].policy).Statement :
         statement.Effect == "Allow" && alltrue([for action in statement.Action : can(regex("^[a-z0-9]+:(Describe|Get|List)[A-Za-z]+$", action))])
       ]) &&
+      contains(jsondecode(aws_iam_role_policy.resolver_release_reads["dev"].policy).Statement[0].Action, "ec2:DescribeAddressesAttribute") &&
       jsondecode(aws_iam_role_policy.resolver_release_reads["dev"].policy).Statement[0].Condition.StringEquals["aws:RequestedRegion"] == "us-east-1" &&
       jsondecode(aws_iam_role_policy.resolver_release_reads["dev"].policy).Statement[1].Resource == "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts" &&
       jsondecode(aws_iam_role_policy.resolver_release_reads["dev"].policy).Statement[2].Resource == "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-resolver-*"
