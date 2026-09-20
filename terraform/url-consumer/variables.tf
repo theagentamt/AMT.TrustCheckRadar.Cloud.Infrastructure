@@ -47,6 +47,7 @@ variable "deployment" {
   validation {
     condition = var.deployment == null ? true : try(
       toset(keys(var.deployment.artifacts)) == toset(["consumer", "recovery", "entitlements"]) &&
+      length(toset([for artifact in values(var.deployment.artifacts) : split("/", artifact.key)[1]])) == 1 &&
       alltrue([for name, artifact in var.deployment.artifacts :
         artifact.bucket == "${var.project_name}-${var.environment}-${split(":", var.deployment.authority_table_arn)[4]}-artifacts" &&
         can(regex("^releases/[a-f0-9]{40}/${ { consumer = "url_consumer", recovery = "url_lease_recovery", entitlements = "v1_entitlements" }[name]}\\.zip$", artifact.key)) &&
