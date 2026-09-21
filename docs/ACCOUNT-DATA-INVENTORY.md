@@ -275,3 +275,13 @@ No table items, log events or identity attributes were read and no resources
 changed. On-demand/AWS Backup copies, S3 versions, queue replay and external
 copies remain unverified. The observed PITR windows alone do not authorize
 retiring deletion fences at 120 days or certify account-deletion readiness.
+
+## Private result feedback — ATCR-122 / SECUR4ALL-238
+
+Source implementation is in progress; this entry is not evidence of live deployment. The owner approved optional structured-only product-quality feedback on an owned retained assessment and storage on the existing purchase-entitlements CHECK row with inherited backup retention. See `PRIVATE-RESULT-FEEDBACK-DECISIONS.md` for the immutable proposal and approval record.
+
+The planned bounded object contains opaque feedback ID, one approved category, server receipt time and policy version. Existing CHECK linkage supplies account/result association. It contains no submitted message, URL, image, free text, demographics or new contact information. One report per result is immutable; ordinary analysis receipt/history projections exclude it. Feedback is separate from research/commercial consent, is not a truth label and does not change billing, verdicts or campaign data.
+
+Active access ends at the original receipt deadline; submission does not start a new seven-day period. Existing whole-row explicit expiry and account-deletion workers must remove the field with its CHECK. TTL remains eventual fallback. Verify those workers and all inventoried account key versions before activating a writer. Restrict the runtime to owned conditional updates; operational logs must not contain bodies, categories, proofs or account/result identifiers.
+
+This object inherits the shared table's PITR and any other backup copies. The last recorded Dev PITR window is 35 days. The current read-only verification attempt failed due expired AWS SSO, so effective settings and any additional backups/exports remain unverified. Restores require quarantine and reapplication of expiry/deletion controls before access. No all-copy erasure at day seven is promised. Do not create longer-lived extracts/aggregates or new backups by implication. Account export must explicitly account for this new field before claiming export completeness; no complete export capability is asserted here.
