@@ -8,13 +8,18 @@ they did not authorize a paid run or qualify a model.
 The subsequent [playbook refinement approval](MESSAGE-ANALYZER-PLAYBOOK-APPROVAL.md)
 authorizes a changed Lambda prompt. The original profile identity below is
 historical; prepare any new experiment from the revised profile recorded with that
-implementation. The proposed eight-case limits and unresolved access, pricing and
-paid-run gates are unchanged. Compatibility success would not measure the refined
+implementation. The eight-case limits are unchanged; owner approval of that paid
+scope is now recorded below, while access, pricing and execution setup remain
+unresolved. Compatibility success would not measure the refined
 playbook's scam-detection quality.
 
-The revised controlled `gpt-4.1-mini-2025-04-14` profile is
+The playbook-r1 controlled `gpt-4.1-mini-2025-04-14` profile was
 `101d79ff26c57c65f53db97c7c6794a51dea56ed862612f98ec57616401eb3f7`.
-Recompute it from the integrated Lambda source before a concrete authorization.
+The subsequent sanitizer runtime guard changes the executable profile to
+`5388372f8d67d8032779308e0ef8585e4d5011eb1720031431225e375df160e3`,
+without changing the prompt or schema. See the
+[sanitizer integration record](SANITIZER-V1-INTEGRATION.md). Regenerate the packet
+and exact manifest from the integrated source; the r1 packet remains historical.
 The original eight-case selection is still a compatibility proposal; supplemental
 playbook regression examples do not silently increase its authorized size or cost.
 
@@ -61,7 +66,7 @@ Unicode/emoji/accented text. Preserve every original case, family, provenance,
 `development` split and `engineering_only` review status. Draft labels are not
 independent quality evidence.
 
-Use only `gpt-4.1-mini-2025-04-14`. Proposed limits are eight input-count attempts,
+Use only `gpt-4.1-mini-2025-04-14`. Owner-approved limits are eight input-count attempts,
 eight generation attempts and USD 0.25 in combined conservative reservations,
 with no retries. Source limits remain 8,192 input and 512 output tokens. This
 checks the provider envelope, structured output, request/count binding and usage
@@ -77,7 +82,10 @@ That is an affordability boundary, not a count-price claim. The official
 establishes the route; this review has not established its billing terms.
 Refresh prices and record an evidenced count-charge bound before authorization.
 
-No paid run has been approved. Ordinary failures may consume the remaining
+The owner subsequently approved this eight-count/eight-generation/USD 0.25 scope
+and chose deferral when prerequisites remained unresolved; SECUR4ALL-323 records
+that authorization. No provider run has occurred and no complete execution grant
+has been pinned. Ordinary failures may consume the remaining
 authorized attempts: the current CLI is not stop-on-first-error. Count/usage or
 pricing-tier drift halts admission globally. Failed and unknown calls retain
 reservations; they never create retry credits. A later expanded experiment must
@@ -119,8 +127,12 @@ intentionally invalid. No ledger or authority directory has been initialized.
 Recreate and verify the packet before execution if temporary files are lost.
 
 The published counting guide and pricing pages did not establish count billing
-terms during this review. The following provider question is prepared but has
-not been sent:
+terms during this review. The following provider question was subsequently sent
+with owner authorization through OpenAI Help Center. The AI-assisted response did
+not resolve pricing or exact permission mapping; specialist escalation was
+acknowledged as requested, with replies directed to `support@andmorethings.com`.
+No case number was displayed. SECUR4ALL-240 comment 7-1292 records that handoff;
+the response is not authoritative billing evidence:
 
 > For POST /v1/responses/input_tokens with gpt-4.1-mini-2025-04-14, what charges
 > apply to successful and unsuccessful requests, and what documented maximum
@@ -147,8 +159,9 @@ not been sent:
    ledger for 30 days after completion; preserve unresolved liability evidence
    until reconciled, and retire the experiment credential after execution.
    This is separate from the application's approved seven-day receipts.
-5. Obtain the concrete owner authorization for eight/eight/USD 0.25 and the exact
-   manifest. Prepare the seven evidence files described in the
+5. Preserve the owner's existing eight/eight/USD 0.25 authorization in the exact
+   manifest; resolve its remaining operational/evidence fields without inventing
+   approval for unresolved choices. Prepare the seven evidence files described in the
    [controlled-evaluation handoff](MESSAGE-AI-CONTROLLED-EVALUATION.md), then have
    the Lambda agent review and pin its digest. Do not invent evidence or edit a
    registry merely to make preflight pass.
@@ -177,6 +190,10 @@ Its legacy 65,536-byte wording must not override the current governed-message
 32,768-byte limit or existing contract identities. SECUR4ALL-169 data boundaries
 and SECUR4ALL-110 explicit URL inspection still apply. This local work can proceed
 independently of model qualification and needs no new infrastructure by itself.
-This assessment selects the next story; it does not claim Android implementation
-has started. ATCR-121 post-scam guidance follows, subject to its backend dependencies.
+The owner subsequently authorized resuming the preserved Android/Lambda drafts.
+Current sanitizer scope and integration evidence belong to the separate
+[V1 sanitizer handoff](SANITIZER-V1-INTEGRATION.md); they do not authorize the paid
+evaluation. The deferred paid test is tracked in SECUR4ALL-323, including the
+owner's eight-case/USD 0.25 authorization and unresolved provider/key setup.
+ATCR-121 post-scam guidance follows, subject to its backend dependencies.
 ATCR-148 retains physical-device/TalkBack testing after V1 implementation.
