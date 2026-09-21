@@ -4,7 +4,7 @@
   "accountId": "107827791950",
   "region": "us-east-1",
   "terraformVersion": "1.12.1",
-  "awsProviderVersion": "6.65.0",
+  "awsProviderVersion": "6.66.0",
   "stateVersion": "97_C5jPGbTUvQhhYHG2.cZ9esbb.pasq",
   "artifactRelease": "e7b9e84211406cc6e1587f86ac0bd0a67af4d3c2",
   "newCandidateSelected": false,

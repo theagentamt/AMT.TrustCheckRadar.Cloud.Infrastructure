@@ -62,6 +62,25 @@ resource "aws_iam_role" "lifecycle" {
 
 data "aws_iam_policy_document" "runtime" {
   count = local.deployed ? 1 : 0
+  dynamic "statement" {
+    for_each = var.account_deletion_terminal_candidate ? [1] : []
+    content {
+      sid       = "CheckHistoryStateForCompletion"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.history.control_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
   statement {
     sid       = "ContentCleanup"
     actions   = ["dynamodb:Query", "dynamodb:DeleteItem"]
@@ -109,12 +128,30 @@ data "aws_iam_policy_document" "runtime" {
     for_each = local.account_deletion_deployed ? [1] : []
     content {
       sid       = "HistoryComponentCompletionReceipt"
-      actions   = ["dynamodb:GetItem", "dynamodb:PutItem"]
+      actions   = var.account_deletion_terminal_candidate ? ["dynamodb:GetItem"] : ["dynamodb:GetItem", "dynamodb:PutItem"]
       resources = [local.foundation.deletion_ledger_table_arn]
       condition {
         test     = "ForAllValues:StringLike"
         variable = "dynamodb:LeadingKeys"
         values   = ["ACCOUNT#*"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.account_deletion_terminal_candidate && local.account_deletion_deployed ? [1] : []
+    content {
+      sid       = "GuardHistoryCompletionReceiptTransaction"
+      actions   = ["dynamodb:PutItem", "dynamodb:ConditionCheckItem"]
+      resources = [local.foundation.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
       }
     }
   }
@@ -150,7 +187,7 @@ resource "aws_lambda_function" "lifecycle" {
   count                          = local.deployed ? 1 : 0
   function_name                  = local.name
   role                           = aws_iam_role.lifecycle[0].arn
-  runtime                        = "python3.12"
+  runtime                        = var.account_deletion_terminal_candidate ? "python3.14" : "python3.12"
   handler                        = "app.lambda_handler"
   architectures                  = ["arm64"]
   memory_size                    = 256
