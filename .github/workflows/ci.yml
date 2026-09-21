@@ -120,6 +120,13 @@ jobs:
           terraform validate
           terraform test
 
+      - name: Validate V1 message consumer candidate
+        working-directory: terraform/message-consumer
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
       - name: Validate disposable URL resolver fixture
         working-directory: terraform/url-resolver/acceptance-fixture
         run: |

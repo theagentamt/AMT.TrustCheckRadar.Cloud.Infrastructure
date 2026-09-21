@@ -11,9 +11,11 @@ on:
       - "!terraform/url-resolver/**"
       - "!terraform/url-assessment/**"
       - "!terraform/url-consumer/**"
+      - "!terraform/message-consumer/**"
       - "!environments/*/url-resolver.tfvars"
       - "!environments/*/url-assessment.tfvars"
       - "!environments/*/url-consumer.tfvars"
+      - "!environments/*/message-consumer.tfvars"
   workflow_dispatch:
     inputs:
       environment:
