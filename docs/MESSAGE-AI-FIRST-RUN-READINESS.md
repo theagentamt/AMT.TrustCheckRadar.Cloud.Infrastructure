@@ -20,22 +20,37 @@ playbook regression examples do not silently increase its authorized size or cos
 
 ## Observed account state
 
-Read-only inspection of the signed-in OpenAI Platform found one Default project
-and no dedicated evaluation project. No project, credential or account setting
-was created or changed, and no provider request was dispatched.
+The dedicated `trustcheckradar-evaluation` project was created on 2026-09-21 and
+verified in the project list. The Default project was left unchanged. The new
+project's settings and restricted-key form were inspected without creating a
+credential or dispatching a provider request. The key list contained zero keys.
 
 | Area | Observed state | Remaining requirement |
 | --- | --- | --- |
-| Project | Default project only; Global residency | Create a dedicated evaluation project and verify its actual settings before use. US app availability does not establish US provider residency. |
+| Project | `trustcheckradar-evaluation` created; Global residency | US app availability does not establish US provider residency. |
 | Sharing | Feedback, evaluation/fine-tuning data, and API input/output sharing disabled | Recheck the dedicated project's applicable controls. |
 | Retention | API call logging shown as enabled per call; project table shows retention `None` | `None` is not proof of zero retention. Review processing/retention for both endpoints. |
 | Service tier | Standard default; other tiers available | Runner explicitly requests `default`; it does not opt into another tier. |
-| Credential/model access | No key inspected; no request attempted | Dedicated restricted credential, selected dated-model access and route permissions remain unverified. |
+| Credential/model access | No key created; restricted form offers Responses Read/Write/None and expiration; dated baseline appears in model-policy picker | Effective model access and count-route permission mapping remain unverified. Appearance in a picker is not proof of request acceptance. |
+| Spend control | No project spend limit configured; UI describes spend alerts | Do not treat dashboard alerts as an enforced experiment cap. The reviewed local ledger remains required. |
 
 Official [data controls](https://developers.openai.com/api/docs/guides/your-data)
 distinguish stored response state from abuse-monitoring retention. `store:false`
 does not establish zero data retention. This record omits account identifiers,
 email, balance and credential material because they are unnecessary for review.
+
+The proposed temporary key is named `trustcheckradar-compatibility-r1`, scoped to
+this project, with Restricted permissions: Model capabilities > Responses =
+Write; unrelated capabilities = None. The UI exposes 1-day, 7-day, 30-day, Never
+and Custom expiration choices. Prefer a one-day key created when execution is
+ready, then retire it after reconciliation. This is a proposal, not a credential
+grant. No separate input-count permission was visible; do not infer its mapping
+or broaden to All to bypass a failed request. No organization-admin key is needed.
+
+Creating persistent credentials through the browser requires confirmation under
+the computer-use tool's action-time access policy. The owner should keep the
+secret out of chat and repository files. The inspection form was closed without
+submitting it.
 
 ## Proposed first experiment
 
@@ -86,10 +101,37 @@ without changing their order or contents. Retain `schemaVersion: 1`, set
 canonical JSON digest. Recompute identities after any edit. The approval registry
 remains empty; these hashes are a proposal, not a grant.
 
+## Revised packet verification
+
+The Lambda agent refreshed the packet against integrated release
+`1afa71dd3291a58cb1ca0de3f9a45456e85cc98b`. Local reproduction verified all eight
+unchanged cases, the revised profile above and per-case serialized count and
+generation request identities, with zero provider requests. The original corpus
+canonical identity remains unchanged; its file-byte SHA-256 is
+`8455025cc77483fd9f776f5d495d86c1f99332c43049d03857bff53208e15af8`.
+
+Private preparation artifacts are at `/tmp/amt-compatibility-r1-preparation`:
+`README.md`, `compatibility-corpus.json`, `request-identities.json`,
+`authorization.template.json`, `readiness.template.json`, `operator-commands.md`
+and `reproduce.py`. These temporary files are review aids, not durable execution
+authority. Unresolved template fields are null and the authorization is
+intentionally invalid. No ledger or authority directory has been initialized.
+Recreate and verify the packet before execution if temporary files are lost.
+
+The published counting guide and pricing pages did not establish count billing
+terms during this review. The following provider question is prepared but has
+not been sent:
+
+> For POST /v1/responses/input_tokens with gpt-4.1-mini-2025-04-14, what charges
+> apply to successful and unsuccessful requests, and what documented maximum
+> charge can we reserve for a request bounded to 64 KiB? Does a project API key
+> with Model capabilities > Responses = Write authorize this route, or is a
+> separate permission required? Please provide the applicable documentation.
+
 ## Remaining setup and execution gates
 
-1. Create the proposed `trustcheckradar-evaluation` provider project. Review actual
-   sharing, retention, residency and model access. Do not borrow the AWS runtime
+1. Project creation is complete. Finish review of applicable sharing, retention
+   and model access. Do not borrow the AWS runtime
    credential. Limit a new project credential to the permissions required by
    input counting and Responses generation; inspect available controls before
    granting access. No organization-admin credential is required.
