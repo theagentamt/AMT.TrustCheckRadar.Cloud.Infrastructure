@@ -31,7 +31,7 @@ Reviewed Lambda release `d35dcf7f5ec4443c5f8a87954c0bd1b8f83a2846`, including `s
 
 ## Staged experiment proposal
 
-Stage A: at most **660 provider attempts**, allocated as 20 smoke calls plus 200 development calls for each of the three models. Split each model's smoke calls evenly between EN/ES and cover response compatibility, refusals, truncated responses and Unicode spans. Split its development set into 100 examples per language: 30 benign, 30 warning, 20 ambiguous/out-of-scope and 20 adversarial. Ensure every warning category is represented. Compare identical cases across models; they remain development material permanently. Stop a candidate on incompatible transport/schema behavior before using its remaining allowance. A prompt revision or rerun consumes the same total attempt cap.
+Stage A: at most **660 provider attempts**, allocated as 20 smoke calls plus 200 development calls for each of the three models. Split each model's smoke calls evenly between EN/ES and test response compatibility and Unicode spans. Force refusals and truncation through offline fixtures; record them if observed live, since a small live sample cannot guarantee those outcomes. Split its development set into 100 examples per language: 30 benign, 30 warning, 20 ambiguous/out-of-scope and 20 adversarial. Ensure every warning category is represented. Compare identical cases across models; they remain development material permanently. Stop a candidate on incompatible transport/schema behavior before using its remaining allowance. A prompt revision or rerun consumes the same total attempt cap.
 
 Stage B: only after choosing and freezing one model/profile and agreeing on labels and release criteria, run **1,800 untouched held-out cases** plus at most **1,000 separate operational calls**. Maximum 2,800 attempts, no automatic retries. The held-out plan remains 900 per language: 300 benign, 300 warning, 150 ambiguous and 150 adversarial, with at least 50 examples per warning category. Operational cases assess latency, errors and costs; repeated load cases do not increase independent quality sample size.
 
@@ -77,6 +77,10 @@ The reporting contract `docs/V1-OPERATIONS-CONTRACT.md` is still a draft. SECUR4
 The report must distinguish processing completion from a chargeable complete assessment. The older draft's completed-but-inconclusive terminology must be reconciled with the approved no-deduction policy. Preserve one logical-check denominator, show pending/late corrections and account for provider costs even when the user is not charged. Native Lambda alarms already defined in infrastructure do not implement these application-level reports. `daily_reporting_ready=false` remains accurate.
 
 ## Concrete next work
+
+The [offline operations and cloud handoff runbook](MESSAGE-AI-EVALUATION-RUNBOOK.md)
+defines the boundary for the first tooling increment. It does not authorize the
+paid stages below or establish model quality.
 
 1. Lambda agent: build offline-first evaluation runner, corpus manifest/labeling rubric, request-profile identity, bounded attempts/cost reservations and metadata-only reports. Test it with simulated providers; leave production qualification empty.
 2. Orchestrator: establish permitted EN/ES sources/reviewers and present the finalized Stage A payload profile, data handling and $5/660-attempt cap before requesting paid execution.
