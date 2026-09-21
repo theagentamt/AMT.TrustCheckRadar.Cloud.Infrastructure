@@ -5,6 +5,19 @@ tooling owned by the Lambda agent. This is work under SECUR4ALL-240, which stays
 In Progress. SECUR4ALL-321/322 completed the adapter and operations handoff;
 they did not authorize a paid run or qualify a model.
 
+The subsequent [playbook refinement approval](MESSAGE-ANALYZER-PLAYBOOK-APPROVAL.md)
+authorizes a changed Lambda prompt. The original profile identity below is
+historical; prepare any new experiment from the revised profile recorded with that
+implementation. The proposed eight-case limits and unresolved access, pricing and
+paid-run gates are unchanged. Compatibility success would not measure the refined
+playbook's scam-detection quality.
+
+The revised controlled `gpt-4.1-mini-2025-04-14` profile is
+`101d79ff26c57c65f53db97c7c6794a51dea56ed862612f98ec57616401eb3f7`.
+Recompute it from the integrated Lambda source before a concrete authorization.
+The original eight-case selection is still a compatibility proposal; supplemental
+playbook regression examples do not silently increase its authorized size or cost.
+
 ## Observed account state
 
 Read-only inspection of the signed-in OpenAI Platform found one Default project
@@ -55,9 +68,9 @@ pricing-tier drift halts admission globally. Failed and unknown calls retain
 reservations; they never create retry credits. A later expanded experiment must
 explicitly account for this run if it shares the proposed Stage A allowance.
 
-## Reproducible proposal identity
+## Historical proposal identity
 
-Lambda release: `74316e9faa2f5d0e5dbb114cdfcbcbdb7adb33aa`.
+Original Lambda release: `74316e9faa2f5d0e5dbb114cdfcbcbdb7adb33aa`.
 Infrastructure baseline: `87422f97c1d572137348f25b9f9e259b7104a7e6`.
 
 | Artifact | Canonical SHA-256 |

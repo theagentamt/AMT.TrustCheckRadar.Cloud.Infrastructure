@@ -24,6 +24,11 @@ The historical proposal is retained byte-for-byte, including its draft heading.
 This record supersedes that heading's approval status. It does not rewrite the
 existing candidate.1 contract or its `message-rules-2026-09-20-v1` policy.
 
+The subsequent [runtime playbook refinement approval](MESSAGE-ANALYZER-PLAYBOOK-APPROVAL.md)
+records the owner's approved prompt clarifications, including the ordinary-invoice
+boundary for `AI_PRETEXT`. It preserves this base policy/transport identity and
+requires a newly identified prompt and evaluation profile before qualification.
+
 ## Approved behavior
 
 Clearly label probabilistic AI findings, keep AI-only findings at suspicious or
