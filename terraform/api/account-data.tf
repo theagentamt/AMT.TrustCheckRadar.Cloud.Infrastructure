@@ -20,6 +20,26 @@ variable "account_data_deployment" {
   }
 }
 
+variable "account_data_finalization_candidate" {
+  description = "Optional reviewed inventory pins and exact-pool identity IAM for a disabled finalization candidate. Does not approve inventory, create its marker or activate deletion."
+  type = object({
+    manifest_sha256    = string
+    inventory_revision = number
+    approval_reference = string
+  })
+  default = null
+  validation {
+    condition = var.account_data_finalization_candidate == null ? true : try(
+      var.account_data_deployment != null &&
+      can(regex("^[0-9a-f]{64}$", var.account_data_finalization_candidate.manifest_sha256)) &&
+      var.account_data_finalization_candidate.inventory_revision >= 1 &&
+      floor(var.account_data_finalization_candidate.inventory_revision) == var.account_data_finalization_candidate.inventory_revision &&
+      length(trimspace(var.account_data_finalization_candidate.approval_reference)) > 0, false
+    )
+    error_message = "Finalization candidates require a pinned account-data deployment, a SHA256 inventory manifest, positive integer revision and review reference."
+  }
+}
+
 locals {
   account_data_name       = "${local.name_prefix}-account-data-api"
   account_data_pool_arn   = "arn:aws:cognito-idp:${var.aws_region}:${split(":", local.users_table_arn)[4]}:userpool/${local.cognito_user_pool_id}"
@@ -57,6 +77,81 @@ data "aws_iam_policy_document" "account_data" {
       test     = "ForAllValues:StringLike"
       variable = "dynamodb:LeadingKeys"
       values   = ["USER#*"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "dynamodb:EnclosingOperation"
+      values   = ["TransactWriteItems"]
+    }
+  }
+  statement {
+    sid       = "ReadAccountInventoryProof"
+    actions   = ["dynamodb:GetItem"]
+    resources = [local.deletion_ledger_table_arn]
+    condition {
+      test     = "ForAllValues:StringEquals"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["INVENTORY#${var.environment}"]
+    }
+  }
+  statement {
+    sid       = "CheckDeletionProofTransaction"
+    actions   = ["dynamodb:ConditionCheckItem"]
+    resources = [local.deletion_ledger_table_arn]
+    condition {
+      test     = "ForAllValues:StringLike"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["ACCOUNT#*", "INVENTORY#${var.environment}"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "dynamodb:EnclosingOperation"
+      values   = ["TransactWriteItems"]
+    }
+  }
+  statement {
+    sid       = "ReadOwnedPurchaseCleanupTargets"
+    actions   = ["dynamodb:GetItem"]
+    resources = [local.purchase_entitlements_table_arn]
+    condition {
+      test     = "ForAllValues:StringLike"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["USER#*", "TOKEN#*", "PURCHASE#CONTROL"]
+    }
+  }
+  statement {
+    sid       = "FindOwnedPurchaseCleanupTargets"
+    actions   = ["dynamodb:Query"]
+    resources = [local.purchase_entitlements_table_arn]
+    condition {
+      test     = "ForAllValues:StringLike"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["USER#*"]
+    }
+  }
+  statement {
+    sid       = "EraseOwnedPurchaseTransaction"
+    actions   = ["dynamodb:DeleteItem"]
+    resources = [local.purchase_entitlements_table_arn]
+    condition {
+      test     = "ForAllValues:StringLike"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["USER#*", "TOKEN#*"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "dynamodb:EnclosingOperation"
+      values   = ["TransactWriteItems"]
+    }
+  }
+  statement {
+    sid       = "CheckPurchaseCleanupInventory"
+    actions   = ["dynamodb:ConditionCheckItem"]
+    resources = [local.purchase_entitlements_table_arn]
+    condition {
+      test     = "ForAllValues:StringEquals"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["PURCHASE#CONTROL"]
     }
     condition {
       test     = "StringEquals"
@@ -184,6 +279,14 @@ data "aws_iam_policy_document" "account_data" {
     actions   = ["cognito-idp:AdminUserGlobalSignOut"]
     resources = [local.account_data_pool_arn]
   }
+  dynamic "statement" {
+    for_each = var.account_data_finalization_candidate == null ? [] : [1]
+    content {
+      sid       = "FinalizeIdentityInOwnPool"
+      actions   = ["cognito-idp:AdminGetUser", "cognito-idp:AdminDeleteUser"]
+      resources = [local.account_data_pool_arn]
+    }
+  }
   statement {
     sid       = "ReadOwnDeletionStream"
     actions   = ["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator", "dynamodb:ListStreams"]
@@ -220,6 +323,7 @@ resource "aws_lambda_function" "account_data" {
   environment {
     variables = {
       APP_ENVIRONMENT                                 = var.environment
+      ENTITLEMENTS_TABLE_NAME                         = local.purchase_entitlements_table_name
       USERS_TABLE_NAME                                = local.users_table_name
       DELETION_LEDGER_TABLE_NAME                      = local.deletion_ledger_table_name
       DEVICE_BINDINGS_TABLE_NAME                      = local.device_bindings_table_name
@@ -245,6 +349,9 @@ resource "aws_lambda_function" "account_data" {
       COGNITO_REQUIRED_SCOPE                          = "aws.cognito.signin.user.admin"
       COGNITO_USERNAME_IS_SUB                         = "false"
       ACCOUNT_DELETION_ENABLED                        = "false"
+      ACCOUNT_IDENTITY_FINALIZER_ENABLED              = "false"
+      ACCOUNT_DATA_INVENTORY_MANIFEST_SHA256          = try(var.account_data_finalization_candidate.manifest_sha256, "")
+      ACCOUNT_DATA_INVENTORY_REVISION                 = tostring(try(var.account_data_finalization_candidate.inventory_revision, 0))
       ACCOUNT_DELETION_POLICY_STATUS                  = "pending"
       ACCOUNT_DELETION_COMPLETION_STATUS              = "incomplete"
       USER_PROFILE_DELETION_POLICY_STATUS             = "pending"
@@ -265,6 +372,8 @@ resource "aws_lambda_function" "account_data" {
     precondition {
       condition = try(
         split(":", local.users_table_arn)[4] == data.aws_caller_identity.account_fence[0].account_id &&
+        local.purchase_entitlements_table_name == "${local.name_prefix}-purchase-entitlements" &&
+        local.purchase_entitlements_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-purchase-entitlements" &&
         local.users_table_name == "${local.name_prefix}-users" &&
         local.deletion_ledger_table_name == "${local.name_prefix}-deletion-ledger" &&
         local.device_bindings_table_name == "${local.name_prefix}-device-bindings" &&

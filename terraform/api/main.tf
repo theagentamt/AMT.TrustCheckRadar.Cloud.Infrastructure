@@ -504,6 +504,37 @@ resource "aws_iam_role_policy_attachment" "device_recovery_runtime" {
 
 data "aws_iam_policy_document" "purchase_handoff_runtime" {
   dynamic "statement" {
+    for_each = var.purchase_handoff_fence_deployment == null ? [] : [1]
+    content {
+      sid       = "ReadPurchaseOwnershipInventory"
+      actions   = ["dynamodb:GetItem"]
+      resources = [local.purchase_entitlements_table_arn]
+      condition {
+        test     = "ForAllValues:StringEquals"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["PURCHASE#CONTROL"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.purchase_handoff_fence_deployment == null ? [] : [1]
+    content {
+      sid       = "CheckPurchaseOwnershipInventory"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.purchase_entitlements_table_arn]
+      condition {
+        test     = "ForAllValues:StringEquals"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["PURCHASE#CONTROL"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+  dynamic "statement" {
     for_each = var.purchase_handoff_fence_deployment == null ? {} : {
       Users  = { arn = local.users_table_arn, keys = ["USER#*"] }
       Ledger = { arn = local.deletion_ledger_table_arn, keys = ["ACCOUNT#*"] }
@@ -1091,7 +1122,7 @@ resource "aws_lambda_function" "campaign_participation" {
 resource "aws_lambda_function" "purchase_handoff" {
   function_name = local.purchase_handoff_lambda_name
   role          = aws_iam_role.purchase_handoff.arn
-  runtime       = var.purchase_handoff_lambda_runtime
+  runtime       = var.purchase_handoff_fence_deployment == null ? var.purchase_handoff_lambda_runtime : "python3.14"
   handler       = var.purchase_handoff_lambda_handler
 
   timeout                        = var.purchase_handoff_lambda_timeout_seconds
@@ -1106,7 +1137,8 @@ resource "aws_lambda_function" "purchase_handoff" {
 
   environment {
     variables = merge(var.purchase_handoff_lambda_env, var.purchase_handoff_fence_deployment == null ? {} : {
-      DELETION_LEDGER_TABLE_NAME = local.deletion_ledger_table_name
+      DELETION_LEDGER_TABLE_NAME           = local.deletion_ledger_table_name
+      PURCHASE_OWNERSHIP_CANDIDATE_ENABLED = "false"
       }, {
       PURCHASE_ENTITLEMENTS_TABLE_ARN       = local.purchase_entitlements_table_arn
       PURCHASE_ENTITLEMENTS_TABLE_NAME      = local.purchase_entitlements_table_name
@@ -1143,12 +1175,14 @@ resource "aws_lambda_function" "purchase_handoff" {
     precondition {
       condition = var.purchase_handoff_fence_deployment == null ? true : (
         split(":", local.users_table_arn)[4] == data.aws_caller_identity.account_fence[0].account_id &&
+        local.purchase_entitlements_table_name == "${local.name_prefix}-purchase-entitlements" &&
+        local.purchase_entitlements_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-purchase-entitlements" &&
         local.users_table_name == "${local.name_prefix}-users" &&
         local.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-users" &&
         local.deletion_ledger_table_name == "${local.name_prefix}-deletion-ledger" &&
         local.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-deletion-ledger"
       )
-      error_message = "Purchase fencing requires exact same-account/Region/environment users and deletion-ledger tables."
+      error_message = "Purchase fencing requires exact same-account/Region/environment users, entitlements and deletion-ledger tables."
     }
   }
 

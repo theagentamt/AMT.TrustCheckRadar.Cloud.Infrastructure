@@ -66,8 +66,11 @@ Three additional nullable release inputs prepare the late-writer corrections:
 - API `purchase_handoff_fence_deployment`: the same immutable fields for
   `purchase_handoff.zip`. It adds a scoped ledger GetItem, transaction-only
   users/ledger ConditionCheckItem, and the authoritative deletion-ledger env
-  value. Pinned entitlement access is limited to GetItem and transaction-only
-  PutItem on `USER#*`/`TOKEN#*`; standalone mutations and index access are removed.
+  value. The ownership follow-on adds read and transaction-only condition checks
+  for the exact `PURCHASE#CONTROL` inventory partition, Python 3.14 and an
+  authoritative `PURCHASE_OWNERSHIP_CANDIDATE_ENABLED=false` setting. Pinned
+  entitlement access otherwise remains GetItem and transaction-only PutItem on
+  `USER#*`/`TOKEN#*`; standalone mutations and index access are removed.
   The Lambda commits
   its entitlement and token ownership writes in the same fenced transaction.
   This does not approve entitlement deletion or any anti-replay retention policy.
