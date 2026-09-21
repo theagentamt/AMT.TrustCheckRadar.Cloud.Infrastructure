@@ -124,6 +124,11 @@ profile must not reinterpret an older experiment's identity or prices.
 
 ## Concrete run readiness record
 
+The [first-run readiness assessment](MESSAGE-AI-FIRST-RUN-READINESS.md) records
+the subsequent account inspection and a smaller, eight-case compatibility
+proposal. Its observed facts supersede the pending inspection entries below;
+neither document authorizes execution.
+
 Prepare this record once the tool and corpus are frozen. Unresolved entries remain
 unresolved; this document supplies no approval signature or artificial evidence.
 
