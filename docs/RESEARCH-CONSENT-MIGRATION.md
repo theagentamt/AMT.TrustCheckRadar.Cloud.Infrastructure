@@ -101,6 +101,11 @@ contribution has been removed.
 
 Qualify source artifacts, locally review plans and IAM, pause the campaign
 pipeline, verify actual pause, and deploy the coordinated reviewed candidates.
+The reviewed maintenance/cutover must also stop new legacy invocations and drain
+already-running API/worker invocations, including cached provider credentials.
+Account for IAM propagation; neither an updated package nor a disabled event
+source proves old in-flight code has stopped. Verify the drain before asserting
+that no legacy writer or provider dispatch can still complete.
 Then verify old-client join rejection, withdrawal and exact reconciliation,
 paid/trial/complimentary independence, no new legacy dispatch, retry/no-double
 charge, session switching and deletion races. Keep joins and mobile adapter
