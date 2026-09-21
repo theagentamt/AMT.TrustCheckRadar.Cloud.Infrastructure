@@ -26,14 +26,17 @@ The participation role cannot access entitlement tables. The retired analysis
 candidate can only replay or report the need for reconciliation; IAM denies
 writes, provider secrets, SSM parameter reads and Lambda dispatch. The snapshot
 candidate must not synthesize FREE access from a missing or malformed record.
-The direct legacy Web Risk candidate has no provider or DynamoDB access. Purchase handoff carries the revised entitlement helper so verification cannot
-restore a research bonus; its account/deletion and transaction-only ownership
-fences remain required. These
+The direct legacy Web Risk candidate has no provider or DynamoDB access. Purchase handoff also retires its old mutation path: the old unconditional
+entitlement write could overwrite usage while verification was in flight. The
+selected purchase role denies provider access and all DynamoDB writes. Its
+account/deletion fences remain in place, but the separate ownership candidate
+is fixed off; qualified replacement purchase/restore requires a subsequent
+reviewed cutover. The shared helper must also remove research incentives. These
 are mandatory behavior changes in the pinned packages, not environment toggles
 that can revive an old allowance path.
 
 Preserving entitlement and usage records does **not** establish uninterrupted
-paid service. Modern V1 authority/consumers and their mobile routes must be
+paid service or purchase/restore. Modern V1 authority/consumers and their mobile routes must be
 qualified before legacy cutover; otherwise the rollout must explicitly account
 for temporary service unavailability. This candidate alone does not enable them.
 
@@ -98,6 +101,11 @@ contribution has been removed.
 
 Qualify source artifacts, locally review plans and IAM, pause the campaign
 pipeline, verify actual pause, and deploy the coordinated reviewed candidates.
+The reviewed maintenance/cutover must also stop new legacy invocations and drain
+already-running API/worker invocations, including cached provider credentials.
+Account for IAM propagation; neither an updated package nor a disabled event
+source proves old in-flight code has stopped. Verify the drain before asserting
+that no legacy writer or provider dispatch can still complete.
 Then verify old-client join rejection, withdrawal and exact reconciliation,
 paid/trial/complimentary independence, no new legacy dispatch, retry/no-double
 charge, session switching and deletion races. Keep joins and mobile adapter
@@ -118,3 +126,18 @@ physical-device result or cleanup/restore proof.
 
 No environment tfvars, remote state, runtime flags, customer items, Secrets
 Manager values or live resources are changed by this source increment.
+
+## Dev runtime observation, 2026-09-21
+
+The read-only [runtime inventory](evidence/research-consent-dev-runtime-inventory.json)
+records actual API integration targets, Lambda hashes/versions and live-alias
+flags. Legacy analysis, participation, snapshot, purchase and direct Web Risk
+still use the old unqualified Python 3.13 functions. Participation exposes the
+old notice/policy. Publisher, cluster and deletion event mappings are enabled;
+all three campaign schedules are enabled. The actual `live` aliases for URL
+checks and V1 access are version 4 with `AUTHORITY_ENABLED=false`.
+
+These observations confirm the migration has not been applied and the current
+replacement service is not enabled. They are not customer-request, billing,
+cleanup or restore tests. No customer items, provider requests, logs or secret
+values were read, and no live changes were made.
