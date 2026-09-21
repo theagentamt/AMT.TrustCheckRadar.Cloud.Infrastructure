@@ -68,6 +68,15 @@ run "candidate_is_isolated_and_inactive" {
     error_message = "Message processing must not enumerate or delete authority records; existing lifecycle workers own that work."
   }
   assert {
+    condition = (
+      toset(jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[2].Action) == toset(["dynamodb:GetItem", "dynamodb:ConditionCheckItem"]) &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[2].Condition["ForAllValues:StringLike"]["dynamodb:LeadingKeys"] == ["V1#*"] &&
+      !can(jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[2].Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"]) &&
+      toset(jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Action) == toset(["dynamodb:PutItem", "dynamodb:UpdateItem"])
+    )
+    error_message = "Fenced condition checks must remain permitted independently of the transaction-only mutation condition."
+  }
+  assert {
     condition     = jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[1].Resource == var.deployment.assessment_alias_arn && jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[2].Effect == "Deny" && alltrue([for action in ["dynamodb:*", "secretsmanager:*", "s3:*", "ssm:*", "sts:AssumeRole"] : contains(jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[2].Action, action)]) && !contains(keys(aws_lambda_function.runtime["evaluator"].environment[0].variables), "AUTHORITY_HMAC_SECRET_ARN") && !contains(keys(aws_lambda_function.runtime["evaluator"].environment[0].variables), "AUTHORITY_TABLE_NAME")
     error_message = "Evaluator must have no authority/storage/secret access and only the exact private URL-assessment invocation grant."
   }
