@@ -504,7 +504,7 @@ resource "aws_iam_role_policy_attachment" "device_recovery_runtime" {
 
 data "aws_iam_policy_document" "purchase_handoff_runtime" {
   dynamic "statement" {
-    for_each = var.purchase_handoff_fence_deployment == null ? [] : [1]
+    for_each = !local.research_purchase_fenced ? [] : [1]
     content {
       sid       = "ReadPurchaseOwnershipInventory"
       actions   = ["dynamodb:GetItem"]
@@ -517,7 +517,7 @@ data "aws_iam_policy_document" "purchase_handoff_runtime" {
     }
   }
   dynamic "statement" {
-    for_each = var.purchase_handoff_fence_deployment == null ? [] : [1]
+    for_each = !local.research_purchase_fenced ? [] : [1]
     content {
       sid       = "CheckPurchaseOwnershipInventory"
       actions   = ["dynamodb:ConditionCheckItem"]
@@ -535,7 +535,7 @@ data "aws_iam_policy_document" "purchase_handoff_runtime" {
     }
   }
   dynamic "statement" {
-    for_each = var.purchase_handoff_fence_deployment == null ? {} : {
+    for_each = !local.research_purchase_fenced ? {} : {
       Users  = { arn = local.users_table_arn, keys = ["USER#*"] }
       Ledger = { arn = local.deletion_ledger_table_arn, keys = ["ACCOUNT#*"] }
     }
@@ -556,7 +556,7 @@ data "aws_iam_policy_document" "purchase_handoff_runtime" {
     }
   }
   dynamic "statement" {
-    for_each = var.purchase_handoff_fence_deployment == null ? [] : [1]
+    for_each = !local.research_purchase_fenced ? [] : [1]
     content {
       sid       = "ReadPurchaseDeletionFence"
       actions   = ["dynamodb:GetItem"]
@@ -571,7 +571,7 @@ data "aws_iam_policy_document" "purchase_handoff_runtime" {
   statement {
     sid    = "PurchaseEntitlementsReadWrite"
     effect = "Allow"
-    actions = var.purchase_handoff_fence_deployment != null ? ["dynamodb:GetItem"] : [
+    actions = local.research_purchase_fenced ? ["dynamodb:GetItem"] : [
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:UpdateItem",
@@ -579,12 +579,12 @@ data "aws_iam_policy_document" "purchase_handoff_runtime" {
       "dynamodb:Query"
     ]
 
-    resources = var.purchase_handoff_fence_deployment != null ? [local.purchase_entitlements_table_arn] : [
+    resources = local.research_purchase_fenced ? [local.purchase_entitlements_table_arn] : [
       local.purchase_entitlements_table_arn,
       "${local.purchase_entitlements_table_arn}/index/*"
     ]
     dynamic "condition" {
-      for_each = var.purchase_handoff_fence_deployment == null ? [] : [1]
+      for_each = !local.research_purchase_fenced ? [] : [1]
       content {
         test     = "ForAllValues:StringLike"
         variable = "dynamodb:LeadingKeys"
@@ -593,7 +593,7 @@ data "aws_iam_policy_document" "purchase_handoff_runtime" {
     }
   }
   dynamic "statement" {
-    for_each = var.purchase_handoff_fence_deployment == null ? [] : [1]
+    for_each = !local.research_purchase_fenced ? [] : [1]
     content {
       sid       = "WriteFencedPurchaseTransaction"
       actions   = ["dynamodb:PutItem"]
@@ -679,7 +679,7 @@ resource "aws_iam_role_policy_attachment" "entitlement_snapshot_runtime" {
 
 data "aws_iam_policy_document" "campaign_participation_runtime" {
   dynamic "statement" {
-    for_each = var.campaign_participation_fence_deployment == null ? {} : {
+    for_each = var.campaign_participation_fence_deployment == null && !local.research_migration_selected ? {} : {
       users  = { arn = local.users_table_arn, keys = ["USER#*"] }
       ledger = { arn = local.deletion_ledger_table_arn, keys = ["ACCOUNT#*"] }
     }
@@ -700,7 +700,7 @@ data "aws_iam_policy_document" "campaign_participation_runtime" {
     }
   }
   dynamic "statement" {
-    for_each = var.campaign_participation_fence_deployment == null ? [] : [1]
+    for_each = var.campaign_participation_fence_deployment == null && !local.research_migration_selected ? [] : [1]
     content {
       sid       = "ReadParticipationDeletionFence"
       actions   = ["dynamodb:GetItem"]
@@ -717,21 +717,26 @@ data "aws_iam_policy_document" "campaign_participation_runtime" {
     effect  = "Allow"
     actions = ["dynamodb:GetItem"]
 
-    resources = [
-      local.users_table_arn,
-      local.purchase_entitlements_table_arn,
-      "${local.purchase_entitlements_table_arn}/index/*"
+    resources = local.research_migration_selected ? [local.users_table_arn] : [
+      local.users_table_arn, local.purchase_entitlements_table_arn, "${local.purchase_entitlements_table_arn}/index/*"
     ]
+    dynamic "condition" {
+      for_each = local.research_migration_selected ? [1] : []
+      content {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+    }
   }
 
   dynamic "statement" {
-    for_each = var.campaign_participation_fence_deployment == null ? {
+    for_each = var.campaign_participation_fence_deployment == null && !local.research_migration_selected ? {
       Legacy = { resources = [local.users_table_arn, local.purchase_entitlements_table_arn, local.deletion_ledger_table_arn], keys = [] }
-      } : {
-      Users        = { resources = [local.users_table_arn], keys = ["USER#*"] }
-      Entitlements = { resources = [local.purchase_entitlements_table_arn], keys = ["USER#*"] }
-      Ledger       = { resources = [local.deletion_ledger_table_arn], keys = ["ACCOUNT#*"] }
-    }
+      } : merge({
+        Users  = { resources = [local.users_table_arn], keys = ["USER#*"] }
+        Ledger = { resources = [local.deletion_ledger_table_arn], keys = ["ACCOUNT#*"] }
+    }, local.research_migration_selected ? {} : { Entitlements = { resources = [local.purchase_entitlements_table_arn], keys = ["USER#*"] } })
     content {
       sid       = statement.key == "Legacy" ? "WriteParticipationTransaction" : "WriteParticipationTransaction${statement.key}"
       effect    = "Allow"
@@ -907,7 +912,7 @@ resource "aws_lambda_function" "age_attestation" {
 resource "aws_lambda_function" "analysis" {
   function_name = local.analysis_lambda_name
   role          = aws_iam_role.analysis.arn
-  runtime       = var.analysis_lambda_runtime
+  runtime       = local.research_migration_selected ? "python3.14" : (var.analysis_lambda_runtime)
   handler       = var.analysis_lambda_handler
 
   timeout                        = var.analysis_lambda_timeout_seconds
@@ -915,10 +920,10 @@ resource "aws_lambda_function" "analysis" {
   architectures                  = var.analysis_lambda_architectures
   reserved_concurrent_executions = var.analysis_lambda_reserved_concurrency
 
-  s3_bucket         = local.analysis_artifact_bucket_name
-  s3_key            = local.analysis_artifact_key
-  s3_object_version = var.history_deployment != null ? var.history_deployment.artifacts["analysis"].object_version : var.analysis_lambda_s3_object_version
-  source_code_hash  = var.history_deployment != null ? var.history_deployment.artifacts["analysis"].source_hash : null
+  s3_bucket         = local.research_migration_selected ? local.foundation.artifact_bucket_name : (local.analysis_artifact_bucket_name)
+  s3_key            = local.research_migration_selected ? "releases/${var.research_consent_migration_deployment.release_id}/conversation_analysis.zip" : (local.analysis_artifact_key)
+  s3_object_version = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["analysis"].object_version : (var.history_deployment != null ? var.history_deployment.artifacts["analysis"].object_version : var.analysis_lambda_s3_object_version)
+  source_code_hash  = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["analysis"].source_hash : (var.history_deployment != null ? var.history_deployment.artifacts["analysis"].source_hash : null)
 
   environment {
     variables = merge(var.analysis_lambda_env, {
@@ -952,10 +957,10 @@ resource "aws_lambda_function" "analysis" {
       CAMPAIGN_OUTBOX_TABLE_ARN  = local.campaign_outbox_table_arn
       CAMPAIGN_OUTBOX_TABLE_NAME = local.campaign_outbox_table_name
       CAMPAIGN_SCHEMA_VERSION    = "1"
-    } : {}, local.history_analysis_env)
+    } : {}, local.history_analysis_env, local.research_migration_replay_env)
   }
 
-  depends_on = [aws_cloudwatch_log_group.analysis_lambda, aws_iam_role_policy.history_analysis, aws_iam_role_policy_attachment.analysis_runtime]
+  depends_on = [terraform_data.research_migration_cutover, aws_iam_role_policy.research_migration_boundary, aws_cloudwatch_log_group.analysis_lambda, aws_iam_role_policy.history_analysis, aws_iam_role_policy_attachment.analysis_runtime]
 
   tags = local.common_tags
 }
@@ -1022,7 +1027,7 @@ resource "aws_lambda_function" "device_recovery" {
 resource "aws_lambda_function" "entitlement_snapshot" {
   function_name = local.entitlement_snapshot_lambda_name
   role          = aws_iam_role.entitlement_snapshot.arn
-  runtime       = var.entitlement_snapshot_lambda_runtime
+  runtime       = local.research_migration_selected ? "python3.14" : (var.entitlement_snapshot_lambda_runtime)
   handler       = var.entitlement_snapshot_lambda_handler
 
   timeout                        = var.entitlement_snapshot_lambda_timeout_seconds
@@ -1030,9 +1035,11 @@ resource "aws_lambda_function" "entitlement_snapshot" {
   architectures                  = var.entitlement_snapshot_lambda_architectures
   reserved_concurrent_executions = var.entitlement_snapshot_lambda_reserved_concurrency
 
-  s3_bucket         = local.entitlement_snapshot_artifact_bucket_name
-  s3_key            = local.entitlement_snapshot_artifact_key
-  s3_object_version = var.entitlement_snapshot_lambda_s3_object_version
+  s3_bucket         = local.research_migration_selected ? local.foundation.artifact_bucket_name : (local.entitlement_snapshot_artifact_bucket_name)
+  s3_key            = local.research_migration_selected ? "releases/${var.research_consent_migration_deployment.release_id}/entitlement_snapshot.zip" : (local.entitlement_snapshot_artifact_key)
+  s3_object_version = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["snapshot"].object_version : (var.entitlement_snapshot_lambda_s3_object_version)
+
+  source_code_hash = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["snapshot"].source_hash : null
 
   environment {
     variables = merge(var.entitlement_snapshot_lambda_env, {
@@ -1054,7 +1061,7 @@ resource "aws_lambda_function" "entitlement_snapshot" {
     })
   }
 
-  depends_on = [aws_cloudwatch_log_group.entitlement_snapshot_lambda]
+  depends_on = [terraform_data.research_migration_cutover, aws_iam_role_policy.research_migration_boundary, aws_cloudwatch_log_group.entitlement_snapshot_lambda]
 
   tags = local.common_tags
 }
@@ -1062,7 +1069,7 @@ resource "aws_lambda_function" "entitlement_snapshot" {
 resource "aws_lambda_function" "campaign_participation" {
   function_name = local.campaign_participation_lambda_name
   role          = aws_iam_role.campaign_participation.arn
-  runtime       = var.campaign_participation_lambda_runtime
+  runtime       = local.research_migration_selected ? "python3.14" : (var.campaign_participation_lambda_runtime)
   handler       = var.campaign_participation_lambda_handler
 
   timeout                        = var.campaign_participation_lambda_timeout_seconds
@@ -1070,10 +1077,10 @@ resource "aws_lambda_function" "campaign_participation" {
   architectures                  = var.campaign_participation_lambda_architectures
   reserved_concurrent_executions = var.campaign_participation_lambda_reserved_concurrency
 
-  s3_bucket         = var.campaign_participation_fence_deployment == null ? local.campaign_participation_artifact_bucket_name : local.foundation.artifact_bucket_name
-  s3_key            = var.campaign_participation_fence_deployment == null ? local.campaign_participation_artifact_key : "releases/${var.campaign_participation_fence_deployment.release_id}/campaign_participation.zip"
-  s3_object_version = var.campaign_participation_fence_deployment == null ? var.campaign_participation_lambda_s3_object_version : var.campaign_participation_fence_deployment.object_version
-  source_code_hash  = var.campaign_participation_fence_deployment == null ? null : var.campaign_participation_fence_deployment.source_hash
+  s3_bucket         = local.research_migration_selected ? local.foundation.artifact_bucket_name : (var.campaign_participation_fence_deployment == null ? local.campaign_participation_artifact_bucket_name : local.foundation.artifact_bucket_name)
+  s3_key            = local.research_migration_selected ? "releases/${var.research_consent_migration_deployment.release_id}/campaign_participation.zip" : (var.campaign_participation_fence_deployment == null ? local.campaign_participation_artifact_key : "releases/${var.campaign_participation_fence_deployment.release_id}/campaign_participation.zip")
+  s3_object_version = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["participation"].object_version : (var.campaign_participation_fence_deployment == null ? var.campaign_participation_lambda_s3_object_version : var.campaign_participation_fence_deployment.object_version)
+  source_code_hash  = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["participation"].source_hash : (var.campaign_participation_fence_deployment == null ? null : var.campaign_participation_fence_deployment.source_hash)
 
   environment {
     variables = merge(var.campaign_participation_lambda_env, {
@@ -1099,12 +1106,12 @@ resource "aws_lambda_function" "campaign_participation" {
       ENTITLEMENT_NONTERMINAL_STATUSES            = jsonencode(var.entitlement_nonterminal_statuses)
       ENTITLEMENT_PLATFORM                        = "google_play"
       ENTITLEMENT_PRODUCT_ID                      = var.google_play_subscription_product_id
-    })
+    }, local.research_migration_consent_env)
   }
 
   lifecycle {
     precondition {
-      condition = var.campaign_participation_fence_deployment == null ? true : (
+      condition = var.campaign_participation_fence_deployment == null && !local.research_migration_selected ? true : (
         split(":", local.users_table_arn)[4] == data.aws_caller_identity.account_fence[0].account_id &&
         local.users_table_name == "${local.name_prefix}-users" &&
         local.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-users" &&
@@ -1114,7 +1121,7 @@ resource "aws_lambda_function" "campaign_participation" {
       error_message = "Participation fencing requires exact same-account/Region/environment users and deletion-ledger tables."
     }
   }
-  depends_on = [aws_cloudwatch_log_group.campaign_participation_lambda, aws_iam_role_policy_attachment.campaign_participation_runtime]
+  depends_on = [terraform_data.research_migration_cutover, aws_iam_role_policy.research_migration_boundary, aws_cloudwatch_log_group.campaign_participation_lambda, aws_iam_role_policy_attachment.campaign_participation_runtime]
 
   tags = local.common_tags
 }
@@ -1122,7 +1129,7 @@ resource "aws_lambda_function" "campaign_participation" {
 resource "aws_lambda_function" "purchase_handoff" {
   function_name = local.purchase_handoff_lambda_name
   role          = aws_iam_role.purchase_handoff.arn
-  runtime       = var.purchase_handoff_fence_deployment == null ? var.purchase_handoff_lambda_runtime : "python3.14"
+  runtime       = !local.research_purchase_fenced ? var.purchase_handoff_lambda_runtime : "python3.14"
   handler       = var.purchase_handoff_lambda_handler
 
   timeout                        = var.purchase_handoff_lambda_timeout_seconds
@@ -1130,13 +1137,13 @@ resource "aws_lambda_function" "purchase_handoff" {
   architectures                  = var.purchase_handoff_lambda_architectures
   reserved_concurrent_executions = var.purchase_handoff_lambda_reserved_concurrency
 
-  s3_bucket         = var.purchase_handoff_fence_deployment == null ? local.purchase_handoff_artifact_bucket_name : local.foundation.artifact_bucket_name
-  s3_key            = var.purchase_handoff_fence_deployment == null ? local.purchase_handoff_artifact_key : "releases/${var.purchase_handoff_fence_deployment.release_id}/purchase_handoff.zip"
-  s3_object_version = var.purchase_handoff_fence_deployment == null ? var.purchase_handoff_lambda_s3_object_version : var.purchase_handoff_fence_deployment.object_version
-  source_code_hash  = var.purchase_handoff_fence_deployment == null ? null : var.purchase_handoff_fence_deployment.source_hash
+  s3_bucket         = local.research_migration_selected ? local.foundation.artifact_bucket_name : (var.purchase_handoff_fence_deployment == null ? local.purchase_handoff_artifact_bucket_name : local.foundation.artifact_bucket_name)
+  s3_key            = local.research_migration_selected ? "releases/${var.research_consent_migration_deployment.release_id}/purchase_handoff.zip" : (var.purchase_handoff_fence_deployment == null ? local.purchase_handoff_artifact_key : "releases/${var.purchase_handoff_fence_deployment.release_id}/purchase_handoff.zip")
+  s3_object_version = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["purchase"].object_version : (var.purchase_handoff_fence_deployment == null ? var.purchase_handoff_lambda_s3_object_version : var.purchase_handoff_fence_deployment.object_version)
+  source_code_hash  = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["purchase"].source_hash : (var.purchase_handoff_fence_deployment == null ? null : var.purchase_handoff_fence_deployment.source_hash)
 
   environment {
-    variables = merge(var.purchase_handoff_lambda_env, var.purchase_handoff_fence_deployment == null ? {} : {
+    variables = merge(var.purchase_handoff_lambda_env, !local.research_purchase_fenced ? {} : {
       DELETION_LEDGER_TABLE_NAME           = local.deletion_ledger_table_name
       PURCHASE_OWNERSHIP_CANDIDATE_ENABLED = "false"
       }, {
@@ -1167,13 +1174,14 @@ resource "aws_lambda_function" "purchase_handoff" {
   }
 
   depends_on = [
+    terraform_data.research_migration_cutover,
     aws_cloudwatch_log_group.purchase_handoff_lambda,
     aws_iam_role_policy_attachment.purchase_handoff_runtime,
   ]
 
   lifecycle {
     precondition {
-      condition = var.purchase_handoff_fence_deployment == null ? true : (
+      condition = !local.research_purchase_fenced ? true : (
         split(":", local.users_table_arn)[4] == data.aws_caller_identity.account_fence[0].account_id &&
         local.purchase_entitlements_table_name == "${local.name_prefix}-purchase-entitlements" &&
         local.purchase_entitlements_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-purchase-entitlements" &&
@@ -1193,7 +1201,7 @@ resource "aws_lambda_function" "web_risk_communication" {
   count         = var.enable_web_risk_communication ? 1 : 0
   function_name = local.web_risk_communication_lambda_name
   role          = aws_iam_role.web_risk_communication[0].arn
-  runtime       = var.web_risk_communication_lambda_runtime
+  runtime       = local.research_migration_selected ? "python3.14" : (var.web_risk_communication_lambda_runtime)
   handler       = var.web_risk_communication_lambda_handler
 
   timeout                        = var.web_risk_communication_lambda_timeout_seconds
@@ -1201,9 +1209,11 @@ resource "aws_lambda_function" "web_risk_communication" {
   architectures                  = var.web_risk_communication_lambda_architectures
   reserved_concurrent_executions = var.web_risk_communication_lambda_reserved_concurrency
 
-  s3_bucket         = local.web_risk_communication_artifact_bucket_name
-  s3_key            = local.web_risk_communication_artifact_key
-  s3_object_version = var.web_risk_communication_lambda_s3_object_version
+  s3_bucket         = local.research_migration_selected ? local.foundation.artifact_bucket_name : (local.web_risk_communication_artifact_bucket_name)
+  s3_key            = local.research_migration_selected ? "releases/${var.research_consent_migration_deployment.release_id}/web_risk_communication.zip" : (local.web_risk_communication_artifact_key)
+  s3_object_version = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["web_risk"].object_version : (var.web_risk_communication_lambda_s3_object_version)
+
+  source_code_hash = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["web_risk"].source_hash : null
 
   environment {
     variables = merge(var.web_risk_communication_lambda_env, {
@@ -1212,7 +1222,7 @@ resource "aws_lambda_function" "web_risk_communication" {
     })
   }
 
-  depends_on = [aws_cloudwatch_log_group.web_risk_communication_lambda]
+  depends_on = [terraform_data.research_migration_cutover, aws_iam_role_policy.research_migration_boundary, aws_cloudwatch_log_group.web_risk_communication_lambda]
 
   tags = local.common_tags
 }

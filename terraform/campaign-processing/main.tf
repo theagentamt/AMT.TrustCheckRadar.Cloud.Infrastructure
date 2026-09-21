@@ -448,6 +448,46 @@ data "aws_iam_policy_document" "cluster_runtime" {
   count = local.enabled ? 1 : 0
 
   dynamic "statement" {
+    for_each = var.research_consent_migration ? {
+      outbox = { arn = local.campaign.outbox_table_arn, keys = ["EVENT#*"] }
+      users  = { arn = local.foundation.users_table_arn, keys = ["USER#*"] }
+      ledger = { arn = local.foundation.deletion_ledger_table_arn, keys = ["ACCOUNT#*"] }
+    } : {}
+    content {
+      sid       = "ReadResearchEligibility${title(statement.key)}"
+      actions   = ["dynamodb:GetItem"]
+      resources = [statement.value.arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = statement.value.keys
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.research_consent_migration ? {
+      outbox = { arn = local.campaign.outbox_table_arn, keys = ["EVENT#*"] }
+      users  = { arn = local.foundation.users_table_arn, keys = ["USER#*"] }
+      ledger = { arn = local.foundation.deletion_ledger_table_arn, keys = ["ACCOUNT#*"] }
+    } : {}
+    content {
+      sid       = "CheckResearchEligibility${title(statement.key)}"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [statement.value.arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = statement.value.keys
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
+  dynamic "statement" {
     for_each = local.account_privacy_candidate ? [1] : []
     content {
       sid       = "CheckCandidateLifecycleTransaction"
@@ -970,6 +1010,11 @@ resource "aws_lambda_function" "worker" {
       CAMPAIGN_LOCATOR_INVENTORY_REVISION = "0"
       } : {}, local.account_privacy_candidate && each.key == "lifecycle" ? {
       CAMPAIGN_LIFECYCLE_CANDIDATE_ENABLED = "false"
+      } : {}, var.research_consent_migration && contains(["publisher", "cluster"], each.key) ? {
+      USERS_TABLE_NAME                      = local.foundation.users_table_name
+      DELETION_LEDGER_TABLE_NAME            = local.foundation.deletion_ledger_table_name
+      CAMPAIGN_PARTICIPATION_NOTICE_VERSION = "research-consent-2026-09-21-v2"
+      CAMPAIGN_PARTICIPATION_POLICY_VERSION = "independent-research-v1"
       } : {}, each.key == "publisher" ? {
       USERS_TABLE_NAME = local.foundation.users_table_name
       } : {}, each.key == "publisher" && local.publisher_fenced ? {
@@ -1000,6 +1045,7 @@ resource "aws_lambda_function" "worker" {
         local.campaign.intelligence_table_name == "${var.project_name}-${var.environment}-campaign-intelligence" &&
         local.campaign.intelligence_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.campaign.intelligence_table_name}" &&
         local.campaign.outbox_table_name == "${var.project_name}-${var.environment}-campaign-outbox" &&
+        (!var.research_consent_migration || try(local.campaign.outbox_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.campaign.outbox_table_name}", false)) &&
         startswith(local.campaign.outbox_stream_arn, "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.campaign.outbox_table_name}/stream/") &&
         startswith(local.foundation.deletion_ledger_stream_arn, "${local.foundation.deletion_ledger_table_arn}/stream/"), false
       )
