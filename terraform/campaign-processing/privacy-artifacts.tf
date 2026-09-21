@@ -31,3 +31,25 @@ locals {
   account_privacy_candidate = var.account_privacy_artifacts != null
   publisher_fenced          = var.publisher_fence_artifact != null || local.account_privacy_candidate
 }
+
+variable "research_consent_migration" {
+  description = "Select reviewed independent-consent publisher/cluster code within the pinned privacy release. Consumers remain paused."
+  type        = bool
+  default     = false
+  nullable    = false
+  validation {
+    condition     = !var.research_consent_migration || var.account_privacy_artifacts != null
+    error_message = "Research consent migration requires a coordinated immutable account privacy candidate."
+  }
+}
+
+output "research_consent_migration_contract" {
+  value = {
+    selected         = var.research_consent_migration
+    environment      = var.environment
+    account_id       = data.aws_caller_identity.current.account_id
+    release_id       = try(var.account_privacy_artifacts.release_id, null)
+    consumers_paused = local.account_privacy_candidate && var.kill_switch_enabled && !local.active
+    live_qualified   = false
+  }
+}

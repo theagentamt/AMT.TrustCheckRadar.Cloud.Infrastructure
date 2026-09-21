@@ -56,6 +56,7 @@ override_data {
         environment             = "dev"
         enabled                 = true
         outbox_table_name       = "trustcheckradar-dev-campaign-outbox"
+        outbox_table_arn        = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox"
         outbox_stream_arn       = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox/stream/1"
         pipeline_table_name     = "trustcheckradar-dev-campaign-pipeline"
         pipeline_table_arn      = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline"
@@ -202,4 +203,58 @@ run "cluster_checks_candidate_lifecycle_only_in_transactions" {
     )
     error_message = "The capped-contributor path must check candidate lifecycle state within the guarded transaction only."
   }
+}
+
+run "research_candidate_checks_current_consent_and_remains_paused" {
+  command = plan
+  variables { research_consent_migration = true }
+  assert {
+    condition     = output.research_consent_migration_contract.selected && output.research_consent_migration_contract.consumers_paused && !output.research_consent_migration_contract.live_qualified && !aws_lambda_event_source_mapping.cluster[0].enabled && alltrue([for name in ["publisher", "cluster"] : aws_lambda_function.worker[name].environment[0].variables.CAMPAIGN_PARTICIPATION_NOTICE_VERSION == "research-consent-2026-09-21-v2" && aws_lambda_function.worker[name].environment[0].variables.DELETION_LEDGER_TABLE_NAME == "trustcheckradar-dev-deletion-ledger"])
+    error_message = "Research candidates must share current notice/deletion fences and remain paused."
+  }
+  assert {
+    condition     = length([for st in data.aws_iam_policy_document.cluster_runtime[0].statement : st if startswith(st.sid, "ReadResearchEligibility")]) == 3 && length([for st in data.aws_iam_policy_document.cluster_runtime[0].statement : st if startswith(st.sid, "CheckResearchEligibility")]) == 3 && alltrue([for st in data.aws_iam_policy_document.cluster_runtime[0].statement : !startswith(st.sid, "CheckResearchEligibility") || anytrue([for c in st.condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])])
+    error_message = "Cluster must read owned outbox evidence and transact with current consent/deletion checks."
+  }
+}
+run "research_candidate_requires_immutable_workers" {
+  command = plan
+  variables {
+    research_consent_migration = true
+    account_privacy_artifacts  = null
+  }
+  expect_failures = [var.research_consent_migration]
+}
+
+run "research_candidate_rejects_foreign_outbox" {
+  command = plan
+  variables { research_consent_migration = true }
+  override_data {
+    target = data.terraform_remote_state.campaign_data[0]
+    values = {
+      outputs = {
+        downstream_contract = {
+          schema_version          = 1
+          environment             = "dev"
+          enabled                 = true
+          outbox_table_name       = "trustcheckradar-dev-campaign-outbox"
+          outbox_table_arn        = "arn:aws:dynamodb:us-east-1:000000000000:table/trustcheckradar-dev-campaign-outbox"
+          outbox_stream_arn       = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox/stream/1"
+          pipeline_table_name     = "trustcheckradar-dev-campaign-pipeline"
+          pipeline_table_arn      = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline"
+          expiration_index_name   = "ExpirationIndex"
+          intelligence_table_name = "trustcheckradar-dev-campaign-intelligence"
+          intelligence_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence"
+          cluster_queue_url       = "https://sqs.us-east-1.amazonaws.com/107827791950/campaign-cluster"
+          cluster_queue_arn       = "arn:aws:sqs:us-east-1:107827791950:campaign-cluster"
+          cluster_dlq_arn         = "arn:aws:sqs:us-east-1:107827791950:campaign-cluster-dlq"
+          transient_kms_key_arn   = "arn:aws:kms:us-east-1:107827791950:key/11111111-1111-1111-1111-111111111111"
+          persistent_kms_key_arn  = "arn:aws:kms:us-east-1:107827791950:key/22222222-2222-2222-2222-222222222222"
+          budget_alert_topic_arn  = "arn:aws:sns:us-east-1:107827791950:campaign-alerts"
+        }
+      }
+    }
+  }
+
+  expect_failures = [aws_lambda_function.worker]
 }
