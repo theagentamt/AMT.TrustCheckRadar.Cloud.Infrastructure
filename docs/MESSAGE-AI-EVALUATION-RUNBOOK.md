@@ -5,6 +5,10 @@ This increment implements evaluation tooling, not a qualified model or enabled s
 The [research proposal](MESSAGE-AI-QUALIFICATION-RESEARCH.md) remains the source for
 candidate selection and proposed paid-experiment limits.
 
+The next source increment is tracked in SECUR4ALL-321/322; see the
+[controlled evaluation handoff](MESSAGE-AI-CONTROLLED-EVALUATION.md) for access,
+durable experiment authority, auxiliary request accounting and remaining run gates.
+
 ## Execution boundary
 
 The runner belongs to the Lambda repository and runs locally with Python 3.14.
