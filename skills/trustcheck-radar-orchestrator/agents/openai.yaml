@@ -1,0 +1,4 @@
+interface:
+  display_name: "TrustCheck Radar Orchestrator"
+  short_description: "Coordinate TrustCheck Radar stories and releases"
+  default_prompt: "Use $trustcheck-radar-orchestrator to assess the next TrustCheck Radar story, coordinate its owners, and verify release completion."
