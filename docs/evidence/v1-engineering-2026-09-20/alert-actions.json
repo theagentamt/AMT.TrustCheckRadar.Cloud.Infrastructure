@@ -1,0 +1,13 @@
+{
+  "alarm": "trustcheckradar-dev-v1-authority-deletion-errors",
+  "actions": [
+    {
+      "summary": "Successfully executed action arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts",
+      "timestamp": "2026-09-20T17:55:19.536000-05:00"
+    },
+    {
+      "summary": "Successfully executed action arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts",
+      "timestamp": "2026-09-20T17:49:19.529000-05:00"
+    }
+  ]
+}

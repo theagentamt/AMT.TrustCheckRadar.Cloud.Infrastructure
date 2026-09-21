@@ -6,7 +6,16 @@ locals {
   alarm_arns = concat(local.resolver_alarm_arns, var.assessment_alarm_notifications_enabled ? [
     for suffix in ["errors", "throttles", "dependency-failures"] :
     "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-url-assessment-${suffix}"
-  ] : [])
+    ] : [], var.consumer_alarm_notifications_enabled ? concat(
+    flatten([for function in ["url-consumer", "v1-entitlements", "url-lease-recovery", "v1-authority-deletion"] : [
+      for suffix in ["errors", "throttles"] : "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-${function}-${suffix}"
+    ]]),
+    flatten([for function in ["url-lease-recovery", "v1-authority-deletion"] : [
+      for suffix in ["failed-items", "heartbeat"] : "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-${function}-${suffix}"
+    ]]),
+    ["arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-url-lease-recovery-expiry-overdue"],
+    [for suffix in ["overdue", "full-pass-age"] : "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-v1-authority-deletion-${suffix}"]
+  ) : [])
 }
 
 resource "aws_sns_topic" "operations" {

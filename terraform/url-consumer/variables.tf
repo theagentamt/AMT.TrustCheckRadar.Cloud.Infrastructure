@@ -46,11 +46,12 @@ variable "deployment" {
   default = null
   validation {
     condition = var.deployment == null ? true : try(
-      toset(keys(var.deployment.artifacts)) == toset(["consumer", "recovery", "entitlements"]) &&
+      length(setsubtract(toset(["consumer", "recovery", "entitlements"]), toset(keys(var.deployment.artifacts)))) == 0 &&
+      length(setsubtract(toset(keys(var.deployment.artifacts)), toset(["consumer", "recovery", "entitlements", "deletion"]))) == 0 &&
       length(toset([for artifact in values(var.deployment.artifacts) : split("/", artifact.key)[1]])) == 1 &&
       alltrue([for name, artifact in var.deployment.artifacts :
         artifact.bucket == "${var.project_name}-${var.environment}-${split(":", var.deployment.authority_table_arn)[4]}-artifacts" &&
-        can(regex("^releases/[a-f0-9]{40}/${ { consumer = "url_consumer", recovery = "url_lease_recovery", entitlements = "v1_entitlements" }[name]}\\.zip$", artifact.key)) &&
+        can(regex("^releases/[a-f0-9]{40}/${ { consumer = "url_consumer", recovery = "url_lease_recovery", entitlements = "v1_entitlements", deletion = "v1_authority_deletion" }[name]}\\.zip$", artifact.key)) &&
         length(trimspace(artifact.object_version)) > 0 && artifact.object_version != "null" &&
         can(regex("^[A-Za-z0-9+/]{43}=$", artifact.source_hash))
       ]) &&
