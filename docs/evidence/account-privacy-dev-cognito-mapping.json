@@ -1,0 +1,17 @@
+{
+  "auditedAtUtc": "2026-09-21T21:04:00.504688+00:00",
+  "environment": "dev",
+  "accountId": "107827791950",
+  "region": "us-east-1",
+  "poolId": "us-east-1_wzN0wUSdQ",
+  "poolUsernameAttributes": [
+    "email"
+  ],
+  "enumerationComplete": true,
+  "pageLimit": 100,
+  "usersExamined": 3,
+  "matchingUsernameAndSub": 3,
+  "mismatchedUsernameAndSub": 0,
+  "missingOrDuplicateSub": 0,
+  "scope": "Read-only count audit of current pool; no identity values persisted. Not proof of historical mappings, legacy records, future writers or complete account inventory."
+}

@@ -1,0 +1,160 @@
+{
+  "auditedAtUtc": "2026-09-21T21:12:59.992748+00:00",
+  "environment": "dev",
+  "accountId": "107827791950",
+  "region": "us-east-1",
+  "terraformVersion": "1.12.1",
+  "awsProviderVersion": "6.65.0",
+  "stateVersion": "97_C5jPGbTUvQhhYHG2.cZ9esbb.pasq",
+  "artifactRelease": "e7b9e84211406cc6e1587f86ac0bd0a67af4d3c2",
+  "newCandidateSelected": false,
+  "managedResourceChanges": [],
+  "refreshDrift": [
+    {
+      "address": "aws_cloudwatch_dashboard.campaign[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.worker[\"cluster\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.worker[\"deletion\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.worker[\"lifecycle\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.worker[\"publisher\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.dead_letter[\"cluster\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.dynamodb_throttles[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.privacy_deadline[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.queue_age[\"cluster\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.worker_errors[\"cluster\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.worker_errors[\"deletion\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.worker_errors[\"lifecycle\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.worker_errors[\"publisher\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_event_source_mapping.cluster[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_event_source_mapping.deletion[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_event_source_mapping.publisher[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"cluster\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"deletion\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"lifecycle\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"publisher\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_scheduler_schedule.lifecycle[\"expire_transient\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_scheduler_schedule.lifecycle[\"finalize_periods\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_scheduler_schedule.lifecycle[\"manage_keys\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_scheduler_schedule_group.campaign[0]",
+      "actions": [
+        "update"
+      ]
+    }
+  ],
+  "applied": false,
+  "scope": "Read-only plan against current Dev state and existing artifact inputs. Not a candidate deployment plan or proof of source behavior; regenerate for selected candidate."
+}
