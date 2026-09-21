@@ -1,6 +1,9 @@
 # Account data and device recovery integration
 
 Status: infrastructure preparation and Lambda implementation in progress.
+The current Android-first work is tracked in
+[ACCOUNT-PRIVACY-V1-IMPLEMENTATION.md](ACCOUNT-PRIVACY-V1-IMPLEMENTATION.md),
+including the provider/runtime upgrade and two additional reconciliation alarms.
 No changes in this document are evidence of a live deployment or activation.
 
 Prepared infrastructure was committed as `297b654` on
@@ -45,7 +48,7 @@ versions or live acceptance. No new package was uploaded to AWS.
 
 Infrastructure now prepares optional account-data monitoring for runtime/stream
 failures, reconciliation heartbeat/full-pass progress and policy-blocked cleanup.
-The eleven alarms use the handler's exact low-cardinality metrics. Missing
+The original eleven alarms use the handler's exact low-cardinality metrics. Missing
 scheduled heartbeat actions stay disabled with the candidate schedule; no
 monitoring destination is selected. See [HISTORY-OPERATIONS.md](HISTORY-OPERATIONS.md).
 Source changes and mocked tests do not satisfy live notification delivery or

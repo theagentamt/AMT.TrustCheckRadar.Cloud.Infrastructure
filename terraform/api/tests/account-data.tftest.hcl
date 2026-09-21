@@ -100,7 +100,7 @@ run "account_monitoring_uses_source_metrics_without_activating_workers" {
   assert {
     condition = (
       length(aws_cloudwatch_metric_alarm.account_data_function) == 3 &&
-      length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 7 &&
+      length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 9 &&
       length(aws_cloudwatch_metric_alarm.account_data_stream_failure) == 1 &&
       alltrue([for alarm in aws_cloudwatch_metric_alarm.account_data_function :
         alarm.namespace == "AWS/Lambda" &&
@@ -126,6 +126,14 @@ run "account_monitoring_uses_source_metrics_without_activating_workers" {
         aws_cloudwatch_metric_alarm.account_data_reconciliation[key].treat_missing_data == "notBreaching"
       ]) &&
       aws_cloudwatch_metric_alarm.account_data_reconciliation["failure"].actions_enabled &&
+      alltrue([for key in ["command_failure", "pass_failure"] :
+        aws_cloudwatch_metric_alarm.account_data_reconciliation[key].actions_enabled &&
+        aws_cloudwatch_metric_alarm.account_data_reconciliation[key].period == 300 &&
+        aws_cloudwatch_metric_alarm.account_data_reconciliation[key].threshold == 0 &&
+        aws_cloudwatch_metric_alarm.account_data_reconciliation[key].treat_missing_data == "notBreaching"
+      ]) &&
+      aws_cloudwatch_metric_alarm.account_data_reconciliation["command_failure"].metric_name == "AccountDeletionReconciliationCommandFailures" &&
+      aws_cloudwatch_metric_alarm.account_data_reconciliation["pass_failure"].metric_name == "AccountDeletionReconciliationPassFailures" &&
       aws_cloudwatch_metric_alarm.account_data_reconciliation["policy_blocked"].actions_enabled &&
       aws_cloudwatch_metric_alarm.account_data_reconciliation["policy_blocked"].metric_name == "AccountDeletionAnalysisAbusePolicyBlocked" &&
       aws_cloudwatch_metric_alarm.account_data_reconciliation["outbox_blocked"].metric_name == "AccountDeletionCampaignOutboxPolicyBlocked" &&
@@ -184,6 +192,7 @@ run "candidate_is_immutable_private_and_fail_closed" {
       aws_lambda_function.account_data[0].s3_object_version == "synthetic-version" &&
       aws_lambda_function.account_data[0].source_code_hash == var.account_data_deployment.source_hash &&
       aws_lambda_function.account_data[0].reserved_concurrent_executions == 1 &&
+      aws_lambda_function.account_data[0].runtime == "python3.14" &&
       aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_ENABLED"] == "false" &&
       aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_POLICY_STATUS"] == "pending" &&
       aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DATA_INVENTORY_STATUS"] == "pending" &&
@@ -241,12 +250,19 @@ run "account_data_permissions_scope_device_cleanup_and_reconciliation" {
 
 run "account_reconciliation_remains_disabled_and_bounded" {
   command = plan
+  override_resource {
+    target          = aws_cloudwatch_event_rule.account_data_reconcile[0]
+    override_during = plan
+    values          = { arn = "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-account-deletion-reconcile" }
+  }
   assert {
     condition = (
       aws_cloudwatch_event_rule.account_data_reconcile[0].state == "DISABLED" &&
       aws_cloudwatch_event_rule.account_data_reconcile[0].schedule_expression == "rate(5 minutes)" &&
       aws_cloudwatch_event_target.account_data_reconcile[0].input == jsonencode({ schemaVersion = 1, operation = "reconcile-session-revocation" }) &&
       aws_lambda_permission.account_data_reconcile[0].principal == "events.amazonaws.com" &&
+      aws_lambda_permission.account_data_reconcile[0].source_account == "107827791950" &&
+      aws_lambda_permission.account_data_reconcile[0].source_arn == aws_cloudwatch_event_rule.account_data_reconcile[0].arn &&
       aws_lambda_function_event_invoke_config.account_data_reconcile[0].maximum_event_age_in_seconds == 300 &&
       aws_lambda_function_event_invoke_config.account_data_reconcile[0].maximum_retry_attempts == 1 &&
       aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_RECONCILIATION_SCAN_LIMIT"] == "100" &&
