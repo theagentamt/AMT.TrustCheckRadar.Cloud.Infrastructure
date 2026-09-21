@@ -61,7 +61,7 @@ run "coordinated_candidate_is_pinned_and_consent_stays_closed" {
   variables {
     enable_web_risk_communication     = true
     campaign_participation_lambda_env = { CONSENT_INDEPENDENCE_ENABLED = "true", CAMPAIGN_PARTICIPATION_NOTICE_VERSION = "unreviewed" }
-    analysis_lambda_env               = { HISTORY_WRITES_ENABLED = "true", RECOGNITION_ENABLED = "true" }
+    analysis_lambda_env               = { HISTORY_WRITES_ENABLED = "true", RECOGNITION_ENABLED = "true", COGNITO_ISSUER = "untrusted-override", HISTORY_MAX_SUMMARY_BYTES = "9999999" }
     research_consent_migration_deployment = {
       release_id         = "research-migration-reviewed"
       approval_reference = "synthetic-contract-review"
@@ -98,6 +98,11 @@ run "coordinated_candidate_is_pinned_and_consent_stays_closed" {
   assert {
     condition     = aws_lambda_function.purchase_handoff.s3_key == "releases/research-migration-reviewed/purchase_handoff.zip" && aws_lambda_function.purchase_handoff.environment[0].variables.PURCHASE_OWNERSHIP_CANDIDATE_ENABLED == "false" && aws_lambda_function.purchase_handoff.environment[0].variables.DELETION_LEDGER_TABLE_NAME == "trustcheckradar-dev-deletion-ledger" && alltrue([for st in data.aws_iam_policy_document.purchase_handoff_runtime.statement : !contains(st.actions, "dynamodb:PutItem") || anytrue([for c in st.condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])])
     error_message = "The revised purchase helper must ship in the same release with deletion guards and transaction-only writes; selecting it cannot approve ownership migration."
+  }
+
+  assert {
+    condition     = var.history_deployment == null && aws_lambda_function.analysis.environment[0].variables.APP_ENVIRONMENT == "dev" && aws_lambda_function.analysis.environment[0].variables.COGNITO_ISSUER == local.jwt_issuer && aws_lambda_function.analysis.environment[0].variables.COGNITO_APP_CLIENT_ID == local.cognito_app_client_id && aws_lambda_function.analysis.environment[0].variables.COGNITO_REQUIRED_SCOPE == "aws.cognito.signin.user.admin" && aws_lambda_function.analysis.environment[0].variables.HISTORY_MAX_SUMMARY_BYTES == "4096" && aws_lambda_function.analysis.environment[0].variables.HISTORY_MAX_LIST_ITEMS == "20" && aws_lambda_function.analysis.environment[0].variables.HISTORY_MAX_TEXT_FIELD_BYTES == "1024" && aws_lambda_function.analysis.environment[0].variables.HISTORY_MAX_RESPONSE_BYTES == "262144"
+    error_message = "Read-only legacy replay needs protected JWT and bounded assessment settings even without a History deployment."
   }
 
 }
