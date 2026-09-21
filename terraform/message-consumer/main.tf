@@ -80,9 +80,12 @@ resource "aws_lambda_function" "runtime" {
   publish                        = true
   environment {
     variables = merge({
-      STAGE                          = var.environment
-      MESSAGE_POLICY_VERSION         = "message-rules-2026-09-20-v1"
-      MESSAGE_POLICY_APPROVAL_SHA256 = "0367140fbdbaef36dd59ba81030f3e35e04e78dbbed4129277c9cb0758971a80"
+      STAGE                             = var.environment
+      MESSAGE_POLICY_VERSION            = "message-rules-2026-09-20-v1"
+      MESSAGE_POLICY_APPROVAL_SHA256    = "0367140fbdbaef36dd59ba81030f3e35e04e78dbbed4129277c9cb0758971a80"
+      MESSAGE_AI_ENABLED                = "false"
+      MESSAGE_AI_POLICY_VERSION         = "message-ai-2026-09-21-v1"
+      MESSAGE_AI_POLICY_APPROVAL_SHA256 = "d6e9fff12225540bef9ba7833cce457cca4b9c791af3b49dd8a4f1601d204349"
       }, each.key == "consumer" ? {
       MESSAGE_CONSUMER_ENABLED       = "false"
       AUTHORITY_ENABLED              = "false"
@@ -100,6 +103,7 @@ resource "aws_lambda_function" "runtime" {
       } : {
       MESSAGE_EVALUATOR_ENABLED   = "false"
       MESSAGE_PROPOSER_ENABLED    = "false"
+      MESSAGE_AI_QUALIFIED        = "false"
       URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn
     })
   }

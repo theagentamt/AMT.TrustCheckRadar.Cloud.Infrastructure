@@ -66,8 +66,9 @@ The next Lambda increment may include an OpenAI Responses proposer. This root
 explicitly sets `MESSAGE_PROPOSER_ENABLED=false`, supplies no provider credential,
 and preserves the evaluator's blanket Secrets Manager deny. Installing its code
 does not activate model processing. The approved rule policy remains pinned;
-general AI conclusions require the separate [policy proposal](../../docs/MESSAGE-AI-ASSESSMENT-POLICY-PROPOSAL.md)
-to be reviewed and implemented through a new contract version.
+general AI conclusions require the approved separate policy to be implemented and
+qualified through a new contract version. See the exact source and owner approval
+in the [approval record](../../docs/MESSAGE-AI-ASSESSMENT-POLICY-APPROVAL.md).
 
 A future reviewed activation change must supply all of these together:
 
@@ -97,6 +98,40 @@ selected model compatibility, total attempt budgets, operational alarms and
 rollback remain activation prerequisites. `store:false` does not establish zero
 provider retention; see the linked proposal's source notes.
 
+## Approved AI policy and candidate.2 gates
+
+The 2026-09-21 owner approval authorizes broader AI implementation under
+`message-ai-2026-09-21-v1`; it is not provider qualification or activation. Both
+runtimes receive that separate version and the immutable approval SHA, while the
+existing `MESSAGE_POLICY_*` settings retain candidate.1 semantics. The new
+`MESSAGE_AI_ENABLED` flag is explicitly false on both, and evaluator
+`MESSAGE_AI_QUALIFIED` is false. No qualification ID, model, credential or budget is
+silently supplied. The approved policy document remains byte-for-byte historical;
+its old draft heading is superseded by the linked approval record.
+
+Candidate.2 uses a distinct version-bound intent/receipt path. A model call or JSON
+schema pass does not establish qualification. Future activation must bind the
+qualified model, prompt, schema and policy digests, require the exact existing Dev
+credential permissions, and retain candidate.1 reconciliation. The AI path and
+legacy proposer are separately gated; enabling either requires deliberate provider
+access review. No permission is granted to either in this configuration.
+
+When the candidate is provisioned, six native Lambda alarms cover errors,
+throttles and duration for consumer/evaluator. They use only function-name metric
+dimensions and the existing confirmed Dev SNS path for
+`support@andmorethings.com`. Errors/throttles trigger at one event in five minutes;
+duration warns three seconds below each hard function timeout. These are scoped
+Dev engineering settings, not measured production SLOs. Missing metrics do not
+constitute a service health check, and an OK notification is only this metric's
+state transition.
+
+Native alarms do not detect a fixed failure returned in a successful invocation,
+count completed checks, deduplicate retries, calculate model costs or produce the
+daily outcome report. Those SECUR4ALL-237/243 requirements, live alarm delivery
+qualification, provider quality/data-control/cost gates and a rollback exercise
+remain prerequisites for user traffic. `daily_reporting_ready=false` is explicit
+in the candidate output. No alarm or resource is created when `enabled=false`.
+
 ## Verification
 
 Use `terraform init -backend=false`, `terraform validate`, and `terraform test`
@@ -108,5 +143,5 @@ mocked applies create no AWS resources and are not a deployment report.
 The 2026-09-21 proposer handoff passed `terraform fmt -check`, `terraform validate`
 and all 10 mocked runs, including the explicit disabled-provider/no-config
 assertion. Changed-file Gitleaks found no leaks; the whole-tree scan reported two
-pre-existing documentation matches containing commit IDs. The broader policy
-document is a review draft, not a runtime configuration or approval record.
+pre-existing documentation matches containing commit IDs. The historical broader policy
+draft is retained; its later approval is recorded separately and does not activate runtime behavior.

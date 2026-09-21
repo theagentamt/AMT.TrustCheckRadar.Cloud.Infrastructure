@@ -18,7 +18,7 @@ variables {
 run "disabled_creates_no_runtime" {
   command = plan
   assert {
-    condition     = length(aws_lambda_function.runtime) == 0 && length(aws_iam_role.runtime) == 0 && length(aws_iam_role_policy.consumer) == 0 && length(aws_iam_role_policy.evaluator) == 0 && output.candidate_contract.consumer_endpoint == null
+    condition     = length(aws_lambda_function.runtime) == 0 && length(aws_iam_role.runtime) == 0 && length(aws_iam_role_policy.consumer) == 0 && length(aws_iam_role_policy.evaluator) == 0 && length(aws_cloudwatch_metric_alarm.runtime) == 0 && output.candidate_contract.consumer_endpoint == null
     error_message = "Default configuration must create nothing and advertise no endpoint."
   }
 }
@@ -66,6 +66,35 @@ run "candidate_is_isolated_and_inactive" {
       !contains(keys(aws_lambda_function.runtime["consumer"].environment[0].variables), "MESSAGE_PROPOSER_SECRET_ARN")
     )
     error_message = "Inactive candidate must explicitly disable the proposer and supply no provider credential/model/budget configuration."
+  }
+  assert {
+    condition = (
+      alltrue([for f in aws_lambda_function.runtime :
+        f.environment[0].variables.MESSAGE_AI_ENABLED == "false" &&
+        f.environment[0].variables.MESSAGE_AI_POLICY_VERSION == "message-ai-2026-09-21-v1" &&
+        f.environment[0].variables.MESSAGE_AI_POLICY_APPROVAL_SHA256 == "d6e9fff12225540bef9ba7833cce457cca4b9c791af3b49dd8a4f1601d204349" &&
+        f.environment[0].variables.MESSAGE_POLICY_VERSION == "message-rules-2026-09-20-v1"
+      ]) &&
+      aws_lambda_function.runtime["evaluator"].environment[0].variables.MESSAGE_AI_QUALIFIED == "false" &&
+      !contains(keys(aws_lambda_function.runtime["evaluator"].environment[0].variables), "MESSAGE_AI_QUALIFICATION_ID") &&
+      !output.candidate_contract.ai_enabled && !output.candidate_contract.ai_qualified && !output.candidate_contract.daily_reporting_ready
+    )
+    error_message = "New approval must remain separate from qualification and activation, preserving the legacy policy."
+  }
+  assert {
+    condition = (
+      length(aws_cloudwatch_metric_alarm.runtime) == 6 &&
+      alltrue([for alarm in aws_cloudwatch_metric_alarm.runtime :
+        alarm.namespace == "AWS/Lambda" &&
+        alarm.alarm_actions == toset(["arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"]) &&
+        alarm.ok_actions == alarm.alarm_actions &&
+        toset(keys(alarm.dimensions)) == toset(["FunctionName"]) &&
+        alarm.period == 300 && alarm.datapoints_to_alarm == 1
+      ]) &&
+      aws_cloudwatch_metric_alarm.runtime["consumer-duration"].threshold == 26000 &&
+      aws_cloudwatch_metric_alarm.runtime["evaluator-duration"].threshold == 20000
+    )
+    error_message = "Native runtime alarms must use bounded function dimensions and the existing confirmed support alert path."
   }
   assert {
     condition     = jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"] == ["TransactWriteItems"] && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAllValues:StringLike"]["dynamodb:LeadingKeys"] == ["V1#*"] && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Resource == var.deployment.authority_hmac_secret_arn && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition.StringEquals["secretsmanager:VersionStage"] == "AWSCURRENT" && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[5].Resource == aws_lambda_alias.runtime["evaluator"].arn
