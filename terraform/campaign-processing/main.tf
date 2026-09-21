@@ -450,6 +450,25 @@ data "aws_iam_policy_document" "cluster_runtime" {
   dynamic "statement" {
     for_each = local.account_privacy_candidate ? [1] : []
     content {
+      sid       = "CheckCandidateLifecycleTransaction"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.campaign.pipeline_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["CANDIDATE#*"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? [1] : []
+    content {
       sid       = "CheckLocatorInventoryTransaction"
       actions   = ["dynamodb:ConditionCheckItem"]
       resources = [local.campaign.pipeline_table_arn]

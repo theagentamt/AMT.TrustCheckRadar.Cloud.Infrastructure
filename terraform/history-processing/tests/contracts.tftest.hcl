@@ -475,3 +475,51 @@ run "active_schedule_has_exact_input_and_observable_failures" {
     error_message = "Heartbeat, backlog, SLA and Lambda failures must alert without personal metric dimensions."
   }
 }
+
+run "terminal_fence_candidate_scopes_reads_and_transactional_receipts" {
+  command = plan
+  variables {
+    lifecycle_deployment_enabled        = true
+    account_deletion_terminal_candidate = true
+    account_deletion_artifact = {
+      release_id = "synthetic-test-only", object_version = "terminal-bridge-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.account_deletion[0].runtime == "python3.14" &&
+      aws_lambda_function.lifecycle[0].runtime == "python3.14" &&
+      aws_lambda_function.lifecycle[0].environment[0].variables["HISTORY_LIFECYCLE_ENABLED"] == "false" &&
+      one([for s in data.aws_iam_policy_document.runtime[0].statement : s if s.sid == "HistoryComponentCompletionReceipt"]).actions == toset(["dynamodb:GetItem"]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.runtime[0].statement : s if s.sid == "GuardHistoryCompletionReceiptTransaction"]).condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])]) &&
+      aws_lambda_function.account_deletion[0].environment[0].variables["HISTORY_ACCOUNT_DELETION_ENABLED"] == "false" &&
+      !aws_lambda_event_source_mapping.account_deletion[0].enabled &&
+      aws_cloudwatch_event_rule.account_deletion_reconcile[0].state == "DISABLED" &&
+      one([for s in data.aws_iam_policy_document.account_deletion[0].statement : s if s.sid == "ReadAuthoritativeAccountFence"]).actions == toset(["dynamodb:GetItem"]) &&
+      one([for s in data.aws_iam_policy_document.account_deletion[0].statement : s if s.sid == "ReadAuthoritativeAccountFence"]).resources == toset([local.foundation.deletion_ledger_table_arn]) &&
+      one(one([for s in data.aws_iam_policy_document.account_deletion[0].statement : s if s.sid == "ReadAuthoritativeAccountFence"]).condition).values == tolist(["ACCOUNT#*"]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.account_deletion[0].statement : s if s.sid == "RecordHistoryAbsentCompletion"]).condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])
+    )
+    error_message = "The corrected History candidate must read only account fences, write receipts only transactionally and stay disabled."
+  }
+}
+
+run "terminal_fence_candidate_requires_artifact" {
+  command = plan
+  variables { account_deletion_terminal_candidate = true }
+  expect_failures = [var.account_deletion_terminal_candidate]
+}
+
+run "terminal_fence_candidate_rejects_active_lifecycle" {
+  command = plan
+  variables {
+    lifecycle_deployment_enabled        = true
+    lifecycle_active                    = true
+    alarm_topic_arn                     = "arn:aws:sns:us-east-1:107827791950:synthetic"
+    account_deletion_terminal_candidate = true
+    account_deletion_artifact = {
+      release_id = "synthetic-test-only", object_version = "terminal-bridge-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  expect_failures = [var.account_deletion_terminal_candidate]
+}

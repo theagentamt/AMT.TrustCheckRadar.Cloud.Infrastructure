@@ -27,7 +27,7 @@ scheduling and key retirement still blocked. Function IAM may
 permit explicit isolated invocations; disabled consumers alone are not a runtime
 authorization boundary.
 
-The campaign root now pins AWS provider 6.65.0 under the same supported 6.x
+The campaign root now pins AWS provider 6.66.0 under the same supported 6.x
 constraint used by the API root. This enables Python 3.14 schema validation.
 The [read-only Dev provider plan](evidence/account-privacy-campaign-provider-plan.json)
 uses existing artifact inputs and selects no new candidate. Its zero managed

@@ -190,3 +190,16 @@ run "workers_cannot_approve_locator_inventory" {
     error_message = "Pipeline inventory approval markers must never be writable by any campaign runtime role."
   }
 }
+
+run "cluster_checks_candidate_lifecycle_only_in_transactions" {
+  command = plan
+  assert {
+    condition = (
+      one([for s in data.aws_iam_policy_document.cluster_runtime[0].statement : s if s.sid == "CheckCandidateLifecycleTransaction"]).actions == toset(["dynamodb:ConditionCheckItem"]) &&
+      one([for s in data.aws_iam_policy_document.cluster_runtime[0].statement : s if s.sid == "CheckCandidateLifecycleTransaction"]).resources == toset([local.campaign.pipeline_table_arn]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.cluster_runtime[0].statement : s if s.sid == "CheckCandidateLifecycleTransaction"]).condition : c.variable == "dynamodb:LeadingKeys" && toset(c.values) == toset(["CANDIDATE#*"])]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.cluster_runtime[0].statement : s if s.sid == "CheckCandidateLifecycleTransaction"]).condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])
+    )
+    error_message = "The capped-contributor path must check candidate lifecycle state within the guarded transaction only."
+  }
+}

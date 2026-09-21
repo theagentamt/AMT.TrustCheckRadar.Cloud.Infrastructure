@@ -12,6 +12,17 @@ variable "account_deletion_artifact" {
   }
 }
 
+variable "account_deletion_terminal_candidate" {
+  description = "Prepare the corrected terminal-fence bridge on Python 3.14 with transactional receipts. Candidate must remain inactive pending coordinated lifecycle qualification."
+  type        = bool
+  default     = false
+  nullable    = false
+  validation {
+    condition     = !var.account_deletion_terminal_candidate || (var.account_deletion_artifact != null && !var.account_deletion_active && !var.lifecycle_active)
+    error_message = "The terminal-fence candidate requires a pinned bridge artifact and disabled deletion and lifecycle consumers."
+  }
+}
+
 variable "account_deletion_active" {
   description = "Enable the deletion stream only after account-fence producer, outage recovery, alert delivery and erasure acceptance."
   type        = bool
@@ -55,6 +66,19 @@ data "aws_iam_policy_document" "account_deletion" {
     sid       = "ConsumeOnlyDeletionLedgerStream"
     actions   = ["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator", "dynamodb:ListStreams"]
     resources = [local.foundation.deletion_ledger_stream_arn]
+  }
+  dynamic "statement" {
+    for_each = var.account_deletion_terminal_candidate ? [1] : []
+    content {
+      sid       = "ReadAuthoritativeAccountFence"
+      actions   = ["dynamodb:GetItem"]
+      resources = [local.foundation.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+    }
   }
   statement {
     sid       = "ReadHistoryAccountState"
@@ -124,6 +148,14 @@ data "aws_iam_policy_document" "account_deletion" {
       variable = "dynamodb:LeadingKeys"
       values   = ["ACCOUNT#*"]
     }
+    dynamic "condition" {
+      for_each = var.account_deletion_terminal_candidate ? [1] : []
+      content {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
   }
   statement {
     sid       = "ContentFreeOwnLogs"
@@ -143,7 +175,7 @@ resource "aws_lambda_function" "account_deletion" {
   count                          = local.account_deletion_deployed ? 1 : 0
   function_name                  = local.account_deletion_name
   role                           = aws_iam_role.account_deletion[0].arn
-  runtime                        = "python3.13"
+  runtime                        = var.account_deletion_terminal_candidate ? "python3.14" : "python3.13"
   handler                        = "app.lambda_handler"
   architectures                  = ["arm64"]
   memory_size                    = 256
