@@ -78,3 +78,35 @@ commit/push, deployment, recovery activation, or UAT/Prod promotion.
   legacy purchase locators, backup coverage and deployed acceptance remain
   engineering blockers. Policy approval does not mark deletion complete.
 - No mobile changes or YouTrack updates are included in this work.
+
+## Owner Decisions 2026-09-21 — ATCR-94
+
+The owner authorized Android-first implementation with Lambda and infrastructure
+dependencies and approved these two concrete decisions in the task:
+
+- **Direct authenticated account export:** current user-visible account data plus
+  a scope manifest, without another server-side payload copy. Values are observed
+  during download, not a frozen cross-store snapshot. Continuation access expires
+  15 minutes after export starts and is not extended by retry. Account deletion
+  stops export access. Cancel discards the local download; it does not independently
+  revoke an issued continuation token before expiry. Access remains authenticated,
+  account/device-bound and subject to current deletion/session checks.
+- **Restoration after deletion:** a newly created account may restore an existing
+  store subscription only after fresh store verification and ownership checks
+  preventing two active accounts from claiming the purchase. Remove the old local
+  purchase binding instead of retaining it indefinitely. This does not authorize
+  reassignment from another active account, token-only cached verification or
+  matching accounts by email. Linked purchase lineage and deletion races remain
+  engineering acceptance requirements.
+
+No new export payload store, financial retention interval or durable export status
+service was approved. Existing recovery/consent/deletion receipt periods, the
+export-before-deletion rule and backup/restore suppression requirements remain.
+The Lambda contract must enumerate actual fields and exclusions, not expose raw
+rows. Android must label incomplete downloads and handle cancellation honestly.
+
+These decisions authorize implementation, tests, source publication and tracker
+coordination for the current story. They are not evidence of deployed cleanup,
+end-to-end acceptance or permission to promote to production. The earlier scope
+statements about no mobile/tracker work described the September 14 inventory
+task; they do not override the owner's new ATCR-94 implementation instruction.

@@ -207,7 +207,7 @@ resource "aws_lambda_function" "account_data" {
   count                          = var.account_data_deployment == null ? 0 : 1
   function_name                  = local.account_data_name
   role                           = aws_iam_role.account_data[0].arn
-  runtime                        = "python3.13"
+  runtime                        = "python3.14"
   architectures                  = ["arm64"]
   handler                        = "app.lambda_handler"
   memory_size                    = 256
@@ -332,12 +332,13 @@ resource "aws_cloudwatch_event_target" "account_data_reconcile" {
 }
 
 resource "aws_lambda_permission" "account_data_reconcile" {
-  count         = var.account_data_deployment == null ? 0 : 1
-  statement_id  = "AllowAccountDeletionReconciliation"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.account_data[0].function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.account_data_reconcile[0].arn
+  count          = var.account_data_deployment == null ? 0 : 1
+  statement_id   = "AllowAccountDeletionReconciliation"
+  action         = "lambda:InvokeFunction"
+  function_name  = aws_lambda_function.account_data[0].function_name
+  principal      = "events.amazonaws.com"
+  source_arn     = aws_cloudwatch_event_rule.account_data_reconcile[0].arn
+  source_account = split(":", local.users_table_arn)[4]
 }
 
 resource "aws_lambda_function_event_invoke_config" "account_data_reconcile" {
