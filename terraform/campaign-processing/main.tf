@@ -46,7 +46,7 @@ locals {
     budget_alert_topic_arn  = null
   })
   enabled      = var.campaign_processing_enabled
-  active       = local.enabled && !var.kill_switch_enabled
+  active       = local.enabled && !var.kill_switch_enabled && !local.account_privacy_candidate
   name_prefix  = "${var.project_name}-${var.environment}-campaign"
   artifact_key = var.artifact_release == null ? null : "releases/${var.artifact_release}"
 
@@ -246,7 +246,26 @@ data "aws_iam_policy_document" "publisher_runtime" {
   count = local.enabled ? 1 : 0
 
   dynamic "statement" {
-    for_each = var.publisher_fence_artifact == null ? [] : [1]
+    for_each = local.account_privacy_candidate ? [1] : []
+    content {
+      sid       = "CheckLocatorInventoryTransaction"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.campaign.pipeline_table_arn]
+      condition {
+        test     = "ForAllValues:StringEquals"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["INVENTORY#${var.environment}"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = local.publisher_fenced ? [1] : []
     content {
       sid       = "ReadFixedAccountDeletionFence"
       actions   = ["dynamodb:GetItem"]
@@ -259,7 +278,7 @@ data "aws_iam_policy_document" "publisher_runtime" {
     }
   }
   dynamic "statement" {
-    for_each = var.publisher_fence_artifact == null ? [] : [1]
+    for_each = local.publisher_fenced ? [1] : []
     content {
       sid       = "CheckFixedAccountDeletionFenceTransactionally"
       actions   = ["dynamodb:ConditionCheckItem"]
@@ -268,6 +287,25 @@ data "aws_iam_policy_document" "publisher_runtime" {
         test     = "ForAllValues:StringLike"
         variable = "dynamodb:LeadingKeys"
         values   = ["ACCOUNT#*"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? [1] : []
+    content {
+      sid       = "CheckContributorTombstoneTransaction"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.campaign.pipeline_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["CONTRIB#*"]
       }
       condition {
         test     = "StringEquals"
@@ -292,7 +330,7 @@ data "aws_iam_policy_document" "publisher_runtime" {
   statement {
     sid    = "WriteTransientPipeline"
     effect = "Allow"
-    actions = var.publisher_fence_artifact != null ? ["dynamodb:GetItem"] : [
+    actions = local.publisher_fenced ? ["dynamodb:GetItem"] : [
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:UpdateItem",
@@ -301,11 +339,19 @@ data "aws_iam_policy_document" "publisher_runtime" {
     resources = [local.campaign.pipeline_table_arn]
   }
   dynamic "statement" {
-    for_each = var.publisher_fence_artifact == null ? [] : [1]
+    for_each = local.publisher_fenced ? [1] : []
     content {
       sid       = "WriteFencedTransientPipeline"
       actions   = ["dynamodb:PutItem", "dynamodb:UpdateItem"]
       resources = [local.campaign.pipeline_table_arn]
+      dynamic "condition" {
+        for_each = local.account_privacy_candidate ? [1] : []
+        content {
+          test     = "ForAllValues:StringLike"
+          variable = "dynamodb:LeadingKeys"
+          values   = ["EVENT#*", "CONTRIB#*"]
+        }
+      }
       condition {
         test     = "StringEquals"
         variable = "dynamodb:EnclosingOperation"
@@ -401,6 +447,44 @@ resource "aws_iam_role_policy" "publisher_runtime" {
 data "aws_iam_policy_document" "cluster_runtime" {
   count = local.enabled ? 1 : 0
 
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? [1] : []
+    content {
+      sid       = "CheckLocatorInventoryTransaction"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.campaign.pipeline_table_arn]
+      condition {
+        test     = "ForAllValues:StringEquals"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["INVENTORY#${var.environment}"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? [1] : []
+    content {
+      sid       = "CheckContributorTombstoneTransaction"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.campaign.pipeline_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["CONTRIB#*"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
   statement {
     sid    = "ConsumeClusterQueue"
     effect = "Allow"
@@ -416,12 +500,8 @@ data "aws_iam_policy_document" "cluster_runtime" {
   statement {
     sid    = "ReadTransientCandidates"
     effect = "Allow"
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:Query",
-      "dynamodb:PutItem",
-      "dynamodb:UpdateItem",
-      "dynamodb:DeleteItem",
+    actions = local.account_privacy_candidate ? ["dynamodb:GetItem", "dynamodb:Query"] : [
+      "dynamodb:GetItem", "dynamodb:Query", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem",
     ]
     resources = [
       local.campaign.pipeline_table_arn,
@@ -432,16 +512,32 @@ data "aws_iam_policy_document" "cluster_runtime" {
   statement {
     sid    = "UpdatePersistentAggregates"
     effect = "Allow"
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:Query",
-      "dynamodb:PutItem",
-      "dynamodb:UpdateItem",
+    actions = local.account_privacy_candidate ? ["dynamodb:GetItem", "dynamodb:Query"] : [
+      "dynamodb:GetItem", "dynamodb:Query", "dynamodb:PutItem", "dynamodb:UpdateItem",
     ]
     resources = [
       local.campaign.intelligence_table_arn,
       "${local.campaign.intelligence_table_arn}/index/PublicationIndex",
     ]
+  }
+
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? [1] : []
+    content {
+      sid       = "WriteMutableCandidateFamilies"
+      actions   = ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem"]
+      resources = [local.campaign.pipeline_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["EVENT#*", "CONTRIB#*", "CANDIDATE#*", "BUCKET#*"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
   }
 
   statement {
@@ -470,6 +566,25 @@ resource "aws_iam_role_policy" "cluster_runtime" {
 data "aws_iam_policy_document" "deletion_runtime" {
   count = local.enabled ? 1 : 0
 
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? [1] : []
+    content {
+      sid       = "CheckLocatorInventoryTransaction"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.campaign.pipeline_table_arn]
+      condition {
+        test     = "ForAllValues:StringEquals"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["INVENTORY#${var.environment}"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
   statement {
     sid    = "ReadDeletionLedgerStream"
     effect = "Allow"
@@ -485,12 +600,8 @@ data "aws_iam_policy_document" "deletion_runtime" {
   statement {
     sid    = "DeleteActiveContributions"
     effect = "Allow"
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:Query",
-      "dynamodb:DeleteItem",
-      "dynamodb:BatchWriteItem",
-      "dynamodb:UpdateItem",
+    actions = local.account_privacy_candidate ? ["dynamodb:GetItem", "dynamodb:Query"] : [
+      "dynamodb:GetItem", "dynamodb:Query", "dynamodb:DeleteItem", "dynamodb:BatchWriteItem", "dynamodb:UpdateItem",
     ]
     resources = [
       local.campaign.pipeline_table_arn,
@@ -501,19 +612,55 @@ data "aws_iam_policy_document" "deletion_runtime" {
   statement {
     sid    = "CompleteParticipationWithdrawal"
     effect = "Allow"
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:UpdateItem",
+    actions = local.account_privacy_candidate ? ["dynamodb:GetItem"] : [
+      "dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem",
     ]
     resources = [local.foundation.users_table_arn]
+    dynamic "condition" {
+      for_each = local.account_privacy_candidate ? [1] : []
+      content {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+    }
   }
 
   statement {
     sid       = "CompleteDeletionLedgerCommand"
     effect    = "Allow"
-    actions   = ["dynamodb:UpdateItem"]
+    actions   = local.account_privacy_candidate ? ["dynamodb:GetItem"] : ["dynamodb:UpdateItem"]
     resources = [local.foundation.deletion_ledger_table_arn]
+    dynamic "condition" {
+      for_each = local.account_privacy_candidate ? [1] : []
+      content {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? {
+      GuardedRepairWrites    = { arn = local.campaign.pipeline_table_arn, keys = ["CONTRIB#*", "EVENT#*", "CANDIDATE#*"], actions = ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:ConditionCheckItem"] }
+      GuardedDeletionCommand = { arn = local.foundation.deletion_ledger_table_arn, keys = ["ACCOUNT#*"], actions = ["dynamodb:ConditionCheckItem"] }
+    } : {}
+    content {
+      sid       = statement.key
+      actions   = statement.value.actions
+      resources = [statement.value.arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = statement.value.keys
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
   }
 
   statement {
@@ -556,13 +703,8 @@ data "aws_iam_policy_document" "lifecycle_runtime" {
   statement {
     sid    = "LifecycleTableAccess"
     effect = "Allow"
-    actions = [
-      "dynamodb:BatchWriteItem",
-      "dynamodb:DeleteItem",
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:Query",
-      "dynamodb:UpdateItem",
+    actions = local.account_privacy_candidate ? ["dynamodb:GetItem", "dynamodb:Query"] : [
+      "dynamodb:BatchWriteItem", "dynamodb:DeleteItem", "dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:Query", "dynamodb:UpdateItem",
     ]
     resources = [
       local.campaign.pipeline_table_arn,
@@ -570,6 +712,44 @@ data "aws_iam_policy_document" "lifecycle_runtime" {
       "${local.campaign.pipeline_table_arn}/index/${local.campaign.expiration_index_name}",
       local.campaign.intelligence_table_arn,
     ]
+  }
+
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? {
+      WriteMutableLifecyclePipeline = { arn = local.campaign.pipeline_table_arn, keys = ["PERIOD#*", "EVENT#*", "CONTRIB#*", "CANDIDATE#*", "BUCKET#*"] }
+      WriteLifecycleAggregates      = { arn = local.campaign.intelligence_table_arn, keys = ["CAMPAIGN#*"] }
+    } : {}
+    content {
+      sid       = statement.key
+      actions   = ["dynamodb:BatchWriteItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem"]
+      resources = [statement.value.arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = statement.value.keys
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? {
+      CheckLifecyclePipelineProof = { arn = local.campaign.pipeline_table_arn, keys = ["CANDIDATE#*", "INVENTORY#${var.environment}"] }
+      CheckLifecycleAggregate     = { arn = local.campaign.intelligence_table_arn, keys = ["CAMPAIGN#*"] }
+    } : {}
+    content {
+      sid       = statement.key
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [statement.value.arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = statement.value.keys
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
   }
 
   statement {
@@ -725,7 +905,7 @@ resource "aws_lambda_function" "worker" {
   function_name = each.value.name
   description   = each.value.description
   role          = aws_iam_role.worker[each.key].arn
-  runtime       = "python3.13"
+  runtime       = local.account_privacy_candidate ? "python3.14" : "python3.13"
   handler       = "app.lambda_handler"
 
   timeout                        = each.value.timeout
@@ -734,14 +914,20 @@ resource "aws_lambda_function" "worker" {
   reserved_concurrent_executions = var.reserved_concurrency
 
   s3_bucket = local.foundation.artifact_bucket_name
-  s3_key = each.key == "publisher" && var.publisher_fence_artifact != null ? "releases/${var.publisher_fence_artifact.release_id}/campaign_observation_publisher.zip" : (
-    each.key == "deletion" && var.deletion_bridge_artifact != null ? "releases/${var.deletion_bridge_artifact.release_id}/campaign_deletion_bridge.zip" : "${local.artifact_key}/${each.value.artifact}"
+  s3_key = local.account_privacy_candidate ? "releases/${var.account_privacy_artifacts.release_id}/${each.value.artifact}" : (
+    each.key == "publisher" && var.publisher_fence_artifact != null ? "releases/${var.publisher_fence_artifact.release_id}/campaign_observation_publisher.zip" : (
+      each.key == "deletion" && var.deletion_bridge_artifact != null ? "releases/${var.deletion_bridge_artifact.release_id}/campaign_deletion_bridge.zip" : "${local.artifact_key}/${each.value.artifact}"
+    )
   )
-  s3_object_version = each.key == "publisher" && var.publisher_fence_artifact != null ? var.publisher_fence_artifact.object_version : (
-    each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.object_version : null
+  s3_object_version = local.account_privacy_candidate ? var.account_privacy_artifacts.workers[each.key].object_version : (
+    each.key == "publisher" && var.publisher_fence_artifact != null ? var.publisher_fence_artifact.object_version : (
+      each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.object_version : null
+    )
   )
-  source_code_hash = each.key == "publisher" && var.publisher_fence_artifact != null ? var.publisher_fence_artifact.source_hash : (
-    each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.source_hash : null
+  source_code_hash = local.account_privacy_candidate ? var.account_privacy_artifacts.workers[each.key].source_hash : (
+    each.key == "publisher" && var.publisher_fence_artifact != null ? var.publisher_fence_artifact.source_hash : (
+      each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.source_hash : null
+    )
   )
 
   environment {
@@ -760,9 +946,14 @@ resource "aws_lambda_function" "worker" {
       AGGREGATE_RETENTION_DAYS    = "400"
       MIN_CONTRIBUTOR_COUNT       = "10"
       MAX_CONTRIBUTOR_SUBMISSIONS = "3"
-      }, each.key == "publisher" ? {
+      }, local.account_privacy_candidate ? {
+      CAMPAIGN_LOCATOR_MANIFEST_SHA256    = ""
+      CAMPAIGN_LOCATOR_INVENTORY_REVISION = "0"
+      } : {}, local.account_privacy_candidate && each.key == "lifecycle" ? {
+      CAMPAIGN_LIFECYCLE_CANDIDATE_ENABLED = "false"
+      } : {}, each.key == "publisher" ? {
       USERS_TABLE_NAME = local.foundation.users_table_name
-      } : {}, each.key == "publisher" && var.publisher_fence_artifact != null ? {
+      } : {}, each.key == "publisher" && local.publisher_fenced ? {
       DELETION_LEDGER_TABLE_NAME = local.foundation.deletion_ledger_table_name
       } : {}, each.key == "deletion" ? {
       USERS_TABLE_NAME           = local.foundation.users_table_name
@@ -774,14 +965,26 @@ resource "aws_lambda_function" "worker" {
 
   lifecycle {
     precondition {
-      condition = each.key != "publisher" || var.publisher_fence_artifact == null ? true : try(
+      condition = !local.account_privacy_candidate && (each.key != "publisher" || !local.publisher_fenced) ? true : try(
         split(":", local.foundation.users_table_arn)[4] == data.aws_caller_identity.current.account_id &&
         local.foundation.users_table_name == "${var.project_name}-${var.environment}-users" &&
         local.foundation.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.foundation.users_table_arn)[4]}:table/${local.foundation.users_table_name}" &&
         local.foundation.deletion_ledger_table_name == "${var.project_name}-${var.environment}-deletion-ledger" &&
         local.foundation.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.foundation.users_table_arn)[4]}:table/${local.foundation.deletion_ledger_table_name}", false
       )
-      error_message = "Publisher fencing requires exact same-account/Region/environment users and deletion-ledger tables."
+      error_message = "Privacy candidates require exact same-account/Region/environment users and deletion-ledger tables."
+    }
+    precondition {
+      condition = !local.account_privacy_candidate || try(
+        local.campaign.pipeline_table_name == "${var.project_name}-${var.environment}-campaign-pipeline" &&
+        local.campaign.pipeline_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.campaign.pipeline_table_name}" &&
+        local.campaign.intelligence_table_name == "${var.project_name}-${var.environment}-campaign-intelligence" &&
+        local.campaign.intelligence_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.campaign.intelligence_table_name}" &&
+        local.campaign.outbox_table_name == "${var.project_name}-${var.environment}-campaign-outbox" &&
+        startswith(local.campaign.outbox_stream_arn, "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.campaign.outbox_table_name}/stream/") &&
+        startswith(local.foundation.deletion_ledger_stream_arn, "${local.foundation.deletion_ledger_table_arn}/stream/"), false
+      )
+      error_message = "Campaign privacy workers require exact environment/account/Region pipeline, intelligence, outbox and ledger stream resources."
     }
   }
 
