@@ -133,6 +133,13 @@ jobs:
           terraform validate
           terraform test
 
+      - name: Validate V1 result feedback candidate
+        working-directory: terraform/result-feedback
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
       - name: Validate disposable URL resolver fixture
         working-directory: terraform/url-resolver/acceptance-fixture
         run: |

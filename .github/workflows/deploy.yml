@@ -13,11 +13,13 @@ on:
       - "!terraform/url-consumer/**"
       - "!terraform/message-consumer/**"
       - "!terraform/recovery-consumer/**"
+      - "!terraform/result-feedback/**"
       - "!environments/*/url-resolver.tfvars"
       - "!environments/*/url-assessment.tfvars"
       - "!environments/*/url-consumer.tfvars"
       - "!environments/*/message-consumer.tfvars"
       - "!environments/*/recovery-consumer.tfvars"
+      - "!environments/*/result-feedback.tfvars"
   workflow_dispatch:
     inputs:
       environment:

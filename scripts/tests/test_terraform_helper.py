@@ -128,6 +128,15 @@ class TerraformHelperTests(unittest.TestCase):
                 self.assertIn(f"-backend-config=key=trustcheckradar/{environment}/history-processing.tfstate", calls[0])
                 self.assertEqual(calls[1], ["-chdir=terraform/history-processing", "plan", f"-var-file=../../environments/{environment}/history-processing.tfvars"])
 
+    def test_feedback_has_isolated_state(self):
+        for environment in ("dev", "uat", "prod"):
+            with self.subTest(environment=environment):
+                self.log.unlink(missing_ok=True)
+                result, calls = self.invoke("plan", environment, "result-feedback")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn(f"-backend-config=key=trustcheckradar/{environment}/result-feedback.tfstate", calls[0])
+                self.assertEqual(calls[1], ["-chdir=terraform/result-feedback", "plan", f"-var-file=../../environments/{environment}/result-feedback.tfvars"])
+
     def test_output_does_not_need_a_lambda_artifact(self):
         result, calls = self.invoke("output", "dev", "history-data")
         self.assertEqual(result.returncode, 0, result.stderr)
