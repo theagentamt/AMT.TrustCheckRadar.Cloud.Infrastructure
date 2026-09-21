@@ -22,3 +22,17 @@
 - Pushed, merged into `release-V01`, deployed, and released from `main` are distinct
   states. Report them accurately. Preserve existing deployment approvals and
   environment gates; this branch policy does not authorize a deployment.
+
+## CI execution policy
+
+- Automatic GitHub CI runs only on pushes to `main`, including merges into it.
+  Do not add pull-request, merge-queue, feature-branch or release-branch CI triggers.
+- Development and `release-V01` integration use the appropriate required local
+  validation. Record that evidence and verify the GitHub push before completion.
+  Remote CI is not a prerequisite for a development or release-branch merge.
+- Keep all main CI checks intact. Do not configure those post-merge checks as
+  required pre-merge statuses, which would prevent the merge that triggers them.
+- Start subsequent work from the latest `origin/release-V01` so it inherits this
+  workflow policy. Do not dispatch GitHub checks for feature/release work.
+- CI changes do not authorize production promotion or alter deployment approvals,
+  workflow inputs, environment protections or manual deployment gates.

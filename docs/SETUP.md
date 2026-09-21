@@ -80,7 +80,11 @@ Recommended protection:
 - `uat`: deployments only from `main`; one reviewer.
 - `prod`: deployments only from `main` or release tags; required reviewer; prevent self-approval and administrator bypass where the GitHub plan supports it.
 
-Protect `main` with pull requests, required CI, and no direct pushes.
+Protect `main` with pull requests and no direct pushes. The owner-approved CI policy
+runs GitHub validation only after a push/merge to `main`; do not require those
+post-merge statuses before the merge. Feature and `release-V01` changes require
+appropriate local validation and recorded evidence. Deployment environment gates
+remain independent of this CI policy.
 
 ## 4. Create the Foundation
 
