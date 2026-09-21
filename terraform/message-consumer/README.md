@@ -60,6 +60,43 @@ unknown/out-of-coverage content remains inconclusive. Approved fixed EN/ES copy 
 not evidence of production accuracy or broader AI coverage. Complete, partial and
 inconclusive states must retain authoritative accounting and evidence limitations.
 
+## Disabled proposer integration
+
+The next Lambda increment may include an OpenAI Responses proposer. This root
+explicitly sets `MESSAGE_PROPOSER_ENABLED=false`, supplies no provider credential,
+and preserves the evaluator's blanket Secrets Manager deny. Installing its code
+does not activate model processing. The approved rule policy remains pinned;
+general AI conclusions require the separate [policy proposal](../../docs/MESSAGE-AI-ASSESSMENT-POLICY-PROPOSAL.md)
+to be reviewed and implemented through a new contract version.
+
+A future reviewed activation change must supply all of these together:
+
+| Setting | Required constraint |
+| --- | --- |
+| `MESSAGE_PROPOSER_ENABLED` | Explicit activation, separate from evaluator/consumer gates |
+| `MESSAGE_PROPOSER_MODEL` | Explicit qualified model version; no inferred default |
+| `MESSAGE_PROPOSER_SECRET_ARN` | Existing exact same-account Dev `trustcheckradar/dev/openai` secret ARN; never its value |
+| `MESSAGE_PROPOSER_TIMEOUT_MS` | Integer 250–8000, within the remaining overall request deadline |
+| `MESSAGE_PROPOSER_MAX_OUTPUT_TOKENS` | Integer 128–512, validated with the selected model |
+
+Only then may evaluator IAM replace its blanket secret deny with an exact
+`GetSecretValue`/`AWSCURRENT` allow and explicit denial outside that secret and
+operation. Adding an allow underneath the existing blanket deny does not work.
+The consumer must never receive provider-secret permission, and the evaluator
+must never receive the authority HMAC or ledger permission. No secret value is
+read by Terraform or stored in state. If the existing secret uses a customer KMS
+key, qualify the narrow decrypt dependency separately; do not add wildcard KMS.
+
+The adapter uses fixed HTTPS `api.openai.com:443/v1/responses`, one attempt,
+no redirects/tools/background mode and `store:false`. Its only content projection
+is validated sanitized text, language and speaker role; account/device/check IDs,
+original entities and reviewed URLs are excluded. Model proposals remain subject
+to the independently qualified verifier. The fixed endpoint is an application
+control, not a claim of network-level egress enforcement. Provider data controls,
+selected model compatibility, total attempt budgets, operational alarms and
+rollback remain activation prerequisites. `store:false` does not establish zero
+provider retention; see the linked proposal's source notes.
+
 ## Verification
 
 Use `terraform init -backend=false`, `terraform validate`, and `terraform test`
@@ -67,3 +104,9 @@ for local validation with the mocked AWS provider. Tests cover no-op defaults,
 inactive runtimes, authority/evaluator isolation, immutable coordinated packages,
 wrong environment/account rejection and absent public endpoint output. These
 mocked applies create no AWS resources and are not a deployment report.
+
+The 2026-09-21 proposer handoff passed `terraform fmt -check`, `terraform validate`
+and all 10 mocked runs, including the explicit disabled-provider/no-config
+assertion. Changed-file Gitleaks found no leaks; the whole-tree scan reported two
+pre-existing documentation matches containing commit IDs. The broader policy
+document is a review draft, not a runtime configuration or approval record.

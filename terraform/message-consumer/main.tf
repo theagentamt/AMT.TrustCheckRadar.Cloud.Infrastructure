@@ -99,6 +99,7 @@ resource "aws_lambda_function" "runtime" {
       MESSAGE_PROVIDER_CIRCUIT_OPEN  = "true"
       } : {
       MESSAGE_EVALUATOR_ENABLED   = "false"
+      MESSAGE_PROPOSER_ENABLED    = "false"
       URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn
     })
   }
