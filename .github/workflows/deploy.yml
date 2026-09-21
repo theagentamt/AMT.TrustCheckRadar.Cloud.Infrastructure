@@ -12,10 +12,12 @@ on:
       - "!terraform/url-assessment/**"
       - "!terraform/url-consumer/**"
       - "!terraform/message-consumer/**"
+      - "!terraform/recovery-consumer/**"
       - "!environments/*/url-resolver.tfvars"
       - "!environments/*/url-assessment.tfvars"
       - "!environments/*/url-consumer.tfvars"
       - "!environments/*/message-consumer.tfvars"
+      - "!environments/*/recovery-consumer.tfvars"
   workflow_dispatch:
     inputs:
       environment:
