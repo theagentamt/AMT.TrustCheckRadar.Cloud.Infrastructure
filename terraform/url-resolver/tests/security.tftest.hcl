@@ -192,3 +192,21 @@ run "assessment_topic_grant_is_exact_and_optional" {
     error_message = "Shared topic must allow exactly the existing resolver alarms and three named assessment alarms."
   }
 }
+
+run "consumer_topic_grant_is_exact_and_optional" {
+  command = apply
+  variables {
+    enabled                              = true
+    consumer_alarm_notifications_enabled = true
+    artifact = {
+      bucket         = "test-bucket"
+      key            = "releases/test/url_redirect_resolver.zip"
+      object_version = "test-version"
+      source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  assert {
+    condition     = length(jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"]) == 18 && contains(jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"], "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-url-lease-recovery-expiry-overdue") && alltrue([for arn in jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"] : !strcontains(arn, "*")])
+    error_message = "Support topic must accept only three resolver and fifteen explicit V1 alarms, without wildcard publishers."
+  }
+}

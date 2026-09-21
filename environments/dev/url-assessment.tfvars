@@ -9,9 +9,9 @@ alert_topic_arn        = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev
 dev_test_principal_arn = "arn:aws:iam::107827791950:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_6659317f1273c022"
 artifact = {
   bucket         = "trustcheckradar-dev-107827791950-artifacts"
-  key            = "releases/1f47f5b90fbff19d27a981206a70ef60e88ed267/url_assessment.zip"
-  object_version = "RfyEhgRrMSD3MMztj.VMwnNBOrZ1eWmA"
-  source_hash    = "k4aHp3JkRAzIQp69vpQRxRkAxos3QgGySl4csW+UvVQ="
+  key            = "releases/84733306d62dd57df883b4425fa5305db6c4a62d/url_assessment.zip"
+  object_version = "Nd1.vttFgSjGwEpbTZepyb.sKI.VszRf"
+  source_hash    = "SL308FYMSDSio/+6Omi0QCJVErDFwtJ6UZZLNniqPew="
 }
 tags = {
   Application = "TrustCheckRadar"

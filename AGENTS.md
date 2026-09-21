@@ -22,6 +22,11 @@
 - Pushed, merged into `release-V01`, deployed, and released from `main` are distinct
   states. Report them accurately. Preserve existing deployment approvals and
   environment gates; this branch policy does not authorize a deployment.
+- Before closing completed development, verify that its final source and handoff
+  changes are integrated into `main` or the current release branch. A pushed
+  feature branch alone does not satisfy integration. Check local-only commits as
+  well as remote heads; recognize verified squash/cherry-pick equivalence without
+  reintroducing behavior that newer release changes have superseded.
 
 ## CI execution policy
 

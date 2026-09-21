@@ -166,6 +166,14 @@ run "consumer_recovery_is_pinned_scoped_and_fresh_auth_only" {
   command = plan
   variables {
     device_self_recovery_enabled = true
+    device_self_recovery_acceptance = {
+      approved                        = true
+      release_id                      = "synthetic-release"
+      contract_version                = "1.0.0"
+      contract_sha256                 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      approval_reference              = "synthetic-test-not-owner-approval"
+      security_verification_reference = "synthetic-test-not-live-acceptance"
+    }
     history_deployment = {
       release_id         = "synthetic-release"
       approval_reference = "synthetic-test-not-deployment-approval"
@@ -197,6 +205,14 @@ run "consumer_recovery_is_pinned_scoped_and_fresh_auth_only" {
   }
   assert {
     condition = (
+      output.device_self_recovery_contract.acceptance_approved &&
+      output.device_self_recovery_contract.contract_version == "1.0.0" &&
+      output.device_self_recovery_contract.contract_sha256 == "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    )
+    error_message = "An activated consumer contract must expose the exact accepted version and digest."
+  }
+  assert {
+    condition = (
       aws_lambda_function.device_recovery[0].s3_key == "releases/synthetic-release/device_recovery.zip" &&
       aws_lambda_function.device_recovery[0].s3_object_version == "recovery-version" &&
       aws_lambda_function.device_registration.s3_key == "releases/synthetic-release/device_registration.zip" &&
@@ -212,11 +228,25 @@ run "consumer_recovery_is_pinned_scoped_and_fresh_auth_only" {
     condition = (
       length(aws_iam_role_policy.device_identity) == 2 &&
       one([for statement in data.aws_iam_policy_document.device_recovery_control[0].statement : statement if statement.sid == "RecoveryReceiptsAuditAndRateState"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-recovery-control"]) &&
-      one([for statement in data.aws_iam_policy_document.device_recovery_control[0].statement : statement if statement.sid == "RecoveryReceiptsAuditAndRateState"]).actions == toset(["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem"]) &&
+      one([for statement in data.aws_iam_policy_document.device_recovery_control[0].statement : statement if statement.sid == "RecoveryReceiptsAuditAndRateState"]).actions == toset(["dynamodb:PutItem", "dynamodb:UpdateItem"]) &&
       one([for statement in data.aws_iam_policy_document.device_identity[0].statement : statement if statement.sid == "SerializeExistingActivePointer"]).actions == toset(["dynamodb:ConditionCheckItem"]) &&
       anytrue([for settings in aws_apigatewayv2_stage.age_attestation.route_settings : settings.route_key == "POST /v1/users/device-recovery" && settings.throttling_rate_limit == 2])
     )
     error_message = "Recovery must scope control state to its own table, supply both identity fences, and bound the consumer route."
+  }
+  assert {
+    condition = (
+      length(data.aws_iam_policy_document.device_recovery_control[0].statement) == 2 &&
+      one([for statement in data.aws_iam_policy_document.device_recovery_control[0].statement : statement if statement.sid == "ReadRecoveryReceiptsAndRateState"]).actions == toset(["dynamodb:GetItem"]) &&
+      alltrue([for statement in data.aws_iam_policy_document.device_recovery_control[0].statement :
+        statement.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-recovery-control"]) &&
+        anytrue([for rule in statement.condition : rule.variable == "dynamodb:LeadingKeys" && rule.test == "ForAllValues:StringLike" && toset(rule.values) == toset(["USER#*"])])
+      ]) &&
+      anytrue([for rule in one([for statement in data.aws_iam_policy_document.device_recovery_control[0].statement : statement if statement.sid == "RecoveryReceiptsAuditAndRateState"]).condition :
+        rule.variable == "dynamodb:EnclosingOperation" && rule.test == "ForAnyValue:StringEquals" && toset(rule.values) == toset(["TransactWriteItems"])
+      ])
+    )
+    error_message = "Recovery control reads must be point reads; only subject-scoped transactional puts/updates may mutate receipts, audit and rate records, without scans, deletes or wildcard resources."
   }
 }
 
@@ -289,8 +319,157 @@ run "disabled_operator_endpoint_creates_no_recovery_route" {
     condition = (
       length(aws_apigatewayv2_route.device_recovery) == 0 &&
       length(aws_lambda_permission.allow_api_gateway_invoke_device_recovery) == 0 &&
-      output.device_recovery_backend_settings == null
+      output.device_recovery_backend_settings == null &&
+      output.device_recovery_endpoint_path == null &&
+      output.device_recovery_endpoint_url == null
     )
     error_message = "An unprovisioned operator endpoint must not advertise or grant recovery access."
   }
+}
+
+run "generic_environment_cannot_activate_consumers_or_weaken_reauthentication" {
+  command = plan
+  variables {
+    device_recovery_lambda_env = {
+      DEVICE_SELF_RECOVERY_ENABLED           = "true"
+      DEVICE_RECOVERY_POLICY_STATUS          = "approved"
+      DEVICE_RECOVERY_MAX_REAUTH_AGE_SECONDS = "86400"
+      DEVICE_RECOVERY_RATE_MAX_REQUESTS      = "999"
+    }
+  }
+  assert {
+    condition = (
+      length(aws_apigatewayv2_route.device_self_recovery) == 0 &&
+      length(aws_lambda_permission.device_self_recovery) == 0 &&
+      !output.device_self_recovery_contract.enabled &&
+      !output.device_self_recovery_contract.acceptance_approved &&
+      output.device_self_recovery_contract.contract_version == null &&
+      output.device_self_recovery_contract.contract_sha256 == null &&
+      aws_lambda_function.device_recovery[0].environment[0].variables["DEVICE_SELF_RECOVERY_ENABLED"] == "false" &&
+      aws_lambda_function.device_recovery[0].environment[0].variables["DEVICE_RECOVERY_MAX_REAUTH_AGE_SECONDS"] == "300" &&
+      aws_lambda_function.device_recovery[0].environment[0].variables["DEVICE_RECOVERY_RATE_MAX_REQUESTS"] == "3"
+    )
+    error_message = "Generic environment overrides must not expose consumer recovery, advertise acceptance, or relax its authentication/rate policy."
+  }
+  assert {
+    condition = (
+      aws_apigatewayv2_route.device_registration.route_key == "POST /device-registration" &&
+      aws_apigatewayv2_route.device_registration.authorization_type == "JWT" &&
+      !contains(keys(aws_lambda_function.device_registration.environment[0].variables), "DEVICE_SELF_RECOVERY_ENABLED") &&
+      !contains(keys(aws_lambda_function.device_registration.environment[0].variables), "DEVICE_RECOVERY_MAX_REAUTH_AGE_SECONDS")
+    )
+    error_message = "Consumer recovery controls must not change automatic normal registration's route or introduce a global step-up requirement."
+  }
+}
+
+run "coordinated_packages_do_not_imply_security_acceptance" {
+  command = plan
+  variables {
+    device_self_recovery_enabled = true
+    history_deployment = {
+      release_id         = "synthetic-release"
+      approval_reference = "synthetic-test-not-deployment-approval"
+      promotion_approved = false
+      artifacts = {
+        read     = { object_version = "read-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        mutation = { object_version = "mutation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
+        analysis = { object_version = "analysis-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
+      }
+    }
+    device_recovery_deployment = {
+      release_id         = "synthetic-release"
+      approval_reference = "synthetic-test-not-deployment-approval"
+      promotion_approved = false
+      artifacts = {
+        recovery     = { object_version = "recovery-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        registration = { object_version = "registration-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
+      }
+    }
+  }
+  expect_failures = [var.device_self_recovery_enabled]
+}
+
+run "acceptance_for_another_release_cannot_activate_consumers" {
+  command = plan
+  variables {
+    device_self_recovery_enabled = true
+    device_self_recovery_acceptance = {
+      approved                        = true
+      release_id                      = "different-release"
+      contract_version                = "1.0.0"
+      contract_sha256                 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      approval_reference              = "synthetic-test-not-owner-approval"
+      security_verification_reference = "synthetic-test-not-live-acceptance"
+    }
+    history_deployment = {
+      release_id         = "synthetic-release"
+      approval_reference = "synthetic-test-not-deployment-approval"
+      promotion_approved = false
+      artifacts = {
+        read     = { object_version = "read-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        mutation = { object_version = "mutation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
+        analysis = { object_version = "analysis-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
+      }
+    }
+    device_recovery_deployment = {
+      release_id         = "synthetic-release"
+      approval_reference = "synthetic-test-not-deployment-approval"
+      promotion_approved = false
+      artifacts = {
+        recovery     = { object_version = "recovery-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        registration = { object_version = "registration-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
+      }
+    }
+  }
+  expect_failures = [var.device_self_recovery_enabled]
+}
+
+run "contract_acceptance_rejects_malformed_or_missing_evidence" {
+  command = plan
+  variables {
+    device_self_recovery_acceptance = {
+      approved                        = true
+      release_id                      = "synthetic-release"
+      contract_version                = "draft"
+      contract_sha256                 = "not-a-sha256"
+      approval_reference              = " "
+      security_verification_reference = ""
+    }
+  }
+  expect_failures = [var.device_self_recovery_acceptance]
+}
+
+run "review_references_without_approval_do_not_activate_consumers" {
+  command = plan
+  variables {
+    device_self_recovery_enabled = true
+    device_self_recovery_acceptance = {
+      approved                        = false
+      release_id                      = "synthetic-release"
+      contract_version                = "1.0.0"
+      contract_sha256                 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      approval_reference              = "synthetic-pending-review"
+      security_verification_reference = "synthetic-pending-security-review"
+    }
+    history_deployment = {
+      release_id         = "synthetic-release"
+      approval_reference = "synthetic-test-not-deployment-approval"
+      promotion_approved = false
+      artifacts = {
+        read     = { object_version = "read-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        mutation = { object_version = "mutation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
+        analysis = { object_version = "analysis-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
+      }
+    }
+    device_recovery_deployment = {
+      release_id         = "synthetic-release"
+      approval_reference = "synthetic-test-not-deployment-approval"
+      promotion_approved = false
+      artifacts = {
+        recovery     = { object_version = "recovery-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        registration = { object_version = "registration-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
+      }
+    }
+  }
+  expect_failures = [var.device_self_recovery_enabled]
 }

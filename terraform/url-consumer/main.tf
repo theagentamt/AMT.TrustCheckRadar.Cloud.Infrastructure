@@ -2,11 +2,13 @@ data "aws_caller_identity" "current" {}
 
 locals {
   prefix = "${var.project_name}-${var.environment}"
-  functions = var.enabled ? {
+  functions = merge(var.enabled ? {
     consumer     = { suffix = "url-consumer", timeout = 29, concurrency = 2, handler = "app.lambda_handler" }
     recovery     = { suffix = "url-lease-recovery", timeout = 15, concurrency = 1, handler = "app.lambda_handler" }
     entitlements = { suffix = "v1-entitlements", timeout = 10, concurrency = 2, handler = "v1_entitlements.app.lambda_handler" }
-  } : {}
+    } : {}, var.enabled && try(contains(keys(var.deployment.artifacts), "deletion"), false) ? {
+    deletion = { suffix = "v1-authority-deletion", timeout = 30, concurrency = 1, handler = "v1_authority_deletion.app.lambda_handler" }
+  } : {})
   authority_arn = try(var.deployment.authority_table_arn, "")
   identity_arns = var.deployment == null ? [] : [var.deployment.users_table_arn, var.deployment.devices_table_arn, var.deployment.deletion_table_arn]
 }
@@ -47,9 +49,9 @@ resource "aws_iam_role_policy" "consumer" {
     Statement = [
       { Sid = "OwnLogs", Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.runtime["consumer"].arn}:*" },
       { Sid = "ReadIdentityFences", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:ConditionCheckItem"], Resource = local.identity_arns },
-      { Sid = "ReadAuthority", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:Query"], Resource = local.authority_arn,
+      { Sid = "ReadAuthority", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:ConditionCheckItem"], Resource = local.authority_arn,
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*"] } } },
-      { Sid = "AtomicAuthorityMutations", Effect = "Allow", Action = ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:ConditionCheckItem"], Resource = local.authority_arn,
+      { Sid = "AtomicAuthorityMutations", Effect = "Allow", Action = ["dynamodb:PutItem", "dynamodb:UpdateItem"], Resource = local.authority_arn,
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
       { Sid = "OneHmacKeyRing", Effect = "Allow", Action = "secretsmanager:GetSecretValue", Resource = aws_secretsmanager_secret.authority_hmac[0].arn,
       Condition = { StringEquals = { "secretsmanager:VersionStage" = "AWSCURRENT" } } },
@@ -73,12 +75,14 @@ resource "aws_iam_role_policy" "recovery" {
     Version = "2012-10-17"
     Statement = [
       { Sid = "OwnLogs", Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.runtime["recovery"].arn}:*" },
-      { Sid = "ReadExistingLease", Effect = "Allow", Action = ["dynamodb:GetItem"], Resource = local.authority_arn,
+      { Sid = "ReadExistingLease", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:ConditionCheckItem"], Resource = local.authority_arn,
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*"] } } },
       { Sid = "FindExpiredLeases", Effect = "Allow", Action = "dynamodb:Query", Resource = "${local.authority_arn}/index/GSI1",
-      Condition = { "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["V1_PENDING"] } } },
-      { Sid = "AtomicLeaseCleanup", Effect = "Allow", Action = ["dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:ConditionCheckItem"], Resource = local.authority_arn,
+      Condition = { "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["V1_PENDING", "V1_EXPIRING"] } } },
+      { Sid = "AtomicLeaseCleanup", Effect = "Allow", Action = ["dynamodb:UpdateItem"], Resource = local.authority_arn,
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
+      { Sid = "ExpireIndexedRows", Effect = "Allow", Action = ["dynamodb:DeleteItem"], Resource = local.authority_arn,
+      Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
       { Sid = "NoProviderIdentitySecretsOrInvocation", Effect = "Deny", Action = ["secretsmanager:*", "lambda:InvokeFunction", "s3:*", "ssm:*", "sts:AssumeRole"], Resource = "*" }
     ]
   })
@@ -103,11 +107,11 @@ resource "aws_lambda_function" "runtime" {
     variables = merge({
       STAGE                = var.environment
       AUTHORITY_TABLE_NAME = split("/", local.authority_arn)[1]
-      }, each.key != "recovery" ? {
-      CONSUMER_ENABLED                   = "false"
-      AUTHORITY_ENABLED                  = "false"
-      V1_ENTITLEMENTS_ENABLED            = "false"
-      TRIAL_AUTHORITY_RETENTION_APPROVED = "false"
+      }, contains(["consumer", "entitlements"], each.key) ? {
+      CONSUMER_ENABLED                   = tostring(var.activate_engineering)
+      AUTHORITY_ENABLED                  = tostring(var.activate_engineering)
+      V1_ENTITLEMENTS_ENABLED            = tostring(var.activate_engineering)
+      TRIAL_AUTHORITY_RETENTION_APPROVED = "true"
       USERS_TABLE_NAME                   = split("/", var.deployment.users_table_arn)[1]
       DEVICE_BINDINGS_TABLE_NAME         = split("/", var.deployment.devices_table_arn)[1]
       DELETION_LEDGER_TABLE_NAME         = split("/", var.deployment.deletion_table_arn)[1]
@@ -116,11 +120,28 @@ resource "aws_lambda_function" "runtime" {
       COGNITO_REQUIRED_SCOPE             = "aws.cognito.signin.user.admin"
       AUTHORITY_HMAC_SECRET_ARN          = aws_secretsmanager_secret.authority_hmac[0].arn
       AUTHORITY_POLICY_VERSION           = "owner-2026-09-20-v1"
+      DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(var.engineering_subjects)))
+      } : each.key == "recovery" ? {
+      LEASE_SWEEP_ENABLED = tostring(var.activate_engineering)
       } : {
-      LEASE_SWEEP_ENABLED = "false"
-    }, each.key == "consumer" ? { URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn } : {})
+      V1_AUTHORITY_DELETION_ENABLED      = tostring(var.activate_engineering)
+      DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(var.engineering_subjects)))
+      DELETION_LEDGER_TABLE_NAME         = split("/", var.deployment.deletion_table_arn)[1]
+      DELETION_LEDGER_STREAM_ARN         = var.deletion_stream_arn
+      AUTHORITY_HMAC_SECRET_ARN          = aws_secretsmanager_secret.authority_hmac[0].arn
+      DELETION_RECEIPT_RETENTION_SECONDS = "10368000"
+      }, contains(["consumer", "entitlements"], each.key) && var.authority_configuration != null ? {
+      OPERATION_VALIDITY_SECONDS = tostring(var.authority_configuration.operation_validity_seconds)
+      WORKER_SETTLEMENT_SECONDS  = tostring(var.authority_configuration.worker_settlement_seconds)
+      RECONCILIATION_SECONDS     = tostring(var.authority_configuration.reconciliation_seconds)
+      RECEIPT_RETENTION_SECONDS  = "604800"
+      COUNTER_RETENTION_SECONDS  = tostring(var.authority_configuration.counter_retention_seconds)
+      ATTEMPT_WINDOW_SECONDS     = "60"
+      ATTEMPTS_PER_WINDOW        = "20"
+      MAX_INFLIGHT               = "2"
+    } : {}, each.key == "consumer" ? { URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn } : {})
   }
-  depends_on = [aws_iam_role_policy.consumer, aws_iam_role_policy.recovery, aws_iam_role_policy.entitlements]
+  depends_on = [aws_iam_role_policy.consumer, aws_iam_role_policy.recovery, aws_iam_role_policy.entitlements, aws_iam_role_policy.deletion]
   tags       = var.tags
 }
 

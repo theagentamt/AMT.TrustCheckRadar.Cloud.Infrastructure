@@ -32,6 +32,38 @@ this backend remain in scope. The Lambda owner must propose a minimal,
 bounded ownership/anti-replay contract and identify any remaining decision;
 no financial retention period is inferred here.
 
+## Normal Registration Switching Decision 2026-09-17
+
+The iOS task relayed the owner's explicit ITCR-59 decision: keep automatic
+switching during normal device registration. Preserve the existing behavior of
+`POST /device-registration`: registering a different installation may atomically
+activate it and inactivate the previous binding. Do not add a requirement for
+fresh sign-in and explicit confirmation for every normal registration switch.
+
+This resolves the registration-versus-recovery switching-policy question only.
+The separate consumer recovery route's fresh-authentication and rate controls
+must not be described as a global device-switch policy. Prior-device rejection
+applies while its binding remains inactive; a later normal registration may
+switch it back. This is not permanent revocation of that installation.
+
+Registration remains a mutation, not a status read. This decision does not
+authorize background status probes, automatic retry loops after ambiguous
+network outcomes, or new mobile invocation behavior. It does not create a
+read-only device-status endpoint.
+
+Consumer recovery remains unavailable pending a published versioned contract
+and fixtures, approved receipt expiry/reuse semantics, safe authoritative
+revalidation, and security/release acceptance. Existing seven-day receipt
+retention does not itself resolve logical expiry or operation-ID reuse.
+
+Provenance: owner decision relayed by the iOS task
+`01a0608b-a8f2-7f61-909c-19c520f5a47e` for ITCR-59. Its reported mobile status is
+In Progress, with ITCR-90 Open for manual Dev verification; these statuses were
+not independently verified or changed by infrastructure.
+
+Recording this decision authorizes no backend behavior change, tracker update,
+commit/push, deployment, recovery activation, or UAT/Prod promotion.
+
 ## Implementation Boundaries
 
 - Dev foundation inputs record the approved recovery policy, with storage
