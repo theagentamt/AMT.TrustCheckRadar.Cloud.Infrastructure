@@ -60,6 +60,14 @@ run "candidate_is_isolated_and_inactive" {
     error_message = "Provisioning must not activate service, authority writes, providers or model access."
   }
   assert {
+    condition = (
+      aws_lambda_function.runtime["evaluator"].environment[0].variables.MESSAGE_PROPOSER_ENABLED == "false" &&
+      alltrue([for key in ["MESSAGE_PROPOSER_MODEL", "MESSAGE_PROPOSER_SECRET_ARN", "MESSAGE_PROPOSER_TIMEOUT_MS", "MESSAGE_PROPOSER_MAX_OUTPUT_TOKENS"] : !contains(keys(aws_lambda_function.runtime["evaluator"].environment[0].variables), key)]) &&
+      !contains(keys(aws_lambda_function.runtime["consumer"].environment[0].variables), "MESSAGE_PROPOSER_SECRET_ARN")
+    )
+    error_message = "Inactive candidate must explicitly disable the proposer and supply no provider credential/model/budget configuration."
+  }
+  assert {
     condition     = jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"] == ["TransactWriteItems"] && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAllValues:StringLike"]["dynamodb:LeadingKeys"] == ["V1#*"] && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Resource == var.deployment.authority_hmac_secret_arn && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition.StringEquals["secretsmanager:VersionStage"] == "AWSCURRENT" && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[5].Resource == aws_lambda_alias.runtime["evaluator"].arn
     error_message = "Consumer must reuse the existing fenced ledger/HMAC and invoke only the private evaluator alias."
   }
