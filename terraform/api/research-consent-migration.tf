@@ -47,6 +47,7 @@ locals {
     analysis      = aws_iam_role.analysis.name
     snapshot      = aws_iam_role.entitlement_snapshot.name
     participation = aws_iam_role.campaign_participation.name
+    purchase      = aws_iam_role.purchase_handoff.name
   }, var.enable_web_risk_communication ? { web_risk = aws_iam_role.web_risk_communication[0].name } : {}) : {}
 }
 
