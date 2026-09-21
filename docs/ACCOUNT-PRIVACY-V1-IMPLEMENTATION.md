@@ -7,7 +7,7 @@ acceptance; it does not declare account export or deletion available.
 
 The owner authorized Android-first work, with Android and Lambda agents owning
 those repositories and the orchestrator owning infrastructure and integration.
-Both current export and purchase-restoration decisions are recorded in
+Current export, purchase-restoration and onboarding decisions are recorded in
 [the policy record](ACCOUNT-DATA-POLICY-DECISIONS.md#owner-decisions-2026-09-21--atcr-94).
 ATCR-94 depends on SECUR4ALL-200 (deletion), SECUR4ALL-236 (export), and
 SECUR4ALL-245 (infrastructure). All four remain In Progress.
@@ -88,11 +88,13 @@ by this source change.
 
 ## Still required for completion
 
-- Full inventory-backed export readers, encrypted continuation contract, fresh
-  authentication and active-device checks; exact cumulative/page limits and
-  truthful handling of legitimate inventories above those limits.
-- Android transport, user-selected file save, partial-write/cancellation behavior,
-  account isolation and fresh-authentication integration.
+- Qualify the merged export readers and encrypted continuation contract against
+  the complete deployed inventory, including legitimate inventories above limits.
+  The source candidate uses fresh authentication, completed onboarding and the
+  active-device requirement. See [the export handoff](ACCOUNT-EXPORT-CANDIDATE-HANDOFF.md).
+- Finish and integrate Android transport, user-selected file save,
+  partial-write/cancellation behavior, account isolation and fresh authentication;
+  then qualify the complete app/backend flow.
 - Atomic purchase ownership/lineage locators, legacy coverage and deletion-safe
   cleanup; no in-place transfer from another active or deletion-pending binding.
 - Every required cleanup receipt, final Cognito identity removal, finalizer and
@@ -103,3 +105,52 @@ by this source change.
 Source publication, release integration, deployment and story completion are
 separate milestones. None of the unavailable lifecycle components can be waived
 by the passing foundation tests.
+
+## Purchase cleanup and identity-finalization infrastructure follow-on
+
+The nullable `account_data_finalization_candidate` supplies a reviewed manifest
+SHA-256, positive integer inventory revision and review reference. It requires
+an immutable `account_data_deployment`. Selecting it adds AdminGetUser and
+AdminDeleteUser for the exact Cognito pool only; null grants neither operation.
+`ACCOUNT_IDENTITY_FINALIZER_ENABLED` remains hard false, as do deletion admission,
+stream and schedule activation. No public route is provisioned. Empty pins and
+revision zero are safe only while the candidate is disabled.
+
+The account-data role reads the exact `INVENTORY#<environment>` marker and checks
+it inside transactions. It can never write that partition. Purchase cleanup
+queries only the owned USER partition, reads USER/TOKEN and the exact
+PURCHASE#CONTROL marker, and deletes USER/TOKEN rows only in transactions.
+Transaction checks cover both inventory markers and the durable account command.
+The worker cannot approve its own inventory coverage. IAM LeadingKeys constrains
+partition keys; exact sort keys, schemas and subject bindings are runtime duties.
+
+No inventory marker is created by Terraform or this change. Before activation,
+prove every current/legacy writer, key lineage, historical copy and replay path,
+verify Username/sub mapping, and pin a real reviewed manifest. The account marker
+must list all eleven required components and predate each accepted request;
+material revisions require a controlled migration or draining pending operations.
+A deployment approval reference is not evidence that this coverage exists.
+
+The finalizer's source design checks ten prior cleanup receipts before identity
+removal, then records the IDENTITY receipt and completed fixed fence atomically.
+The external Cognito call cannot be part of the DynamoDB transaction: if its
+acknowledgment or the final transaction is lost, durable reconciliation retries,
+using UserNotFound only after the same verified proof set. Freeze inventory
+revisions while requests are in flight or explicitly requalify them; do not
+rewrite their original timestamps. All downstream workers must understand the
+terminal fence before activation. Component receipts describe the approved
+120-day informational retention; the completed suppression fence has no automatic
+TTL. Neither implies immediate physical erasure of backups.
+
+This source increment does not activate restoration, paid entitlement checks,
+store notifications, account cleanup or export. Legacy ownership coverage,
+Google Play fresh verification and lineage, delayed-writer fencing, campaign
+locator coverage, restore suppression and live disposable-user acceptance still
+require proof. New-account purchase restoration remains the owner-approved
+behavior after old local ownership is removed under the deletion fence.
+
+Local validation for this follow-on: all 77 API mocked tests passed, API validation,
+recursive Terraform format and whitespace checks passed. Independent review
+found no blocking issue in IAM, inventory pins or disabled activation defaults.
+No AWS apply, marker write, customer-record deletion or identity lookup was
+performed for this increment.

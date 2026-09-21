@@ -110,3 +110,15 @@ coordination for the current story. They are not evidence of deployed cleanup,
 end-to-end acceptance or permission to promote to production. The earlier scope
 statements about no mobile/tracker work described the September 14 inventory
 task; they do not override the owner's new ATCR-94 implementation instruction.
+
+### Onboarding and export access — September 21 follow-up
+
+The owner explicitly chose **keep export blocked until onboarding is completed**
+after reviewing the case where a PENDING_AGE_GATE account has no active binding.
+There is no device-less export exception. Export retains completed-onboarding,
+fresh-authentication and active-device checks, without a paid-plan or allowance
+requirement. Clients must not describe this restriction as a network outage.
+
+This answer concerned export. It does not require an owner to attest to being an
+adult merely to delete an already-created account: the deletion contract retains
+fresh authentication and exact account ownership for incomplete-onboarding profiles.
