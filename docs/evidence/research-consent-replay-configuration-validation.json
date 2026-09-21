@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "scope": "local mocked replay configuration regression; no live change",
+  "baseCommit": "ada029568cf333dc3904faf81343bdd7080bab6f",
+  "checks": [
+    {
+      "command": "terraform -chdir=terraform/api test -filter=tests/research-consent-migration.tftest.hcl -no-color",
+      "passed": 12,
+      "failed": 0
+    }
+  ],
+  "fileSha256": {
+    "terraform/api/research-consent-migration.tf": "0688feeb38cb29137beabf228e0b43a10a1e55ece3463c0cdcb00ddf2cb2687a",
+    "terraform/api/tests/research-consent-migration.tftest.hcl": "ca4f923eb68ea8681f34581633790fa376a5fad39df6067234eb5321924b3932"
+  },
+  "liveQualified": false
+}

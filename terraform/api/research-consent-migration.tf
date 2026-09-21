@@ -38,6 +38,14 @@ locals {
     CAMPAIGN_PARTICIPATION_POLICY_VERSION = "independent-research-v1"
   } : {}
   research_migration_replay_env = local.research_migration_selected ? {
+    APP_ENVIRONMENT                = var.environment
+    COGNITO_ISSUER                 = local.jwt_issuer
+    COGNITO_APP_CLIENT_ID          = local.cognito_app_client_id
+    COGNITO_REQUIRED_SCOPE         = "aws.cognito.signin.user.admin"
+    HISTORY_MAX_SUMMARY_BYTES      = "4096"
+    HISTORY_MAX_LIST_ITEMS         = "20"
+    HISTORY_MAX_TEXT_FIELD_BYTES   = "1024"
+    HISTORY_MAX_RESPONSE_BYTES     = "262144"
     DELETION_LEDGER_TABLE_NAME     = local.deletion_ledger_table_name
     HISTORY_WRITES_ENABLED         = "false"
     HISTORY_DURABLE_REPLAY_ENABLED = "false"

@@ -22,6 +22,11 @@ new account. Withdrawal does not require joining under a new notice. The default
 `CONSENT_INDEPENDENCE_ENABLED=false` blocks new joins; reads, exact-operation
 reconciliation and withdrawal remain available.
 
+Replay independently receives the exact Cognito issuer/client/scope and bounded
+assessment projection settings, even when History deployment is null. Generic
+environment maps cannot replace these settings or activate History writers.
+Configured History tables must still be read to honor removal/visibility fences.
+
 The participation role cannot access entitlement tables. The retired analysis
 candidate can only replay or report the need for reconciliation; IAM denies
 writes, provider secrets, SSM parameter reads and Lambda dispatch. The snapshot
