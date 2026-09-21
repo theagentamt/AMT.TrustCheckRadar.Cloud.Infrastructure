@@ -487,6 +487,12 @@ run "terminal_fence_candidate_scopes_reads_and_transactional_receipts" {
   }
   assert {
     condition = (
+      alltrue([for policy in [data.aws_iam_policy_document.account_deletion[0], data.aws_iam_policy_document.runtime[0]] :
+        one([for s in policy.statement : s if s.sid == "CheckHistoryStateForCompletion"]).actions == toset(["dynamodb:ConditionCheckItem"]) &&
+        one([for s in policy.statement : s if s.sid == "CheckHistoryStateForCompletion"]).resources == toset([local.history.control_table_arn]) &&
+        anytrue([for c in one([for s in policy.statement : s if s.sid == "CheckHistoryStateForCompletion"]).condition : c.variable == "dynamodb:LeadingKeys" && toset(c.values) == toset(["USER#*"])]) &&
+        anytrue([for c in one([for s in policy.statement : s if s.sid == "CheckHistoryStateForCompletion"]).condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])
+      ]) &&
       aws_lambda_function.account_deletion[0].runtime == "python3.14" &&
       aws_lambda_function.lifecycle[0].runtime == "python3.14" &&
       aws_lambda_function.lifecycle[0].environment[0].variables["HISTORY_LIFECYCLE_ENABLED"] == "false" &&

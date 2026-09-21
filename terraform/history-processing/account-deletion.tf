@@ -62,6 +62,25 @@ resource "aws_iam_role" "account_deletion" {
 
 data "aws_iam_policy_document" "account_deletion" {
   count = local.account_deletion_deployed ? 1 : 0
+  dynamic "statement" {
+    for_each = var.account_deletion_terminal_candidate ? [1] : []
+    content {
+      sid       = "CheckHistoryStateForCompletion"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.history.control_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+      condition {
+        test     = "StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
   statement {
     sid       = "ConsumeOnlyDeletionLedgerStream"
     actions   = ["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator", "dynamodb:ListStreams"]

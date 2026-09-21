@@ -15,11 +15,14 @@ When selected, both History functions use Python 3.14 ARM64. The bridge receives
 GetItem on the exact ledger's ACCOUNT partition family. Its HISTORY receipt Put
 permission becomes transaction-only, alongside its existing authoritative-command
 ConditionCheck. The lifecycle worker separates its existing ledger GetItem from
-transaction-only receipt Put/ConditionCheck. Neither gains ledger UpdateItem
-permission. Runtime code must restrict PutItem to the exact HISTORY receipt sort
+transaction-only receipt Put/ConditionCheck. Both receive transaction-only
+ConditionCheckItem on the History control USER partition, so the absent/DELETED
+state proof and authoritative account command share the receipt transaction.
+Neither gains ledger UpdateItem permission. Runtime code must restrict PutItem to the exact HISTORY receipt sort
 key and enforce the command schema; IAM LeadingKeys constrains only the partition
-and cannot itself prohibit replacing a different sort key with PutItem. All candidates retain
-normal disabled runtime flags and existing fixed reconciliation inputs.
+and cannot itself prohibit replacing a different sort key with PutItem. All
+candidates retain normal disabled runtime flags and existing fixed reconciliation
+inputs.
 
 The History root uses AWS provider 6.66.0 under the supported 6.x constraint.
 A [read-only Dev plan](evidence/account-privacy-history-provider-plan.json) with
