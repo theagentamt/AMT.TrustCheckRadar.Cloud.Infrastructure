@@ -84,6 +84,14 @@ authority's cross-field invariants and approved seven-day receipt policy; a read
 deployment must not rely on implicit defaults or treat missing configuration as
 unlimited access.
 
+The Dev consumer additionally requires `DEV_SUBJECT_ALLOWLIST_JSON`, the existing
+engineering gate's explicit list of authenticated test subjects. It is deliberately
+absent from the inactive candidate. An empty or missing list must fail closed;
+do not substitute public access or bypass the validated JWT/device/account checks.
+The current provider transport accepts `RECOVERY_AI_TIMEOUT_MS` only up to 8,000 ms,
+which is stricter than the policy's 10,000 ms ceiling. Qualification and deployment
+must use the adapter's actual bound.
+
 ## Operations and activation evidence
 
 Six native Lambda alarms cover errors, throttles and duration via the existing
