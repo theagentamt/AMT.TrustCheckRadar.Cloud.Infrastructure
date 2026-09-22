@@ -67,6 +67,15 @@ successful OAuth authentication. The fixed subscription catalog request returned
 HTTP 403 with `SERVICE_DISABLED`: the Android Publisher API is disabled in the
 credential's project, `trustcheck-radar`. The owner has been asked to enable the
 [Google Play Developer API](https://console.cloud.google.com/apis/library/androidpublisher.googleapis.com?project=trustcheck-radar).
+The owner subsequently reported enabling the API. Two bounded read-only checks
+still returned `SERVICE_DISABLED`. Whitelisted Google error metadata identifies
+`androidpublisher.googleapis.com` and consumer project `1034373992662`, while the
+credential project ID is `trustcheck-radar`. Exact console confirmation is
+pending; this observation does not establish why the reported enablement has not
+reached the request. See the
+[configuration audit](evidence/play-catalog-configuration-audit.json). Do not infer
+usable permissions or repeatedly probe without new setup evidence.
+
 The catalog, Play Console permissions, license tester enrollment, test track,
 purchase/order/acknowledgment access and RTDN delivery remain unverified. No new
 credential or key rotation is needed to address this particular disabled-API
@@ -77,6 +86,13 @@ Provider credentials belong only to the backend verification role. Android
 supplies a purchase proof to the authenticated backend and does not receive
 Google service-account credentials. Preserve the retired endpoint's denial
 boundary; new verification is a separately gated candidate.
+
+Current read-only infrastructure metadata confirms enabled `expiresAt` TTL,
+active GSI1 with ALL projection, and 35-day point-in-time recovery. No on-demand
+DynamoDB backups or AWS Backup recovery points were listed for this table; both
+inventories were complete. This does not prove prompt physical expiry or future
+backup configuration. See the
+[retention infrastructure audit](evidence/play-retention-infrastructure-audit.json).
 
 ## Decisions and acceptance still open
 
