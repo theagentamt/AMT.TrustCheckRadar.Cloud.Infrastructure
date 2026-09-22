@@ -45,6 +45,8 @@ on:
           - campaign-data
           - history-data
           - history-processing
+          - research-plan-campaign-processing
+          - research-plan-api
       execution_mode:
         description: Generate plans only or apply them
         required: true
@@ -53,6 +55,10 @@ on:
         options:
           - plan
           - apply
+      expected_revision:
+        description: Full release commit SHA required for the Dev research plan
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -64,6 +70,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/main' && !startsWith(inputs.deployment_scope, 'research-plan-')
     name: Deploy ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -342,3 +349,81 @@ jobs:
               fi
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+  research-plan:
+    name: Review Dev research migration plan
+    if: github.event_name == 'workflow_dispatch' && startsWith(inputs.deployment_scope, 'research-plan-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: dev
+    env:
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      REQUESTED_ENVIRONMENT: ${{ inputs.environment }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+      REQUESTED_SCOPE: ${{ inputs.deployment_scope }}
+      TF_IN_AUTOMATION: 'true'
+      TF_INPUT: 'false'
+      TF_VAR_state_bucket_name: amt-trustcheckradar-107827791950-tfstate
+      TF_VAR_state_bucket_region: us-east-1
+      TF_VAR_state_key_prefix: trustcheckradar
+      TF_VAR_artifact_release: ${{ inputs.artifact_release || vars.ARTIFACT_RELEASE }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Validate bounded release plan request
+        shell: bash
+        run: |
+          test "$GITHUB_REF" = refs/heads/release-V01
+          test "$REQUESTED_ENVIRONMENT" = dev
+          test "$EXECUTION_MODE" = plan
+          [[ "$EXPECTED_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          test "$EXPECTED_REVISION" = "$GITHUB_SHA"
+          test "$EXPECTED_REVISION" = "$(git rev-parse HEAD)"
+          case "$REQUESTED_SCOPE" in
+            research-plan-campaign-processing) echo 'STACK=campaign-processing' >> "$GITHUB_ENV" ;;
+            research-plan-api) echo 'STACK=api' >> "$GITHUB_ENV" ;;
+            *) exit 1 ;;
+          esac
+          test -n "$TF_VAR_artifact_release"
+      - uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+      - name: Authenticate to Dev
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::107827791950:role/trustcheckradar-dev-github-deploy
+          aws-region: us-east-1
+          allowed-account-ids: '107827791950'
+          role-session-name: research-plan-${{ github.run_id }}
+      - name: Plan only the selected stack
+        shell: bash
+        run: |
+          terraform -chdir="terraform/$STACK" init -reconfigure \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=trustcheckradar/dev/$STACK.tfstate" \
+            -backend-config="region=us-east-1" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true" > "$RUNNER_TEMP/research-init.log" 2>&1
+          args=(-var-file="../../environments/dev/$STACK.tfvars")
+          candidate="environments/dev/research-migration-$STACK.tfvars.json"
+          if [[ -f "$candidate" ]]; then
+            args+=(-var-file="../../$candidate")
+          fi
+          # Raw Terraform output and state-derived plans stay on the runner.
+          terraform -chdir="terraform/$STACK" plan "${args[@]}" \
+            -out="$RUNNER_TEMP/research.tfplan" > "$RUNNER_TEMP/research-plan.log" 2>&1
+          terraform -chdir="terraform/$STACK" show -json "$RUNNER_TEMP/research.tfplan" > "$RUNNER_TEMP/research-plan.json"
+          python3 scripts/summarize_research_plan.py "$RUNNER_TEMP/research-plan.json" \
+            --revision "$EXPECTED_REVISION" --stack "$STACK" > "$RUNNER_TEMP/research-review.json"
+          cat "$RUNNER_TEMP/research-review.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish minimized plan evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-plan-${{ github.run_id }}
+          path: ${{ runner.temp }}/research-review.json
+          if-no-files-found: error
+          retention-days: 7
+      - name: Remove private plans and logs
+        if: always()
+        shell: bash
+        run: rm -f "$RUNNER_TEMP"/research-init.log "$RUNNER_TEMP"/research-plan.log "$RUNNER_TEMP"/research.tfplan "$RUNNER_TEMP"/research-plan.json
