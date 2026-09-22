@@ -76,3 +76,28 @@ Publication, release-branch integration, runtime deployment and feature
 activation are separate states. Development targets `release-V01`; automatic
 CI remains main-only. Reviewed manual Dev infrastructure/Lambda Actions are
 authorized; Android Actions remain excluded.
+
+## Reviewed runtime update
+
+Lambda [PR37](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/pull/37)
+integrated source `8700d234e17ac9155bf6566f9ddcbd5bc8341146` into `release-V01`.
+Its four public access schema/fixture files are byte-identical to the previous
+contract. Validation passed 1,769 ordinary tests plus 232 subtests and 263
+SDK/Moto authority tests, including 39 new corruption/race cases. Eight affected
+archives were built; only the four functions owned by this Terraform root were
+selected for the disabled Dev update.
+
+The [publication manifest](evidence/v1-access-publication-2026-09-21.json)
+records exact S3 object versions and hashes. Downloaded bytes matched each
+record. Its generic `app.lambda_handler` identifies the available packaged shim;
+the installed nested entitlement/deletion handlers are preserved and were also
+checked directly. Local archive imports do not substitute for target-runtime
+acceptance.
+
+The baseline Dev plan had no drift. The saved candidate plan contains only four
+Lambda code updates and their four alias updates, with no creates, deletes,
+replacement, IAM changes or activation. Runtime configuration, existing nested
+handlers, empty subject allowlists, disabled schedules and stream mapping stay
+unchanged. The [minimized plan record](evidence/v1-access-install-plan-2026-09-21.json)
+includes the saved-plan digest and exact configured handlers. This plan record
+alone is not evidence that installation or activation occurred.

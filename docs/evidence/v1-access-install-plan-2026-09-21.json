@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "sourceSha": "8700d234e17ac9155bf6566f9ddcbd5bc8341146",
+  "scope": "Four code updates and four live alias updates; gates closed",
+  "savedPlanSha256": "65fc86efc2e85c8c3586e2c9893b1d5eb0f6254448148263b48f9ad50529494b",
+  "noCreatesDeletesReplacements": true,
+  "resources": [
+    {
+      "address": "aws_lambda_alias.runtime[\"consumer\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "function_version"
+      ]
+    },
+    {
+      "address": "aws_lambda_alias.runtime[\"deletion\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "function_version"
+      ]
+    },
+    {
+      "address": "aws_lambda_alias.runtime[\"entitlements\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "function_version"
+      ]
+    },
+    {
+      "address": "aws_lambda_alias.runtime[\"recovery\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "function_version"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.runtime[\"consumer\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "last_modified",
+        "qualified_arn",
+        "qualified_invoke_arn",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash",
+        "version"
+      ],
+      "configuredHandler": "app.lambda_handler",
+      "gates": {
+        "AUTHORITY_ENABLED": "false",
+        "CONSUMER_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      },
+      "engineeringSubjectCount": 0,
+      "sourceCodeHash": "tWl/GeNA83Y3Eao+VnPXtadZXiVQd2QNgChqjB41eAg="
+    },
+    {
+      "address": "aws_lambda_function.runtime[\"deletion\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "last_modified",
+        "qualified_arn",
+        "qualified_invoke_arn",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash",
+        "version"
+      ],
+      "configuredHandler": "v1_authority_deletion.app.lambda_handler",
+      "gates": {
+        "V1_AUTHORITY_DELETION_ENABLED": "false"
+      },
+      "engineeringSubjectCount": 0,
+      "sourceCodeHash": "Xm1fz2QyyF/cnagXYuFEteSSGUc4Zf/CqVAEV/UuK+I="
+    },
+    {
+      "address": "aws_lambda_function.runtime[\"entitlements\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "last_modified",
+        "qualified_arn",
+        "qualified_invoke_arn",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash",
+        "version"
+      ],
+      "configuredHandler": "v1_entitlements.app.lambda_handler",
+      "gates": {
+        "AUTHORITY_ENABLED": "false",
+        "CONSUMER_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      },
+      "engineeringSubjectCount": 0,
+      "sourceCodeHash": "slCLqK11rLK2z2ofSCsMCTDIZJi6Ixjhl3prfCp4xZQ="
+    },
+    {
+      "address": "aws_lambda_function.runtime[\"recovery\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "last_modified",
+        "qualified_arn",
+        "qualified_invoke_arn",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash",
+        "version"
+      ],
+      "configuredHandler": "app.lambda_handler",
+      "gates": {
+        "LEASE_SWEEP_ENABLED": "false"
+      },
+      "engineeringSubjectCount": 0,
+      "sourceCodeHash": "rmopw7xe3v6zvuYXWmAyVOonGoHFaSop5gtk8OdPs/U="
+    }
+  ]
+}
