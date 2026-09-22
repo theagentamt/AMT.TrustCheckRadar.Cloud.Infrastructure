@@ -1,0 +1,100 @@
+{
+  "account": "107827791950",
+  "scope": "Dev infrastructure and Lambda publisher trust only",
+  "roles": [
+    {
+      "role": "trustcheckradar-dev-github-deploy",
+      "before": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "GitHubEnvironment",
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "arn:aws:iam::107827791950:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                "token.actions.githubusercontent.com:ref": "refs/heads/main",
+                "token.actions.githubusercontent.com:sub": "repo:theagentamt@286777212/AMT.TrustCheckRadar.Cloud.Infrastructure@1355413242:environment:dev"
+              }
+            }
+          }
+        ]
+      },
+      "after": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "GitHubEnvironment",
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "arn:aws:iam::107827791950:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "token.actions.githubusercontent.com:sub": "repo:theagentamt@286777212/AMT.TrustCheckRadar.Cloud.Infrastructure@1355413242:environment:dev",
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                "token.actions.githubusercontent.com:ref": [
+                  "refs/heads/main",
+                  "refs/heads/release-V01"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "permissionsChanged": false
+    },
+    {
+      "role": "trustcheckradar-dev-lambda-publisher",
+      "before": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "GitHubLambdaEnvironment",
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "arn:aws:iam::107827791950:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "token.actions.githubusercontent.com:ref": "refs/heads/main",
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                "token.actions.githubusercontent.com:sub": "repo:theagentamt@286777212/AMT.TrustCheckRadar.Lambdas@1355411973:environment:dev"
+              }
+            }
+          }
+        ]
+      },
+      "after": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "GitHubLambdaEnvironment",
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "arn:aws:iam::107827791950:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                "token.actions.githubusercontent.com:ref": [
+                  "refs/heads/main",
+                  "refs/heads/release-V01"
+                ],
+                "token.actions.githubusercontent.com:sub": "repo:theagentamt@286777212/AMT.TrustCheckRadar.Lambdas@1355411973:environment:dev"
+              }
+            }
+          }
+        ]
+      },
+      "permissionsChanged": false
+    }
+  ]
+}

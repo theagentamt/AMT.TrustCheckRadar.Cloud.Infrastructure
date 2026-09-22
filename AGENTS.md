@@ -41,3 +41,12 @@
   workflow policy. Do not dispatch GitHub checks for feature/release work.
 - CI changes do not authorize production promotion or alter deployment approvals,
   workflow inputs, environment protections or manual deployment gates.
+
+## Authorized Dev deployment exception
+
+- On 2026-09-21 the owner authorized manually triggered GitHub Actions for
+  infrastructure and Lambda deployment from `release-V01`. This narrow exception
+  permits the reviewed Dev deployment/publication/plan workflows; automatic CI
+  remains main-only and Android Actions remain excluded.
+- Follow `docs/DEV-RELEASE-ACTIONS.md`; publishing packages, planning, applying and
+  accepting a runtime migration are separate states. Preserve activation gates.
