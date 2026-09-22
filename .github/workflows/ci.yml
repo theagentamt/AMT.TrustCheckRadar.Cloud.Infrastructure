@@ -140,6 +140,13 @@ jobs:
           terraform validate
           terraform test
 
+      - name: Validate inactive Google Play verifier
+        working-directory: terraform/play-verification
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
       - name: Validate disposable URL resolver fixture
         working-directory: terraform/url-resolver/acceptance-fixture
         run: |

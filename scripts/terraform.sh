@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "Usage: $0 <init|plan|apply|output> <dev|uat|prod> <foundation|history-data|history-processing|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows|url-resolver|url-assessment|url-consumer|message-consumer|recovery-consumer|result-feedback> [artifact-release]" >&2
+  echo "Usage: $0 <init|plan|apply|output> <dev|uat|prod> <foundation|history-data|history-processing|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows|url-resolver|url-assessment|url-consumer|message-consumer|recovery-consumer|result-feedback|play-verification> [artifact-release]" >&2
   exit 2
 }
 
@@ -24,7 +24,7 @@ case "$environment" in
 esac
 
 case "$stack" in
-  foundation|history-data|history-processing|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows|url-resolver|url-assessment|url-consumer|message-consumer|recovery-consumer|result-feedback) ;;
+  foundation|history-data|history-processing|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows|url-resolver|url-assessment|url-consumer|message-consumer|recovery-consumer|result-feedback|play-verification) ;;
   *) usage ;;
 esac
 

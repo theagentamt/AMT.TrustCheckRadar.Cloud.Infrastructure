@@ -14,12 +14,14 @@ on:
       - "!terraform/message-consumer/**"
       - "!terraform/recovery-consumer/**"
       - "!terraform/result-feedback/**"
+      - "!terraform/play-verification/**"
       - "!environments/*/url-resolver.tfvars"
       - "!environments/*/url-assessment.tfvars"
       - "!environments/*/url-consumer.tfvars"
       - "!environments/*/message-consumer.tfvars"
       - "!environments/*/recovery-consumer.tfvars"
       - "!environments/*/result-feedback.tfvars"
+      - "!environments/*/play-verification.tfvars"
   workflow_dispatch:
     inputs:
       environment:

@@ -137,6 +137,17 @@ class TerraformHelperTests(unittest.TestCase):
                 self.assertIn(f"-backend-config=key=trustcheckradar/{environment}/result-feedback.tfstate", calls[0])
                 self.assertEqual(calls[1], ["-chdir=terraform/result-feedback", "plan", f"-var-file=../../environments/{environment}/result-feedback.tfvars"])
 
+    def test_play_verification_is_isolated_and_never_uses_legacy_release(self):
+        for environment in ("dev", "uat", "prod"):
+            with self.subTest(environment=environment):
+                self.log.unlink(missing_ok=True)
+                result, calls = self.invoke("plan", environment, "play-verification")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(len(calls), 2)
+                self.assertIn(f"-backend-config=key=trustcheckradar/{environment}/play-verification.tfstate", calls[0])
+                self.assertEqual(calls[1], ["-chdir=terraform/play-verification", "plan", f"-var-file=../../environments/{environment}/play-verification.tfvars"])
+                self.assertNotIn("TF_VAR_artifact_release", json.loads(self.environment_log.read_text()))
+
     def test_output_does_not_need_a_lambda_artifact(self):
         result, calls = self.invoke("output", "dev", "history-data")
         self.assertEqual(result.returncode, 0, result.stderr)
