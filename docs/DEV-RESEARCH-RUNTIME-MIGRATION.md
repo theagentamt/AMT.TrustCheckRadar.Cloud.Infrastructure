@@ -74,3 +74,21 @@ passed scope/closed-gate validation and exact S3 version/hash verification for
 all four packages. Its digest is a local preflight only; Actions must generate
 its own reviewed digest at the committed dispatch revision. Independent review
 covered the verifier, workflow gates, pin mapping and normal environment inputs.
+
+## Campaign installation
+
+[Plan 35677812219](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35677812219)
+and matching [apply 35677898642](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35677898642)
+succeeded at 245d67a0226cf19de5dd793daa4fa30c63fa5498. The saved plan applied
+nine updates (four packages/configurations and five inline policies); the
+post-apply plan reported no drift. Four exact deployed package hashes and
+Python 3.14/arm64 runtime identities were independently verified while concurrency
+remained zero. Campaign mappings and schedules remain disabled.
+
+The dependent private API plan contains seven updates and six creates (five
+named IAM boundaries and one Terraform coordination record), with no deletes.
+All five exact package bytes verified. The release checker now accepts the
+provider's unused computed name_prefix only on creation with an exact fixed
+policy name and role; twelve focused checker tests pass, including rejection
+of a supplied prefix or missing/changed identity. This is a checker correction,
+not a broader permission grant.
