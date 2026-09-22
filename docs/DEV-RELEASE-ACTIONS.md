@@ -81,3 +81,26 @@ we will not forge remote-state evidence to bypass that requirement.
 also succeeded with zero changes and candidateSelected=false; its
 [minimized report](evidence/dev-research-api-baseline-plan.json) confirms no
 baseline API drift at the observed revision.
+
+## Candidate plan result
+
+[Candidate run 35676587703](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35676587703)
+succeeded at infrastructure revision325b0ed01493dfb754614b7506d59f3886afa8c7.
+The [minimized report](evidence/dev-research-campaign-candidate-plan.json) records
+candidateSelected=true and15 in-place updates: four worker functions, five
+runtime/scheduler inline policies, three event mappings and three schedules.
+There are no planned creates or deletes. This verifies plan execution through
+Dev OIDC; it is not an IAM behavior review, invocation drain or apply evidence.
+
+No campaign worker, API handler, alias, customer item, entitlement or activation
+flag was changed by these runs. Infrastructure bootstrap trust and the Dev
+GitHub environment branch allowlist are the only applied access configuration
+changes. Lambda publication uploaded immutable S3 packages. Android Actions
+were not dispatched and main was not changed.
+
+Next migration acceptance remains SECUR4ALL-217/218/241: protected inventory and
+classification, qualified paid/trial/complimentary access and purchase restore,
+retention-aware cleanup continuity, reviewed maintenance/drain, then an exact
+saved-plan apply with runtime/IAM verification. Do not apply the campaign pause
+and leave cleanup disabled while those dependencies remain unresolved. New
+consent joins and the Android adapter stay closed until their own acceptance.

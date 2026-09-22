@@ -1,0 +1,100 @@
+{
+  "revision": "325b0ed01493dfb754614b7506d59f3886afa8c7",
+  "environment": "dev",
+  "stack": "campaign-processing",
+  "candidateSelected": true,
+  "planSha256": "52722a4c7d1ded6bb610da1a256d9d2fcd017203468a74d72365fecfc3053cce",
+  "changes": [
+    {
+      "address": "aws_iam_role_policy.cluster_runtime[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.deletion_runtime[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.lifecycle_runtime[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.publisher_runtime[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.scheduler_invoke[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_event_source_mapping.cluster[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_event_source_mapping.deletion[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_event_source_mapping.publisher[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"cluster\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"deletion\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"lifecycle\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"publisher\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_scheduler_schedule.lifecycle[\"expire_transient\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_scheduler_schedule.lifecycle[\"finalize_periods\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_scheduler_schedule.lifecycle[\"manage_keys\"]",
+      "actions": [
+        "update"
+      ]
+    }
+  ],
+  "applyAuthorizedByThisReport": false
+}
