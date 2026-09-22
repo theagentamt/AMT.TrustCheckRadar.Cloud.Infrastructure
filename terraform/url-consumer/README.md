@@ -1,5 +1,12 @@
 # V1 URL consumer candidate
 
+This document preserves the initial provisioning procedure. Authenticated
+routes, a fourth deletion worker, maintenance schedules and alarms have since
+been provisioned and qualified with bounded synthetic fixtures. Execution gates
+remain closed. See the [engineering evidence](../../docs/URL-CONSUMER-ENGINEERING-INTEGRATION.md)
+and [current access integration](../../docs/V1-ACCESS-INTEGRATION.md) before using
+the historical resource counts or activation checklist below.
+
 This independent stack provisions the inactive Dev candidate for the authenticated URL-check journey. Dev was manually provisioned on 2026-09-20 with all runtime gates false; UAT and Production remain unprovisioned. It is not an active endpoint. See [manual deployment evidence](../../docs/URL-CONSUMER-MANUAL-DEV-2026-09-20.md).
 
 The three Python 3.14 ARM64 functions have separate roles:
