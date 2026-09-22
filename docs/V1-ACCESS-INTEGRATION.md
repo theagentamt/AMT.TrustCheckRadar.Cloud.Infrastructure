@@ -24,9 +24,9 @@ Both routes require the configured Cognito JWT issuer, audience and
 alias with a 15-second integration timeout. Neither route invokes the legacy
 `/entitlements/snapshot` handler. There is no `/v1/users/access` route.
 
-The four modern functions remain Python 3.14/ARM64, with empty engineering
-allowlists and disabled execution gates. Their live aliases are consumer 4,
-entitlements 4, recovery 4 and deletion 3. The completed nine-function
+Before this update, the four modern functions were Python 3.14/ARM64, with empty
+engineering allowlists and disabled execution gates. Their live aliases were
+consumer 4, entitlements 4, recovery 4 and deletion 3. The completed nine-function
 [research runtime migration](DEV-RESEARCH-RUNTIME-MIGRATION.md) is a separate
 deployment; it did not install a new version of these four functions.
 
@@ -101,3 +101,39 @@ handlers, empty subject allowlists, disabled schedules and stream mapping stay
 unchanged. The [minimized plan record](evidence/v1-access-install-plan-2026-09-21.json)
 includes the saved-plan digest and exact configured handlers. This plan record
 alone is not evidence that installation or activation occurred.
+
+## Completed installation and Android integration
+
+Infrastructure [PR45](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/pull/45)
+integrated source `943645385afee7a1b0f245a732bf66e8f9c482cd` into `release-V01`.
+The independently reviewed saved plan was then applied manually to the isolated
+Dev access root: eight in-place updates, zero additions and zero deletions. The
+post-apply plan reported no drift. This update did not use GitHub Actions.
+
+The [target-runtime verification](evidence/v1-access-runtime-2026-09-21.json)
+confirms consumer/recovery/entitlements version 5 and deletion version 4, exact
+published hashes, Python 3.14/ARM64, unchanged handlers and concurrency. All
+execution flags remain false; subject allowlists remain empty. Both maintenance
+schedules and the deletion stream mapping remain disabled.
+
+All four final empty-event alias checks returned the expected disabled response
+without a Lambda `FunctionError`. The verifier corrected an alias lookup and an
+error-envelope assertion; seven empty disabled invocations occurred in total.
+These checks verify package loading and the closed handler paths. No signed-in
+check, trial grant, billing, research or customer deletion was exercised, and no
+provider call occurred on these inspected paths.
+
+Android [PR35](https://github.com/theagentamt/AMT.Android.TrustCheckRadar/pull/35)
+integrated source `427f48b46c50940698fc70b053356f72344db1cf` into `release-V01`
+at `69bbade6f38198540692183e7c1a80a5947b6d25`. Pricing and Settings now reuse
+the modern access snapshot, with account/generation guards, explicit reserved
+versus completed counts, neutral unavailable wording and no legacy balance
+fallback. Source validation passed all 147 local gate tasks, 2,443 host tests and
+15 emulator cases. Line/branch coverage is 92.89%/85.73%. Independent review
+verified the immutable contract and 33 recorded hashes. No Android Actions ran
+for this work; the application service gate remains disabled.
+
+This completes the snapshot implementation and disabled installation increment.
+The broader SECUR4ALL-230 and ATCR-92 stories remain In Progress for the live
+authority, paid lifecycle and qualification dependencies listed above. Their
+unperformed acceptance cases have not been declared passed or silently deferred.
