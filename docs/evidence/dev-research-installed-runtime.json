@@ -1,0 +1,282 @@
+[
+  {
+    "FunctionName": "trustcheckradar-dev-campaign-cluster-aggregator",
+    "Runtime": "python3.14",
+    "Handler": "app.lambda_handler",
+    "Architectures": [
+      "arm64"
+    ],
+    "CodeSha256": "ppaduE5zmMxeKYX1w8JBuRrVgTtFMp39+RyzMF+C4ho=",
+    "Timeout": 30,
+    "MemorySize": 1024,
+    "LastModified": "2026-09-22T02:01:49.000+0000",
+    "LastUpdateStatus": "Successful",
+    "RevisionId": "8a6654a9-6f19-40bc-bff2-aac14d0729b6",
+    "State": "Active",
+    "selectedFlags": {
+      "CAMPAIGN_PARTICIPATION_NOTICE_VERSION": "research-consent-2026-09-21-v2",
+      "CAMPAIGN_PARTICIPATION_POLICY_VERSION": "independent-research-v1",
+      "APP_ENVIRONMENT": "dev",
+      "CAMPAIGN_LOCATOR_MANIFEST_SHA256": "",
+      "CAMPAIGN_LOCATOR_INVENTORY_REVISION": "0"
+    },
+    "tableBindings": {
+      "USERS_TABLE_NAME": "trustcheckradar-dev-users",
+      "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger",
+      "OUTBOX_TABLE_NAME": "trustcheckradar-dev-campaign-outbox",
+      "PIPELINE_TABLE_NAME": "trustcheckradar-dev-campaign-pipeline"
+    },
+    "concurrency": {
+      "ReservedConcurrentExecutions": 0
+    },
+    "aliases": [],
+    "expectedCodeSha256": "ppaduE5zmMxeKYX1w8JBuRrVgTtFMp39+RyzMF+C4ho=",
+    "matchesCandidate": true
+  },
+  {
+    "FunctionName": "trustcheckradar-dev-campaign-deletion-bridge",
+    "Runtime": "python3.14",
+    "Handler": "app.lambda_handler",
+    "Architectures": [
+      "arm64"
+    ],
+    "CodeSha256": "FItTXNai302HOO+oHnMNj70y6t0r/5YeWjScTX7QQMQ=",
+    "Timeout": 30,
+    "MemorySize": 512,
+    "LastModified": "2026-09-22T02:01:49.000+0000",
+    "LastUpdateStatus": "Successful",
+    "RevisionId": "60ec35ac-7d54-488e-a4b7-b42d6070f228",
+    "State": "Active",
+    "selectedFlags": {
+      "APP_ENVIRONMENT": "dev",
+      "CAMPAIGN_LOCATOR_MANIFEST_SHA256": "",
+      "CAMPAIGN_LOCATOR_INVENTORY_REVISION": "0"
+    },
+    "tableBindings": {
+      "USERS_TABLE_NAME": "trustcheckradar-dev-users",
+      "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger",
+      "OUTBOX_TABLE_NAME": "trustcheckradar-dev-campaign-outbox",
+      "PIPELINE_TABLE_NAME": "trustcheckradar-dev-campaign-pipeline"
+    },
+    "concurrency": {
+      "ReservedConcurrentExecutions": 0
+    },
+    "aliases": [],
+    "expectedCodeSha256": "FItTXNai302HOO+oHnMNj70y6t0r/5YeWjScTX7QQMQ=",
+    "matchesCandidate": true
+  },
+  {
+    "FunctionName": "trustcheckradar-dev-campaign-lifecycle",
+    "Runtime": "python3.14",
+    "Handler": "app.lambda_handler",
+    "Architectures": [
+      "arm64"
+    ],
+    "CodeSha256": "PehVB8VPv4/tkcNrigxD6Ce64mUwsET9qX10P+UAkJo=",
+    "Timeout": 60,
+    "MemorySize": 512,
+    "LastModified": "2026-09-22T02:01:49.000+0000",
+    "LastUpdateStatus": "Successful",
+    "RevisionId": "458b8e41-0ddb-41c6-9962-91c858715bbb",
+    "State": "Active",
+    "selectedFlags": {
+      "APP_ENVIRONMENT": "dev",
+      "CAMPAIGN_LOCATOR_MANIFEST_SHA256": "",
+      "CAMPAIGN_LOCATOR_INVENTORY_REVISION": "0",
+      "CAMPAIGN_LIFECYCLE_CANDIDATE_ENABLED": "false"
+    },
+    "tableBindings": {
+      "OUTBOX_TABLE_NAME": "trustcheckradar-dev-campaign-outbox",
+      "PIPELINE_TABLE_NAME": "trustcheckradar-dev-campaign-pipeline"
+    },
+    "concurrency": {
+      "ReservedConcurrentExecutions": 0
+    },
+    "aliases": [],
+    "expectedCodeSha256": "PehVB8VPv4/tkcNrigxD6Ce64mUwsET9qX10P+UAkJo=",
+    "matchesCandidate": true
+  },
+  {
+    "FunctionName": "trustcheckradar-dev-campaign-observation-publisher",
+    "Runtime": "python3.14",
+    "Handler": "app.lambda_handler",
+    "Architectures": [
+      "arm64"
+    ],
+    "CodeSha256": "n/08qq/fpGZx/fob8iTvxitMVRpACwfTvt7ScUJuSbE=",
+    "Timeout": 30,
+    "MemorySize": 256,
+    "LastModified": "2026-09-22T02:01:49.000+0000",
+    "LastUpdateStatus": "Successful",
+    "RevisionId": "37c8c9e3-e623-4cf7-8af2-d976032e1cd6",
+    "State": "Active",
+    "selectedFlags": {
+      "CAMPAIGN_PARTICIPATION_NOTICE_VERSION": "research-consent-2026-09-21-v2",
+      "CAMPAIGN_PARTICIPATION_POLICY_VERSION": "independent-research-v1",
+      "APP_ENVIRONMENT": "dev",
+      "CAMPAIGN_LOCATOR_MANIFEST_SHA256": "",
+      "CAMPAIGN_LOCATOR_INVENTORY_REVISION": "0"
+    },
+    "tableBindings": {
+      "USERS_TABLE_NAME": "trustcheckradar-dev-users",
+      "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger",
+      "OUTBOX_TABLE_NAME": "trustcheckradar-dev-campaign-outbox",
+      "PIPELINE_TABLE_NAME": "trustcheckradar-dev-campaign-pipeline"
+    },
+    "concurrency": {
+      "ReservedConcurrentExecutions": 0
+    },
+    "aliases": [],
+    "expectedCodeSha256": "n/08qq/fpGZx/fob8iTvxitMVRpACwfTvt7ScUJuSbE=",
+    "matchesCandidate": true
+  },
+  {
+    "FunctionName": "trustcheckradar-dev-campaign-participation",
+    "Runtime": "python3.14",
+    "Handler": "app.lambda_handler",
+    "Architectures": [
+      "arm64"
+    ],
+    "CodeSha256": "p+wPYSC7BSxN5jYSffePQAu2DLZLfDhZ+cJLKP2dnX8=",
+    "Timeout": 10,
+    "MemorySize": 256,
+    "LastModified": "2026-09-22T02:07:15.000+0000",
+    "LastUpdateStatus": "Successful",
+    "RevisionId": "c9efd265-e728-45a6-adea-36df2a18e0e4",
+    "State": "Active",
+    "selectedFlags": {
+      "CONSENT_INDEPENDENCE_ENABLED": "false",
+      "CAMPAIGN_PARTICIPATION_NOTICE_VERSION": "research-consent-2026-09-21-v2",
+      "CAMPAIGN_PARTICIPATION_POLICY_VERSION": "independent-research-v1",
+      "CAMPAIGN_PARTICIPATION_AUDIT_RETENTION_DAYS": "400",
+      "CAMPAIGN_PARTICIPATION_DELETION_SLA_HOURS": "24",
+      "ENVIRONMENT": "dev"
+    },
+    "tableBindings": {
+      "USERS_TABLE_NAME": "trustcheckradar-dev-users",
+      "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger"
+    },
+    "concurrency": {
+      "ReservedConcurrentExecutions": 0
+    },
+    "aliases": [],
+    "expectedCodeSha256": "p+wPYSC7BSxN5jYSffePQAu2DLZLfDhZ+cJLKP2dnX8=",
+    "matchesCandidate": true
+  },
+  {
+    "FunctionName": "trustcheckradar-dev-conversation-analysis",
+    "Runtime": "python3.14",
+    "Handler": "app.lambda_handler",
+    "Architectures": [
+      "arm64"
+    ],
+    "CodeSha256": "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=",
+    "Timeout": 30,
+    "MemorySize": 512,
+    "LastModified": "2026-09-22T02:07:15.000+0000",
+    "LastUpdateStatus": "Successful",
+    "RevisionId": "98140011-46bd-4a98-9467-981e47194798",
+    "State": "Active",
+    "selectedFlags": {
+      "HISTORY_WRITES_ENABLED": "false",
+      "HISTORY_DURABLE_REPLAY_ENABLED": "false",
+      "RECOGNITION_ENABLED": "false",
+      "COGNITO_ISSUER": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzN0wUSdQ",
+      "COGNITO_APP_CLIENT_ID": "5kvl9a8jo4fr1qqnci27tdabk4",
+      "COGNITO_REQUIRED_SCOPE": "aws.cognito.signin.user.admin",
+      "APP_ENVIRONMENT": "dev",
+      "HISTORY_MAX_SUMMARY_BYTES": "4096",
+      "HISTORY_MAX_LIST_ITEMS": "20",
+      "HISTORY_MAX_TEXT_FIELD_BYTES": "1024",
+      "HISTORY_MAX_RESPONSE_BYTES": "262144"
+    },
+    "tableBindings": {
+      "USERS_TABLE_NAME": "trustcheckradar-dev-users",
+      "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger",
+      "ANALYSIS_ABUSE_TABLE_NAME": "trustcheckradar-dev-analysis-abuse-control",
+      "HISTORY_CONTROL_TABLE_NAME": "trustcheckradar-dev-history-control"
+    },
+    "concurrency": {
+      "ReservedConcurrentExecutions": 0
+    },
+    "aliases": [],
+    "expectedCodeSha256": "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=",
+    "matchesCandidate": true
+  },
+  {
+    "FunctionName": "trustcheckradar-dev-entitlement-snapshot",
+    "Runtime": "python3.14",
+    "Handler": "app.lambda_handler",
+    "Architectures": [
+      "arm64"
+    ],
+    "CodeSha256": "3HxxsEAtAEKls89OxN91CfNQo1edq6ucNus4r+o2RVo=",
+    "Timeout": 10,
+    "MemorySize": 256,
+    "LastModified": "2026-09-22T02:07:15.000+0000",
+    "LastUpdateStatus": "Successful",
+    "RevisionId": "d099a38c-6f08-4826-ad86-363652254958",
+    "State": "Active",
+    "selectedFlags": {},
+    "tableBindings": {
+      "USERS_TABLE_NAME": "trustcheckradar-dev-users"
+    },
+    "concurrency": {
+      "ReservedConcurrentExecutions": 0
+    },
+    "aliases": [],
+    "expectedCodeSha256": "3HxxsEAtAEKls89OxN91CfNQo1edq6ucNus4r+o2RVo=",
+    "matchesCandidate": true
+  },
+  {
+    "FunctionName": "trustcheckradar-dev-purchase-handoff",
+    "Runtime": "python3.14",
+    "Handler": "app.lambda_handler",
+    "Architectures": [
+      "arm64"
+    ],
+    "CodeSha256": "fbF+jSPpXRPrYKqDtE3jcosIMAfnpZLlsztfkaSyvRI=",
+    "Timeout": 15,
+    "MemorySize": 256,
+    "LastModified": "2026-09-22T02:07:15.000+0000",
+    "LastUpdateStatus": "Successful",
+    "RevisionId": "841e4124-11ef-4143-b3ed-41f54b6b4632",
+    "State": "Active",
+    "selectedFlags": {
+      "PURCHASE_OWNERSHIP_CANDIDATE_ENABLED": "false"
+    },
+    "tableBindings": {
+      "USERS_TABLE_NAME": "trustcheckradar-dev-users",
+      "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger"
+    },
+    "concurrency": {
+      "ReservedConcurrentExecutions": 0
+    },
+    "aliases": [],
+    "expectedCodeSha256": "fbF+jSPpXRPrYKqDtE3jcosIMAfnpZLlsztfkaSyvRI=",
+    "matchesCandidate": true
+  },
+  {
+    "FunctionName": "trustcheckradar-dev-web-risk-communication",
+    "Runtime": "python3.14",
+    "Handler": "app.lambda_handler",
+    "Architectures": [
+      "arm64"
+    ],
+    "CodeSha256": "rOF7rlDO8hJA/u1SHOiC1ebYM5I3czocmUtj77wwnCI=",
+    "Timeout": 15,
+    "MemorySize": 256,
+    "LastModified": "2026-09-22T02:07:15.000+0000",
+    "LastUpdateStatus": "Successful",
+    "RevisionId": "bc0fabb2-3f40-4278-8d59-deb1aa36cf7a",
+    "State": "Active",
+    "selectedFlags": {},
+    "tableBindings": {},
+    "concurrency": {
+      "ReservedConcurrentExecutions": 0
+    },
+    "aliases": [],
+    "expectedCodeSha256": "rOF7rlDO8hJA/u1SHOiC1ebYM5I3czocmUtj77wwnCI=",
+    "matchesCandidate": true
+  }
+]

@@ -1,0 +1,295 @@
+{
+  "verifiedAt": "2026-09-22T02:08:19.921413+00:00",
+  "policies": [
+    {
+      "functionName": "trustcheckradar-dev-conversation-analysis",
+      "roleName": "trustcheckradar-dev-conversation-analysis-role",
+      "policyName": "trustcheckradar-dev-research-migration-analysis",
+      "policySha256": "c02032cd895e957b4908f3c25123aae8d72159dc8163cbfd15bfc51817809187",
+      "requiredUnconditionalStatementsVerified": true,
+      "simulation": {
+        "available": true,
+        "decisions": [
+          {
+            "action": "dynamodb:BatchWriteItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:DeleteItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLDelete",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLInsert",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLUpdate",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PutItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:UpdateItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "lambda:InvokeFunction",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "secretsmanager:GetSecretValue",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParameter",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParameters",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParametersByPath",
+            "decision": "explicitDeny"
+          }
+        ]
+      }
+    },
+    {
+      "functionName": "trustcheckradar-dev-campaign-participation",
+      "roleName": "trustcheckradar-dev-campaign-participation-role",
+      "policyName": "trustcheckradar-dev-research-migration-participation",
+      "policySha256": "6b14fb4b08d29cca73f065dc9f85656dab223ab4356d62aa5d70940397113b1d",
+      "requiredUnconditionalStatementsVerified": true,
+      "simulation": {
+        "available": true,
+        "decisions": [
+          {
+            "action": "lambda:InvokeFunction",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "secretsmanager:GetSecretValue",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParameter",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParameters",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParametersByPath",
+            "decision": "explicitDeny"
+          }
+        ]
+      }
+    },
+    {
+      "functionName": "trustcheckradar-dev-entitlement-snapshot",
+      "roleName": "trustcheckradar-dev-entitlement-snapshot-role",
+      "policyName": "trustcheckradar-dev-research-migration-snapshot",
+      "policySha256": "242874b129d0c9285b96a227ed374a724a5d6c751fc3ea311e764a92d1e18b6c",
+      "requiredUnconditionalStatementsVerified": true,
+      "simulation": {
+        "available": true,
+        "decisions": [
+          {
+            "action": "dynamodb:BatchWriteItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:DeleteItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLDelete",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLInsert",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLUpdate",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PutItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:UpdateItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "lambda:InvokeFunction",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "secretsmanager:GetSecretValue",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParameter",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParameters",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParametersByPath",
+            "decision": "explicitDeny"
+          }
+        ]
+      }
+    },
+    {
+      "functionName": "trustcheckradar-dev-purchase-handoff",
+      "roleName": "trustcheckradar-dev-purchase-handoff-role",
+      "policyName": "trustcheckradar-dev-research-migration-purchase",
+      "policySha256": "242874b129d0c9285b96a227ed374a724a5d6c751fc3ea311e764a92d1e18b6c",
+      "requiredUnconditionalStatementsVerified": true,
+      "simulation": {
+        "available": true,
+        "decisions": [
+          {
+            "action": "dynamodb:BatchWriteItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:DeleteItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLDelete",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLInsert",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLUpdate",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PutItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:UpdateItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "lambda:InvokeFunction",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "secretsmanager:GetSecretValue",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParameter",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParameters",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParametersByPath",
+            "decision": "explicitDeny"
+          }
+        ]
+      }
+    },
+    {
+      "functionName": "trustcheckradar-dev-web-risk-communication",
+      "roleName": "trustcheckradar-dev-web-risk-communication-role",
+      "policyName": "trustcheckradar-dev-research-migration-web_risk",
+      "policySha256": "15dcbadf03f8713a3c3078fd48f3d4ded394ba8391a2726fc1fbbad14b7d0635",
+      "requiredUnconditionalStatementsVerified": true,
+      "simulation": {
+        "available": true,
+        "decisions": [
+          {
+            "action": "dynamodb:BatchWriteItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:DeleteItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:DescribeTable",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:GetItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLDelete",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLInsert",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PartiQLUpdate",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:PutItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:Query",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:Scan",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "dynamodb:UpdateItem",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "lambda:InvokeFunction",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "secretsmanager:GetSecretValue",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParameter",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParameters",
+            "decision": "explicitDeny"
+          },
+          {
+            "action": "ssm:GetParametersByPath",
+            "decision": "explicitDeny"
+          }
+        ]
+      }
+    }
+  ],
+  "actualProviderRequests": 0,
+  "actualDynamoDBRequests": 0
+}

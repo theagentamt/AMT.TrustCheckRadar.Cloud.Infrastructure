@@ -101,9 +101,9 @@ research_consent_migration_deployment = {
   }
 }
 
-# Keep invocations fenced until all installed runtime/IAM identities are verified.
-analysis_lambda_reserved_concurrency               = 0
-campaign_participation_lambda_reserved_concurrency = 0
-entitlement_snapshot_lambda_reserved_concurrency   = 0
-purchase_handoff_lambda_reserved_concurrency       = 0
-web_risk_communication_lambda_reserved_concurrency = 0
+# Installed code and IAM restrictions verified before restoring normal API capacity.
+analysis_lambda_reserved_concurrency               = 5
+campaign_participation_lambda_reserved_concurrency = 5
+entitlement_snapshot_lambda_reserved_concurrency   = 5
+purchase_handoff_lambda_reserved_concurrency       = 5
+web_risk_communication_lambda_reserved_concurrency = 5

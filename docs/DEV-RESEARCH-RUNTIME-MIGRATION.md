@@ -92,3 +92,41 @@ provider's unused computed name_prefix only on creation with an exact fixed
 policy name and role; twelve focused checker tests pass, including rejection
 of a supplied prefix or missing/changed identity. This is a checker correction,
 not a broader permission grant.
+
+## API installation plan
+
+[API plan 35678175700](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35678175700)
+succeeded at ebbff20f8dc126f5f11517b4f95fbdf78a6924c4. Its exact reviewed digest
+is fc1cefebad039b0ff9e1dbcd50a677fab6c3464050ca7b6b80c4f0714764a425.
+The scoped plan updates five functions and two existing policies, and creates
+five named deny boundaries plus the Terraform coordination record. All five
+functions stay at zero concurrency during installation.
+
+[API apply 35678251386](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35678251386)
+succeeded with that exact digest, and its post-apply plan reported no drift.
+Both stacks are installed with all nine function concurrency limits still zero,
+awaiting independent metadata/IAM verification before the separate restoration.
+
+
+## Installed runtime verification and restoration selection
+
+Independent verification while all nine functions remained at zero concurrency
+passed exact package hashes, Python 3.14/arm64 identities, handlers, successful
+updates and closed activation/inventory gates. Five named IAM boundaries were
+read and hashed; all 57 simulated permission decisions returned explicitDeny.
+No provider calls or customer-record writes were used. Evidence is recorded in
+[evaluated runtime metadata](evidence/dev-research-installed-runtime.json) and
+[permission verification](evidence/dev-research-installed-iam.json).
+
+Normal inputs now select API concurrency 5 and campaign concurrency 2. The
+separate restoration plans must change only those nine existing concurrency
+limits and computed modification metadata; the release guard requires already
+installed exact package identities before allowing positive concurrency.
+Campaign event mappings and schedules, new joins and all unfinished feature
+gates remain disabled.
+
+Local restoration preflights passed the package and release guards. The API
+plan changes only five concurrency values. The campaign plan changes four
+concurrency values and recomputes the scheduler's lifecycle-only invoke policy
+against the same verified function ARN; its permissions do not expand. No code,
+feature flags, event mappings or schedules are changed by restoration.
