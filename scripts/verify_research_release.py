@@ -208,7 +208,14 @@ def review(plan, revision, stack, manifest=None):
         elif address in boundaries:
             name = PREFIX+artifacts[boundaries[address]]['function'].replace('_','-')
             require(after.get('name') == PREFIX+'research-migration-'+boundaries[address] and after.get('role') == name+'-role' and isinstance(after.get('policy'), str), 'Invalid migration boundary identity')
-            require(fields <= ({'name','role','policy','id'} if actions == ['create'] else {'policy'}), 'Out-of-scope boundary change')
+            # AWS provider emits an unused computed prefix on creation even
+            # though the exact policy name is configured and verified above.
+            boundary_fields = {'name','role','policy','id'} if actions == ['create'] else {'policy'}
+            if actions == ['create'] and 'name_prefix' in fields:
+                require(after.get('name_prefix') is None and (change.get('after_unknown') or {}).get('name_prefix') is True,
+                        'Only a computed unused boundary prefix is permitted')
+                boundary_fields.add('name_prefix')
+            require(fields <= boundary_fields, 'Out-of-scope boundary change')
         elif address == cutover and stack == 'api':
             require(after.get('input') == selected['release_id'] and fields <= {'input','output','id'}, 'Invalid campaign cutover evidence')
         if actions != ['no-op']:

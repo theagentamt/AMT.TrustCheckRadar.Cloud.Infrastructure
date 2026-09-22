@@ -152,6 +152,20 @@ class ResearchReleaseTests(unittest.TestCase):
         altered=copy.deepcopy(plan);at(altered,'aws_iam_role_policy.research_migration_boundary')['after']['role']='wrong-role'
         with self.assertRaises(ValueError):module.review(altered,REVISION,'api',manifest)
 
+    def test_boundary_creation_allows_only_unused_computed_name_prefix(self):
+        plan,manifest,_=fixture('api')
+        change=at(plan,'aws_iam_role_policy.research_migration_boundary')
+        change['after_unknown'].update(id=True,name_prefix=True)
+        module.review(plan,REVISION,'api',manifest)
+        for mutate in (
+            lambda c:c['after'].update(name_prefix='different-'),
+            lambda c:c['after'].update(name=None),
+            lambda c:c['after'].update(role='other-role'),
+            lambda c:c.update(actions=['update'],before=copy.deepcopy(c['after'])),
+        ):
+            altered=copy.deepcopy(plan);mutate(at(altered,'aws_iam_role_policy.research_migration_boundary'))
+            with self.assertRaises(ValueError):module.review(altered,REVISION,'api',manifest)
+
     def test_exact_version_downloads_hash_bytes_and_never_mutates_cloud(self):
         plan,manifest,contents=fixture('api');report=module.review(plan,REVISION,'api',manifest)
         calls=[]
