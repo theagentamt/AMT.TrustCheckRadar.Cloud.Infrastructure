@@ -258,3 +258,20 @@ run "research_candidate_rejects_foreign_outbox" {
 
   expect_failures = [aws_lambda_function.worker]
 }
+
+run "dev_research_install_may_remain_fully_paused" {
+  command = plan
+  variables {
+    research_consent_migration = true
+    reserved_concurrency       = 0
+  }
+  assert {
+    condition     = alltrue([for worker in aws_lambda_function.worker : worker.reserved_concurrent_executions == 0]) && !local.active
+    error_message = "The coordinated Dev install must allow zero concurrency until runtime verification."
+  }
+}
+run "zero_concurrency_is_not_a_general_runtime_exception" {
+  command = plan
+  variables { reserved_concurrency = 0 }
+  expect_failures = [check.runtime_bounds]
+}

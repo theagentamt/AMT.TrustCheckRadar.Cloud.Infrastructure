@@ -47,6 +47,8 @@ on:
           - history-processing
           - research-plan-campaign-processing
           - research-plan-api
+          - research-migrate-campaign-processing
+          - research-migrate-api
       execution_mode:
         description: Generate plans only or apply them
         required: true
@@ -57,6 +59,10 @@ on:
           - apply
       expected_revision:
         description: Full release commit SHA required for the Dev research plan
+        required: false
+        type: string
+      reviewed_plan_digest:
+        description: Exact reviewed research migration plan digest required for apply
         required: false
         type: string
 
@@ -70,7 +76,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main' && !startsWith(inputs.deployment_scope, 'research-plan-')
+    if: github.ref == 'refs/heads/main' && !startsWith(inputs.deployment_scope, 'research-')
     name: Deploy ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -351,8 +357,8 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
   research-plan:
-    name: Review Dev research migration plan
-    if: github.event_name == 'workflow_dispatch' && startsWith(inputs.deployment_scope, 'research-plan-')
+    name: Dev research migration
+    if: github.event_name == 'workflow_dispatch' && startsWith(inputs.deployment_scope, 'research-')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: dev
@@ -361,6 +367,7 @@ jobs:
       REQUESTED_ENVIRONMENT: ${{ inputs.environment }}
       EXECUTION_MODE: ${{ inputs.execution_mode }}
       REQUESTED_SCOPE: ${{ inputs.deployment_scope }}
+      REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
       TF_IN_AUTOMATION: 'true'
       TF_INPUT: 'false'
       TF_VAR_state_bucket_name: amt-trustcheckradar-107827791950-tfstate
@@ -374,13 +381,20 @@ jobs:
         run: |
           test "$GITHUB_REF" = refs/heads/release-V01
           test "$REQUESTED_ENVIRONMENT" = dev
-          test "$EXECUTION_MODE" = plan
+          if [[ "$REQUESTED_SCOPE" == research-plan-* ]]; then
+            test "$EXECUTION_MODE" = plan
+          else
+            [[ "$EXECUTION_MODE" == plan || "$EXECUTION_MODE" == apply ]]
+            if [[ "$EXECUTION_MODE" == apply ]]; then
+              [[ "$REVIEWED_PLAN_DIGEST" =~ ^[0-9a-f]{64}$ ]]
+            fi
+          fi
           [[ "$EXPECTED_REVISION" =~ ^[0-9a-f]{40}$ ]]
           test "$EXPECTED_REVISION" = "$GITHUB_SHA"
           test "$EXPECTED_REVISION" = "$(git rev-parse HEAD)"
           case "$REQUESTED_SCOPE" in
-            research-plan-campaign-processing) echo 'STACK=campaign-processing' >> "$GITHUB_ENV" ;;
-            research-plan-api) echo 'STACK=api' >> "$GITHUB_ENV" ;;
+            research-plan-campaign-processing|research-migrate-campaign-processing) echo 'STACK=campaign-processing' >> "$GITHUB_ENV" ;;
+            research-plan-api|research-migrate-api) echo 'STACK=api' >> "$GITHUB_ENV" ;;
             *) exit 1 ;;
           esac
           test -n "$TF_VAR_artifact_release"
@@ -413,9 +427,30 @@ jobs:
           terraform -chdir="terraform/$STACK" plan "${args[@]}" \
             -out="$RUNNER_TEMP/research.tfplan" > "$RUNNER_TEMP/research-plan.log" 2>&1
           terraform -chdir="terraform/$STACK" show -json "$RUNNER_TEMP/research.tfplan" > "$RUNNER_TEMP/research-plan.json"
-          python3 scripts/summarize_research_plan.py "$RUNNER_TEMP/research-plan.json" \
-            --revision "$EXPECTED_REVISION" --stack "$STACK" > "$RUNNER_TEMP/research-review.json"
+          if [[ "$REQUESTED_SCOPE" == research-migrate-* ]]; then
+            verify_args=(--revision "$EXPECTED_REVISION" --stack "$STACK")
+            if [[ "$EXECUTION_MODE" == apply ]]; then
+              verify_args+=(--apply --expected-digest "$REVIEWED_PLAN_DIGEST")
+            fi
+            python3 scripts/verify_research_release.py "$RUNNER_TEMP/research-plan.json" "${verify_args[@]}" > "$RUNNER_TEMP/research-review.json"
+          else
+            python3 scripts/summarize_research_plan.py "$RUNNER_TEMP/research-plan.json" \
+              --revision "$EXPECTED_REVISION" --stack "$STACK" > "$RUNNER_TEMP/research-review.json"
+          fi
           cat "$RUNNER_TEMP/research-review.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Apply only the verified saved plan
+        if: startsWith(inputs.deployment_scope, 'research-migrate-') && inputs.execution_mode == 'apply'
+        shell: bash
+        run: |
+          terraform -chdir="terraform/$STACK" apply -input=false "$RUNNER_TEMP/research.tfplan" > "$RUNNER_TEMP/research-apply.log" 2>&1
+          echo "Applied the reviewed saved Dev $STACK plan." >> "$GITHUB_STEP_SUMMARY"
+      - name: Verify no drift after apply
+        if: startsWith(inputs.deployment_scope, 'research-migrate-') && inputs.execution_mode == 'apply'
+        shell: bash
+        run: |
+          terraform -chdir="terraform/$STACK" plan \
+            -var-file="../../environments/dev/$STACK.tfvars" -detailed-exitcode > "$RUNNER_TEMP/research-drift.log" 2>&1
+          echo "Post-apply plan: no drift." >> "$GITHUB_STEP_SUMMARY"
       - name: Publish minimized plan evidence
         uses: actions/upload-artifact@v4
         with:
@@ -426,4 +461,4 @@ jobs:
       - name: Remove private plans and logs
         if: always()
         shell: bash
-        run: rm -f "$RUNNER_TEMP"/research-init.log "$RUNNER_TEMP"/research-plan.log "$RUNNER_TEMP"/research.tfplan "$RUNNER_TEMP"/research-plan.json
+        run: rm -f "$RUNNER_TEMP"/research-init.log "$RUNNER_TEMP"/research-plan.log "$RUNNER_TEMP"/research.tfplan "$RUNNER_TEMP"/research-plan.json "$RUNNER_TEMP"/research-apply.log "$RUNNER_TEMP"/research-drift.log

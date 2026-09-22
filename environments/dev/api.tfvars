@@ -70,3 +70,40 @@ device_recovery_deployment = {
     }
   }
 }
+
+# Apply after the same-release paused campaign contract.
+research_consent_migration_deployment = {
+  release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
+  approval_reference = "docs/DEV-RESEARCH-RUNTIME-MIGRATION.md"
+  promotion_approved = false
+  consent_enabled    = false
+  artifacts = {
+    analysis = {
+      object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1"
+      source_hash    = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4="
+    }
+    participation = {
+      object_version = "JFtcjKqccqtDkTVQREwMn8R7mlSPGNJZ"
+      source_hash    = "p+wPYSC7BSxN5jYSffePQAu2DLZLfDhZ+cJLKP2dnX8="
+    }
+    snapshot = {
+      object_version = "wm7VjLE.iVAv9r.MwZwgWsAYwdHm6jxP"
+      source_hash    = "3HxxsEAtAEKls89OxN91CfNQo1edq6ucNus4r+o2RVo="
+    }
+    web_risk = {
+      object_version = "kD.vAr62k1w78y_K4VA_s5ooBctKpb8."
+      source_hash    = "rOF7rlDO8hJA/u1SHOiC1ebYM5I3czocmUtj77wwnCI="
+    }
+    purchase = {
+      object_version = "zUIPAp_ZSg.QN2XoDtEBBRiGWvb19A2d"
+      source_hash    = "fbF+jSPpXRPrYKqDtE3jcosIMAfnpZLlsztfkaSyvRI="
+    }
+  }
+}
+
+# Keep invocations fenced until all installed runtime/IAM identities are verified.
+analysis_lambda_reserved_concurrency               = 0
+campaign_participation_lambda_reserved_concurrency = 0
+entitlement_snapshot_lambda_reserved_concurrency   = 0
+purchase_handoff_lambda_reserved_concurrency       = 0
+web_risk_communication_lambda_reserved_concurrency = 0

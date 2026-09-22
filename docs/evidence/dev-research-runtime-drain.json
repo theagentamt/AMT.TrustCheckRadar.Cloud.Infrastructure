@@ -1,0 +1,83 @@
+{
+  "functions": [
+    {
+      "functionName": "trustcheckradar-dev-campaign-cluster-aggregator",
+      "reservedConcurrency": 0
+    },
+    {
+      "functionName": "trustcheckradar-dev-campaign-deletion-bridge",
+      "reservedConcurrency": 0
+    },
+    {
+      "functionName": "trustcheckradar-dev-campaign-lifecycle",
+      "reservedConcurrency": 0
+    },
+    {
+      "functionName": "trustcheckradar-dev-campaign-observation-publisher",
+      "reservedConcurrency": 0
+    },
+    {
+      "functionName": "trustcheckradar-dev-campaign-participation",
+      "reservedConcurrency": 0
+    },
+    {
+      "functionName": "trustcheckradar-dev-conversation-analysis",
+      "reservedConcurrency": 0
+    },
+    {
+      "functionName": "trustcheckradar-dev-entitlement-snapshot",
+      "reservedConcurrency": 0
+    },
+    {
+      "functionName": "trustcheckradar-dev-purchase-handoff",
+      "reservedConcurrency": 0
+    },
+    {
+      "functionName": "trustcheckradar-dev-web-risk-communication",
+      "reservedConcurrency": 0
+    }
+  ],
+  "mappings": [
+    {
+      "uuid": "45da87c1-cc6d-49da-ad0c-3e0d06da4b0c",
+      "functionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-observation-publisher",
+      "state": "Disabled"
+    },
+    {
+      "uuid": "04c7b23a-97e3-4dd1-b705-355f9fb6713d",
+      "functionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-deletion-bridge",
+      "state": "Disabled"
+    },
+    {
+      "uuid": "3986a9e8-4718-4b3e-bc9a-cda17b7390e2",
+      "functionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-cluster-aggregator",
+      "state": "Disabled"
+    }
+  ],
+  "schedules": [
+    {
+      "name": "trustcheckradar-dev-campaign-manage-keys",
+      "groupName": "trustcheckradar-dev-campaign",
+      "state": "DISABLED",
+      "targetArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-lifecycle",
+      "configurationPreserved": true
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-finalize-periods",
+      "groupName": "trustcheckradar-dev-campaign",
+      "state": "DISABLED",
+      "targetArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-lifecycle",
+      "configurationPreserved": true
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-expire-transient",
+      "groupName": "trustcheckradar-dev-campaign",
+      "state": "DISABLED",
+      "targetArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-lifecycle",
+      "configurationPreserved": true
+    }
+  ],
+  "verifiedAt": "2026-09-22T01:52:47.799246+00:00",
+  "verifiedEpoch": 1790041967.799472,
+  "elapsedSinceFirstSettledSeconds": 80.73313188552856
+}
