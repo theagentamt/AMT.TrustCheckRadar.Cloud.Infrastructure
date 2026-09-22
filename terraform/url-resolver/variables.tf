@@ -124,3 +124,14 @@ variable "consumer_alarm_notifications_enabled" {
     error_message = "Consumer alarm integration is Dev-only."
   }
 }
+
+variable "play_alarm_notifications_enabled" {
+  description = "Permit only the two named inactive Dev Play verifier runtime alarms on the existing support topic."
+  type        = bool
+  default     = false
+  nullable    = false
+  validation {
+    condition     = !var.play_alarm_notifications_enabled || var.environment == "dev"
+    error_message = "Play verifier alarm integration is Dev-only."
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-21",
+  "stories": [
+    "SECUR4ALL-195",
+    "SECUR4ALL-244",
+    "ATCR-91"
+  ],
+  "scope": "inactive infrastructure source candidate; no cloud deployment or paid purchase acceptance",
+  "lambdaContractRevision": "a2a2e9e9235997e66c0daede428b640ad578c6b9",
+  "contractVersion": "v1-play-handoff-1.0.0-candidate.1",
+  "packageName": "com.andmorethings.trustcheckradar",
+  "validation": {
+    "terraformPlay": {
+      "validate": "passed",
+      "mockedTestsPassed": 7
+    },
+    "terraformResolver": {
+      "validate": "passed",
+      "mockedTestsPassed": 12
+    },
+    "scriptsTestsPassed": 62,
+    "actionlint": "passed",
+    "shellSyntax": "passed",
+    "diffCheck": "passed"
+  },
+  "providerAudit": {
+    "credentialFormatValid": true,
+    "oauthUsable": true,
+    "catalogHttpStatus": 403,
+    "reason": "SERVICE_DISABLED",
+    "googleProject": "trustcheck-radar",
+    "api": "androidpublisher.googleapis.com",
+    "configurationReadable": false
+  },
+  "defaultState": {
+    "devEnabled": false,
+    "uatEnabled": false,
+    "prodEnabled": false,
+    "routePublished": false,
+    "playHandoffEnabled": false,
+    "authorityEnabled": false,
+    "catalogQualified": false,
+    "engineeringAllowlist": [],
+    "testPurchasesRequired": true,
+    "playAlarmTopicGrantEnabled": false
+  },
+  "remainingAcceptance": [
+    "owner enablement of Android Publisher API",
+    "Play Console catalog and permission verification",
+    "license tester and test-device setup",
+    "final backend accounting/deletion/expiry implementation and review",
+    "authenticated route, throttling and abuse-control qualification",
+    "reviewed immutable artifact installation and closed-gate verification",
+    "real license-test purchase and lifecycle acceptance",
+    "SECUR4ALL-125 background lifecycle and monitoring"
+  ],
+  "review": {
+    "reviewer": "Lambda owner (independent of infrastructure implementation)",
+    "runtimeContract": "compatible",
+    "finding": "Narrow transactional authority writes to V1#*#* so V1#CONTROL inventory cannot be modified",
+    "resolution": "implemented; seven mocked candidate tests passed again"
+  }
+}

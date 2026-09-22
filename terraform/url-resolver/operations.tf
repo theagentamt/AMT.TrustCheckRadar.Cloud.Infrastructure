@@ -15,7 +15,10 @@ locals {
     ]]),
     ["arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-url-lease-recovery-expiry-overdue"],
     [for suffix in ["overdue", "full-pass-age"] : "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-v1-authority-deletion-${suffix}"]
-  ) : [])
+    ) : [], var.play_alarm_notifications_enabled ? [
+    for suffix in ["errors", "throttles"] :
+    "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-v1-play-handoff-${suffix}"
+  ] : [])
 }
 
 resource "aws_sns_topic" "operations" {

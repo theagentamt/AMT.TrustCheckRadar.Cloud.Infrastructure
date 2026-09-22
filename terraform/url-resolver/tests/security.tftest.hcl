@@ -210,3 +210,32 @@ run "consumer_topic_grant_is_exact_and_optional" {
     error_message = "Support topic must accept only three resolver and fifteen explicit V1 alarms, without wildcard publishers."
   }
 }
+
+run "play_topic_grant_is_exact_and_optional" {
+  command = apply
+  variables {
+    enabled                          = true
+    play_alarm_notifications_enabled = true
+    artifact = {
+      bucket         = "test-bucket"
+      key            = "releases/test/url_redirect_resolver.zip"
+      object_version = "test-version"
+      source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  assert {
+    condition = toset(jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"]) == toset(concat(local.resolver_alarm_arns, [
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-v1-play-handoff-errors",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-v1-play-handoff-throttles"
+    ]))
+    error_message = "The optional verifier integration must add exactly its two native alarms, with no wildcard or other publisher."
+  }
+}
+run "no_prod_play_topic_grant" {
+  command = plan
+  variables {
+    environment                      = "prod"
+    play_alarm_notifications_enabled = true
+  }
+  expect_failures = [var.play_alarm_notifications_enabled]
+}
