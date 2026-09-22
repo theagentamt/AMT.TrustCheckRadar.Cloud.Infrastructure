@@ -56,3 +56,28 @@ Actionlint passed for deploy.yml. Four summarizer tests cover environment/scope
 rejection, private-value omission, baseline identification and drift fingerprints.
 The mocked Terraform trust test verifies exact Dev release refs, audience and
 repository/environment subjects, with main-only UAT/Prod trust.
+
+## Plan-only candidate selection
+
+[Lambda run 35675976296](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/actions/runs/35675976296)
+succeeded at source d98ffd65b42d54953ad83e980e58846b6fc02c5d. The
+[publication manifest](evidence/dev-research-actions-publication.json) contains all
+nine S3 object versions and hashes. This is artifact publication, not runtime
+replacement. Use this manifest exclusively; the packaged purchase dependency
+bytes differ from the earlier local build.
+
+[Campaign baseline run 35676187963](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35676187963)
+succeeded with zero changes and candidateSelected=false. Its minimized report is
+[retained here](evidence/dev-research-campaign-baseline-plan.json).
+
+The campaign-processing overlay selects the four published workers and pauses
+all consumers only in a plan. Its approval_reference points here to describe
+plan review; it is not a maintenance-window or runtime-activation approval.
+Normal campaign-processing.tfvars remains unchanged. The API candidate must wait
+for an actual same-release paused campaign contract before a valid cutover plan;
+we will not forge remote-state evidence to bypass that requirement.
+
+[API baseline run 35676311698](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35676311698)
+also succeeded with zero changes and candidateSelected=false; its
+[minimized report](evidence/dev-research-api-baseline-plan.json) confirms no
+baseline API drift at the observed revision.
