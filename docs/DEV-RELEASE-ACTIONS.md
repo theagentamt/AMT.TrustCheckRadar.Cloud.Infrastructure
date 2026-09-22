@@ -1,5 +1,9 @@
 # Dev release branch Actions
 
+Update: the owner subsequently authorized runtime migration now because Dev has
+no ongoing testing. Follow [the runtime deployment record](DEV-RESEARCH-RUNTIME-MIGRATION.md).
+The plan-only status below describes the earlier preparatory stage.
+
 The owner authorized GitHub Actions for infrastructure and Lambda deployment on
 2026-09-21 after resolving GitHub billing. Android Actions remain excluded.
 Automatic CI still runs only on main; this permission does not promote a release

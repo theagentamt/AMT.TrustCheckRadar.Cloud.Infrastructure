@@ -151,7 +151,10 @@ check "runtime_bounds" {
       var.cluster_timeout_seconds <= 30 &&
       var.lifecycle_timeout_seconds <= 60 &&
       var.deletion_timeout_seconds <= 30 &&
-      var.reserved_concurrency >= 1 &&
+      (var.reserved_concurrency >= 1 || (
+        var.reserved_concurrency == 0 && var.environment == "dev" &&
+        var.research_consent_migration && local.account_privacy_candidate && var.kill_switch_enabled
+      )) &&
       var.reserved_concurrency <= 10 &&
       var.queue_batch_size >= 1 &&
       var.queue_batch_size <= 10
