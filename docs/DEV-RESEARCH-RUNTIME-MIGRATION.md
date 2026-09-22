@@ -130,3 +130,38 @@ plan changes only five concurrency values. The campaign plan changes four
 concurrency values and recomputes the scheduler's lifecycle-only invoke policy
 against the same verified function ARN; its permissions do not expand. No code,
 feature flags, event mappings or schedules are changed by restoration.
+
+## Runtime restoration completed
+
+At release revision 41cf7b0033150476cb08ca648162cfb3d660cd25, both restoration
+plans and applies succeeded:
+
+- API plan 35678599151 and [apply 35678724604](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35678724604).
+- Campaign plan 35678628261 and [apply 35678750363](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35678750363).
+
+Both post-apply plans reported no drift. Normal API concurrency is 5 per handler
+and campaign concurrency is 2 per worker. Campaign event mappings/schedules and
+all previously closed feature gates remain disabled. The [eight-run record](evidence/dev-research-actions-runtime.json)
+verifies actual successful GitHub dispatches for both installation and restoration.
+The approved Dev runtime deployment is complete; future activation and data
+qualification remain separately tracked acceptance work.
+
+
+## Final deployed verification
+
+The [final verification record](evidence/dev-research-runtime-final-verification.json)
+confirms all nine exact runtime identities, restored API 5/campaign 2 limits,
+unchanged closed flags and disabled campaign triggers. All eight non-mutating
+handler checks passed: snapshot 409 LEGACY_MIGRATION_REQUIRED; direct Web Risk 410
+LEGACY_ENDPOINT_RETIRED; analysis and consent 401 UNAUTHORIZED; purchase 400
+INVALID_REQUEST; publisher, cluster and deletion empty batches produced their
+expected zero-work results. These are direct Lambda smoke invocations, not
+mobile end-to-end or authenticated-account acceptance. Lifecycle was not invoked.
+Side-effect conclusions are limited to the inspected no-work/rejection paths;
+no provider or account-mutation scenarios were exercised.
+
+The deployed legacy endpoints now enforce their migration/retirement behavior.
+New paid/access ownership service readiness, consent activation, historical data
+classification and cleanup qualification remain future acceptance items. The
+owner's no-testing/downtime approval allowed this Dev deployment to finish now;
+those items no longer block the already-completed runtime installation.
