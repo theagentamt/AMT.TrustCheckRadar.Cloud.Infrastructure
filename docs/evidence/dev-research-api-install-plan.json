@@ -1,0 +1,232 @@
+{
+  "revision": "ebbff20f8dc126f5f11517b4f95fbdf78a6924c4",
+  "environment": "dev",
+  "stack": "api",
+  "scope": "research-migration-flags-off",
+  "reviewedPlanDigest": "fc1cefebad039b0ff9e1dbcd50a677fab6c3464050ca7b6b80c4f0714764a425",
+  "changes": [
+    {
+      "address": "aws_iam_policy.campaign_participation_runtime",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "policy"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_iam_policy.purchase_handoff_runtime",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "policy"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_iam_role_policy.research_migration_boundary[\"analysis\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "id",
+        "name",
+        "name_prefix",
+        "policy",
+        "role"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_iam_role_policy.research_migration_boundary[\"participation\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "id",
+        "name",
+        "name_prefix",
+        "policy",
+        "role"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_iam_role_policy.research_migration_boundary[\"purchase\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "id",
+        "name",
+        "name_prefix",
+        "policy",
+        "role"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_iam_role_policy.research_migration_boundary[\"snapshot\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "id",
+        "name",
+        "name_prefix",
+        "policy",
+        "role"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_iam_role_policy.research_migration_boundary[\"web_risk\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "id",
+        "name",
+        "name_prefix",
+        "policy",
+        "role"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_lambda_function.analysis",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "environment",
+        "last_modified",
+        "runtime",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash"
+      ],
+      "changedEnvironmentFields": [
+        "HISTORY_MAX_RESPONSE_BYTES"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.campaign_participation",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "environment",
+        "last_modified",
+        "runtime",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash"
+      ],
+      "changedEnvironmentFields": [
+        "CAMPAIGN_PARTICIPATION_NOTICE_VERSION",
+        "CAMPAIGN_PARTICIPATION_POLICY_VERSION",
+        "CONSENT_INDEPENDENCE_ENABLED"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.entitlement_snapshot",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "last_modified",
+        "runtime",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_lambda_function.purchase_handoff",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "environment",
+        "last_modified",
+        "runtime",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash"
+      ],
+      "changedEnvironmentFields": [
+        "DELETION_LEDGER_TABLE_NAME",
+        "PURCHASE_OWNERSHIP_CANDIDATE_ENABLED"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.web_risk_communication[0]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "last_modified",
+        "runtime",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "terraform_data.research_migration_cutover[0]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "id",
+        "input",
+        "output"
+      ],
+      "changedEnvironmentFields": []
+    }
+  ],
+  "artifacts": [
+    {
+      "function": "conversation_analysis",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/conversation_analysis.zip",
+      "object_version": "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1",
+      "source_hash": "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4="
+    },
+    {
+      "function": "campaign_participation",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/campaign_participation.zip",
+      "object_version": "JFtcjKqccqtDkTVQREwMn8R7mlSPGNJZ",
+      "source_hash": "p+wPYSC7BSxN5jYSffePQAu2DLZLfDhZ+cJLKP2dnX8="
+    },
+    {
+      "function": "purchase_handoff",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/purchase_handoff.zip",
+      "object_version": "zUIPAp_ZSg.QN2XoDtEBBRiGWvb19A2d",
+      "source_hash": "fbF+jSPpXRPrYKqDtE3jcosIMAfnpZLlsztfkaSyvRI="
+    },
+    {
+      "function": "entitlement_snapshot",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/entitlement_snapshot.zip",
+      "object_version": "wm7VjLE.iVAv9r.MwZwgWsAYwdHm6jxP",
+      "source_hash": "3HxxsEAtAEKls89OxN91CfNQo1edq6ucNus4r+o2RVo="
+    },
+    {
+      "function": "web_risk_communication",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/web_risk_communication.zip",
+      "object_version": "kD.vAr62k1w78y_K4VA_s5ooBctKpb8.",
+      "source_hash": "rOF7rlDO8hJA/u1SHOiC1ebYM5I3czocmUtj77wwnCI="
+    }
+  ],
+  "consentEnabled": false,
+  "campaignConsumersEnabled": false
+}

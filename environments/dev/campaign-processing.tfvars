@@ -44,5 +44,5 @@ account_privacy_artifacts = {
   }
 }
 
-# Keep invocations fenced during code/IAM installation; restore in a verified second step.
-reserved_concurrency = 0
+# Installed code and closed gates verified before restoring normal worker capacity.
+reserved_concurrency = 2
