@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "scope": "modern_authority_disabled_candidate",
+  "sourceSha": "8700d234e17ac9155bf6566f9ddcbd5bc8341146",
+  "environment": "dev",
+  "runtimeUpdated": false,
+  "activationApproved": false,
+  "artifacts": [
+    {
+      "function": "url_consumer",
+      "artifact": "url_consumer.zip",
+      "sha256": "b5697f19e340f3763711aa3e5673d7b5a7595e255077640d80286a8c1e357808",
+      "sourceCodeHash": "tWl/GeNA83Y3Eao+VnPXtadZXiVQd2QNgChqjB41eAg=",
+      "bytes": 684940,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "bundledDependencies": [
+        "attrs-26.1.0.dist-info",
+        "jsonschema-4.25.1.dist-info",
+        "jsonschema_specifications-2025.9.1.dist-info",
+        "referencing-0.37.0.dist-info",
+        "rpds_py-2026.6.3.dist-info"
+      ],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/8700d234e17ac9155bf6566f9ddcbd5bc8341146/url_consumer.zip",
+      "versionId": "NqgnQE5VK2xa0iNnuRRmClg_8.SqScFP"
+    },
+    {
+      "function": "url_lease_recovery",
+      "artifact": "url_lease_recovery.zip",
+      "sha256": "ae6a29c3bc5edefeb3bee6175a603254ea271a81c5692a29e60b64f0e74fb3f5",
+      "sourceCodeHash": "rmopw7xe3v6zvuYXWmAyVOonGoHFaSop5gtk8OdPs/U=",
+      "bytes": 39714,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "bundledDependencies": [],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/8700d234e17ac9155bf6566f9ddcbd5bc8341146/url_lease_recovery.zip",
+      "versionId": "WOSUu3I1AW2wSLSW8dF3E4k4WORd.0zM"
+    },
+    {
+      "function": "v1_entitlements",
+      "artifact": "v1_entitlements.zip",
+      "sha256": "b2508ba8ad75acb2b6cf6a1f482b0c0930c86498ba2318e1977a6b7c2a78c594",
+      "sourceCodeHash": "slCLqK11rLK2z2ofSCsMCTDIZJi6Ixjhl3prfCp4xZQ=",
+      "bytes": 43715,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "bundledDependencies": [],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/8700d234e17ac9155bf6566f9ddcbd5bc8341146/v1_entitlements.zip",
+      "versionId": "YIerN78WKpg.sBNczBskLJhejmxuKSrB"
+    },
+    {
+      "function": "v1_authority_deletion",
+      "artifact": "v1_authority_deletion.zip",
+      "sha256": "5e6d5fcf6432c85fdc9da81762e144b5e49219473865ffc2a9500457f52e2be2",
+      "sourceCodeHash": "Xm1fz2QyyF/cnagXYuFEteSSGUc4Zf/CqVAEV/UuK+I=",
+      "bytes": 51110,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "bundledDependencies": [],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/8700d234e17ac9155bf6566f9ddcbd5bc8341146/v1_authority_deletion.zip",
+      "versionId": "QtSEjX7n_uYWVPolacMHcH1YnDZdjkEZ"
+    }
+  ],
+  "publicationComplete": true
+}
