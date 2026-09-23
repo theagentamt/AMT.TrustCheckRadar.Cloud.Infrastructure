@@ -66,6 +66,33 @@ variable "activate_engineering" {
     error_message = "Engineering activation requires synthetic subjects, explicit policy, authenticated routing, monitoring and deletion worker/stream."
   }
 }
+variable "activate_access_engineering" {
+  description = "Restricted Dev access snapshots and cleanup only; URL execution and trial activation remain disabled."
+  type        = bool
+  default     = false
+  validation {
+    condition = !var.activate_access_engineering || (
+      !var.activate_engineering && var.enabled && var.environment == "dev" &&
+      length(var.engineering_subjects) > 0 && var.authority_configuration != null &&
+      var.api_gateway != null && var.alert_topic_arn != null && var.deletion_stream_arn != "" &&
+      try(contains(keys(var.deployment.artifacts), "deletion"), false) &&
+      length(trimspace(var.access_qualification_reference)) > 0
+    )
+    error_message = "Access-only qualification requires exact subjects, policy, authenticated routing, alerts, deletion/expiry cleanup, a recorded readiness reference and full engineering mode off."
+  }
+}
+variable "access_qualification_reference" {
+  description = "Reference to independently reviewed whole-table cleanup/key inventory and scoped account-test readiness; a reference alone does not establish that evidence."
+  type        = string
+  default     = ""
+  validation {
+    condition     = length(var.access_qualification_reference) <= 512
+    error_message = "Use a bounded evidence reference, not account identifiers or credentials."
+  }
+}
+locals {
+  authority_engineering_active = var.activate_engineering || var.activate_access_engineering
+}
 locals {
   routes = var.enabled && var.api_gateway != null ? {
     prepare   = { key = "POST /v1/url-checks/prepare", function = "consumer", permission = "POST/v1/url-checks/prepare" }

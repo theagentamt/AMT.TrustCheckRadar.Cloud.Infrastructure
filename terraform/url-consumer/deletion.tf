@@ -41,7 +41,7 @@ resource "aws_lambda_event_source_mapping" "v1_deletion" {
   count                          = local.deletion_provisioned ? 1 : 0
   event_source_arn               = var.deletion_stream_arn
   function_name                  = aws_lambda_alias.runtime["deletion"].arn
-  enabled                        = var.activate_engineering
+  enabled                        = local.authority_engineering_active
   starting_position              = "LATEST"
   batch_size                     = 5
   parallelization_factor         = 1
@@ -71,7 +71,7 @@ resource "aws_cloudwatch_event_rule" "maintenance" {
   for_each            = local.schedules
   name                = "${local.prefix}-${each.value.suffix}"
   schedule_expression = "rate(1 minute)"
-  state               = var.activate_engineering ? "ENABLED" : "DISABLED"
+  state               = local.authority_engineering_active ? "ENABLED" : "DISABLED"
   tags                = var.tags
 }
 resource "aws_cloudwatch_event_target" "maintenance" {
