@@ -906,7 +906,7 @@ variable "cors_allow_methods" {
 }
 
 variable "play_verification_route_throttle_enabled" {
-  description = "Install the dedicated modern Play route throttle before its separate closed verifier is provisioned."
+  description = "Install the dedicated modern Play route throttle after its separate closed verifier route exists."
   type        = bool
   default     = false
   validation {

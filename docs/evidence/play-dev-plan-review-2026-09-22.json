@@ -1,5 +1,5 @@
 {
-  "state": "saved plans awaiting apply",
+  "state": "applied after route-order correction; gates remain closed",
   "plans": [
     {
       "root": "api",
@@ -181,5 +181,16 @@
         }
       ]
     }
-  ]
+  ],
+  "initialApiApply": {
+    "result": "AWS rejected with 404; route must exist first",
+    "changesApplied": false
+  },
+  "applyOrder": [
+    "url-resolver",
+    "url-consumer",
+    "play-verification",
+    "api"
+  ],
+  "replacementApiPlanSha256": "8b0ea5b70dc2f8759d5bfa27afb5ea1e78329830f9991ae298bfdf3f8884da8a"
 }

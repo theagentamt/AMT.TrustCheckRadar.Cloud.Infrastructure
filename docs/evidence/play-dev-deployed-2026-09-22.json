@@ -1,0 +1,184 @@
+{
+  "observedAtUtc": "2026-09-23T02:44:20.618807+00:00",
+  "sourceSha": "28b4da19f321e6dc98ce2fc8b4e71632451b4362",
+  "scope": "closed Dev installation only; no purchase or activation",
+  "functions": [
+    {
+      "function": "trustcheckradar-dev-url-consumer",
+      "liveVersion": "6",
+      "sourceCodeHash": "sqegscbAtUFrWUForrB2v+wpJ7IsnyxmpjEabb/0ZRI=",
+      "handler": "app.lambda_handler",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "gates": {
+        "CONSUMER_ENABLED": "false",
+        "DEV_SUBJECT_ALLOWLIST_JSON": "[]",
+        "AUTHORITY_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      },
+      "closedSmoke": {
+        "statusCode": 503,
+        "errorCode": "SERVICE_UNAVAILABLE"
+      }
+    },
+    {
+      "function": "trustcheckradar-dev-url-lease-recovery",
+      "liveVersion": "6",
+      "sourceCodeHash": "ofu2Qeq8ZpPxlSiKo1eBDTLTSpq5b78SSOBlhXvBtAA=",
+      "handler": "app.lambda_handler",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "gates": {
+        "LEASE_SWEEP_ENABLED": "false"
+      },
+      "closedSmoke": {
+        "enabled": false,
+        "recovered": 0
+      }
+    },
+    {
+      "function": "trustcheckradar-dev-v1-entitlements",
+      "liveVersion": "6",
+      "sourceCodeHash": "3B9co1bUw2EBnhK4943dPTvxVgBXvowNY2LymfoNHr4=",
+      "handler": "v1_entitlements.app.lambda_handler",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "gates": {
+        "CONSUMER_ENABLED": "false",
+        "DEV_SUBJECT_ALLOWLIST_JSON": "[]",
+        "AUTHORITY_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      },
+      "closedSmoke": {
+        "statusCode": 503,
+        "errorCode": "ACCESS_SERVICE_UNAVAILABLE"
+      }
+    },
+    {
+      "function": "trustcheckradar-dev-v1-authority-deletion",
+      "liveVersion": "5",
+      "sourceCodeHash": "YvEH0qhhvMSO4MCdj4J0fsV9sL5Zg+VTm3VozIDzzC0=",
+      "handler": "v1_authority_deletion.app.lambda_handler",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "gates": {
+        "DEV_SUBJECT_ALLOWLIST_JSON": "[]",
+        "V1_AUTHORITY_DELETION_ENABLED": "false"
+      },
+      "closedSmoke": {
+        "enabled": false
+      }
+    },
+    {
+      "function": "trustcheckradar-dev-v1-play-handoff",
+      "liveVersion": "1",
+      "sourceCodeHash": "lCFJyf2hIG/WbhrxySRVTCxERwdnP4IWc/nAKyf7l/I=",
+      "handler": "v1_play_handoff.app.lambda_handler",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "gates": {
+        "DEV_SUBJECT_ALLOWLIST_JSON": "[]",
+        "AUTHORITY_ENABLED": "false",
+        "PLAY_HANDOFF_ENABLED": "false"
+      },
+      "closedSmoke": {
+        "statusCode": 503,
+        "errorCode": "PURCHASE_SERVICE_UNAVAILABLE"
+      }
+    }
+  ],
+  "route": {
+    "RouteKey": "POST /v1/purchases/google-play/verify",
+    "AuthorizationType": "JWT",
+    "AuthorizationScopes": [
+      "aws.cognito.signin.user.admin"
+    ]
+  },
+  "throttle": {
+    "DetailedMetricsEnabled": true,
+    "ThrottlingBurstLimit": 4,
+    "ThrottlingRateLimit": 2.0
+  },
+  "unauthenticatedStatus": 401,
+  "verifierIamSimulation": [
+    {
+      "action": "PutItem",
+      "partition": "V1#PURCHASE_USAGE#synthetic",
+      "transaction": true,
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "action": "PutItem",
+      "partition": "V1#CONTROL",
+      "transaction": true,
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "action": "PutItem",
+      "partition": "PURCHASE#CONTROL",
+      "transaction": true,
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "action": "PutItem",
+      "partition": "TOKEN#synthetic",
+      "transaction": false,
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "action": "ConditionCheckItem",
+      "partition": "V1#CONTROL",
+      "transaction": false,
+      "decision": "allowed",
+      "passed": true
+    }
+  ],
+  "cleanupRules": [
+    {
+      "name": "trustcheckradar-dev-v1-authority-deletion",
+      "state": "DISABLED"
+    },
+    {
+      "name": "trustcheckradar-dev-url-lease-recovery",
+      "state": "DISABLED"
+    }
+  ],
+  "deletionStreamState": "Disabled",
+  "alarms": [
+    {
+      "name": "trustcheckradar-dev-v1-play-handoff-errors",
+      "state": "OK",
+      "actions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ]
+    },
+    {
+      "name": "trustcheckradar-dev-v1-play-handoff-throttles",
+      "state": "OK",
+      "actions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ]
+    }
+  ],
+  "limitations": [
+    "No authenticated account/device purchase acceptance",
+    "Google provider dependencies lazily loaded; closed smoke is not provider execution",
+    "No alarm transition/delivery exercise",
+    "Cleanup schedules and deletion stream remain disabled",
+    "Modern message/recovery-consumer/feedback/export not installed by this increment"
+  ]
+}
