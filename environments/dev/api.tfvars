@@ -109,3 +109,28 @@ purchase_handoff_lambda_reserved_concurrency       = 5
 web_risk_communication_lambda_reserved_concurrency = 5
 
 play_verification_route_throttle_enabled = true
+play_preparation_route_throttle_enabled  = true
+
+# Closed privacy candidates; inventory/finalization and public routing remain gated.
+account_export_deployment = {
+  release_id                = "39cce61623794a123e61d25f5248b0c081eccf4a"
+  object_version            = "yXGRM6bfQinj9Wf_l6LF6Who9XTmQSRR"
+  source_hash               = "/q1/eMfOPR6OzsVxme7ACh911HqTfS7AJO34M62U5oc="
+  approval_reference        = "docs/PLAY-ACCOUNT-PRIVACY-DEV-DEPLOYMENT.md"
+  promotion_approved        = false
+  authority_hmac_secret_arn = "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/v1-authority-hmac-C7v1hG"
+}
+account_export_play_token_table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens"
+account_data_deployment = {
+  release_id         = "39cce61623794a123e61d25f5248b0c081eccf4a"
+  object_version     = "zJDzK5ozh5t4gVkrzAlHVbRfQqxMIlMo"
+  source_hash        = "1QZcQV/kDtAThdaZt4K48EOW00R3dbMOqq0pQqOH7LQ="
+  approval_reference = "docs/PLAY-ACCOUNT-PRIVACY-DEV-DEPLOYMENT.md"
+  promotion_approved = false
+}
+account_export_monitoring = {
+  alarm_topic_arn = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+}
+account_data_monitoring = {
+  alarm_topic_arn = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+}
