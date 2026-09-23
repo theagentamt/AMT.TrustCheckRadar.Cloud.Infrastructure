@@ -111,9 +111,11 @@ ciphertext, no backups, logical expiry and account-deletion erasure. A false
 policy gate prevents its use. This row is separate from the existing deletion
 ledger's reconciliation cursor. TTL alone is never timely erasure evidence.
 
-Role policies isolate encryption from deletion: deletion has no Google credential
-or KMS use; foreground preparation/retention can generate a data key but cannot
-decrypt. Only background reconciliation can read/decrypt retained tokens. Token
+Role policies isolate token encryption from deletion: deletion has no Google
+credential or use of the token application key; foreground preparation/retention can generate a data key but cannot
+decrypt token envelopes. These crypto denies target only the token application
+key, preserving Secrets Manager decryption of the required HMAC/provider secrets.
+Only background reconciliation can read/decrypt retained tokens. Token
 mutations require transactions and scoped key families. Inventory controls stay
 read-only. Stream read permissions address only the deletion stream; ListStreams
 is metadata discovery limited to us-east-1 (AWS provides no resource scope for it).

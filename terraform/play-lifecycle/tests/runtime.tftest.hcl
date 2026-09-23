@@ -42,6 +42,10 @@ run "closed_runtimes_and_cleanup" {
     error_message = "Deletion must operate without decrypting or calling the store provider."
   }
   assert {
+    condition = alltrue([for s in jsondecode(aws_iam_role_policy.runtime["deletion"].policy).Statement : s.Effect != "Deny" || !strcontains(jsonencode(s.Action), "kms:") || s.Resource == aws_kms_key.tokens[0].arn])
+    error_message = "Token cryptography denial must not block Secrets Manager decryption of the required HMAC secret."
+  }
+  assert {
     condition     = alltrue(flatten([for p in aws_iam_role_policy.runtime : [for s in jsondecode(p.policy).Statement : s.Effect != "Allow" || !try(contains(s.Action, "dynamodb:PutItem") || contains(s.Action, "dynamodb:UpdateItem") || contains(s.Action, "dynamodb:DeleteItem"), false) || s.Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"] == ["TransactWriteItems"]]]))
     error_message = "Every write must be transactional and retain coupled state fences."
   }

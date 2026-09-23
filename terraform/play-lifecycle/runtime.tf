@@ -40,7 +40,7 @@ resource "aws_iam_role_policy" "runtime" {
     Condition = { StringEquals = { "secretsmanager:VersionStage" = "AWSCURRENT" } } },
     { Sid = "NoOtherServicesOrCopies", Effect = "Deny", Action = ["lambda:InvokeFunction", "s3:*", "ssm:*", "sts:AssumeRole", "dynamodb:CreateBackup", "dynamodb:StartAwsBackupJob", "dynamodb:ExportTableToPointInTime", "dynamodb:RestoreTableToPointInTime", "dynamodb:UpdateContinuousBackups", "dynamodb:BatchWriteItem"], Resource = "*" }
     ], [for statement in [
-      { Sid = "NoDecryptOrProvider", Effect = "Deny", Action = "kms:*", Resource = "*" },
+      { Sid = "NoTokenCryptography", Effect = "Deny", Action = "kms:*", Resource = aws_kms_key.tokens[0].arn },
       { Sid = "DeletionCommands", Effect = "Allow", Action = ["dynamodb:Scan"], Resource = local.deletion_arn },
       { Sid = "DeletionReceipts", Effect = "Allow", Action = ["dynamodb:PutItem"], Resource = local.deletion_arn,
       Condition = merge(local.transaction_condition, { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["ACCOUNT#*"] }, "ForAllValues:StringEquals" = { "dynamodb:Attributes" = ["PK", "SK", "schemaVersion", "recordVersion", "environment", "eventType", "component", "status", "operationId", "requestOccurredAtEpoch", "occurredAtEpoch", "retainUntilEpoch"] } }) },

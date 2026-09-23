@@ -22,7 +22,8 @@ resource "aws_iam_role_policy" "lifecycle" {
     Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*#*", "PLAY_BINDING#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
     { Sid = "NewTokenEnvelopeKeyOnly", Effect = "Allow", Action = ["kms:GenerateDataKey"], Resource = var.lifecycle_storage.kms_key_arn,
     Condition = { StringEquals = { "kms:EncryptionContext:purpose" = "google-play-reconciliation", "kms:EncryptionContext:environment" = "dev", "kms:DataKeySpec" = "AES_256" }, "ForAllValues:StringEquals" = { "kms:EncryptionContextKeys" = ["purpose", "environment"] } } },
-    { Sid = "NoTokenDecryptionOrCopies", Effect = "Deny", Action = ["kms:Decrypt", "kms:Encrypt", "kms:ReEncrypt*", "dynamodb:CreateBackup", "dynamodb:StartAwsBackupJob", "dynamodb:ExportTableToPointInTime", "dynamodb:UpdateContinuousBackups"], Resource = "*" }
+    { Sid = "NoTokenDecryption", Effect = "Deny", Action = ["kms:Decrypt", "kms:Encrypt", "kms:ReEncrypt*"], Resource = var.lifecycle_storage.kms_key_arn },
+    { Sid = "NoTokenCopies", Effect = "Deny", Action = ["dynamodb:CreateBackup", "dynamodb:StartAwsBackupJob", "dynamodb:ExportTableToPointInTime", "dynamodb:UpdateContinuousBackups"], Resource = "*" }
   ] })
 }
 resource "aws_apigatewayv2_route" "prepare" {
