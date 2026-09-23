@@ -12,11 +12,11 @@ tags = {
   "Stack" : "play-verification"
 }
 deployment = {
-  "artifact" : {
+  artifact = {
     "bucket" : "trustcheckradar-dev-107827791950-artifacts",
-    "key" : "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/v1_play_handoff.zip",
-    "object_version" : "pLLnpT50xdObhmAne64pzqysd4YaTHoo",
-    "source_hash" : "lCFJyf2hIG/WbhrxySRVTCxERwdnP4IWc/nAKyf7l/I="
+    "key" : "releases/39cce61623794a123e61d25f5248b0c081eccf4a/v1_play_handoff.zip",
+    "object_version" : "x6WH5tnuSa8F1dJRfo0oMvXJQbdssyfW",
+    "source_hash" : "2sCKdiQE4NaS7cdUeYcWj6TwdtT4CXa6bM8133yb8aw="
   },
   "authority_hmac_secret_arn" : "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/v1-authority-hmac-C7v1hG",
   "google_play_secret_arn" : "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/google-play-service-account-F89Y5G",
@@ -36,3 +36,8 @@ api_gateway = {
   "stage_name" : "$default"
 }
 alert_topic_arn = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+
+lifecycle_storage = {
+  "table_arn" : "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens",
+  "kms_key_arn" : "arn:aws:kms:us-east-1:107827791950:key/62f786f5-76ab-41c3-ac77-fe362e0108ae"
+}
