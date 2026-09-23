@@ -67,9 +67,11 @@ resource "aws_lambda_function" "runtime" {
   source_code_hash               = var.deployment.artifact.source_hash
   publish                        = true
   environment {
-    variables = {
+    variables = merge({
       STAGE                                  = var.environment
       PLAY_HANDOFF_ENABLED                   = "false"
+      PLAY_PREPARATION_ENABLED               = "false"
+      PLAY_LIFECYCLE_ENABLED                 = "false"
       AUTHORITY_ENABLED                      = "false"
       DEV_SUBJECT_ALLOWLIST_JSON             = "[]"
       PLAY_CATALOG_P1M_VERIFIED              = tostring(var.catalog_p1m_verified)
@@ -97,9 +99,13 @@ resource "aws_lambda_function" "runtime" {
       ATTEMPT_WINDOW_SECONDS                 = "60"
       ATTEMPTS_PER_WINDOW                    = "20"
       MAX_INFLIGHT                           = "2"
-    }
+      }, var.lifecycle_storage == null ? {} : {
+      PLAY_TOKEN_TABLE_NAME             = split("/", var.lifecycle_storage.table_arn)[1]
+      PLAY_TOKEN_KMS_KEY_ARN            = var.lifecycle_storage.kms_key_arn
+      PLAY_TOKEN_READABLE_KMS_KEYS_JSON = jsonencode([var.lifecycle_storage.kms_key_arn])
+    })
   }
-  depends_on = [aws_iam_role_policy.runtime]
+  depends_on = [aws_iam_role_policy.runtime, aws_iam_role_policy.lifecycle]
   tags       = var.tags
 }
 resource "aws_lambda_alias" "runtime" {

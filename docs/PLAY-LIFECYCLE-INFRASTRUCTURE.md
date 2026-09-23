@@ -94,3 +94,55 @@ Provider deprecation warnings about hash/range key declarations remain warnings.
 - [KMS encryption context and audit logging](https://docs.aws.amazon.com/kms/latest/developerguide/encrypt_context.html)
 - [Pub/Sub subscription retention](https://docs.cloud.google.com/pubsub/docs/subscription-properties)
 - [Authenticated Pub/Sub push](https://docs.cloud.google.com/pubsub/docs/authenticate-push-subscriptions)
+
+## Closed runtime integration
+
+The next candidate provisions three Python 3.14 ARM64 handlers from one immutable
+Lambda release: authenticated ingress, reconciliation/expiry, and account-token
+deletion. All runtime/authority/cleanup/preparation gates remain false, including
+`PLAY_CHECKPOINT_POLICY_APPROVED`; schedules and the deletion stream mapping are
+disabled. Worker/deletion schedules use one-minute cadence when later qualified.
+The deletion mapping admits at most five ledger records per batch. No raw-token
+AWS queue or failure destination is created.
+
+The worker's proposed five-minute continuation row stores only canonical index
+position, revision and timing. Owner approval is pending. It has no token or
+ciphertext, no backups, logical expiry and account-deletion erasure. A false
+policy gate prevents its use. This row is separate from the existing deletion
+ledger's reconciliation cursor. TTL alone is never timely erasure evidence.
+
+Role policies isolate token encryption from deletion: deletion has no Google
+credential or use of the token application key; foreground preparation/retention can generate a data key but cannot
+decrypt token envelopes. These crypto denies target only the token application
+key, preserving Secrets Manager decryption of the required HMAC/provider secrets.
+Only background reconciliation can read/decrypt retained tokens. Token
+mutations require transactions and scoped key families. Inventory controls stay
+read-only. Stream read permissions address only the deletion stream; ListStreams
+is metadata discovery limited to us-east-1 (AWS provides no resource scope for it).
+
+The optional `play-verification.lifecycle_storage` adds exact token dependencies
+and the authenticated `/v1/purchases/google-play/prepare` route with the same JWT
+scope as verify. API stage settings use separate default-false preparation
+selection: deploy and read back the closed prepare route first, then select
+`play_preparation_route_throttle_enabled`. The existing verification throttle
+alone never adds settings for a nonexistent preparation route. It does not activate
+preparation, purchases or token retention. The foreground authority role remains
+Put-only; background shortening has separate Query/Update/Delete permissions.
+The optional API `account_export_play_token_table_arn` grants owned-partition
+Get/Query; token metadata export and full export remain disabled. Deploy matching
+account-deletion/finalizer packages and requalify the required PLAY_TOKENS inventory
+before enabling writers; do not declare erasure complete using the old inventory.
+
+Content-free semantic failure/lag alarms and native errors/throttles target the
+existing support@andmorethings.com SNS topic. Missing-heartbeat actions are off
+until schedules are activated. Ingress is event-driven and has no missing-heartbeat
+alarm. API logs exclude bodies, headers, token/account identifiers and query strings.
+
+Google setup and actual provider delivery remain separate from an AWS deployment;
+see [Google notification setup](PLAY-NOTIFICATION-SETUP.md).
+
+Local runtime-candidate validation: 9 lifecycle/storage Terraform cases,
+11 foreground verifier/preparation cases, 14 account-export cases and 19 API
+recovery/route-throttle cases passed. These are mock-plan/apply tests, not live
+provider delivery or token-erasure evidence. Independent review corrected the
+prepare-route deployment ordering before source integration.

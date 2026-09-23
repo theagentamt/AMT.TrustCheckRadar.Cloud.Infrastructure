@@ -272,3 +272,12 @@ run "export_monitoring_rejects_foreign_topic" {
   variables { account_export_monitoring = { alarm_topic_arn = "arn:aws:sns:us-east-1:111111111111:synthetic-alerts" } }
   expect_failures = [var.account_export_monitoring]
 }
+
+run "play_token_metadata_reader_stays_closed" {
+  command = plan
+  variables { account_export_play_token_table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens" }
+  assert {
+    condition     = aws_lambda_function.account_export[0].environment[0].variables.ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED == "false" && aws_lambda_function.account_export[0].environment[0].variables.PLAY_TOKEN_TABLE_NAME == "trustcheckradar-dev-play-tokens" && one([for statement in data.aws_iam_policy_document.account_export[0].statement : statement if statement.sid == "ReadOwnedPlayTokens"]).actions == toset(["dynamodb:GetItem", "dynamodb:Query"]) && one([for statement in data.aws_iam_policy_document.account_export[0].statement : statement if statement.sid == "ReadOwnedPlayTokens"]).resources == toset([var.account_export_play_token_table_arn])
+    error_message = "Export integration provides only exact-table metadata reads and must not activate candidate.3."
+  }
+}
