@@ -1,5 +1,5 @@
 {
-  "observedAtUtc": "2026-09-23T05:03:39.153987+00:00",
+  "observedAtUtc": "2026-09-23T05:14:50.028682+00:00",
   "lambdaSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
   "scope": "Configuration metadata only; no invocation, account items or secret values",
   "functions": [
@@ -23,7 +23,7 @@
       "inlinePolicies": [
         {
           "name": "purpose-limited-lifecycle",
-          "sha256": "f7387bba88194e4c552f2da915c8700d67da95d2a13abee9e28288f88871aeed"
+          "sha256": "314902f3920ad8926563f5a7461a2109eb6083817dbade3596e4aaa1c7a5a2fd"
         }
       ],
       "managedPolicies": []
@@ -48,7 +48,7 @@
       "inlinePolicies": [
         {
           "name": "purpose-limited-lifecycle",
-          "sha256": "e2631d5f4d4505ab433aa0d1e7512f8bc8652324569ec9fd970e561d46a43b05"
+          "sha256": "beb06ecc8777ac9d7425b761a7d3d9bdedb5adf47f4e8fb7c7140c43e05d2cb4"
         }
       ],
       "managedPolicies": []
@@ -97,7 +97,7 @@
       "inlinePolicies": [
         {
           "name": "prepare-binding-and-retain-verified-token",
-          "sha256": "1a78ea7959478570d7af920bbdf41c656d21792ffa6a96527b439fffede14b58"
+          "sha256": "41486b33422eb1eb58047445b2d794dbd6d629c37babf4b13f8a7503828e4bf6"
         },
         {
           "name": "verified-play-ownership-and-authority",

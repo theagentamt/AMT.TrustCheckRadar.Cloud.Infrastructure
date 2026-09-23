@@ -202,6 +202,11 @@ run "closed_lifecycle_preparation_is_scoped" {
     condition = alltrue([for statement in jsondecode(aws_iam_role_policy.lifecycle[0].policy).Statement : statement.Effect != "Deny" || !strcontains(jsonencode(statement.Action), "kms:") || statement.Resource == var.lifecycle_storage.kms_key_arn])
     error_message = "The explicit token decrypt denial must leave the required Secrets Manager credential-decryption path available."
   }
+  assert {
+    condition = alltrue([for statement in jsondecode(aws_iam_role_policy.lifecycle[0].policy).Statement : statement.Sid != "NewTokenEnvelopeKeyOnly" || (statement.Condition.StringEquals["kms:EncryptionAlgorithm"] == "SYMMETRIC_DEFAULT" && !contains(keys(statement.Condition.StringEquals), "kms:DataKeySpec"))])
+    error_message = "Foreground data-key generation must use a documented KMS condition."
+  }
+
 }
 run "reject_other_lifecycle_table" {
   command = plan

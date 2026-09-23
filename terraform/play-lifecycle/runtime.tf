@@ -54,7 +54,7 @@ resource "aws_iam_role_policy" "runtime" {
       { Sid = "CurrentPlayCredential", Effect = "Allow", Action = "secretsmanager:GetSecretValue", Resource = var.deployment.google_play_secret_arn,
       Condition = { StringEquals = { "secretsmanager:VersionStage" = "AWSCURRENT" } } },
       { Sid = "TokenDataKey", Effect = "Allow", Action = ["kms:GenerateDataKey"], Resource = aws_kms_key.tokens[0].arn,
-      Condition = { StringEquals = { "kms:EncryptionContext:purpose" = "google-play-reconciliation", "kms:EncryptionContext:environment" = "dev", "kms:DataKeySpec" = "AES_256" }, "ForAllValues:StringEquals" = { "kms:EncryptionContextKeys" = local.context_keys } } },
+      Condition = { StringEquals = { "kms:EncryptionContext:purpose" = "google-play-reconciliation", "kms:EncryptionContext:environment" = "dev", "kms:EncryptionAlgorithm" = "SYMMETRIC_DEFAULT" }, "ForAllValues:StringEquals" = { "kms:EncryptionContextKeys" = local.context_keys } } },
       { Sid = "TokenDecrypt", Effect = "Allow", Action = ["kms:Decrypt"], Resource = aws_kms_key.tokens[0].arn,
       Condition = { StringEquals = { "kms:EncryptionContext:purpose" = "google-play-reconciliation", "kms:EncryptionContext:environment" = "dev", "kms:EncryptionAlgorithm" = "SYMMETRIC_DEFAULT" }, "ForAllValues:StringEquals" = { "kms:EncryptionContextKeys" = local.context_keys } } },
       { Sid = "AuthorityAccountQueries", Effect = "Allow", Action = "dynamodb:Query", Resource = local.authority_arn,

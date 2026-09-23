@@ -28,5 +28,16 @@
   "customerDataReadOrChanged": false,
   "googleTransportConfigured": false,
   "activationApproved": false,
-  "physicalTestingPerformed": false
+  "physicalTestingPerformed": false,
+  "permissionCorrection": {
+    "source": "da76e91f58078cd6289d50c71947814e12102835",
+    "scope": "Replace unsupported DataKeySpec with documented EncryptionAlgorithm condition only",
+    "iamPolicyUpdates": 3,
+    "functionsOrActivationChanges": false,
+    "installedPerResourceSimulationsPassed": 28,
+    "postApplyDetailedExitCodes": {
+      "play-lifecycle": 0,
+      "play-verification": 0
+    }
+  }
 }

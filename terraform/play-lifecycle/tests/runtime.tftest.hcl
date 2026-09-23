@@ -74,6 +74,11 @@ run "closed_runtimes_and_cleanup" {
     error_message = "Only the cleanup worker/deletion roles may maintain the minimized lifecycle checkpoint."
   }
 
+  assert {
+    condition = alltrue([for role in ["ingress", "worker"] : alltrue([for statement in jsondecode(aws_iam_role_policy.runtime[role].policy).Statement : statement.Sid != "TokenDataKey" || (statement.Condition.StringEquals["kms:EncryptionAlgorithm"] == "SYMMETRIC_DEFAULT" && !contains(keys(statement.Condition.StringEquals), "kms:DataKeySpec"))])])
+    error_message = "Data key permission must use supported KMS conditions; AES_256 is enforced by the runtime request."
+  }
+
 }
 run "authenticated_notification_route" {
   command = plan
