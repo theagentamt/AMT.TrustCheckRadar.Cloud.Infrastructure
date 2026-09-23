@@ -77,7 +77,11 @@ changed. This is Console configuration evidence, not authenticated callback or
 store-transaction test evidence. IAM propagation and actual delivery remain to
 be qualified.
 
-Still pending: reviewed callback configuration using the unique ID above,
+The Dev lifecycle configuration now selects this verified identity for the closed
+callback. The reviewed deployment record will distinguish selection from an
+applied endpoint; this selection keeps all processing gates disabled.
+
+Still pending: callback deployment and authentication qualification,
 cleanup/erasure/export acceptance, the separate five-minute checkpoint retention
 decision, push subscription creation with the approved 600-second pending-message
 retention, Play Console delivery configuration and end-to-end delivery validation.
