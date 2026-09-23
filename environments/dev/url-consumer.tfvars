@@ -13,28 +13,28 @@ tags = {
 deployment = {
   artifacts = {
     consumer = {
-      bucket         = "trustcheckradar-dev-107827791950-artifacts"
-      key            = "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/url_consumer.zip"
-      object_version = "xVQqzGgyqoGBisfRfRZWiEyyTfHflnKg"
-      source_hash    = "sqegscbAtUFrWUForrB2v+wpJ7IsnyxmpjEabb/0ZRI="
+      "bucket" : "trustcheckradar-dev-107827791950-artifacts",
+      "key" : "releases/39cce61623794a123e61d25f5248b0c081eccf4a/url_consumer.zip",
+      "object_version" : "QMq0XD1xRogqUM51iPjD71XQD7liaiPw",
+      "source_hash" : "Y8iJQMYB8aWOXieJBMaJLrOpBop3sLpbg09Gy+PnVbA="
     },
     recovery = {
-      bucket         = "trustcheckradar-dev-107827791950-artifacts"
-      key            = "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/url_lease_recovery.zip"
-      object_version = "ibnXKj0vHg38E6kKr6JKXHYW3aI76df4"
-      source_hash    = "ofu2Qeq8ZpPxlSiKo1eBDTLTSpq5b78SSOBlhXvBtAA="
+      "bucket" : "trustcheckradar-dev-107827791950-artifacts",
+      "key" : "releases/39cce61623794a123e61d25f5248b0c081eccf4a/url_lease_recovery.zip",
+      "object_version" : "b7u.Gz0sGsE6Ou2DhuMcDTzBUBf4vm63",
+      "source_hash" : "a5uouU5vy1ZJMuWpjQY4GUQ236d4jpRS23yTmaP5K+Y="
     },
     entitlements = {
-      bucket         = "trustcheckradar-dev-107827791950-artifacts"
-      key            = "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/v1_entitlements.zip"
-      object_version = "iz7t7.FQr.z0a.pjA9_p4hgqq7cRr71S"
-      source_hash    = "3B9co1bUw2EBnhK4943dPTvxVgBXvowNY2LymfoNHr4="
+      "bucket" : "trustcheckradar-dev-107827791950-artifacts",
+      "key" : "releases/39cce61623794a123e61d25f5248b0c081eccf4a/v1_entitlements.zip",
+      "object_version" : "4v213SSYD50qrijRyBRDNW54IcRTww92",
+      "source_hash" : "xFuy0ylGhHpfHsJBEFZsYcxhpdish1Qx4a5UcF0ZOhM="
     },
     deletion = {
-      bucket         = "trustcheckradar-dev-107827791950-artifacts"
-      key            = "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/v1_authority_deletion.zip"
-      object_version = "h15XlWwddxXStuY6t.xIFr4zWqksuaqH"
-      source_hash    = "YvEH0qhhvMSO4MCdj4J0fsV9sL5Zg+VTm3VozIDzzC0="
+      "bucket" : "trustcheckradar-dev-107827791950-artifacts",
+      "key" : "releases/39cce61623794a123e61d25f5248b0c081eccf4a/v1_authority_deletion.zip",
+      "object_version" : "yG9KvplPKb.k9EYNjiFt7OQei49b7scw",
+      "source_hash" : "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc="
     },
   },
   users_table_arn       = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
