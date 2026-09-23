@@ -72,7 +72,7 @@ resource "aws_lambda_function" "runtime" {
       PLAY_HANDOFF_ENABLED                   = "false"
       AUTHORITY_ENABLED                      = "false"
       DEV_SUBJECT_ALLOWLIST_JSON             = "[]"
-      PLAY_CATALOG_P1M_VERIFIED              = "false"
+      PLAY_CATALOG_P1M_VERIFIED              = tostring(var.catalog_p1m_verified)
       PLAY_REQUIRE_TEST_PURCHASES            = "true"
       USERS_TABLE_NAME                       = split("/", var.deployment.users_table_arn)[1]
       DEVICE_BINDINGS_TABLE_NAME             = split("/", var.deployment.devices_table_arn)[1]

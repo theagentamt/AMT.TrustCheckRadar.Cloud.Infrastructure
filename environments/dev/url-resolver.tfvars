@@ -23,3 +23,5 @@ tags = {
 
 assessment_alarm_notifications_enabled = true
 consumer_alarm_notifications_enabled   = true
+
+play_alarm_notifications_enabled = true

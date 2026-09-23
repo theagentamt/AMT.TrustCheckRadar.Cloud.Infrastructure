@@ -1,0 +1,185 @@
+{
+  "state": "saved plans awaiting apply",
+  "plans": [
+    {
+      "root": "api",
+      "savedPlanSha256": "09ec2239b2f7e26055a9e0c68f08bf468ef675602dcf7aa1fbab15ec058508fb",
+      "changes": [
+        {
+          "address": "aws_apigatewayv2_stage.age_attestation",
+          "actions": [
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "root": "url-resolver",
+      "savedPlanSha256": "5cb5e790991d984366c36f49b87cd709bd005ddcb15a2f6e35574791e0fa34b4",
+      "changes": [
+        {
+          "address": "aws_sns_topic_policy.operations[0]",
+          "actions": [
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "root": "url-consumer",
+      "savedPlanSha256": "1ec98f2a1289baa8c30f4350e0d7909a18606a218c023827889fb5f935cacf65",
+      "changes": [
+        {
+          "address": "aws_iam_role_policy.consumer[0]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.deletion[0]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.entitlements[0]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.recovery[0]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[\"consumer\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[\"entitlements\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[\"recovery\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"consumer\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"entitlements\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"recovery\"]",
+          "actions": [
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "root": "play-verification",
+      "savedPlanSha256": "04fbb725356f9d939ecb0aa84e3444e53f5ad2f070aca87bd366dd76ddbf06e2",
+      "changes": [
+        {
+          "address": "aws_apigatewayv2_authorizer.play[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_apigatewayv2_integration.play[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_apigatewayv2_route.play[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_group.runtime[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.runtime[\"Errors\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.runtime[\"Throttles\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role.runtime[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.runtime[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_function_event_invoke_config.runtime[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_permission.play[0]",
+          "actions": [
+            "create"
+          ]
+        }
+      ]
+    }
+  ]
+}

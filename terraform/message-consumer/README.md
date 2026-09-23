@@ -9,7 +9,7 @@ message processing. All checked-in environment files remain disabled.
 
 - Python 3.14 ARM64 `message-consumer` invokes only `message-evaluator:live`.
   It reuses the existing V1 HMAC key ring, authority ledger, account/device/deletion
-  fences and transactional `V1#*` mutations. There is no second allowance ledger,
+  fences and transactional `V1#*#*` mutations. There is no second allowance ledger,
   duplicate recovery worker, new secret container or Terraform-managed key value.
 - Python 3.14 ARM64 `message-evaluator` can invoke only the existing private
   `url-assessment:live` for explicitly reviewed targets. Its role denies DynamoDB,

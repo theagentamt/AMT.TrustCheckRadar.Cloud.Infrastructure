@@ -1452,6 +1452,16 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
     }
   }
 
+  dynamic "route_settings" {
+    for_each = var.play_verification_route_throttle_enabled ? ["POST /v1/purchases/google-play/verify"] : []
+    content {
+      route_key                = route_settings.value
+      detailed_metrics_enabled = true
+      throttling_burst_limit   = 4
+      throttling_rate_limit    = 2
+    }
+  }
+
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.age_attestation_api.arn
     format = jsonencode({

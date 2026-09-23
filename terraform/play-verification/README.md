@@ -1,14 +1,14 @@
 # Inactive Google Play verification candidate
 
 This isolated Terraform root belongs to SECUR4ALL-244 and supports the new
-SECUR4ALL-195 Lambda contract. The normal Dev/UAT/Production files all set
-`enabled = false`. No cloud resource or endpoint is provisioned by those defaults.
+SECUR4ALL-195 Lambda contract. The root defaults to disabled. UAT/Production remain disabled; the Dev file now
+selects an immutable package and authenticated route for closed-gate qualification.
 
 An explicitly selected immutable Dev package can provision a Python 3.14/ARM64
 `v1_play_handoff.app.lambda_handler` behind a `live` alias. The candidate has
 29-second timeout, concurrency two and no asynchronous retries. Both
 `PLAY_HANDOFF_ENABLED` and `AUTHORITY_ENABLED` are hardcoded false; the synthetic
-subject allowlist is empty, catalog qualification is false, and real purchases
+subject allowlist is empty, catalog qualification is explicitly recorded, and real purchases
 are rejected by the required test-purchase setting. No caller-supplied environment
 map or activation switch can override those controls.
 
@@ -26,14 +26,17 @@ contract and requires coordinated backend accounting/deletion implementation.
 
 The owner selected `com.andmorethings.trustcheckradar`, product
 `trustcheck_radar_pro_monthly` and base plan `pro-monthly` remain the existing
-source catalog identifiers. Provider confirmation is still required. Refer to
+source catalog identifiers. The bounded catalog audit returned HTTP 200 with an
+active P1M US base plan at $4.99. This does not prove purchase/acknowledgment
+permissions or actual tester qualification. Refer to
 [the setup record](../../docs/GOOGLE-PLAY-VERIFICATION-SETUP.md).
 
-The intended mobile contract is `POST /v1/purchases/google-play/verify`. This
-root does not publish it yet. JWT issuer/audience/scope, exact alias invocation
-permission, existing API-stage route throttles, per-account abuse handling,
-catalog/provider qualification and closed-gate authenticated tests must be
-reviewed before routing or activation. The old purchase endpoint and its denial
+The mobile contract is `POST /v1/purchases/google-play/verify`. Optional routing
+requires the exact Dev API/$default stage, Cognito issuer/audience and access-token
+scope, with same-account permission limited to the live alias and method/path.
+The owning API root supplies burst 4/rate 2 throttling. Publishing this closed
+route does not authorize purchases; engineering subjects, inventory, cleanup,
+provider and authenticated acceptance still require qualification. The old purchase endpoint and its denial
 boundary remain separately owned by `terraform/api`.
 
 Optional native runtime error/throttle alarms use only the existing support

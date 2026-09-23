@@ -69,7 +69,7 @@ run "candidate_is_isolated_and_inactive" {
     error_message = "Consumer must mutate atomically and access only its HMAC secret and private assessment alias."
   }
   assert {
-    condition     = jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[2].Resource == "${var.deployment.authority_table_arn}/index/GSI1" && jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[2].Condition["ForAllValues:StringEquals"]["dynamodb:LeadingKeys"] == ["V1_PENDING", "V1_EXPIRING"] && jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[5].Effect == "Deny" && contains(jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[5].Action, "lambda:InvokeFunction") && !contains(keys(aws_lambda_function.runtime["recovery"].environment[0].variables), "AUTHORITY_HMAC_SECRET_ARN")
+    condition     = jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[2].Resource == "${var.deployment.authority_table_arn}/index/GSI1" && jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[2].Condition["ForAllValues:StringEquals"]["dynamodb:LeadingKeys"] == ["V1_PENDING", "V1_EXPIRING"] && jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[6].Effect == "Deny" && contains(jsondecode(aws_iam_role_policy.recovery[0].policy).Statement[6].Action, "lambda:InvokeFunction") && !contains(keys(aws_lambda_function.runtime["recovery"].environment[0].variables), "AUTHORITY_HMAC_SECRET_ARN")
     error_message = "Cleanup must use only pending ledger records and cannot invoke providers or retrieve secrets."
   }
   assert {

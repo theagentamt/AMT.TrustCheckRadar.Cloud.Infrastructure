@@ -97,7 +97,7 @@ run "candidate_is_isolated_and_inactive" {
     error_message = "Native runtime alarms must use bounded function dimensions and the existing confirmed support alert path."
   }
   assert {
-    condition     = jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"] == ["TransactWriteItems"] && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAllValues:StringLike"]["dynamodb:LeadingKeys"] == ["V1#*"] && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Resource == var.deployment.authority_hmac_secret_arn && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition.StringEquals["secretsmanager:VersionStage"] == "AWSCURRENT" && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[5].Resource == aws_lambda_alias.runtime["evaluator"].arn
+    condition     = jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"] == ["TransactWriteItems"] && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAllValues:StringLike"]["dynamodb:LeadingKeys"] == ["V1#*#*"] && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Resource == var.deployment.authority_hmac_secret_arn && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition.StringEquals["secretsmanager:VersionStage"] == "AWSCURRENT" && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[5].Resource == aws_lambda_alias.runtime["evaluator"].arn
     error_message = "Consumer must reuse the existing fenced ledger/HMAC and invoke only the private evaluator alias."
   }
   assert {

@@ -13,8 +13,8 @@ The three Python 3.14 ARM64 functions have separate roles:
 
 | Function | Purpose | Allowed dependency writes/calls |
 | --- | --- | --- |
-| `url-consumer` | Prepare, admit, settle and reconcile one logical check | Transactional `V1#*` authority records; exact private assessment alias |
-| `v1-entitlements` | Access snapshot and explicit trial activation | Transactional `V1#*` authority records; no provider invocation |
+| `url-consumer` | Prepare, admit, settle and reconcile one logical check | Transactional `V1#*#*` authority records; exact private assessment alias |
+| `v1-entitlements` | Access snapshot and explicit trial activation | Transactional `V1#*#*` authority records; no provider invocation |
 | `url-lease-recovery` | Release expired, unfinished reservations with zero deduction | Existing authority records and pending `GSI1`; no identity tables, secrets or provider invocation |
 
 The consumer and entitlement functions can read authoritative account, deletion and active-device fences. They cannot mutate those identity tables. Only those two functions can read the separate HMAC key ring, with `AWSCURRENT` explicitly requested. No function receives the Google API key. The private assessment retains its separate storage-denied role.
