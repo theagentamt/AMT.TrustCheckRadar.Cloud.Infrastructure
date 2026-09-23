@@ -1,5 +1,30 @@
 # Repository working rules
 
+## Testing and independent component delivery
+
+- Owner direction applies to all current and future stories across infrastructure,
+  Lambda, Android and iOS: use automated tests, emulators and simulators now.
+  Do not request, wait for, discover, install on or test physical devices until
+  the owner explicitly resumes physical testing.
+- Put physical-device-only acceptance in a linked, open follow-up. Reuse Android
+  ATCR-148 for the V1 physical-device pass; use the corresponding project follow-up
+  for other platforms. Record the deferred cases and the owner's scope decision.
+  Emulated or mocked results must never be reported as physical-device or actual
+  store-provider transaction evidence.
+- A blocked mobile story does not automatically block infrastructure or Lambda.
+  Continue each component's implementation, contract tests, backend integration,
+  deployment qualification and other authorized work independently where possible.
+  A genuine blocker must identify the missing contract, artifact, service or
+  decision, its owner, and the specific work it prevents. Continue unaffected work.
+- Evaluate completion per component's agreed scope. Once its acceptance checks
+  pass and commits/handoff records are pushed and integrated into release-V01,
+  the component story may close with explicitly deferred physical testing linked
+  to its open follow-up. Do not hold it open solely for unavailable mobile hardware.
+  Do not close it if its own implementation or non-deferred acceptance is missing.
+- Component completion, end-to-end acceptance and release readiness are distinct.
+  Keep real integration/release dependencies and unperformed evidence visible;
+  this rule does not bypass deployment, activation, privacy or launch approvals.
+
 ## Release integration and story completion
 
 - `release-V01` is the integration branch for ongoing V1 work in this repository.
