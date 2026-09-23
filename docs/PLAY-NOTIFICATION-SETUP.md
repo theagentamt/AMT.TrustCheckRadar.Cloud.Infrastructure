@@ -77,11 +77,13 @@ changed. This is Console configuration evidence, not authenticated callback or
 store-transaction test evidence. IAM propagation and actual delivery remain to
 be qualified.
 
-The Dev lifecycle configuration now selects this verified identity for the closed
-callback. The reviewed deployment record will distinguish selection from an
-applied endpoint; this selection keeps all processing gates disabled.
+The Dev lifecycle configuration selects this verified identity for the closed
+callback, now applied at
+`https://h8w7swnmqe.execute-api.us-east-1.amazonaws.com/v1/notifications/google-play`.
+See [the deployment record](PLAY-LIFECYCLE-DEV-DEPLOYMENT.md#closed-google-callback-deployment)
+for readback and 401 rejection checks. All processing gates remain disabled.
 
-Still pending: callback deployment and authentication qualification,
+Still pending: authenticated Google delivery qualification,
 cleanup/erasure/export acceptance, the separate five-minute checkpoint retention
 decision, push subscription creation with the approved 600-second pending-message
 retention, Play Console delivery configuration and end-to-end delivery validation.

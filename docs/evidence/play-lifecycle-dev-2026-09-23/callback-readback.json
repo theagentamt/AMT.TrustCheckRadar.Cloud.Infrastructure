@@ -1,0 +1,49 @@
+{
+  "endpoint": "https://h8w7swnmqe.execute-api.us-east-1.amazonaws.com/v1/notifications/google-play",
+  "api_id": "h8w7swnmqe",
+  "ingress_live_version": "2",
+  "code_sha256": "BocXkxw6VeJSHp4Ggtmc5wlz4lxetWhXpTbz+mYtrRo=",
+  "runtime": "python3.14",
+  "architectures": [
+    "arm64"
+  ],
+  "route_key": "POST /v1/notifications/google-play",
+  "authorization": "JWT",
+  "jwt_configuration": {
+    "Audience": [
+      "https://api-dev.andmorethings.net/v1/notifications/google-play"
+    ],
+    "Issuer": "https://accounts.google.com"
+  },
+  "throttle": {
+    "DetailedMetricsEnabled": true,
+    "ThrottlingBurstLimit": 4,
+    "ThrottlingRateLimit": 2.0
+  },
+  "log_fields": [
+    "integrationLatency",
+    "requestId",
+    "routeKey",
+    "status"
+  ],
+  "identity_subject": "105021781538297478987",
+  "processing_gates": {
+    "AUTHORITY_ENABLED": "false",
+    "PLAY_LIFECYCLE_ENABLED": "false",
+    "PLAY_PREPARATION_ENABLED": "false",
+    "PLAY_TOKEN_CLEANUP_ENABLED": "false",
+    "PLAY_CHECKPOINT_POLICY_APPROVED": "false"
+  },
+  "subjects_empty": true,
+  "synthetic_http_checks": [
+    {
+      "case": "missing_authorization",
+      "http_status": 401
+    },
+    {
+      "case": "invalid_bearer",
+      "http_status": 401
+    }
+  ],
+  "google_authenticated_delivery_tested": false
+}

@@ -1,0 +1,65 @@
+{
+  "source_commit": "b415d405a1567c90d29fa3990bcd884c40b9e2e1",
+  "release_merge": "c20a5ffca1160b86becf667f0d6e75ff8ecf1d77",
+  "saved_plan_sha256": "f418d996df216b6e29a864a7cb738e538b058c881e618a05d5998a4419f789b9",
+  "changes": [
+    {
+      "address": "aws_apigatewayv2_api.notification[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_authorizer.notification[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_integration.notification[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.notification[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_stage.notification[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.notification_access[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_alias.runtime[\"ingress\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.runtime[\"ingress\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.notification[0]",
+      "actions": [
+        "create"
+      ]
+    }
+  ],
+  "independent_plan_review": "approved",
+  "applied": true,
+  "post_apply_plan_exit_code": 0,
+  "terraform_tests_passed": 9
+}
