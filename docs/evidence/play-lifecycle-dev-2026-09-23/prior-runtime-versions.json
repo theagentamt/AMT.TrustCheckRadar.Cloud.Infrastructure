@@ -1,0 +1,67 @@
+[
+  {
+    "function": "trustcheckradar-dev-v1-play-handoff",
+    "liveVersion": "1",
+    "codeSha256": "lCFJyf2hIG/WbhrxySRVTCxERwdnP4IWc/nAKyf7l/I=",
+    "runtime": "python3.14",
+    "architecture": [
+      "arm64"
+    ],
+    "gates": {
+      "AUTHORITY_ENABLED": "false",
+      "PLAY_HANDOFF_ENABLED": "false"
+    }
+  },
+  {
+    "function": "trustcheckradar-dev-url-consumer",
+    "liveVersion": "6",
+    "codeSha256": "sqegscbAtUFrWUForrB2v+wpJ7IsnyxmpjEabb/0ZRI=",
+    "runtime": "python3.14",
+    "architecture": [
+      "arm64"
+    ],
+    "gates": {
+      "CONSUMER_ENABLED": "false",
+      "AUTHORITY_ENABLED": "false",
+      "V1_ENTITLEMENTS_ENABLED": "false"
+    }
+  },
+  {
+    "function": "trustcheckradar-dev-url-lease-recovery",
+    "liveVersion": "6",
+    "codeSha256": "ofu2Qeq8ZpPxlSiKo1eBDTLTSpq5b78SSOBlhXvBtAA=",
+    "runtime": "python3.14",
+    "architecture": [
+      "arm64"
+    ],
+    "gates": {
+      "LEASE_SWEEP_ENABLED": "false"
+    }
+  },
+  {
+    "function": "trustcheckradar-dev-v1-entitlements",
+    "liveVersion": "6",
+    "codeSha256": "3B9co1bUw2EBnhK4943dPTvxVgBXvowNY2LymfoNHr4=",
+    "runtime": "python3.14",
+    "architecture": [
+      "arm64"
+    ],
+    "gates": {
+      "CONSUMER_ENABLED": "false",
+      "AUTHORITY_ENABLED": "false",
+      "V1_ENTITLEMENTS_ENABLED": "false"
+    }
+  },
+  {
+    "function": "trustcheckradar-dev-v1-authority-deletion",
+    "liveVersion": "5",
+    "codeSha256": "YvEH0qhhvMSO4MCdj4J0fsV9sL5Zg+VTm3VozIDzzC0=",
+    "runtime": "python3.14",
+    "architecture": [
+      "arm64"
+    ],
+    "gates": {
+      "V1_AUTHORITY_DELETION_ENABLED": "false"
+    }
+  }
+]

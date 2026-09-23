@@ -1,0 +1,249 @@
+{
+  "observedAtUtc": "2026-09-23T05:03:39.153987+00:00",
+  "lambdaSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
+  "scope": "Configuration metadata only; no invocation, account items or secret values",
+  "functions": [
+    {
+      "function": "trustcheckradar-dev-play-lifecycle-ingress",
+      "liveVersion": "1",
+      "codeSha256": "BocXkxw6VeJSHp4Ggtmc5wlz4lxetWhXpTbz+mYtrRo=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "gates": {
+        "PLAY_CHECKPOINT_POLICY_APPROVED": "false",
+        "AUTHORITY_ENABLED": "false",
+        "PLAY_TOKEN_CLEANUP_ENABLED": "false",
+        "PLAY_LIFECYCLE_ENABLED": "false",
+        "PLAY_PREPARATION_ENABLED": "false"
+      },
+      "allowlistEmpty": true,
+      "inlinePolicies": [
+        {
+          "name": "purpose-limited-lifecycle",
+          "sha256": "f7387bba88194e4c552f2da915c8700d67da95d2a13abee9e28288f88871aeed"
+        }
+      ],
+      "managedPolicies": []
+    },
+    {
+      "function": "trustcheckradar-dev-play-lifecycle-worker",
+      "liveVersion": "1",
+      "codeSha256": "YdZv9rHFPAYScnVhJLFh9/NZ598R3SgaeEzi7A2Xgcs=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "gates": {
+        "PLAY_CHECKPOINT_POLICY_APPROVED": "false",
+        "AUTHORITY_ENABLED": "false",
+        "PLAY_TOKEN_CLEANUP_ENABLED": "false",
+        "PLAY_LIFECYCLE_ENABLED": "false",
+        "PLAY_PREPARATION_ENABLED": "false"
+      },
+      "allowlistEmpty": true,
+      "inlinePolicies": [
+        {
+          "name": "purpose-limited-lifecycle",
+          "sha256": "e2631d5f4d4505ab433aa0d1e7512f8bc8652324569ec9fd970e561d46a43b05"
+        }
+      ],
+      "managedPolicies": []
+    },
+    {
+      "function": "trustcheckradar-dev-play-token-deletion",
+      "liveVersion": "1",
+      "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "gates": {
+        "PLAY_CHECKPOINT_POLICY_APPROVED": "false",
+        "AUTHORITY_ENABLED": "false",
+        "PLAY_TOKEN_CLEANUP_ENABLED": "false",
+        "PLAY_LIFECYCLE_ENABLED": "false",
+        "PLAY_PREPARATION_ENABLED": "false"
+      },
+      "allowlistEmpty": true,
+      "inlinePolicies": [
+        {
+          "name": "purpose-limited-lifecycle",
+          "sha256": "c73889e6fd16725adf66e7bec39456adff54fa77a1a6713331a96c6e25a2561a"
+        }
+      ],
+      "managedPolicies": []
+    },
+    {
+      "function": "trustcheckradar-dev-v1-play-handoff",
+      "liveVersion": "2",
+      "codeSha256": "2sCKdiQE4NaS7cdUeYcWj6TwdtT4CXa6bM8133yb8aw=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "handler": "v1_play_handoff.app.lambda_handler",
+      "gates": {
+        "AUTHORITY_ENABLED": "false",
+        "PLAY_HANDOFF_ENABLED": "false",
+        "PLAY_LIFECYCLE_ENABLED": "false",
+        "PLAY_PREPARATION_ENABLED": "false"
+      },
+      "allowlistEmpty": true,
+      "inlinePolicies": [
+        {
+          "name": "prepare-binding-and-retain-verified-token",
+          "sha256": "1a78ea7959478570d7af920bbdf41c656d21792ffa6a96527b439fffede14b58"
+        },
+        {
+          "name": "verified-play-ownership-and-authority",
+          "sha256": "616878d4e1524ff84bfa9d90293304e3c4a9e4c2a36771a65b1d72cb30eb9426"
+        }
+      ],
+      "managedPolicies": []
+    },
+    {
+      "function": "trustcheckradar-dev-url-consumer",
+      "liveVersion": "7",
+      "codeSha256": "Y8iJQMYB8aWOXieJBMaJLrOpBop3sLpbg09Gy+PnVbA=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "gates": {
+        "CONSUMER_ENABLED": "false",
+        "AUTHORITY_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      },
+      "allowlistEmpty": true,
+      "inlinePolicies": [
+        {
+          "name": "fenced-check-authority-and-private-assessment",
+          "sha256": "0317f710ac62ac2a1242e1f40b3ba9f033e89a686f23638c094117d3ae026dc0"
+        }
+      ],
+      "managedPolicies": []
+    },
+    {
+      "function": "trustcheckradar-dev-url-lease-recovery",
+      "liveVersion": "7",
+      "codeSha256": "a5uouU5vy1ZJMuWpjQY4GUQ236d4jpRS23yTmaP5K+Y=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "gates": {
+        "LEASE_SWEEP_ENABLED": "false"
+      },
+      "allowlistEmpty": true,
+      "inlinePolicies": [
+        {
+          "name": "expired-lease-cleanup-only",
+          "sha256": "f556674acec46576caf4e2e1afb102984a42b67457c5d27a3bcbd9daa1918f77"
+        }
+      ],
+      "managedPolicies": []
+    },
+    {
+      "function": "trustcheckradar-dev-v1-entitlements",
+      "liveVersion": "7",
+      "codeSha256": "xFuy0ylGhHpfHsJBEFZsYcxhpdish1Qx4a5UcF0ZOhM=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "handler": "v1_entitlements.app.lambda_handler",
+      "gates": {
+        "CONSUMER_ENABLED": "false",
+        "AUTHORITY_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      },
+      "allowlistEmpty": true,
+      "inlinePolicies": [
+        {
+          "name": "fenced-access-and-explicit-trial",
+          "sha256": "24f0413d5d658692b25990f3ba48f6f5110166544a6493a5082ba6c9b2343575"
+        }
+      ],
+      "managedPolicies": []
+    },
+    {
+      "function": "trustcheckradar-dev-v1-authority-deletion",
+      "liveVersion": "6",
+      "codeSha256": "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "handler": "v1_authority_deletion.app.lambda_handler",
+      "gates": {
+        "V1_AUTHORITY_DELETION_ENABLED": "false"
+      },
+      "allowlistEmpty": true,
+      "inlinePolicies": [
+        {
+          "name": "v1-authority-deletion-only",
+          "sha256": "1c3c136ea29f1777f4a5d27cd20ef8b550d40ac8d49618c33c8d981a64f30b9b"
+        }
+      ],
+      "managedPolicies": []
+    }
+  ],
+  "schedules": [
+    {
+      "name": "trustcheckradar-dev-play-lifecycle-worker",
+      "state": "DISABLED",
+      "expression": "rate(1 minute)",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-play-lifecycle-worker:live",
+      "retryPolicy": {
+        "MaximumEventAgeInSeconds": 60,
+        "MaximumRetryAttempts": 0
+      }
+    },
+    {
+      "name": "trustcheckradar-dev-play-token-deletion",
+      "state": "DISABLED",
+      "expression": "rate(1 minute)",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-play-token-deletion:live",
+      "retryPolicy": {
+        "MaximumEventAgeInSeconds": 60,
+        "MaximumRetryAttempts": 0
+      }
+    }
+  ],
+  "mappings": [
+    {
+      "UUID": "7e42551d-60aa-4370-9df8-5510118f747c",
+      "State": "Disabled",
+      "BatchSize": 5,
+      "MaximumRecordAgeInSeconds": 600,
+      "MaximumRetryAttempts": 2,
+      "EventSourceArn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091"
+    }
+  ],
+  "preparationRoute": {
+    "RouteId": "h7goiej",
+    "RouteKey": "POST /v1/purchases/google-play/prepare",
+    "AuthorizationType": "JWT",
+    "AuthorizerId": "tebb1y",
+    "AuthorizationScopes": [
+      "aws.cognito.signin.user.admin"
+    ]
+  },
+  "heartbeats": [
+    {
+      "name": "trustcheckradar-dev-play-worker-heartbeat",
+      "actionsEnabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-play-deletion-heartbeat",
+      "actionsEnabled": false
+    }
+  ]
+}
