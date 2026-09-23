@@ -41,7 +41,7 @@ observation, not a recommendation to disable audit logging.
 
 ## Approved Google transport and remaining setup
 
-The owner approved Pub/Sub pending-message retention of600seconds, no retention
+The owner approved Pub/Sub pending-message retention of 600 seconds, no retention
 of acknowledged messages, no dead-letter topic and no additional AWS raw-token
 queue. Queued notifications contain purchase tokens and cannot be selectively
 erased at account deletion; handlers reject deleted accounts. The setting is not
@@ -68,8 +68,24 @@ The six storage Terraform cases cover disabled default, no-copy/index/crypto
 boundaries, exact backup-role deny and rejected environment/role inputs. Existing
 stack-helper tests cover independent state routing; no Android Actions or hardware
 are involved. The actual foundation plan has exactly three creates and no updates
-or deletes. Deployment and readback will be recorded separately; a plan is not an
-applied or activated runtime.
+or deletes. Foundation PR54 was merged into `release-V01` at
+`2ff06a3089ea97f152f39fcd6559418cb018ff38`. The saved plan from reviewed source
+`8e5119402c23c356cad773f7de55de471eedf973` was manually applied to Dev on
+2026-09-23 UTC: three creates, no changes or destroys. Plan JSON SHA-256:
+`b0525bbcfc997de22bb1bbf2b37d89e27a428cc36ed828a42d79cd5a85c00bd4`.
+A fresh plan then returned detailed exit code 0 (no drift).
+
+[Metadata readback](evidence/play-token-foundation-2026-09-23/storage-audit.json)
+confirmed active storage, TTL enabled, no Streams/PITR, KEYS_ONLY projection,
+no backups/recovery points and no configured AWS Backup plans or execution roles.
+[KMS readback](evidence/play-token-foundation-2026-09-23/kms-readback.json)
+confirmed rotation and an ephemeral AES-256 data-key roundtrip using the approved
+static context. Missing, wrong-purpose, wrong-environment and extra context keys
+were denied. No purchase token or account data was used. These checks do not
+qualify expiry/deletion or enable purchases. No lifecycle runtime was deployed.
+
+Local validation: six storage Terraform cases and sixteen script tests passed.
+Provider deprecation warnings about hash/range key declarations remain warnings.
 
 ## Primary references
 
