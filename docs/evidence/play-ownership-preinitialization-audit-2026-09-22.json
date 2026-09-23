@@ -1,0 +1,350 @@
+{
+  "observedAt": "2026-09-23T03:44:43.790374+00:00",
+  "scope": "READ_ONLY; projected aggregate ownership inventory; no approval marker initialization",
+  "deployedSource": "28b4da19f321e6dc98ce2fc8b4e71632451b4362",
+  "table": "trustcheckradar-dev-purchase-entitlements",
+  "tableStatus": "ACTIVE",
+  "firstPass": {
+    "pages": 1,
+    "items": 5,
+    "fullyPaginated": true,
+    "digest": "e2b1b62ea205888ed59830e1c070909bb68e1a99c9de8f34d23b11a7721de436"
+  },
+  "secondPass": {
+    "pages": 1,
+    "items": 5,
+    "fullyPaginated": true,
+    "digest": "e2b1b62ea205888ed59830e1c070909bb68e1a99c9de8f34d23b11a7721de436"
+  },
+  "projectedPassesStable": true,
+  "families": {
+    "legacyProductEntitlement": 2,
+    "inertLegacyAuthorityCheckpoint": 2,
+    "authorityHmacInventory": 1
+  },
+  "shapeChecks": {
+    "legacyTier:free": 2,
+    "legacyStatus:expired": 2,
+    "legacyAccessFlag:false": 2,
+    "legacyProductRecordedUsage": 1
+  },
+  "projectionFields": [
+    "PK",
+    "SK",
+    "recordType",
+    "schemaVersion",
+    "revision",
+    "accountId",
+    "purchaseTokenHash",
+    "platform",
+    "productId",
+    "verifiedAtEpoch",
+    "verificationStatus",
+    "normalizedStatus",
+    "subscriptionStatus",
+    "entitlementTier",
+    "isAccessGranted",
+    "environment",
+    "coverage",
+    "monthlyScanLimit",
+    "remainingMonthlyScans",
+    "remainingCredits"
+  ],
+  "knownWriters": [
+    {
+      "function": "trustcheckradar-dev-campaign-participation",
+      "version": "$LATEST",
+      "codeSha256": "p+wPYSC7BSxN5jYSffePQAu2DLZLfDhZ+cJLKP2dnX8=",
+      "runtime": "python3.14",
+      "handler": "app.lambda_handler",
+      "gateFlags": {
+        "CONSENT_INDEPENDENCE_ENABLED": "false"
+      },
+      "denyPolicies": [
+        {
+          "name": "trustcheckradar-dev-research-migration-participation",
+          "sha256": "6b14fb4b08d29cca73f065dc9f85656dab223ab4356d62aa5d70940397113b1d"
+        }
+      ],
+      "dynamoDenyShape": [
+        {
+          "actions": [
+            "dynamodb:*"
+          ],
+          "unconditional": true,
+          "resourceAll": false,
+          "coversExactTable": true
+        }
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-conversation-analysis",
+      "version": "$LATEST",
+      "codeSha256": "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=",
+      "runtime": "python3.14",
+      "handler": "app.lambda_handler",
+      "gateFlags": {},
+      "denyPolicies": [
+        {
+          "name": "trustcheckradar-dev-research-migration-analysis",
+          "sha256": "c02032cd895e957b4908f3c25123aae8d72159dc8163cbfd15bfc51817809187"
+        }
+      ],
+      "dynamoDenyShape": [
+        {
+          "actions": [
+            "dynamodb:UpdateItem",
+            "dynamodb:PutItem",
+            "dynamodb:PartiQLUpdate",
+            "dynamodb:PartiQLInsert",
+            "dynamodb:PartiQLDelete",
+            "dynamodb:DeleteItem",
+            "dynamodb:BatchWriteItem"
+          ],
+          "unconditional": true,
+          "resourceAll": true,
+          "coversExactTable": true
+        }
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-entitlement-snapshot",
+      "version": "$LATEST",
+      "codeSha256": "3HxxsEAtAEKls89OxN91CfNQo1edq6ucNus4r+o2RVo=",
+      "runtime": "python3.14",
+      "handler": "app.lambda_handler",
+      "gateFlags": {},
+      "denyPolicies": [
+        {
+          "name": "trustcheckradar-dev-research-migration-snapshot",
+          "sha256": "242874b129d0c9285b96a227ed374a724a5d6c751fc3ea311e764a92d1e18b6c"
+        }
+      ],
+      "dynamoDenyShape": [
+        {
+          "actions": [
+            "dynamodb:UpdateItem",
+            "dynamodb:PutItem",
+            "dynamodb:PartiQLUpdate",
+            "dynamodb:PartiQLInsert",
+            "dynamodb:PartiQLDelete",
+            "dynamodb:DeleteItem",
+            "dynamodb:BatchWriteItem"
+          ],
+          "unconditional": true,
+          "resourceAll": true,
+          "coversExactTable": true
+        }
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-purchase-handoff",
+      "version": "$LATEST",
+      "codeSha256": "fbF+jSPpXRPrYKqDtE3jcosIMAfnpZLlsztfkaSyvRI=",
+      "runtime": "python3.14",
+      "handler": "app.lambda_handler",
+      "gateFlags": {
+        "PURCHASE_OWNERSHIP_CANDIDATE_ENABLED": "false"
+      },
+      "denyPolicies": [
+        {
+          "name": "trustcheckradar-dev-research-migration-purchase",
+          "sha256": "242874b129d0c9285b96a227ed374a724a5d6c751fc3ea311e764a92d1e18b6c"
+        }
+      ],
+      "dynamoDenyShape": [
+        {
+          "actions": [
+            "dynamodb:UpdateItem",
+            "dynamodb:PutItem",
+            "dynamodb:PartiQLUpdate",
+            "dynamodb:PartiQLInsert",
+            "dynamodb:PartiQLDelete",
+            "dynamodb:DeleteItem",
+            "dynamodb:BatchWriteItem"
+          ],
+          "unconditional": true,
+          "resourceAll": true,
+          "coversExactTable": true
+        }
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-v1-play-handoff",
+      "version": "1",
+      "codeSha256": "lCFJyf2hIG/WbhrxySRVTCxERwdnP4IWc/nAKyf7l/I=",
+      "runtime": "python3.14",
+      "handler": "v1_play_handoff.app.lambda_handler",
+      "gateFlags": {
+        "PLAY_HANDOFF_ENABLED": "false",
+        "AUTHORITY_ENABLED": "false"
+      },
+      "denyPolicies": [
+        {
+          "name": "verified-play-ownership-and-authority",
+          "sha256": "616878d4e1524ff84bfa9d90293304e3c4a9e4c2a36771a65b1d72cb30eb9426"
+        }
+      ],
+      "dynamoDenyShape": [
+        {
+          "actions": [
+            "lambda:InvokeFunction",
+            "s3:*",
+            "ssm:*",
+            "sts:AssumeRole",
+            "dynamodb:Scan",
+            "dynamodb:Query",
+            "dynamodb:DeleteItem",
+            "dynamodb:UpdateItem"
+          ],
+          "unconditional": true,
+          "resourceAll": true,
+          "coversExactTable": true
+        }
+      ],
+      "matchesPublished28b4da19": true
+    },
+    {
+      "function": "trustcheckradar-dev-url-consumer",
+      "version": "6",
+      "codeSha256": "sqegscbAtUFrWUForrB2v+wpJ7IsnyxmpjEabb/0ZRI=",
+      "runtime": "python3.14",
+      "handler": "app.lambda_handler",
+      "gateFlags": {
+        "AUTHORITY_ENABLED": "false",
+        "CONSUMER_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      },
+      "denyPolicies": [
+        {
+          "name": "fenced-check-authority-and-private-assessment",
+          "sha256": "0317f710ac62ac2a1242e1f40b3ba9f033e89a686f23638c094117d3ae026dc0"
+        }
+      ],
+      "dynamoDenyShape": [],
+      "matchesPublished28b4da19": true
+    },
+    {
+      "function": "trustcheckradar-dev-url-lease-recovery",
+      "version": "6",
+      "codeSha256": "ofu2Qeq8ZpPxlSiKo1eBDTLTSpq5b78SSOBlhXvBtAA=",
+      "runtime": "python3.14",
+      "handler": "app.lambda_handler",
+      "gateFlags": {
+        "LEASE_SWEEP_ENABLED": "false"
+      },
+      "denyPolicies": [
+        {
+          "name": "expired-lease-cleanup-only",
+          "sha256": "f556674acec46576caf4e2e1afb102984a42b67457c5d27a3bcbd9daa1918f77"
+        }
+      ],
+      "dynamoDenyShape": [],
+      "matchesPublished28b4da19": true
+    },
+    {
+      "function": "trustcheckradar-dev-v1-entitlements",
+      "version": "6",
+      "codeSha256": "3B9co1bUw2EBnhK4943dPTvxVgBXvowNY2LymfoNHr4=",
+      "runtime": "python3.14",
+      "handler": "v1_entitlements.app.lambda_handler",
+      "gateFlags": {
+        "AUTHORITY_ENABLED": "false",
+        "CONSUMER_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      },
+      "denyPolicies": [
+        {
+          "name": "fenced-access-and-explicit-trial",
+          "sha256": "24f0413d5d658692b25990f3ba48f6f5110166544a6493a5082ba6c9b2343575"
+        }
+      ],
+      "dynamoDenyShape": [],
+      "matchesPublished28b4da19": true
+    },
+    {
+      "function": "trustcheckradar-dev-v1-authority-deletion",
+      "version": "5",
+      "codeSha256": "YvEH0qhhvMSO4MCdj4J0fsV9sL5Zg+VTm3VozIDzzC0=",
+      "runtime": "python3.14",
+      "handler": "v1_authority_deletion.app.lambda_handler",
+      "gateFlags": {
+        "V1_AUTHORITY_DELETION_ENABLED": "false"
+      },
+      "denyPolicies": [
+        {
+          "name": "v1-authority-deletion-only",
+          "sha256": "1c3c136ea29f1777f4a5d27cd20ef8b550d40ac8d49618c33c8d981a64f30b9b"
+        }
+      ],
+      "dynamoDenyShape": [],
+      "matchesPublished28b4da19": true
+    }
+  ],
+  "latestConfigTableReferences": [
+    {
+      "function": "trustcheckradar-dev-campaign-participation",
+      "tableReferenceNames": [
+        "ENTITLEMENTS_TABLE_NAME"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-purchase-handoff",
+      "tableReferenceNames": [
+        "ENTITLEMENTS_TABLE_NAME",
+        "PURCHASE_ENTITLEMENTS_TABLE_NAME"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-url-lease-recovery",
+      "tableReferenceNames": [
+        "AUTHORITY_TABLE_NAME"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-url-consumer",
+      "tableReferenceNames": [
+        "AUTHORITY_TABLE_NAME"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-v1-entitlements",
+      "tableReferenceNames": [
+        "AUTHORITY_TABLE_NAME"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-v1-authority-deletion",
+      "tableReferenceNames": [
+        "AUTHORITY_TABLE_NAME"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-v1-play-handoff",
+      "tableReferenceNames": [
+        "AUTHORITY_TABLE_NAME",
+        "PURCHASE_OWNERSHIP_TABLE_NAME"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-entitlement-snapshot",
+      "tableReferenceNames": [
+        "ENTITLEMENTS_TABLE_NAME"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-conversation-analysis",
+      "tableReferenceNames": [
+        "ENTITLEMENTS_TABLE_NAME"
+      ]
+    }
+  ],
+  "approvalMarkerCreated": false,
+  "safeInitializationApproved": false,
+  "limitations": [
+    "Strongly consistent scans are not point-in-time snapshots; stable passes require independent all-writer/restore fences.",
+    "Projected modern row checks do not prove absence of extra fields; nonempty modern rows need exact-shape follow-up before qualification.",
+    "Legacy entitlement rows are preserved; no normalization, grant reconstruction or cleanup performed.",
+    "Alias/version rollback, external operator/IAM writers and backup restore controls still need orchestrator acceptance."
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "observedAtUtc": "2026-09-23T03:44:36.181431+00:00",
+  "hmacCurrentKeyringMatchesInventory": true,
+  "retainedKeyCount": 1,
+  "historicalIssuanceEvidence": "Existing verified marker and engineering integration record; current match is not a new historical audit",
+  "legacyVersionFences": [
+    {
+      "function": "trustcheckradar-dev-conversation-analysis",
+      "publishedAndLatestVersionCount": 1,
+      "distinctRoleCount": 1,
+      "aliasCount": 0,
+      "allVersionRolesExplicitlyDenyTableMutations": true
+    },
+    {
+      "function": "trustcheckradar-dev-entitlement-snapshot",
+      "publishedAndLatestVersionCount": 1,
+      "distinctRoleCount": 1,
+      "aliasCount": 0,
+      "allVersionRolesExplicitlyDenyTableMutations": true
+    },
+    {
+      "function": "trustcheckradar-dev-purchase-handoff",
+      "publishedAndLatestVersionCount": 1,
+      "distinctRoleCount": 1,
+      "aliasCount": 0,
+      "allVersionRolesExplicitlyDenyTableMutations": true
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-participation",
+      "publishedAndLatestVersionCount": 1,
+      "distinctRoleCount": 1,
+      "aliasCount": 0,
+      "allVersionRolesExplicitlyDenyTableMutations": true
+    }
+  ],
+  "restoreBoundary": "Runtime roles bind the exact existing table ARN. A restored replacement table or copied ownership state requires closed gates and renewed marker/writer qualification before repointing; no administrative copy or restore performed.",
+  "ownershipMarkerWritten": false
+}
