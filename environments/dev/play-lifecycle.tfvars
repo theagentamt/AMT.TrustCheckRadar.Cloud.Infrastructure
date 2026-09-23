@@ -1,4 +1,11 @@
 # Reviewed immutable closed runtime selection; all activation flags remain false.
+pubsub_identity = {
+  audience                = "https://api-dev.andmorethings.net/v1/notifications/google-play"
+  subscription            = "projects/trustcheck-radar/subscriptions/trustcheckradar-dev-play-lifecycle"
+  service_account_email   = "tcr-dev-play-push@trustcheck-radar.iam.gserviceaccount.com"
+  service_account_subject = "105021781538297478987"
+}
+
 aws_region        = "us-east-1"
 project_name      = "trustcheckradar"
 environment       = "dev"
