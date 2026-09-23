@@ -92,3 +92,31 @@ is merged at `b2a84785c0dfb2c10ba0b0485b7b33df8ca4e756`. Its eight empty-event
 AWS checks returned the expected HTTP503 or enabled=false without FunctionError.
 No provider/customer operation occurred. These calls qualify disabled entrypoints,
 not enabled encryption, cleanup, allowance or Google transaction behavior.
+
+## Closed Google callback deployment
+
+After the manual Google setup recorded in [the notification runbook](PLAY-NOTIFICATION-SETUP.md),
+PR61 selected verified subject `105021781538297478987` and merged into release-V01
+at `c20a5ffca1160b86becf667f0d6e75ff8ecf1d77`. The independently reviewed saved
+plan added seven callback resources and updated only the ingress function/alias.
+The four Pub/Sub identity fields were the only environment changes. Nine lifecycle
+Terraform tests and formatting checks passed; the exact saved plan was applied
+and a fresh plan returned exit code 0 (no drift).
+
+The actual callback URL is
+`https://h8w7swnmqe.execute-api.us-east-1.amazonaws.com/v1/notifications/google-play`.
+Its JWT audience remains the separate stable
+`https://api-dev.andmorethings.net/v1/notifications/google-play` claim.
+Ingress live alias is now version **2**, with the same immutable code hash as
+version 1. Google issuer/audience, exact POST route permission, burst/rate limits
+4/2, and metadata-only access log fields were verified through AWS readback.
+Synthetic requests with missing authorization and an invalid bearer token both
+returned **401**. These are authentication rejection checks, not proof of
+authenticated Google delivery. Processing gates remain false and subjects empty;
+no Google subscription, Play notification delivery or AWS cleanup was activated.
+
+[Deployment evidence](evidence/play-lifecycle-dev-2026-09-23/callback-deployment.json)
+and [callback readback](evidence/play-lifecycle-dev-2026-09-23/callback-readback.json)
+record the applied scope and checks. This supersedes the initial deployment's
+absence of a selected callback; export/deletion/cleanup and delivery acceptance
+remain open.
