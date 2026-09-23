@@ -9,6 +9,8 @@ output "candidate_contract" {
     pitr_enabled                  = false
     ttl_is_only_cleanup_backstop  = true
     token_stream_enabled          = false
+    runtime_aliases               = { for name, alias in aws_lambda_alias.runtime : name => alias.arn }
+    notification_endpoint         = try("${aws_apigatewayv2_api.notification[0].api_endpoint}/v1/notifications/google-play", null)
     lifecycle_active              = false
     google_transport_provisioned  = false
     account_backup_audit_required = true

@@ -1,3 +1,16 @@
+variable "account_export_play_token_table_arn" {
+  description = "Optional Dev token metadata reader; does not enable export or candidate.3."
+  type        = string
+  default     = null
+  validation {
+    condition = var.account_export_play_token_table_arn == null ? true : (
+      var.account_export_deployment != null && var.environment == "dev" &&
+      var.account_export_play_token_table_arn == "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens"
+    )
+    error_message = "Only the reviewed Dev token metadata store may be added to the disabled export candidate."
+  }
+}
+
 variable "account_export_deployment" {
   description = "Immutable disabled account-export candidate. No route or activation; complete inventory, identity mapping and end-to-end acceptance are required separately."
   type = object({
@@ -32,6 +45,8 @@ locals {
     Deletion     = { arn = local.deletion_ledger_table_arn, keys = ["ACCOUNT#*"] }
     Entitlements = { arn = local.purchase_entitlements_table_arn, keys = ["USER#*", "TOKEN#*", "V1#*"] }
     Analysis     = { arn = local.analysis_abuse_control_table_arn, keys = ["ANALYSIS#REQUEST#*", "ANALYSIS#CONSUMPTION#*"] }
+    }, var.account_export_play_token_table_arn == null ? {} : {
+    PlayTokens = { arn = var.account_export_play_token_table_arn, keys = ["V1#*#*", "PLAY_BINDING#*"] }
     }, var.history_deployment == null ? {} : {
     HistoryContent = { arn = local.history_data.content_table_arn, keys = ["USER#*"] }
     HistoryControl = { arn = local.history_data.control_table_arn, keys = ["USER#*"] }
@@ -205,6 +220,8 @@ resource "aws_lambda_function" "account_export" {
     variables = {
       STAGE                              = var.environment
       ACCOUNT_EXPORT_ENABLED             = "false"
+      ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED = "false"
+      PLAY_TOKEN_TABLE_NAME              = var.account_export_play_token_table_arn == null ? "" : split("/", var.account_export_play_token_table_arn)[1]
       ACCOUNT_EXPORT_POLICY_VERSION      = "account-export-observed-v1"
       ACCOUNT_EXPORT_INVENTORY_STATUS    = "pending"
       ACCOUNT_EXPORT_CURSOR_SECRET_ARN   = aws_secretsmanager_secret.account_export_cursor[0].arn

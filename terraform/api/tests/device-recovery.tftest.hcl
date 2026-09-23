@@ -478,7 +478,19 @@ run "play_route_throttle_is_bounded" {
   command = plan
   variables { play_verification_route_throttle_enabled = true }
   assert {
-    condition     = length([for route in aws_apigatewayv2_stage.age_attestation.route_settings : route if route.route_key == "POST /v1/purchases/google-play/verify" && route.throttling_burst_limit == 4 && route.throttling_rate_limit == 2 && route.detailed_metrics_enabled]) == 1
+    condition     = length([for route in aws_apigatewayv2_stage.age_attestation.route_settings : route if route.route_key == "POST /v1/purchases/google-play/verify" && route.throttling_burst_limit == 4 && route.throttling_rate_limit == 2 && route.detailed_metrics_enabled]) == 1 && length([for route in aws_apigatewayv2_stage.age_attestation.route_settings : route if route.route_key == "POST /v1/purchases/google-play/prepare"]) == 0
     error_message = "The Play route requires a dedicated bounded throttle."
+  }
+}
+
+run "prepare_throttle_requires_explicit_route_selection" {
+  command = plan
+  variables {
+    play_verification_route_throttle_enabled = true
+    play_preparation_route_throttle_enabled  = true
+  }
+  assert {
+    condition     = alltrue([for path in ["POST /v1/purchases/google-play/verify", "POST /v1/purchases/google-play/prepare"] : length([for route in aws_apigatewayv2_stage.age_attestation.route_settings : route if route.route_key == path && route.throttling_burst_limit == 4 && route.throttling_rate_limit == 2 && route.detailed_metrics_enabled]) == 1])
+    error_message = "After explicit route-first selection, both Play routes must have the same bounded throttle."
   }
 }

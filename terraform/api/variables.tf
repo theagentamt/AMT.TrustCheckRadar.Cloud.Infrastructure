@@ -914,3 +914,13 @@ variable "play_verification_route_throttle_enabled" {
     error_message = "Modern Play qualification is Dev-only."
   }
 }
+
+variable "play_preparation_route_throttle_enabled" {
+  description = "Install prepare throttle only after the separately managed closed prepare route exists; never implied by the existing verify throttle."
+  type        = bool
+  default     = false
+  validation {
+    condition     = !var.play_preparation_route_throttle_enabled || var.environment == "dev"
+    error_message = "Play preparation qualification is Dev-only."
+  }
+}

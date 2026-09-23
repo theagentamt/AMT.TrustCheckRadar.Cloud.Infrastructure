@@ -1453,7 +1453,7 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
   }
 
   dynamic "route_settings" {
-    for_each = var.play_verification_route_throttle_enabled ? ["POST /v1/purchases/google-play/verify"] : []
+    for_each = concat(var.play_verification_route_throttle_enabled ? ["POST /v1/purchases/google-play/verify"] : [], var.play_preparation_route_throttle_enabled ? ["POST /v1/purchases/google-play/prepare"] : [])
     content {
       route_key                = route_settings.value
       detailed_metrics_enabled = true
