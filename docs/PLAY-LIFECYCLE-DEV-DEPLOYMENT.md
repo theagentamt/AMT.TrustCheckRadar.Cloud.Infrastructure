@@ -54,3 +54,28 @@ The proposed five-minute checkpoint policy still awaits the owner's decision.
 Google Pub/Sub API enablement/configuration, account-deletion/export inventory,
 qualified expiry and coordinated remaining writers remain explicit activation
 dependencies. No physical testing or Android Actions are involved.
+
+## Data-key permission correction
+
+A post-deployment IAM simulation found that the original GenerateDataKey Allow
+used unsupported `kms:DataKeySpec`. The simulator denied generation, and isolated
+condition checks identified that condition. AWS documents
+[`kms:EncryptionAlgorithm`](https://docs.aws.amazon.com/kms/latest/developerguide/conditions-kms.html#conditions-kms-encryption-algorithm)
+for GenerateDataKey; it evaluates the symmetric algorithm used to encrypt the data
+key even when the request has no explicit algorithm parameter. Replace the invalid
+condition with `kms:EncryptionAlgorithm=SYMMETRIC_DEFAULT` in the foreground,
+ingress and reconciliation roles. The Lambda request separately selects AES_256
+and checks the returned key length. Exact CMK and purpose/environment restrictions
+are unchanged. No processing was enabled and no customer operation used the old
+permission.
+
+[Corrective saved plans](evidence/play-lifecycle-dev-2026-09-23/kms-correction-reviewed-plans.json)
+change only those three inline IAM policies. Root compared every before/after
+policy and confirmed the single condition substitution is the entire change.
+The nine lifecycle and eleven foreground Terraform cases pass, including a
+regression against reintroducing the unsupported condition.
+[Candidate identity-policy simulations](evidence/play-lifecycle-dev-2026-09-23/kms-correction-candidate-simulation.json)
+passed28 per-resource evaluations: required secret reads, role-specific key
+permissions and wrong-purpose/environment/extra-context denials. These simulations
+do not invoke Secrets Manager/KMS or fully qualify SCP/key-policy/service behavior.
+Applied policy/readback evidence follows after the exact reviewed correction.

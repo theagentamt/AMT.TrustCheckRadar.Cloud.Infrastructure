@@ -21,7 +21,7 @@ resource "aws_iam_role_policy" "lifecycle" {
     { Sid = "AtomicBindingAndVerifiedToken", Effect = "Allow", Action = ["dynamodb:PutItem"], Resource = var.lifecycle_storage.table_arn,
     Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*#*", "PLAY_BINDING#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
     { Sid = "NewTokenEnvelopeKeyOnly", Effect = "Allow", Action = ["kms:GenerateDataKey"], Resource = var.lifecycle_storage.kms_key_arn,
-    Condition = { StringEquals = { "kms:EncryptionContext:purpose" = "google-play-reconciliation", "kms:EncryptionContext:environment" = "dev", "kms:DataKeySpec" = "AES_256" }, "ForAllValues:StringEquals" = { "kms:EncryptionContextKeys" = ["purpose", "environment"] } } },
+    Condition = { StringEquals = { "kms:EncryptionContext:purpose" = "google-play-reconciliation", "kms:EncryptionContext:environment" = "dev", "kms:EncryptionAlgorithm" = "SYMMETRIC_DEFAULT" }, "ForAllValues:StringEquals" = { "kms:EncryptionContextKeys" = ["purpose", "environment"] } } },
     { Sid = "NoTokenDecryption", Effect = "Deny", Action = ["kms:Decrypt", "kms:Encrypt", "kms:ReEncrypt*"], Resource = var.lifecycle_storage.kms_key_arn },
     { Sid = "NoTokenCopies", Effect = "Deny", Action = ["dynamodb:CreateBackup", "dynamodb:StartAwsBackupJob", "dynamodb:ExportTableToPointInTime", "dynamodb:UpdateContinuousBackups"], Resource = "*" }
   ] })
