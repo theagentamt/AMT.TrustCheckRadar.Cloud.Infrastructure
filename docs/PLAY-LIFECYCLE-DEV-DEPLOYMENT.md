@@ -29,9 +29,26 @@ selected because the dedicated external identity is not yet verified. Preparatio
 inherits the existing API default throttle; its separate dedicated throttle must
 be selected and verified after the closed route exists, before activation.
 
-This record initially describes the reviewed selection and plans, not an applied
-runtime. Applied versions, readbacks and synthetic closed-handler checks will be
-recorded after deployment. Neither local tests nor empty-event smoke prove Google
+The exact saved plans were manually applied to Dev on 2026-09-23 UTC after
+independent plan/source review and PR57 release integration at
+`3fb3569357fbeb97da4eaf836409939e9f822434`. Applied counts matched all three
+plans. Each fresh post-apply plan returned detailed exit code 0 (no drift).
+[Applied summary](evidence/play-lifecycle-dev-2026-09-23/applied-summary.json)
+and [configuration readback](evidence/play-lifecycle-dev-2026-09-23/runtime-readback.json)
+confirm exact hashes/handlers/Python3.14 ARM64 for all 8 live aliases, no weighted
+alias routing, false gates, empty applicable allowlists, two disabled schedules,
+one disabled five-record deletion mapping and JWT-protected preparation route.
+Execution roles have no attached managed policies; inline policy hashes are
+recorded. Missing-heartbeat actions remain off.
+
+Installed live versions: new ingress/worker/token-deletion1, Play handoff2,
+URL consumer/lease recovery/entitlements7 and authority deletion6.
+[Prior versions](evidence/play-lifecycle-dev-2026-09-23/prior-runtime-versions.json)
+were recorded after verifying those five functions were already disabled.
+[Independent publication download verification](evidence/play-lifecycle-dev-2026-09-23/publication-download-verification.json)
+matched every one of the thirteen immutable objects. These configuration checks
+do not invoke a handler or read account rows/secret values. Synthetic deployed
+handler evidence is recorded separately by the Lambda owner. Neither local tests nor empty-event smoke prove Google
 purchase/acknowledgment, renewal, token expiry/erasure or inventory qualification.
 The proposed five-minute checkpoint policy still awaits the owner's decision.
 Google Pub/Sub API enablement/configuration, account-deletion/export inventory,

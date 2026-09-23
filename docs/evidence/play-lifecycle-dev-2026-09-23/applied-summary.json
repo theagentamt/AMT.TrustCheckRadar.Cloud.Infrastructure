@@ -1,0 +1,32 @@
+{
+  "scope": "Actual Dev saved-plan application and post-apply checks; all processing disabled",
+  "selectionSource": "909004f711c56af5f87c624562c49f1f6344a946",
+  "releaseMerge": "3fb3569357fbeb97da4eaf836409939e9f822434",
+  "stacks": [
+    {
+      "name": "play-lifecycle",
+      "added": 55,
+      "changed": 0,
+      "destroyed": 0,
+      "postApplyDetailedExitCode": 0
+    },
+    {
+      "name": "play-verification",
+      "added": 3,
+      "changed": 2,
+      "destroyed": 0,
+      "postApplyDetailedExitCode": 0
+    },
+    {
+      "name": "url-consumer",
+      "added": 0,
+      "changed": 8,
+      "destroyed": 0,
+      "postApplyDetailedExitCode": 0
+    }
+  ],
+  "customerDataReadOrChanged": false,
+  "googleTransportConfigured": false,
+  "activationApproved": false,
+  "physicalTestingPerformed": false
+}
