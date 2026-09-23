@@ -55,3 +55,31 @@ inventory mutation, direct writes, and invalid checkpoint fields denied.
 [Simulation evidence](evidence/play-dev-iam-simulation-2026-09-22.json) is not a
 live DynamoDB transaction test. Verifier policy gets a separate post-install
 simulation once the new log ARN is resolved.
+
+## Actual Dev deployment and bounded verification
+
+Infrastructure PR49 merged `87a1184edd8552c04cfeabfb7408f125274b9191`.
+The initial stage throttle apply failed with AWS 404 because the route did not yet
+exist. No stage change was applied. The exact reviewed resolver, accounting and
+verifier plans then succeeded. A freshly reviewed stage-only plan applied the
+throttle after the closed route existed. Future runs must use that dependency
+order; the new route briefly inherited the API default while all runtime gates
+remained closed.
+
+[Live evidence](evidence/play-dev-deployed-2026-09-22.json) records five exact
+artifact hashes, Python 3.14 ARM64 aliases, empty-event disabled responses,
+access-token JWT routing, unauthenticated HTTP 401, burst 4/rate 2 throttle,
+closed schedules/stream, two configured support alarms, and five additional
+positive/negative verifier IAM simulation cases. These are closed-runtime tests;
+no real purchase, account grant, acknowledgment or provider dependency execution
+was performed. Alarm delivery/transition has not been exercised by this increment.
+
+SECUR4ALL-244/195 and ATCR-91/111 remain In Progress: authenticated test-subject and
+canonical-device qualification, coordinated cleanup/inventory readiness, and the
+actual license-test purchase/restore/retry matrix are still pending. Background
+renewal/refund/grace/revocation remains SECUR4ALL-125. Its newly approved source
+work is separate and not included in deployed artifact source `28b4da19`.
+
+All four post-deployment Terraform plans returned detailed exit code 0 (no drift).
+[Drift evidence](evidence/play-dev-no-drift-2026-09-22.json). Live versions are
+verifier 1, URL consumer 6, lease recovery 6, entitlements 6, authority deletion 5.
