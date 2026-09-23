@@ -78,4 +78,17 @@ regression against reintroducing the unsupported condition.
 passed28 per-resource evaluations: required secret reads, role-specific key
 permissions and wrong-purpose/environment/extra-context denials. These simulations
 do not invoke Secrets Manager/KMS or fully qualify SCP/key-policy/service behavior.
-Applied policy/readback evidence follows after the exact reviewed correction.
+The independently reviewed saved plans from source
+`da76e91f58078cd6289d50c71947814e12102835` were applied: exactly three inline
+policy updates and no function/storage/activation changes. Both fresh affected
+stack plans returned detailed exit code 0. All 28
+[installed role identity-policy evaluations](evidence/play-lifecycle-dev-2026-09-23/kms-installed-permission-simulation.json)
+then passed, and the refreshed eight-function readback preserved every closed
+gate and disabled trigger. Simulation used per-resource results, which distinguish
+the deletion role's allowed HMAC secret from its denied Google credential.
+
+The Lambda owner's [PR44](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/pull/44)
+is merged at `b2a84785c0dfb2c10ba0b0485b7b33df8ca4e756`. Its eight empty-event
+AWS checks returned the expected HTTP503 or enabled=false without FunctionError.
+No provider/customer operation occurred. These calls qualify disabled entrypoints,
+not enabled encryption, cleanup, allowance or Google transaction behavior.
