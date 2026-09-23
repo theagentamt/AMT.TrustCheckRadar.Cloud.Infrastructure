@@ -107,3 +107,5 @@ campaign_participation_lambda_reserved_concurrency = 5
 entitlement_snapshot_lambda_reserved_concurrency   = 5
 purchase_handoff_lambda_reserved_concurrency       = 5
 web_risk_communication_lambda_reserved_concurrency = 5
+
+play_verification_route_throttle_enabled = true

@@ -9,14 +9,21 @@ resource "aws_iam_role_policy" "deletion" {
       { Sid = "ReadV1Authority", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:ConditionCheckItem"], Resource = local.authority_arn,
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*"] } } },
       { Sid = "AtomicV1Deletion", Effect = "Allow", Action = ["dynamodb:UpdateItem"], Resource = local.authority_arn,
-      Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
+      Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
       { Sid = "DeleteAccountRowsOnly", Effect = "Allow", Action = ["dynamodb:DeleteItem"], Resource = local.authority_arn,
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
       { Sid = "ReadDeletionCommands", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:Scan"], Resource = var.deployment.deletion_table_arn },
       { Sid = "AtomicDeletionProgress", Effect = "Allow", Action = ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem"], Resource = var.deployment.deletion_table_arn,
-      Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["ACCOUNT#*", "V1#CONTROL"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
+      Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["ACCOUNT#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
       { Sid = "CheckDeletionProgress", Effect = "Allow", Action = ["dynamodb:ConditionCheckItem"], Resource = var.deployment.deletion_table_arn,
-      Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["ACCOUNT#*", "V1#CONTROL"] } } },
+      Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["ACCOUNT#*"] } } },
+      { Sid = "UpdateDeletionCheckpoint", Effect = "Allow", Action = ["dynamodb:UpdateItem"], Resource = var.deployment.deletion_table_arn,
+        Condition = {
+          "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["V1#CONTROL"], "dynamodb:Attributes" = ["PK", "SK", "cursor", "revision", "scanStartedAtEpoch", "lastFullPassAtEpoch"] }
+          "ForAnyValue:StringEquals"  = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] }
+          "Null"                      = { "dynamodb:Attributes" = "false" }
+        }
+      },
       { Sid = "ReadCommandStream", Effect = "Allow", Action = ["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator", "dynamodb:ListStreams"], Resource = var.deletion_stream_arn },
       { Sid = "OneRetainedKeyRing", Effect = "Allow", Action = "secretsmanager:GetSecretValue", Resource = aws_secretsmanager_secret.authority_hmac[0].arn,
       Condition = { StringEquals = { "secretsmanager:VersionStage" = "AWSCURRENT" } } },

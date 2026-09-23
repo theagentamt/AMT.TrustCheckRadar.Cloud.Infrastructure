@@ -14,27 +14,27 @@ deployment = {
   artifacts = {
     consumer = {
       bucket         = "trustcheckradar-dev-107827791950-artifacts"
-      key            = "releases/8700d234e17ac9155bf6566f9ddcbd5bc8341146/url_consumer.zip"
-      object_version = "NqgnQE5VK2xa0iNnuRRmClg_8.SqScFP"
-      source_hash    = "tWl/GeNA83Y3Eao+VnPXtadZXiVQd2QNgChqjB41eAg="
+      key            = "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/url_consumer.zip"
+      object_version = "xVQqzGgyqoGBisfRfRZWiEyyTfHflnKg"
+      source_hash    = "sqegscbAtUFrWUForrB2v+wpJ7IsnyxmpjEabb/0ZRI="
     },
     recovery = {
       bucket         = "trustcheckradar-dev-107827791950-artifacts"
-      key            = "releases/8700d234e17ac9155bf6566f9ddcbd5bc8341146/url_lease_recovery.zip"
-      object_version = "WOSUu3I1AW2wSLSW8dF3E4k4WORd.0zM"
-      source_hash    = "rmopw7xe3v6zvuYXWmAyVOonGoHFaSop5gtk8OdPs/U="
+      key            = "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/url_lease_recovery.zip"
+      object_version = "ibnXKj0vHg38E6kKr6JKXHYW3aI76df4"
+      source_hash    = "ofu2Qeq8ZpPxlSiKo1eBDTLTSpq5b78SSOBlhXvBtAA="
     },
     entitlements = {
       bucket         = "trustcheckradar-dev-107827791950-artifacts"
-      key            = "releases/8700d234e17ac9155bf6566f9ddcbd5bc8341146/v1_entitlements.zip"
-      object_version = "YIerN78WKpg.sBNczBskLJhejmxuKSrB"
-      source_hash    = "slCLqK11rLK2z2ofSCsMCTDIZJi6Ixjhl3prfCp4xZQ="
+      key            = "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/v1_entitlements.zip"
+      object_version = "iz7t7.FQr.z0a.pjA9_p4hgqq7cRr71S"
+      source_hash    = "3B9co1bUw2EBnhK4943dPTvxVgBXvowNY2LymfoNHr4="
     },
     deletion = {
       bucket         = "trustcheckradar-dev-107827791950-artifacts"
-      key            = "releases/8700d234e17ac9155bf6566f9ddcbd5bc8341146/v1_authority_deletion.zip"
-      object_version = "QtSEjX7n_uYWVPolacMHcH1YnDZdjkEZ"
-      source_hash    = "Xm1fz2QyyF/cnagXYuFEteSSGUc4Zf/CqVAEV/UuK+I="
+      key            = "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/v1_authority_deletion.zip"
+      object_version = "h15XlWwddxXStuY6t.xIFr4zWqksuaqH"
+      source_hash    = "YvEH0qhhvMSO4MCdj4J0fsV9sL5Zg+VTm3VozIDzzC0="
     },
   },
   users_table_arn       = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",

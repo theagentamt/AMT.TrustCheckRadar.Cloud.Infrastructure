@@ -82,6 +82,29 @@ run "routes_and_cleanup_default_inactive" {
     error_message = "Deletion must be bounded and cannot call providers."
   }
 }
+run "inventory_markers_are_not_mutable" {
+  command = apply
+  assert {
+    condition = alltrue([for policy in [aws_iam_role_policy.consumer[0].policy, aws_iam_role_policy.entitlements[0].policy, aws_iam_role_policy.deletion[0].policy, aws_iam_role_policy.recovery[0].policy] : alltrue([
+      for statement in jsondecode(policy).Statement :
+      statement.Effect != "Allow" || statement.Resource != var.deployment.authority_table_arn ||
+      !anytrue([for action in ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem"] : try(contains(statement.Action, action), false)]) ||
+      try(statement.Condition["ForAllValues:StringLike"]["dynamodb:LeadingKeys"] == ["V1#*#*"], false) ||
+      try(statement.Condition["ForAllValues:StringEquals"]["dynamodb:LeadingKeys"] == ["V1#CHECKPOINT"] && statement.Action == ["dynamodb:UpdateItem"], false)
+    ])])
+    error_message = "Ordinary writes must exclude inventory; recovery may update only its separate checkpoint partition."
+  }
+  assert {
+    condition = alltrue([for statement in jsondecode(aws_iam_role_policy.deletion[0].policy).Statement :
+      statement.Effect != "Allow" || statement.Resource != var.deployment.deletion_table_arn ||
+      !anytrue([for action in ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem"] : try(contains(statement.Action, action), false)]) ||
+      try(statement.Condition["ForAllValues:StringLike"]["dynamodb:LeadingKeys"] == ["ACCOUNT#*"], false) ||
+      try(statement.Action == ["dynamodb:UpdateItem"] && statement.Condition["ForAllValues:StringEquals"]["dynamodb:LeadingKeys"] == ["V1#CONTROL"] &&
+      statement.Condition["ForAllValues:StringEquals"]["dynamodb:Attributes"] == ["PK", "SK", "cursor", "revision", "scanStartedAtEpoch", "lastFullPassAtEpoch"], false)
+    ])
+    error_message = "Deletion ledger inventory must remain excluded from writes; its cursor accepts only progress fields."
+  }
+}
 run "engineering_requires_subjects" {
   command = plan
   variables { activate_engineering = true }

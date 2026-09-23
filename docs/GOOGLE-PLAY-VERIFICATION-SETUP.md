@@ -124,3 +124,26 @@ Actionlint, shell syntax and diff checks passed. These are source checks, not
 store purchase or deployed acceptance. The
 [evidence record](evidence/play-verification-source-candidate.json) distinguishes
 provider observations, default-disabled controls and outstanding qualification.
+
+
+## Verified catalog and Dev integration follow-up (2026-09-22)
+
+The latest bounded catalog audit supersedes the earlier SERVICE_DISABLED and
+permission-denied observations: HTTP 200; active `pro-monthly`, P1M, US available,
+$4.99 for `com.andmorethings.trustcheckradar` / `trustcheck_radar_pro_monthly`.
+No customer purchases were read or acknowledged. Owner confirmed a license tester,
+a dedicated profile without existing canonical-package data, and onboarded Dev
+account; these confirmations are not device-verified evidence.
+
+The authenticated modern route, native runtime alarms, stage throttle, and
+coordinated accounting deployment are tracked in SECUR4ALL-244/195. All purchase,
+authority, cleanup and mobile gates remain closed pending qualification. See
+[Dev integration](PLAY-DEV-INTEGRATION-2026-09-22.md) for deployment evidence.
+
+Background lifecycle policy was separately approved: encrypted token retention
+while its account exists, deletion with the account, otherwise at most latest
+verified access end plus 7 days; verified grace/deferral uses remaining checks,
+never a new allowance until a newly funded period is verified. Minimal usage
+retention extends to that verified access end plus 7 days, with existing backups
+up to 35 additional days. SECUR4ALL-125 implements this separately; the current
+closed deployment does not claim that policy is active.

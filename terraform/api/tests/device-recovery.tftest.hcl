@@ -473,3 +473,12 @@ run "review_references_without_approval_do_not_activate_consumers" {
   }
   expect_failures = [var.device_self_recovery_enabled]
 }
+
+run "play_route_throttle_is_bounded" {
+  command = plan
+  variables { play_verification_route_throttle_enabled = true }
+  assert {
+    condition     = length([for route in aws_apigatewayv2_stage.age_attestation.route_settings : route if route.route_key == "POST /v1/purchases/google-play/verify" && route.throttling_burst_limit == 4 && route.throttling_rate_limit == 2 && route.detailed_metrics_enabled]) == 1
+    error_message = "The Play route requires a dedicated bounded throttle."
+  }
+}

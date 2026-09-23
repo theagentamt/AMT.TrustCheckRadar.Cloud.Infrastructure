@@ -136,3 +136,49 @@ run "optional_runtime_alerts_are_bounded" {
     error_message = "Native runtime alarms must use the exact existing support topic and candidate function."
   }
 }
+
+run "authenticated_route_keeps_purchase_gates_closed" {
+  command = apply
+  variables {
+    enabled              = true
+    catalog_p1m_verified = true
+    api_gateway = {
+      api_id        = "icuak34th9"
+      execution_arn = "arn:aws:execute-api:us-east-1:107827791950:icuak34th9"
+      stage_name    = "$default"
+    }
+  }
+  assert {
+    condition = (
+      aws_apigatewayv2_route.play[0].route_key == "POST /v1/purchases/google-play/verify" &&
+      aws_apigatewayv2_route.play[0].authorization_type == "JWT" &&
+      aws_apigatewayv2_route.play[0].authorization_scopes == toset(["aws.cognito.signin.user.admin"]) &&
+      aws_apigatewayv2_authorizer.play[0].jwt_configuration[0].audience == toset([var.deployment.cognito_app_client_id]) &&
+      aws_apigatewayv2_authorizer.play[0].jwt_configuration[0].issuer == var.deployment.cognito_issuer &&
+      aws_apigatewayv2_integration.play[0].payload_format_version == "2.0" &&
+      aws_apigatewayv2_integration.play[0].timeout_milliseconds == 29000 &&
+      aws_lambda_permission.play[0].qualifier == "live" &&
+      aws_lambda_permission.play[0].source_account == "107827791950" &&
+      aws_lambda_permission.play[0].source_arn == "arn:aws:execute-api:us-east-1:107827791950:icuak34th9/$default/POST/v1/purchases/google-play/verify"
+    )
+    error_message = "The purchase route must bind access-token JWT identity and the exact same-account API/stage/method/path/live alias."
+  }
+  assert {
+    condition = (
+      output.candidate_contract.route_published && output.candidate_contract.catalog_verified &&
+      output.candidate_contract.endpoint == "https://icuak34th9.execute-api.us-east-1.amazonaws.com/v1/purchases/google-play/verify" &&
+      aws_lambda_function.runtime[0].environment[0].variables.PLAY_CATALOG_P1M_VERIFIED == "true" &&
+      aws_lambda_function.runtime[0].environment[0].variables.PLAY_HANDOFF_ENABLED == "false" &&
+      aws_lambda_function.runtime[0].environment[0].variables.AUTHORITY_ENABLED == "false" &&
+      aws_lambda_function.runtime[0].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == "[]"
+    )
+    error_message = "Catalog verification and authenticated routing must not activate paid access."
+  }
+}
+run "other_gateway_rejected" {
+  command = plan
+  variables {
+    api_gateway = { api_id = "abcdefghij", execution_arn = "arn:aws:execute-api:us-east-1:107827791950:abcdefghij", stage_name = "$default" }
+  }
+  expect_failures = [var.api_gateway]
+}

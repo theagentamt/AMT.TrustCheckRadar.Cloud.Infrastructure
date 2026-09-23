@@ -904,3 +904,13 @@ variable "cors_allow_methods" {
   type        = list(string)
   default     = ["OPTIONS", "GET", "POST", "PUT"]
 }
+
+variable "play_verification_route_throttle_enabled" {
+  description = "Install the dedicated modern Play route throttle before its separate closed verifier is provisioned."
+  type        = bool
+  default     = false
+  validation {
+    condition     = !var.play_verification_route_throttle_enabled || var.environment == "dev"
+    error_message = "Modern Play qualification is Dev-only."
+  }
+}
