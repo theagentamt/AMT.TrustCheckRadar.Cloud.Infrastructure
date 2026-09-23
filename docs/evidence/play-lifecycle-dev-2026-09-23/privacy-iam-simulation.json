@@ -1,0 +1,25 @@
+{
+  "scope": "identity_policy_simulation_not_runtime_service_qualification",
+  "checks": [
+    {
+      "case": "stream_discovery_us-east-1",
+      "decision": "allowed"
+    },
+    {
+      "case": "stream_discovery_us-west-2",
+      "decision": "implicitDeny"
+    },
+    {
+      "case": "stream_records_own",
+      "decision": "allowed"
+    },
+    {
+      "case": "stream_records_other",
+      "decision": "implicitDeny"
+    },
+    {
+      "case": "export_play_token_decrypt",
+      "decision": "implicitDeny"
+    }
+  ]
+}
