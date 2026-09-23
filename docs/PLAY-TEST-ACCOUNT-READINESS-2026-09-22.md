@@ -7,12 +7,32 @@ no account-deletion fence. The account has no ACTIVE_BINDING pointer. Its privat
 subject/username stay outside this repository; do not fabricate a device binding
 or reuse another installation's fingerprint.
 
-The authority retained-key marker exists and reports VERIFIED_COMPLETE with one
-retained key. That observation is not a new audit of historical issuance or a
-secret-value comparison. PURCHASE#CONTROL/OWNERSHIP_INVENTORY is absent; no purchase
-can be admitted until independent coverage evidence justifies initialization.
-New V1#CHECKPOINT cursor rows are absent after the recent disabled deployment;
-first-run traversal qualification remains pending. No marker was written here.
+The authority retained-key marker matches the current retained keyring through
+its deployed validator. Historical issuance qualification remains the existing
+engineering record; a current-key match is not a new historical audit.
+
+After independent review, refreshed stable fully paginated scans found no modern
+owner/locator records and no unknown row families. All four legacy writers have
+only `$LATEST`, no aliases, and explicit mutation denies on the exact table for
+every execution role. Known modern writer gates remain closed. The previously
+absent `PURCHASE#CONTROL / OWNERSHIP_INVENTORY` marker was conditionally created
+and read back at 2026-09-23 03:44 UTC (September 22 local). All five pre-existing
+projected rows remained unchanged. This qualifies current empty ownership
+coverage only; it does not activate paid access or qualify historical paid usage.
+
+Two expired FREE legacy entitlement records remain intact, including one with
+prior usage. No legacy usage was reconstructed, migrated, or deleted. No provider
+was called and no grant or account/device state was changed. Any restore, state
+copy or table repointing requires closed gates and renewed qualification.
+
+New `V1#CHECKPOINT` cursor rows remain absent; first-run expiry/deletion traversal
+qualification and the dedicated physical-device test remain pending.
+
+Evidence: [pre-initialization audit](evidence/play-ownership-preinitialization-audit-2026-09-22.json),
+[writer fences](evidence/play-ownership-writer-fences-2026-09-22.json), and
+[conditional initialization/readback](evidence/play-ownership-initialization-2026-09-22.json).
+The first two files describe their pre-write observations; the last records the
+subsequent single control-record write.
 
 ## Independent stages
 
