@@ -9,6 +9,35 @@ TABLE = "trustcheckradar-dev-play-tokens"
 ARN = f"arn:aws:dynamodb:{REGION}:{ACCOUNT}:table/{TABLE}"
 
 
+def may_trust_backup(document):
+    statements = document.get("Statement", [])
+    if isinstance(statements, dict):
+        statements = [statements]
+    for statement in statements:
+        if statement.get("Effect") != "Allow":
+            continue
+        principal = statement.get("Principal")
+        if principal == "*":
+            return True
+        if isinstance(principal, dict):
+            services = principal.get("Service", [])
+            if isinstance(services, str):
+                services = [services]
+            if any(value == "backup.amazonaws.com" or "*" in value for value in services):
+                return True
+    return False
+
+
+def needs_review(report):
+    return bool(report["backupPlans"] or report["backupExecutionRoles"] or
+                report.get("dynamoBackupCount", 0) or report.get("awsBackupRecoveryPointCount", 0) or
+                report.get("tableExists") and (
+                    report.get("pitrStatus") != "DISABLED" or report.get("streamEnabled") or
+                    not report.get("deletionProtection") or
+                    report.get("indexProjections") != {"GSI1": "KEYS_ONLY"} or
+                    report.get("ttl") != {"TimeToLiveStatus": "ENABLED", "AttributeName": "expiresAt"}))
+
+
 def audit(session):
     if session.client("sts").get_caller_identity()["Account"] != ACCOUNT:
         raise ValueError("Unexpected AWS account")
@@ -48,8 +77,8 @@ def audit(session):
                     selections.append(backup.get_backup_selection(BackupPlanId=plan["BackupPlanId"], SelectionId=selection["SelectionId"])["BackupSelection"])
             plans.append({"id":plan["BackupPlanId"],"selections":selections})
     report["backupPlans"]=plans
-    report["backupExecutionRoles"]=[r["Arn"] for page in iam.get_paginator("list_roles").paginate() for r in page["Roles"] if "backup.amazonaws.com" in json.dumps(r["AssumeRolePolicyDocument"])]
-    report["configurationReviewRequired"]=bool(plans or report["backupExecutionRoles"])
+    report["backupExecutionRoles"]=[r["Arn"] for page in iam.get_paginator("list_roles").paginate() for r in page["Roles"] if may_trust_backup(r["AssumeRolePolicyDocument"])]
+    report["configurationReviewRequired"]=needs_review(report)
     report["limitations"]=["Point-in-time metadata inventory; future backup configuration requires requalification.",
                             "This audit does not prove explicit expiry/account deletion or runtime activation readiness.",
                             "Table resource policy does not by itself govern AWS Backup StartAwsBackupJob; inspect actual execution-role denies when present."]
