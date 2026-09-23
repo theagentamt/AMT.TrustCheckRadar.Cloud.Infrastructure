@@ -78,3 +78,25 @@ pending Android pull request or satisfy its missing acceptance evidence.
 Do not generate HMAC key material, add public routes/schedules, or grant real trial
 or paid access as part of this inactive provisioning procedure. Complete the
 activation prerequisites above in a separately reviewed change.
+
+## Restricted access-only engineering mode
+
+`activate_access_engineering` defaults to false and cannot coexist with the older
+full `activate_engineering` mode. After recorded readiness review, it can enable
+exact-subject access snapshots and monitored cleanup while leaving every URL
+consumer gate false. It sets `TRIAL_AUTHORITY_RETENTION_APPROVED=false` for the
+paid-only test so the existing trial handler cannot consume trial eligibility.
+This operational restriction does not revoke the owner's retention-policy approval.
+
+The mode requires the same explicit policy, JWT routes, alerts, deletion stream
+and packages as full engineering, plus `access_qualification_reference`. That
+reference identifies reviewed evidence; its presence does not prove the evidence.
+The operator must qualify all authority rows before enabling the lease/expiry
+worker: its sweeps are table-wide, unlike the subject-scoped deletion worker.
+Access GET may refresh existing authority and is not universally read-only.
+
+Keep subjects in a private local override, not source or review evidence. All
+committed environment files remain closed. Play handoff remains separately closed
+and this change adds no Play activation switch. No grant, trial, inventory marker,
+device binding, provider request or test purchase is created by the default mode.
+See [test-account readiness](../../docs/PLAY-TEST-ACCOUNT-READINESS-2026-09-22.md).

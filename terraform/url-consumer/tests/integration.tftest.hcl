@@ -130,3 +130,61 @@ run "invalid_subject_rejected" {
   variables { engineering_subjects = ["*"] }
   expect_failures = [var.engineering_subjects]
 }
+
+run "access_only_requires_recorded_readiness_and_subject" {
+  command = plan
+  variables { activate_access_engineering = true }
+  expect_failures = [var.activate_access_engineering]
+}
+run "access_only_rejects_missing_readiness" {
+  command = plan
+  variables {
+    activate_access_engineering = true
+    engineering_subjects        = ["00000000-0000-4000-8000-000000000001"]
+  }
+  expect_failures = [var.activate_access_engineering]
+}
+run "access_only_keeps_providers_and_trial_closed" {
+  command = apply
+  variables {
+    activate_access_engineering    = true
+    engineering_subjects           = ["00000000-0000-4000-8000-000000000001"]
+    access_qualification_reference = "synthetic test evidence, not operational approval"
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.AUTHORITY_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "false" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.CONSUMER_ENABLED == "false" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.AUTHORITY_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "false" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000001"]) &&
+      output.candidate_contract.access_enabled && !output.candidate_contract.consumer_enabled &&
+      !output.candidate_contract.trial_activation_enabled && !output.candidate_contract.general_customer_access
+    )
+    error_message = "Access-only mode must enable exact-subject snapshots without URL execution, a provider call, or trial activation."
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "true" &&
+      aws_lambda_function.runtime["deletion"].environment[0].variables.V1_AUTHORITY_DELETION_ENABLED == "true" &&
+      alltrue([for rule in aws_cloudwatch_event_rule.maintenance : rule.state == "ENABLED"]) &&
+      aws_lambda_event_source_mapping.v1_deletion[0].enabled &&
+      alltrue([for alarm in aws_cloudwatch_metric_alarm.worker_heartbeat : alarm.actions_enabled && alarm.treat_missing_data == "breaching"]) &&
+      aws_cloudwatch_metric_alarm.deletion_full_pass_age[0].actions_enabled
+    )
+    error_message = "Access-only mode must retain monitored scheduled expiry, lease recovery and subject-scoped deletion."
+  }
+}
+run "access_only_and_full_modes_cannot_overlap" {
+  command = plan
+  variables {
+    activate_engineering          = true
+    activate_access_engineering   = true
+    engineering_subjects          = ["00000000-0000-4000-8000-000000000001"]
+    access_qualification_reference = "synthetic test evidence"
+  }
+  expect_failures = [var.activate_access_engineering]
+}

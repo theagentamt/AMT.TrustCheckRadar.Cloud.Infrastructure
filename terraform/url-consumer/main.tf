@@ -111,9 +111,9 @@ resource "aws_lambda_function" "runtime" {
       AUTHORITY_TABLE_NAME = split("/", local.authority_arn)[1]
       }, contains(["consumer", "entitlements"], each.key) ? {
       CONSUMER_ENABLED                   = tostring(var.activate_engineering)
-      AUTHORITY_ENABLED                  = tostring(var.activate_engineering)
-      V1_ENTITLEMENTS_ENABLED            = tostring(var.activate_engineering)
-      TRIAL_AUTHORITY_RETENTION_APPROVED = "true"
+      AUTHORITY_ENABLED                  = tostring(each.key == "entitlements" ? local.authority_engineering_active : var.activate_engineering)
+      V1_ENTITLEMENTS_ENABLED            = tostring(each.key == "entitlements" ? local.authority_engineering_active : var.activate_engineering)
+      TRIAL_AUTHORITY_RETENTION_APPROVED = tostring(!var.activate_access_engineering)
       USERS_TABLE_NAME                   = split("/", var.deployment.users_table_arn)[1]
       DEVICE_BINDINGS_TABLE_NAME         = split("/", var.deployment.devices_table_arn)[1]
       DELETION_LEDGER_TABLE_NAME         = split("/", var.deployment.deletion_table_arn)[1]
@@ -124,9 +124,9 @@ resource "aws_lambda_function" "runtime" {
       AUTHORITY_POLICY_VERSION           = "owner-2026-09-20-v1"
       DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(var.engineering_subjects)))
       } : each.key == "recovery" ? {
-      LEASE_SWEEP_ENABLED = tostring(var.activate_engineering)
+      LEASE_SWEEP_ENABLED = tostring(local.authority_engineering_active)
       } : {
-      V1_AUTHORITY_DELETION_ENABLED      = tostring(var.activate_engineering)
+      V1_AUTHORITY_DELETION_ENABLED      = tostring(local.authority_engineering_active)
       DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(var.engineering_subjects)))
       DELETION_LEDGER_TABLE_NAME         = split("/", var.deployment.deletion_table_arn)[1]
       DELETION_LEDGER_STREAM_ARN         = var.deletion_stream_arn
