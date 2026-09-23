@@ -1,0 +1,215 @@
+{
+  "source_commit": "c480dfca133d58d1eb67d75b004d2801e1189ea5",
+  "release_merge": "784828cedb7f6a3dddf81404d73178869354bdfa",
+  "saved_plan_sha256": "76bc01c6c859507644e916cc24810249f68654f0a5ba4356a03678816c96c8a3",
+  "changes": [
+    {
+      "address": "aws_apigatewayv2_stage.age_attestation",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_event_rule.account_data_reconcile[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_event_target.account_data_reconcile[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.account_data[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.account_export[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_function[\"errors\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_function[\"lag\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_function[\"throttles\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"command_failure\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"failure\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"heartbeat\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"no_full_pass\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"outbox_blocked\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"pass_failure\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"policy_blocked\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"profile_blocked\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"stale_full_pass\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_data_stream_failure[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_export_runtime[\"Errors\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_export_runtime[\"Throttles\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_export_unavailable[\"continue\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_export_unavailable[\"start\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.account_export_unavailable[\"unknown\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_iam_role.account_data[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_iam_role.account_export[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.account_data[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.account_export[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_event_source_mapping.account_data_revocation[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.account_data[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.account_export[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_function_event_invoke_config.account_data_reconcile[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_function_event_invoke_config.account_export[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.account_data_reconcile[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_secretsmanager_secret.account_export_cursor[0]",
+      "actions": [
+        "create"
+      ]
+    }
+  ],
+  "independent_plan_review": "approved",
+  "applied": true,
+  "post_apply_plan_exit_code": 0,
+  "terraform_tests_passed": 65
+}

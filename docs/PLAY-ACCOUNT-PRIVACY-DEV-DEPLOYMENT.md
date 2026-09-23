@@ -5,8 +5,8 @@ artifacts from Lambda source `39cce61623794a123e61d25f5248b0c081eccf4a` for an
 owner-authorized disabled Dev deployment. The exact versions and hashes are in
 `environments/dev/api.tfvars` and the existing
 [publication record](evidence/play-lifecycle-dev-2026-09-23/publication.json).
-This is a deployment selection, not evidence of applied resources or enabled
-export/deletion. An applied record will be added after saved-plan qualification.
+The closed deployment was applied as recorded below. This is not evidence of
+enabled export/deletion or completed live retention/erasure acceptance.
 
 Export receives owned-partition token metadata read permissions and the token
 table name. Both export switches remain false; candidate.3 is not enabled and
@@ -31,3 +31,35 @@ mapping, cursor key setup, erasure/export and cleanup deadlines. The five-minute
 cleanup checkpoint retention decision remains separate and pending. Google
 authenticated delivery and actual store transactions remain unproven by disabled
 smoke or synthetic SDK tests. Physical testing remains in the existing follow-up.
+
+## Applied and verified, 2026-09-23
+
+Source PR63 merged at `784828cedb7f6a3dddf81404d73178869354bdfa` after independent
+source and exact-plan review. The saved plan created 33 resources and updated only
+the API stage to add the existing prepare route's 4/2 throttle; there were no
+deletes or changes to other functions. All 46 privacy and 19 route-throttle
+Terraform tests passed. The exact saved plan was applied and a fresh plan returned
+exit code 0 (no drift).
+
+Both functions are unqualified **$LATEST** candidates, not published versions or
+live aliases. AWS readback verified the manifest code hashes, Python 3.14 ARM64,
+resolved disabled feature flags, pending inventory and disabled username mapping.
+Neither role grants AdminDeleteUser. Export has GetItem/Query token metadata
+permissions and no Play-token CMK decryption grant; its separate campaign KMS
+permissions remain scoped to their existing purpose. The export cursor secret
+has no versions. The deletion mapping and reconciliation rule remain disabled.
+
+Five installed identity-policy simulations passed: same-region stream discovery
+and own-stream reads allowed; other-region discovery, unrelated-stream reads and
+export decryption with the Play-token CMK denied. This does not prove runtime KMS
+or end-to-end deletion behavior.
+
+The Lambda owner separately invoked each candidate once with an empty event,
+checking exact code hash, flags and RevisionId before and after. Export returned
+503 SERVICE_NOT_ENABLED and account-data returned 503 FEATURE_DISABLED, with no
+FunctionError. These validate disabled entrypoints only; no provider/customer
+operation, cursor value, inventory approval or activation was performed.
+
+- [Saved-plan deployment record](evidence/play-lifecycle-dev-2026-09-23/privacy-deployment.json)
+- [Resolved configuration readback](evidence/play-lifecycle-dev-2026-09-23/privacy-readback.json)
+- [Installed IAM simulations](evidence/play-lifecycle-dev-2026-09-23/privacy-iam-simulation.json)
