@@ -289,8 +289,18 @@ data "aws_iam_policy_document" "account_data" {
   }
   statement {
     sid       = "ReadOwnDeletionStream"
-    actions   = ["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator", "dynamodb:ListStreams"]
+    actions   = ["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator"]
     resources = compact([local.account_data_stream_arn])
+  }
+  statement {
+    sid       = "DiscoverDeletionStreamsInRegion"
+    actions   = ["dynamodb:ListStreams"]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestedRegion"
+      values   = [var.aws_region]
+    }
   }
   statement {
     sid       = "WriteOwnLogs"

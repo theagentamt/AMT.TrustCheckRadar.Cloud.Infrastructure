@@ -92,6 +92,21 @@ run "candidate_monitoring_is_opt_in" {
   }
 }
 
+run "stream_discovery_is_regional_and_reads_are_exact" {
+  command = plan
+  assert {
+    condition = (
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "ReadOwnDeletionStream"]).actions == toset(["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator"]) &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "ReadOwnDeletionStream"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-14T00:00:00.000"]) &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "DiscoverDeletionStreamsInRegion"]).actions == toset(["dynamodb:ListStreams"]) &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "DiscoverDeletionStreamsInRegion"]).resources == toset(["*"]) &&
+      one(one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "DiscoverDeletionStreamsInRegion"]).condition).variable == "aws:RequestedRegion" &&
+      one(one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "DiscoverDeletionStreamsInRegion"]).condition).values == tolist(["us-east-1"])
+    )
+    error_message = "ListStreams needs regional discovery permission; stream content reads must stay restricted to the exact deletion stream."
+  }
+}
+
 run "account_monitoring_uses_source_metrics_without_activating_workers" {
   command = plan
   variables {
