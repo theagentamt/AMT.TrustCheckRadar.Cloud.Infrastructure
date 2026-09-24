@@ -109,3 +109,12 @@ cover the no-op case, preservation of other triggers and explicit override chang
 Prepared plans (not evidence of application):
 - API SHA256 `2a6cbda302ed1fa8b743dbb703b75f82d339fd58fb4ca547492e5be115df8e3f`.
 - Identity SHA256 `93f69745ec4c209d02e2a17b2abe687cbdc07dc337e815af07441a86c13a51a0`.
+
+### Identity provider compatibility
+
+The first identity installation plan failed validation before any apply because
+its historical AWS5.100.0 provider does not support Python3.14. The identity stack
+now uses the same signed AWS6.65.0 lock and >=6.20,<7 constraint as API. Preparation
+had already succeeded with old code/runtime; no running package was changed by the
+failed plan. Re-run identity tests/validation and generate a fresh installation
+plan with the compatible provider. Never apply the failed-plan output.
