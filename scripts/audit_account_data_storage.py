@@ -12,7 +12,7 @@ TABLE_SUFFIXES = (
     "users", "deletion-ledger", "analysis-abuse-control", "device-bindings",
     "purchase-entitlements", "web-risk-cache", "device-recovery-control",
     "campaign-outbox", "campaign-pipeline", "campaign-intelligence",
-    "history-content", "history-control",
+    "history-content", "history-control", "play-tokens",
 )
 
 

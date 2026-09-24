@@ -1,5 +1,16 @@
 # Account-data inventory and completion requirements
 
+Current scope note (2026-09-23): the baseline matrix below predates the dedicated
+`play-tokens` store and is historical, not a current activation inventory. The
+metadata audit now includes that thirteenth default-name table. Its encrypted
+purchase tokens, reverse ownership bindings and proposed bounded cleanup
+checkpoint require the separate PLAY_TOKENS receipt, metadata-only export,
+explicit expiry/account erasure and no-backup verification described in
+[the lifecycle contract](PLAY-LIFECYCLE-INFRASTRUCTURE.md). The deployed closed
+callback and privacy candidates are recorded in
+[the latest deployment record](PLAY-ACCOUNT-PRIVACY-DEV-DEPLOYMENT.md).
+Neither source coverage nor a metadata audit approves the full inventory marker.
+
 Status: infrastructure and Lambda source inventories reconciled. Dev policy
 decisions are recorded in [ACCOUNT-DATA-POLICY-DECISIONS.md](ACCOUNT-DATA-POLICY-DECISIONS.md);
 live coverage verification and implementation remain incomplete. This is not activation approval.
@@ -243,7 +254,7 @@ Run the repository helper using the already authenticated AWS CLI:
 python3 scripts/audit_account_data_storage.py --environment dev --expected-account 107827791950
 ```
 
-The helper checks the account before querying storage, then describes the twelve
+The helper checks the account before querying storage, then describes the thirteen
 default-name tables, TTL/PITR configuration and bounded Lambda/API log-group
 metadata. It never reads table items, log events, messages or secret values,
 does not log in, and never creates/changes/deletes resources. It reports missing
