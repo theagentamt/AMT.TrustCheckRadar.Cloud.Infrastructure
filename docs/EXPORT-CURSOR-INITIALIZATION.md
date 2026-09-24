@@ -52,3 +52,19 @@ The independently reviewed saved plan SHA256
 updates only the export function's three artifact fields (plus computed modification
 time). Environment, IAM, other functions and all activation gates are unchanged.
 Application and key initialization require separate readback evidence.
+
+## Applied and verified
+
+Infrastructure PR67 merged at `d4d5e79f4b9a00984efeb64eeea79e4fa77987fe`.
+The reviewed plan applied successfully; a fresh full API plan returned exit 0.
+The new export hash and revision matched, and the Lambda owner checked the
+disabled entrypoint once: 503 SERVICE_NOT_ENABLED, no FunctionError, unchanged
+revision before/after. Both export gates remain false.
+
+The corrected initializer created one keyring version and verified AWSCURRENT
+in memory. No key material is in these records. This does not qualify enabled
+export, inventory, identity mapping or live deletion.
+
+- [Deployment readback](evidence/play-lifecycle-dev-2026-09-23/export-parser-deployment.json)
+- [Initialization metadata](evidence/play-lifecycle-dev-2026-09-23/cursor-initialization.json)
+- [Disabled smoke](evidence/play-lifecycle-dev-2026-09-23/export-parser-smoke.json)

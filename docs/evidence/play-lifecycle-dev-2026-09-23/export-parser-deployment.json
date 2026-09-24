@@ -1,0 +1,23 @@
+{
+  "FunctionName": "trustcheckradar-dev-account-export-api",
+  "RevisionId": "c1ab92bc-20d6-4b25-a287-08c00a488361",
+  "CodeSha256": "ynYTDY4o8nhqZOq+uIuyFTckEamaec1TWt9TKmRdsSk=",
+  "Runtime": "python3.14",
+  "Architectures": [
+    "arm64"
+  ],
+  "LastUpdateStatus": "Successful",
+  "gates": {
+    "COGNITO_USERNAME_IS_SUB": "false",
+    "ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED": "false",
+    "ACCOUNT_EXPORT_ENABLED": "false",
+    "ACCOUNT_EXPORT_INVENTORY_STATUS": "pending"
+  },
+  "sourceCommit": "e1651f86e30fc1478f69ba16a4049be8baf0e5f3",
+  "infrastructureMerge": "d4d5e79f4b9a00984efeb64eeea79e4fa77987fe",
+  "savedPlanSha256": "112e031fc6f84dc995d1a6412d91ea25fbe381ee210a0046e62e8b29b23a1789",
+  "applyExitCode": 0,
+  "postApplyPlanExitCode": 0,
+  "managedUpdates": 1,
+  "runtimeActivated": false
+}

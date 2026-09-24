@@ -3,6 +3,12 @@ mock_provider "aws" {
   mock_data "aws_iam_policy_document" { defaults = { json = "{\"Version\":\"2012-10-17\",\"Statement\":[]}" } }
 }
 
+# Mock providers cannot import; override the adopted group while retaining
+# assertions against configured retention in each plan.
+override_resource {
+  target = aws_cloudwatch_log_group.post_confirmation
+}
+
 variables {
   aws_region          = "us-east-1"
   environment         = "dev"
