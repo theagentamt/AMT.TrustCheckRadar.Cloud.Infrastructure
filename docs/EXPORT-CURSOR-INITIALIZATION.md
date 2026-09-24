@@ -31,3 +31,24 @@ The actual runtime parser and local round-trip tests must validate compatibility
 before activation. Secret setup alone does not qualify identity mapping, complete
 inventory, live export behavior, key rotation or account cleanup. All current
 export/deletion gates remain disabled.
+
+## CLI correction and export artifact selection, 2026-09-23
+
+The first live CLI attempt stopped before secret access: boto3 clients support
+`close()` but not context-manager entry. The wrapper now uses `contextlib.closing`;
+a CLI regression test covers clients without context-manager support. Seven
+initializer tests pass. No secret was written by the failed attempt.
+
+The Dev selection now pins only `account_export_api` from Lambda source
+`e1651f86e30fc1478f69ba16a4049be8baf0e5f3`, S3 version
+`YNLn3_R23z7m.OIi_0AfJCu5abU2btay`, SHA256
+`ca76130d8e28f2786a64eabeb88bb215372411a99a79cd535adf532a645db129`.
+The Lambda owner independently downloaded and verified the archive and validated
+an initializer-generated keyring with its packaged parser and local encryption
+round-trip. Publication evidence is integrated in Lambda PR48.
+
+The independently reviewed saved plan SHA256
+`112e031fc6f84dc995d1a6412d91ea25fbe381ee210a0046e62e8b29b23a1789`
+updates only the export function's three artifact fields (plus computed modification
+time). Environment, IAM, other functions and all activation gates are unchanged.
+Application and key initialization require separate readback evidence.
