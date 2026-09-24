@@ -102,9 +102,14 @@ run "cleanup_writes_are_transaction_scoped_and_cannot_complete" {
       one([for s in data.aws_iam_policy_document.deletion_runtime[0].statement : s if s.sid == "CompleteDeletionLedgerCommand"]).actions == toset(["dynamodb:GetItem"]) &&
       one([for s in data.aws_iam_policy_document.deletion_runtime[0].statement : s if s.sid == "CompleteParticipationWithdrawal"]).actions == toset(["dynamodb:GetItem"]) &&
       one([for s in data.aws_iam_policy_document.deletion_runtime[0].statement : s if s.sid == "DeleteActiveContributions"]).actions == toset(["dynamodb:GetItem", "dynamodb:Query"]) &&
-      alltrue([for sid in ["GuardedRepairWrites", "GuardedDeletionCommand"] :
+      one([for s in data.aws_iam_policy_document.deletion_runtime[0].statement : s if s.sid == "GuardedRepairWrites"]).actions == toset(["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem"]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.deletion_runtime[0].statement : s if s.sid == "GuardedRepairWrites"]).condition :
+        c.variable == "dynamodb:EnclosingOperation" && c.test == "ForAnyValue:StringEquals" && toset(c.values) == toset(["TransactWriteItems"])
+      ]) &&
+      alltrue([for sid in ["GuardedRepairChecks", "GuardedDeletionCommand"] :
+        one([for s in data.aws_iam_policy_document.deletion_runtime[0].statement : s if s.sid == sid]).actions == toset(["dynamodb:ConditionCheckItem"]) &&
         anytrue([for c in one([for s in data.aws_iam_policy_document.deletion_runtime[0].statement : s if s.sid == sid]).condition :
-          c.variable == "dynamodb:EnclosingOperation" && c.test == "StringEquals" && toset(c.values) == toset(["TransactWriteItems"])
+          c.variable == "dynamodb:ReturnValues" && c.test == "StringEqualsIfExists" && toset(c.values) == toset(["NONE"])
         ])
       ]) &&
       one([for s in data.aws_iam_policy_document.deletion_runtime[0].statement : s if s.sid == "GuardedDeletionCommand"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]) &&
@@ -199,7 +204,7 @@ run "cluster_checks_candidate_lifecycle_only_in_transactions" {
       one([for s in data.aws_iam_policy_document.cluster_runtime[0].statement : s if s.sid == "CheckCandidateLifecycleTransaction"]).actions == toset(["dynamodb:ConditionCheckItem"]) &&
       one([for s in data.aws_iam_policy_document.cluster_runtime[0].statement : s if s.sid == "CheckCandidateLifecycleTransaction"]).resources == toset([local.campaign.pipeline_table_arn]) &&
       anytrue([for c in one([for s in data.aws_iam_policy_document.cluster_runtime[0].statement : s if s.sid == "CheckCandidateLifecycleTransaction"]).condition : c.variable == "dynamodb:LeadingKeys" && toset(c.values) == toset(["CANDIDATE#*"])]) &&
-      anytrue([for c in one([for s in data.aws_iam_policy_document.cluster_runtime[0].statement : s if s.sid == "CheckCandidateLifecycleTransaction"]).condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])
+      anytrue([for c in one([for s in data.aws_iam_policy_document.cluster_runtime[0].statement : s if s.sid == "CheckCandidateLifecycleTransaction"]).condition : c.variable == "dynamodb:ReturnValues" && c.test == "StringEqualsIfExists" && toset(c.values) == toset(["NONE"])])
     )
     error_message = "The capped-contributor path must check candidate lifecycle state within the guarded transaction only."
   }
@@ -213,7 +218,7 @@ run "research_candidate_checks_current_consent_and_remains_paused" {
     error_message = "Research candidates must share current notice/deletion fences and remain paused."
   }
   assert {
-    condition     = length([for st in data.aws_iam_policy_document.cluster_runtime[0].statement : st if startswith(st.sid, "ReadResearchEligibility")]) == 3 && length([for st in data.aws_iam_policy_document.cluster_runtime[0].statement : st if startswith(st.sid, "CheckResearchEligibility")]) == 3 && alltrue([for st in data.aws_iam_policy_document.cluster_runtime[0].statement : !startswith(st.sid, "CheckResearchEligibility") || anytrue([for c in st.condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])])
+    condition     = length([for st in data.aws_iam_policy_document.cluster_runtime[0].statement : st if startswith(st.sid, "ReadResearchEligibility")]) == 3 && length([for st in data.aws_iam_policy_document.cluster_runtime[0].statement : st if startswith(st.sid, "CheckResearchEligibility")]) == 3 && alltrue([for st in data.aws_iam_policy_document.cluster_runtime[0].statement : !startswith(st.sid, "CheckResearchEligibility") || anytrue([for c in st.condition : c.variable == "dynamodb:ReturnValues" && c.test == "StringEqualsIfExists" && toset(c.values) == toset(["NONE"])])])
     error_message = "Cluster must read owned outbox evidence and transact with current consent/deletion checks."
   }
 }
@@ -274,4 +279,31 @@ run "zero_concurrency_is_not_a_general_runtime_exception" {
   command = plan
   variables { reserved_concurrency = 0 }
   expect_failures = [check.runtime_bounds]
+}
+
+run "candidate_condition_checks_use_supported_keys_without_old_value_disclosure" {
+  command = plan
+  variables { research_consent_migration = true }
+  assert {
+    condition = alltrue([for policy in [data.aws_iam_policy_document.publisher_runtime[0], data.aws_iam_policy_document.cluster_runtime[0], data.aws_iam_policy_document.deletion_runtime[0], data.aws_iam_policy_document.lifecycle_runtime[0]] :
+      alltrue([for st in policy.statement : !contains(st.actions, "dynamodb:ConditionCheckItem") || (
+        st.actions == toset(["dynamodb:ConditionCheckItem"]) &&
+        alltrue([for c in st.condition : c.variable != "dynamodb:EnclosingOperation"]) &&
+        anytrue([for c in st.condition : c.variable == "dynamodb:LeadingKeys" && startswith(c.test, "ForAllValues:") && length(c.values) > 0]) &&
+        anytrue([for c in st.condition : c.variable == "dynamodb:ReturnValues" && c.test == "StringEqualsIfExists" && toset(c.values) == toset(["NONE"])])
+      )])
+    ])
+    error_message = "All candidate checks must use supported context keys, retain owned partitions and prohibit old-value disclosure."
+  }
+  assert {
+    condition = alltrue([for st in concat(
+      [for s in data.aws_iam_policy_document.publisher_runtime[0].statement : s if s.sid == "WriteFencedTransientPipeline"],
+      [for s in data.aws_iam_policy_document.cluster_runtime[0].statement : s if s.sid == "WriteMutableCandidateFamilies"],
+      [for s in data.aws_iam_policy_document.deletion_runtime[0].statement : s if s.sid == "GuardedRepairWrites"]
+      ) :
+      !contains(st.actions, "dynamodb:ConditionCheckItem") &&
+      anytrue([for c in st.condition : c.variable == "dynamodb:EnclosingOperation" && c.test == "ForAnyValue:StringEquals" && toset(c.values) == toset(["TransactWriteItems"])])
+    ])
+    error_message = "Separating checks must not remove transaction requirements on publisher, cluster or repair writes."
+  }
 }

@@ -260,9 +260,9 @@ data "aws_iam_policy_document" "publisher_runtime" {
         values   = ["INVENTORY#${var.environment}"]
       }
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = local.account_privacy_candidate ? "StringEqualsIfExists" : "StringEquals"
+        variable = local.account_privacy_candidate ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+        values   = local.account_privacy_candidate ? ["NONE"] : ["TransactWriteItems"]
       }
     }
   }
@@ -292,9 +292,9 @@ data "aws_iam_policy_document" "publisher_runtime" {
         values   = ["ACCOUNT#*"]
       }
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = local.account_privacy_candidate ? "StringEqualsIfExists" : "StringEquals"
+        variable = local.account_privacy_candidate ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+        values   = local.account_privacy_candidate ? ["NONE"] : ["TransactWriteItems"]
       }
     }
   }
@@ -311,9 +311,9 @@ data "aws_iam_policy_document" "publisher_runtime" {
         values   = ["CONTRIB#*"]
       }
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = local.account_privacy_candidate ? "StringEqualsIfExists" : "StringEquals"
+        variable = local.account_privacy_candidate ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+        values   = local.account_privacy_candidate ? ["NONE"] : ["TransactWriteItems"]
       }
     }
   }
@@ -356,7 +356,7 @@ data "aws_iam_policy_document" "publisher_runtime" {
         }
       }
       condition {
-        test     = "StringEquals"
+        test     = local.account_privacy_candidate ? "ForAnyValue:StringEquals" : "StringEquals"
         variable = "dynamodb:EnclosingOperation"
         values   = ["TransactWriteItems"]
       }
@@ -383,9 +383,9 @@ data "aws_iam_policy_document" "publisher_runtime" {
     resources = [local.foundation.users_table_arn]
 
     condition {
-      test     = "StringEquals"
-      variable = "dynamodb:EnclosingOperation"
-      values   = ["TransactWriteItems"]
+      test     = local.account_privacy_candidate ? "StringEqualsIfExists" : "StringEquals"
+      variable = local.account_privacy_candidate ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+      values   = local.account_privacy_candidate ? ["NONE"] : ["TransactWriteItems"]
     }
 
     condition {
@@ -483,9 +483,9 @@ data "aws_iam_policy_document" "cluster_runtime" {
         values   = statement.value.keys
       }
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = local.account_privacy_candidate ? "StringEqualsIfExists" : "StringEquals"
+        variable = local.account_privacy_candidate ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+        values   = local.account_privacy_candidate ? ["NONE"] : ["TransactWriteItems"]
       }
     }
   }
@@ -502,9 +502,9 @@ data "aws_iam_policy_document" "cluster_runtime" {
         values   = ["CANDIDATE#*"]
       }
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = local.account_privacy_candidate ? "StringEqualsIfExists" : "StringEquals"
+        variable = local.account_privacy_candidate ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+        values   = local.account_privacy_candidate ? ["NONE"] : ["TransactWriteItems"]
       }
     }
   }
@@ -521,9 +521,9 @@ data "aws_iam_policy_document" "cluster_runtime" {
         values   = ["INVENTORY#${var.environment}"]
       }
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = local.account_privacy_candidate ? "StringEqualsIfExists" : "StringEquals"
+        variable = local.account_privacy_candidate ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+        values   = local.account_privacy_candidate ? ["NONE"] : ["TransactWriteItems"]
       }
     }
   }
@@ -540,9 +540,9 @@ data "aws_iam_policy_document" "cluster_runtime" {
         values   = ["CONTRIB#*"]
       }
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = local.account_privacy_candidate ? "StringEqualsIfExists" : "StringEquals"
+        variable = local.account_privacy_candidate ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+        values   = local.account_privacy_candidate ? ["NONE"] : ["TransactWriteItems"]
       }
     }
   }
@@ -595,7 +595,7 @@ data "aws_iam_policy_document" "cluster_runtime" {
         values   = ["EVENT#*", "CONTRIB#*", "CANDIDATE#*", "BUCKET#*"]
       }
       condition {
-        test     = "StringEquals"
+        test     = local.account_privacy_candidate ? "ForAnyValue:StringEquals" : "StringEquals"
         variable = "dynamodb:EnclosingOperation"
         values   = ["TransactWriteItems"]
       }
@@ -640,9 +640,9 @@ data "aws_iam_policy_document" "deletion_runtime" {
         values   = ["INVENTORY#${var.environment}"]
       }
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = local.account_privacy_candidate ? "StringEqualsIfExists" : "StringEquals"
+        variable = local.account_privacy_candidate ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+        values   = local.account_privacy_candidate ? ["NONE"] : ["TransactWriteItems"]
       }
     }
   }
@@ -705,8 +705,7 @@ data "aws_iam_policy_document" "deletion_runtime" {
 
   dynamic "statement" {
     for_each = local.account_privacy_candidate ? {
-      GuardedRepairWrites    = { arn = local.campaign.pipeline_table_arn, keys = ["CONTRIB#*", "EVENT#*", "CANDIDATE#*"], actions = ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:ConditionCheckItem"] }
-      GuardedDeletionCommand = { arn = local.foundation.deletion_ledger_table_arn, keys = ["ACCOUNT#*"], actions = ["dynamodb:ConditionCheckItem"] }
+      GuardedRepairWrites = { arn = local.campaign.pipeline_table_arn, keys = ["CONTRIB#*", "EVENT#*", "CANDIDATE#*"], actions = ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem"] }
     } : {}
     content {
       sid       = statement.key
@@ -718,9 +717,33 @@ data "aws_iam_policy_document" "deletion_runtime" {
         values   = statement.value.keys
       }
       condition {
-        test     = "StringEquals"
+        test     = "ForAnyValue:StringEquals"
         variable = "dynamodb:EnclosingOperation"
         values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
+  // ConditionCheck has no standalone mutation API and does not support EnclosingOperation.
+  // Keep checks separate from transaction-only writes; never return old values on failure.
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? {
+      GuardedRepairChecks    = { arn = local.campaign.pipeline_table_arn, keys = ["CONTRIB#*", "EVENT#*", "CANDIDATE#*"] }
+      GuardedDeletionCommand = { arn = local.foundation.deletion_ledger_table_arn, keys = ["ACCOUNT#*"] }
+    } : {}
+    content {
+      sid       = statement.key
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [statement.value.arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = statement.value.keys
+      }
+      condition {
+        test     = "StringEqualsIfExists"
+        variable = "dynamodb:ReturnValues"
+        values   = ["NONE"]
       }
     }
   }
@@ -807,9 +830,9 @@ data "aws_iam_policy_document" "lifecycle_runtime" {
         values   = statement.value.keys
       }
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = local.account_privacy_candidate ? "StringEqualsIfExists" : "StringEquals"
+        variable = local.account_privacy_candidate ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+        values   = local.account_privacy_candidate ? ["NONE"] : ["TransactWriteItems"]
       }
     }
   }
