@@ -1,0 +1,63 @@
+{
+  "observedAtUtc": "2026-09-24T03:54:28.791760+00:00",
+  "table": "trustcheckradar-dev-play-tokens",
+  "scope": "Metadata only; no token, binding or account items read",
+  "tableExists": true,
+  "tableStatus": "ACTIVE",
+  "streamEnabled": false,
+  "deletionProtection": true,
+  "indexProjections": {
+    "GSI1": "KEYS_ONLY"
+  },
+  "ttl": {
+    "TimeToLiveStatus": "ENABLED",
+    "AttributeName": "expiresAt"
+  },
+  "pitrStatus": "DISABLED",
+  "tablePolicy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "NoTokenCopies",
+        "Effect": "Deny",
+        "Principal": "*",
+        "Action": [
+          "dynamodb:CreateBackup",
+          "dynamodb:UpdateContinuousBackups",
+          "dynamodb:RestoreTableToPointInTime",
+          "dynamodb:ExportTableToPointInTime",
+          "dynamodb:EnableKinesisStreamingDestination"
+        ],
+        "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens"
+      },
+      {
+        "Sid": "NoCrossAccount",
+        "Effect": "Deny",
+        "Principal": "*",
+        "Action": "dynamodb:*",
+        "Resource": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens",
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens/index/*"
+        ],
+        "Condition": {
+          "Bool": {
+            "aws:PrincipalIsAWSService": "false"
+          },
+          "StringNotEquals": {
+            "aws:PrincipalAccount": "107827791950"
+          }
+        }
+      }
+    ]
+  },
+  "dynamoBackupCount": 0,
+  "awsBackupRecoveryPointCount": 0,
+  "backupPlans": [],
+  "backupExecutionRoles": [],
+  "configurationReviewRequired": false,
+  "limitations": [
+    "Point-in-time metadata inventory; future backup configuration requires requalification.",
+    "This audit does not prove explicit expiry/account deletion or runtime activation readiness.",
+    "Table resource policy does not by itself govern AWS Backup StartAwsBackupJob; inspect actual execution-role denies when present."
+  ]
+}
