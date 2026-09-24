@@ -26,3 +26,15 @@ inventory or activation approval. The post-confirmation profile-fence candidate
 also remains unselected; the live writer has no deletion-ledger fence and still
 uses its previous Python runtime. That separate Lambda/infrastructure dependency
 must be qualified before enabling whole-account deletion.
+
+## Applied and verified, 2026-09-23
+
+PR68 merged at `4ea949bc16d183e950fb466d0243d37cb0d57b21`. The independently
+reviewed saved plan applied successfully: one existing group imported and updated,
+none created or destroyed. AWS readback confirms 14-day retention. A fresh full
+identity-stack plan returned exit 0 (no drift). No Lambda, IAM or Cognito behavior
+changed. See [metadata evidence](evidence/play-lifecycle-dev-2026-09-23/post-confirmation-log-retention.json).
+
+The refreshed configuration audit found explicit retention on all 33 observed
+log groups. The deliberately disabled recovery table is still absent; metadata
+coverage alone does not qualify complete account-data erasure.
