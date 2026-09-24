@@ -44,10 +44,30 @@ passed 44 cases for the deletion policy, including allowed period checks and
 rejection of old-value disclosure and foreign partitions. All temporary resources
 were removed. Other roles were validated against the plan but not re-exercised;
 stream/queue/KMS behavior and application semantics remain outside this IAM test.
-Deployment is separate; the broader four-policy correction is already applied with
+The broader four-policy correction is already applied with
 no drift in [the preceding readiness record](CAMPAIGN-COMPLETION-READINESS.md).
 
 Neither current empty contributions nor this cursor closes the full lifecycle
 story. Historical/restore inventory, safe publication and retirement ordering,
 durable reconciliation after stream expiry, qualified receipt production and
 operational acceptance remain pending. Schedules and stream mappings stay off.
+
+## Integration and Dev permission deployment
+
+Lambda PR54 source `bab218d737af0fafb592f6e275ebc552e40506a1` is integrated in
+`release-V01` merge `7a98240581163c85f82bb390f42d3b2baea4ed21`. Its 25 new SDK
+cases, 139 combined SDK cases and six ordinary cases plus nine subtests pass.
+Root independently reran the 25 new cases. The overlapping withdrawal/account
+commands test preserves shared cursor position and locator progress under exact
+owned command guards; malformed or mismatched inventory/range remains rejected.
+Source integration and local package checks are not runtime deployment.
+
+Infrastructure PR76 source `c6d2a146a5d9c3086b7411a6cab21c68bea590e7` is integrated
+in merge `783f9200aafd731511370a69a26d8f82325859f2`. The exact saved plan was then
+applied in Dev: zero additions, one policy update, zero deletions.
+[Deployment evidence](evidence/campaign-completion-2026-09-24/retained-period-iam-deployment.json)
+and [runtime readback](evidence/campaign-completion-2026-09-24/retained-period-runtime-after.json)
+verify the installed PERIOD guard exactly matches the plan. All other inline
+policies, function code and configuration, mappings, schedules and table settings
+are unchanged. A post-apply plan reports no drift. No Lambda artifact was uploaded
+or selected, and no activation or inventory marker was changed.

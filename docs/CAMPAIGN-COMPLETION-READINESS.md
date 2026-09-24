@@ -80,8 +80,11 @@ call-start deadline. The output explicitly declines inventory/erasure approval.
 
 ## Remaining work
 
-- Reconstruct candidate lexical, signal and indicator metadata from retained
-  contributions during deletion repair; reject unsupported legacy schemas.
+- Candidate metadata reconstruction source is integrated in Lambda PR53 at
+  `48880d05133de9f9ff24ceb8fb917fa33a12943d`; deployment and actual worker
+  qualification remain pending. The handler's fair retained-period cleanup source
+  is integrated in PR54 at `bab218d737af0fafb592f6e275ebc552e40506a1`.
+  See [retained-period readiness](CAMPAIGN-RETAINED-PERIOD-READINESS.md).
 - Qualify complete retained-period/key/legacy and restore coverage with reviewed
   writer inventory. Empty current tables do not satisfy this requirement.
 - Establish publication ordering and safe retirement of HMAC keys and tombstones.

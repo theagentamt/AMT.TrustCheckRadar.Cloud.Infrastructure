@@ -1,0 +1,18 @@
+{
+  "added": 0,
+  "appliedPlanSha256": "cdac6998284c641e0e59cc1654cd9d93f8266e747a33a9d78740b8f0d98745cf",
+  "changed": 1,
+  "destroyed": 0,
+  "erasureVerified": false,
+  "installedPolicyMatchesPlan": true,
+  "inventoryApproved": false,
+  "liveDeletionEnabled": false,
+  "observedAtUtc": "2026-09-24T22:06:24.472362+00:00",
+  "otherPoliciesAndRuntimeUnchangedVerified": true,
+  "postApplyDetailedExitCode": 0,
+  "postApplyPlanSha256": "55f2da42b14f8ad1b33e3440a83dc52987a96d54675d47c1b9c2e36fdf3955a2",
+  "releaseMerge": "783f9200aafd731511370a69a26d8f82325859f2",
+  "schemaVersion": 1,
+  "scope": "Dev deletion role check-only PERIOD guard; no code or activation change",
+  "sourceRevision": "c6d2a146a5d9c3086b7411a6cab21c68bea590e7"
+}
