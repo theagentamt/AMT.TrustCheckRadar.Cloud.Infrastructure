@@ -82,3 +82,30 @@ this final evidence supersedes that fixture-shape limitation.
 preserve source-policy hashes and the executed harness hash. Five local harness
 tests verify policy validation, resource-only substitution and meaningful denial
 classification. No real account or application-table item was accessed.
+
+## Selected artifacts and exact stage overrides
+
+Dev final inputs pin Lambda source `c4b1cae34b9a90a9803022302a6ad7f2d8a13e38`.
+The publication/download records in this evidence directory contain both exact
+S3 versions and source hashes. The ordinary tfvars describe the final tightened
+state. Every stage uses the same approved artifact-release baseline
+`e7b9e84211406cc6e1587f86ac0bd0a67af4d3c2` for unrelated functions.
+
+Preparation overrides final inputs with `profile_fence_deployment=null`,
+`profile_fence_transition_enabled=true`, and the existing writer runtime
+`python3.13` (age_attestation_lambda_runtime in API,
+post_confirmation_lambda_runtime in identity-workflows). The first-stage plans
+change only each writer's environment and policy. They preserve source, runtime,
+legacy users permissions, every other function and all deletion/export gates.
+Installation overrides only `profile_fence_transition_enabled=true`; tightening
+uses the final tfvars without stage overrides. Each saved plan is reviewed after
+the preceding stage has completed; do not reuse an earlier-state plan.
+
+The user-pool update helper now returns without UpdateUserPool when its desired
+trigger map already matches the current map. Artifact changes retain the same
+function ARN, so this avoids unnecessarily rewriting pool settings. Three tests
+cover the no-op case, preservation of other triggers and explicit override changes.
+
+Prepared plans (not evidence of application):
+- API SHA256 `2a6cbda302ed1fa8b743dbb703b75f82d339fd58fb4ca547492e5be115df8e3f`.
+- Identity SHA256 `93f69745ec4c209d02e2a17b2abe687cbdc07dc337e815af07441a86c13a51a0`.

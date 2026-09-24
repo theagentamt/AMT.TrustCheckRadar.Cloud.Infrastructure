@@ -134,3 +134,14 @@ account_export_monitoring = {
 account_data_monitoring = {
   alarm_topic_arn = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
 }
+
+# Final state; reviewed rollout uses explicit prepare/install overrides first.
+age_attestation_lambda_runtime   = "python3.14"
+profile_fence_transition_enabled = false
+profile_fence_deployment = {
+  release_id         = "c4b1cae34b9a90a9803022302a6ad7f2d8a13e38"
+  object_version     = "oC3vBJfvil2SDUji4XbWM3fjUlmrfEXV"
+  source_hash        = "4fcLN8YHPOZNgY3iTt4gzlicbXMHdv1ToF//NWUzeBg="
+  approval_reference = "SECUR4ALL-244 owner-authorized Dev profile-writer safeguards; reviewed staged rollout"
+  promotion_approved = false
+}
