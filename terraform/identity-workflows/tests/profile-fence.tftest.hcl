@@ -83,11 +83,13 @@ run "candidate_pins_writer_and_transactional_fence" {
       one([for statement in data.aws_iam_policy_document.post_confirmation_dynamodb.statement : statement if statement.sid == "PreventDeletedProfileRecreation"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]) &&
       one([for statement in data.aws_iam_policy_document.post_confirmation_dynamodb.statement : statement if statement.sid == "PreventDeletedProfileRecreation"]).actions == toset(["dynamodb:ConditionCheckItem"]) &&
       alltrue([for statement in data.aws_iam_policy_document.post_confirmation_dynamodb.statement :
-        anytrue([for condition in statement.condition : condition.variable == "dynamodb:EnclosingOperation" && toset(condition.values) == toset(["TransactWriteItems"])]) &&
+        (contains(statement.actions, "dynamodb:ConditionCheckItem") ?
+          alltrue([for condition in statement.condition : condition.variable != "dynamodb:EnclosingOperation"]) :
+        anytrue([for condition in statement.condition : condition.test == "ForAnyValue:StringEquals" && condition.variable == "dynamodb:EnclosingOperation" && toset(condition.values) == toset(["TransactWriteItems"])])) &&
         anytrue([for condition in statement.condition : condition.variable == "dynamodb:LeadingKeys"])
       ])
     )
-    error_message = "Both the profile write and ledger absence check must be transaction-only, resource-scoped and partition-scoped."
+    error_message = "Profile writes must be transaction-only; ledger checks use supported action conditions. Both stay resource and partition scoped."
   }
 }
 
@@ -108,4 +110,79 @@ run "unlimited_retention_is_not_a_finite_policy" {
   command = plan
   variables { post_confirmation_log_policy = { retention_days = 0, approval_reference = "synthetic-test" } }
   expect_failures = [var.post_confirmation_log_policy]
+}
+
+run "transition_prepares_without_changing_existing_source_or_users_permissions" {
+  command = plan
+  variables {
+    post_confirmation_log_policy     = { retention_days = 14, approval_reference = "synthetic-test" }
+    profile_fence_deployment         = null
+    profile_fence_transition_enabled = true
+  }
+  assert {
+    condition = (
+      aws_lambda_function.post_confirmation.s3_key == "releases/existing-release/post_confirmation.zip" &&
+      aws_lambda_function.post_confirmation.environment[0].variables["DELETION_LEDGER_TABLE_NAME"] == "trustcheckradar-dev-deletion-ledger" &&
+      one([for st in data.aws_iam_policy_document.post_confirmation_dynamodb.statement : st if st.sid == "UsersTableWrite"]).actions == toset(["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem"]) &&
+      length(one([for st in data.aws_iam_policy_document.post_confirmation_dynamodb.statement : st if st.sid == "UsersTableWrite"]).condition) == 0 &&
+      output.profile_fence_contract.transition_enabled &&
+      !output.profile_fence_contract.transactional_user_permissions &&
+      !output.profile_fence_contract.account_deletion_activation_approved
+    )
+    error_message = "Prepare must add exact ledger configuration while preserving old source and its users permissions."
+  }
+  assert {
+    condition = alltrue([for st in data.aws_iam_policy_document.post_confirmation_dynamodb.statement :
+      contains(st.actions, "dynamodb:ConditionCheckItem") ? (
+        st.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]) &&
+        alltrue([for c in st.condition : c.variable != "dynamodb:EnclosingOperation"]) &&
+        anytrue([for c in st.condition : c.variable == "dynamodb:LeadingKeys" && c.test == "ForAllValues:StringLike" && toset(c.values) == toset(["ACCOUNT#*"])]) &&
+        anytrue([for c in st.condition : c.variable == "dynamodb:ReturnValues" && c.test == "StringEqualsIfExists" && toset(c.values) == toset(["NONE"])])
+      ) : true
+    ])
+    error_message = "Transition must add only same-environment scoped condition checks with no returned ledger contents."
+  }
+}
+
+run "transition_pins_source_before_tightening_users_permissions" {
+  command = plan
+  variables {
+    post_confirmation_log_policy     = { retention_days = 14, approval_reference = "synthetic-test" }
+    profile_fence_transition_enabled = true
+    profile_fence_deployment = {
+      release_id         = "profile-candidate", object_version = "immutable-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      approval_reference = "synthetic-test", promotion_approved = false
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.post_confirmation.s3_key == "releases/profile-candidate/post_confirmation.zip" &&
+      one([for st in data.aws_iam_policy_document.post_confirmation_dynamodb.statement : st if st.sid == "UsersTableWrite"]).actions == toset(["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem"]) &&
+      !output.profile_fence_contract.transactional_user_permissions
+    )
+    error_message = "Installation must allow old in-flight writes until source verification and drain complete."
+  }
+}
+
+run "transition_does_not_bypass_production_approval" {
+  command = plan
+  variables {
+    profile_fence_transition_enabled = true
+    environment                      = "prod"
+  }
+  expect_failures = [var.profile_fence_transition_enabled]
+}
+
+run "transition_rejects_other_caller_account" {
+  command = plan
+  variables {
+
+    profile_fence_transition_enabled = true
+    profile_fence_deployment         = null
+  }
+  override_data {
+    target = data.aws_caller_identity.current
+    values = { account_id = "999999999999" }
+  }
+  expect_failures = [aws_lambda_function.post_confirmation]
 }

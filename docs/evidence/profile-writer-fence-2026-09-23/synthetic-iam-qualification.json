@@ -1,0 +1,102 @@
+{
+  "accountId": "107827791950",
+  "cases": [
+    "post_confirmation:transaction_absence_none_allowed",
+    "post_confirmation:standalone_write_denied",
+    "post_confirmation:unrelated_users_partition_denied",
+    "post_confirmation:unrelated_ledger_partition_denied",
+    "post_confirmation:failure_return_values_denied",
+    "post_confirmation:ledger_write_denied",
+    "post_confirmation:tombstone_blocks_without_returned_item",
+    "age_attestation:transaction_absence_none_allowed",
+    "age_attestation:standalone_write_denied",
+    "age_attestation:unrelated_users_partition_denied",
+    "age_attestation:unrelated_ledger_partition_denied",
+    "age_attestation:failure_return_values_denied",
+    "age_attestation:ledger_write_denied",
+    "age_attestation:tombstone_blocks_without_returned_item"
+  ],
+  "cleanupComplete": true,
+  "cleanupOutstanding": [],
+  "passed": true,
+  "region": "us-east-1",
+  "runId": "b0eb617670bb40ff8448025af8cad95f",
+  "schemaVersion": 1,
+  "scope": "ephemeral synthetic tables and roles only",
+  "harnessSha256": "8bf96e819d1b1e3e354d7e90705f21a0285fd8662af954475f7d16093d598f3c",
+  "ledgerSortKey": "ACCOUNT_DELETION",
+  "sourcePolicies": {
+    "age_attestation": {
+      "sha256": "8df00f8a16f804197c918f701b67864f2a3540ff5f8195232a62998cfb6a319e",
+      "policy": {
+        "Statement": [
+          {
+            "Action": "dynamodb:UpdateItem",
+            "Condition": {
+              "ForAllValues:StringLike": {
+                "dynamodb:LeadingKeys": "USER#*"
+              },
+              "ForAnyValue:StringEquals": {
+                "dynamodb:EnclosingOperation": "TransactWriteItems"
+              }
+            },
+            "Effect": "Allow",
+            "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
+            "Sid": "UsersTableReadUpdate"
+          },
+          {
+            "Action": "dynamodb:ConditionCheckItem",
+            "Condition": {
+              "ForAllValues:StringLike": {
+                "dynamodb:LeadingKeys": "ACCOUNT#*"
+              },
+              "StringEqualsIfExists": {
+                "dynamodb:ReturnValues": "NONE"
+              }
+            },
+            "Effect": "Allow",
+            "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+            "Sid": "PreventDeletedProfileReactivation"
+          }
+        ],
+        "Version": "2012-10-17"
+      }
+    },
+    "post_confirmation": {
+      "sha256": "d76c56f33b3a6811bd14768b55769e6953825243a4ae0cb8349015e5eb5f3493",
+      "policy": {
+        "Statement": [
+          {
+            "Action": "dynamodb:PutItem",
+            "Condition": {
+              "ForAllValues:StringLike": {
+                "dynamodb:LeadingKeys": "USER#*"
+              },
+              "ForAnyValue:StringEquals": {
+                "dynamodb:EnclosingOperation": "TransactWriteItems"
+              }
+            },
+            "Effect": "Allow",
+            "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
+            "Sid": "UsersTableWrite"
+          },
+          {
+            "Action": "dynamodb:ConditionCheckItem",
+            "Condition": {
+              "ForAllValues:StringLike": {
+                "dynamodb:LeadingKeys": "ACCOUNT#*"
+              },
+              "StringEqualsIfExists": {
+                "dynamodb:ReturnValues": "NONE"
+              }
+            },
+            "Effect": "Allow",
+            "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+            "Sid": "PreventDeletedProfileRecreation"
+          }
+        ],
+        "Version": "2012-10-17"
+      }
+    }
+  }
+}

@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "post_confirmation_dynamodb" {
   statement {
     sid    = "UsersTableWrite"
     effect = "Allow"
-    actions = var.profile_fence_deployment != null ? ["dynamodb:PutItem"] : [
+    actions = local.profile_fence_permissions_enforced ? ["dynamodb:PutItem"] : [
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:UpdateItem"
@@ -74,15 +74,15 @@ data "aws_iam_policy_document" "post_confirmation_dynamodb" {
 
     resources = [local.foundation.users_table_arn]
     dynamic "condition" {
-      for_each = var.profile_fence_deployment != null ? [1] : []
+      for_each = local.profile_fence_permissions_enforced ? [1] : []
       content {
-        test     = "StringEquals"
+        test     = "ForAnyValue:StringEquals"
         variable = "dynamodb:EnclosingOperation"
         values   = ["TransactWriteItems"]
       }
     }
     dynamic "condition" {
-      for_each = var.profile_fence_deployment != null ? [1] : []
+      for_each = local.profile_fence_permissions_enforced ? [1] : []
       content {
         test     = "ForAllValues:StringLike"
         variable = "dynamodb:LeadingKeys"
@@ -91,15 +91,17 @@ data "aws_iam_policy_document" "post_confirmation_dynamodb" {
     }
   }
   dynamic "statement" {
-    for_each = var.profile_fence_deployment != null ? [1] : []
+    for_each = local.profile_fence_configured ? [1] : []
     content {
       sid       = "PreventDeletedProfileRecreation"
       actions   = ["dynamodb:ConditionCheckItem"]
       resources = [local.foundation.deletion_ledger_table_arn]
+      # ConditionCheckItem is transaction-only by API design; EnclosingOperation
+      # is not a supported condition key for this action in the service reference.
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = "StringEqualsIfExists"
+        variable = "dynamodb:ReturnValues"
+        values   = ["NONE"]
       }
       condition {
         test     = "ForAllValues:StringLike"
@@ -138,7 +140,7 @@ resource "aws_lambda_function" "post_confirmation" {
   source_code_hash  = var.profile_fence_deployment == null ? null : var.profile_fence_deployment.source_hash
 
   environment {
-    variables = merge(var.post_confirmation_lambda_env, var.profile_fence_deployment == null ? {} : {
+    variables = merge(var.post_confirmation_lambda_env, !local.profile_fence_configured ? {} : {
       DELETION_LEDGER_TABLE_NAME = local.foundation.deletion_ledger_table_name
       }, {
       USERS_TABLE_ARN = local.foundation.users_table_arn
@@ -147,7 +149,7 @@ resource "aws_lambda_function" "post_confirmation" {
 
   lifecycle {
     precondition {
-      condition = var.profile_fence_deployment == null ? true : (
+      condition = !local.profile_fence_configured ? true : (
         local.foundation.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.name_prefix}-deletion-ledger" &&
         local.foundation.deletion_ledger_table_name == "${local.name_prefix}-deletion-ledger" &&
         local.foundation.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.name_prefix}-users"

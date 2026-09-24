@@ -613,7 +613,9 @@ run "age_attestation_candidate_is_pinned_with_atomic_ledger_fence" {
       one([for statement in data.aws_iam_policy_document.age_attestation_dynamodb.statement : statement if statement.sid == "UsersTableReadUpdate"]).actions == toset(["dynamodb:UpdateItem"]) &&
       one([for statement in data.aws_iam_policy_document.age_attestation_dynamodb.statement : statement if statement.sid == "PreventDeletedProfileReactivation"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]) &&
       alltrue([for statement in data.aws_iam_policy_document.age_attestation_dynamodb.statement :
-        anytrue([for condition in statement.condition : condition.variable == "dynamodb:EnclosingOperation" && toset(condition.values) == toset(["TransactWriteItems"])])
+        contains(statement.actions, "dynamodb:ConditionCheckItem") ?
+        alltrue([for condition in statement.condition : condition.variable != "dynamodb:EnclosingOperation"]) :
+        anytrue([for condition in statement.condition : condition.test == "ForAnyValue:StringEquals" && condition.variable == "dynamodb:EnclosingOperation" && toset(condition.values) == toset(["TransactWriteItems"])])
       ])
     )
     error_message = "Age attestation must update the profile only transactionally with the authoritative deletion fence and pinned corrected package."
@@ -737,4 +739,80 @@ run "identity_finalizer_rejects_invalid_pins" {
     }
   }
   expect_failures = [var.account_data_finalization_candidate]
+}
+
+run "transition_prepares_without_changing_existing_source_or_users_permissions" {
+  command = plan
+  variables {
+    account_data_deployment          = null
+    profile_fence_deployment         = null
+    profile_fence_transition_enabled = true
+  }
+  assert {
+    condition = (
+      aws_lambda_function.age_attestation.s3_key == "releases/existing-release/age_attestation.zip" &&
+      aws_lambda_function.age_attestation.environment[0].variables["DELETION_LEDGER_TABLE_NAME"] == "trustcheckradar-dev-deletion-ledger" &&
+      one([for st in data.aws_iam_policy_document.age_attestation_dynamodb.statement : st if st.sid == "UsersTableReadUpdate"]).actions == toset(["dynamodb:GetItem", "dynamodb:UpdateItem"]) &&
+      length(one([for st in data.aws_iam_policy_document.age_attestation_dynamodb.statement : st if st.sid == "UsersTableReadUpdate"]).condition) == 0 &&
+      output.profile_fence_contract.transition_enabled &&
+      !output.profile_fence_contract.transactional_user_permissions &&
+      !output.profile_fence_contract.account_deletion_activation_approved
+    )
+    error_message = "Prepare must add exact ledger configuration while preserving old source and its users permissions."
+  }
+  assert {
+    condition = alltrue([for st in data.aws_iam_policy_document.age_attestation_dynamodb.statement :
+      contains(st.actions, "dynamodb:ConditionCheckItem") ? (
+        st.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]) &&
+        alltrue([for c in st.condition : c.variable != "dynamodb:EnclosingOperation"]) &&
+        anytrue([for c in st.condition : c.variable == "dynamodb:LeadingKeys" && c.test == "ForAllValues:StringLike" && toset(c.values) == toset(["ACCOUNT#*"])]) &&
+        anytrue([for c in st.condition : c.variable == "dynamodb:ReturnValues" && c.test == "StringEqualsIfExists" && toset(c.values) == toset(["NONE"])])
+      ) : true
+    ])
+    error_message = "Transition must add only same-environment scoped condition checks with no returned ledger contents."
+  }
+}
+
+run "transition_pins_source_before_tightening_users_permissions" {
+  command = plan
+  variables {
+    account_data_deployment          = null
+    profile_fence_transition_enabled = true
+    profile_fence_deployment = {
+      release_id         = "profile-candidate", object_version = "immutable-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      approval_reference = "synthetic-test", promotion_approved = false
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.age_attestation.s3_key == "releases/profile-candidate/age_attestation.zip" &&
+      one([for st in data.aws_iam_policy_document.age_attestation_dynamodb.statement : st if st.sid == "UsersTableReadUpdate"]).actions == toset(["dynamodb:GetItem", "dynamodb:UpdateItem"]) &&
+      !output.profile_fence_contract.transactional_user_permissions
+    )
+    error_message = "Installation must allow old in-flight writes until source verification and drain complete."
+  }
+}
+
+run "transition_does_not_bypass_production_approval" {
+  command = plan
+  variables {
+    account_data_deployment          = null
+    profile_fence_transition_enabled = true
+    environment                      = "prod"
+  }
+  expect_failures = [var.profile_fence_transition_enabled]
+}
+
+run "transition_rejects_other_caller_account" {
+  command = plan
+  variables {
+    account_data_deployment          = null
+    profile_fence_transition_enabled = true
+    profile_fence_deployment         = null
+  }
+  override_data {
+    target = data.aws_caller_identity.account_fence[0]
+    values = { account_id = "999999999999" }
+  }
+  expect_failures = [aws_lambda_function.age_attestation]
 }
