@@ -35,7 +35,8 @@ class StorageAuditTests(unittest.TestCase):
                 return {"logGroups": []}
             return None
         report = self.run_audit(read)
-        self.assertEqual(len(report["tables"]), 12)
+        self.assertEqual(len(report["tables"]), 13)
+        self.assertIn("trustcheckradar-dev-play-tokens", {table["name"] for table in report["tables"]})
         self.assertTrue(all(not table["present"] for table in report["tables"]))
         self.assertFalse(report["deletionReadinessVerified"])
         self.assertEqual({(service, operation) for service, operation, _ in calls}, {
