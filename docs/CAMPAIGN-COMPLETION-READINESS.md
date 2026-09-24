@@ -40,7 +40,12 @@ synthetic tables. Permission checks, forbidden returned values/partitions,
 transaction-only mutations and atomic guard cancellation passed; all temporary
 resources were removed. The harness has 13 offline tests. This qualifies the
 reviewed DynamoDB write/check policy shape, not deployed worker semantics,
-streams, queues, KMS or table/index reads. Final deployment readback remains pending.
+streams, queues, KMS or table/index reads. The exact saved plan was subsequently applied in Dev: zero additions, four
+policy updates, zero deletions. [Deployment evidence](evidence/campaign-completion-2026-09-24/iam-deployment.json)
+and [runtime readback](evidence/campaign-completion-2026-09-24/runtime-after.json)
+verify the installed policy documents match the plan; function code, environment,
+concurrency, mappings, schedules, other inline policies and table settings are
+unchanged. A post-apply plan reported no drift. Gates remain closed.
 
 ## Read-only Dev observations
 

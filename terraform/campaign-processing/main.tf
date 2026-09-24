@@ -729,6 +729,7 @@ data "aws_iam_policy_document" "deletion_runtime" {
   dynamic "statement" {
     for_each = local.account_privacy_candidate ? {
       GuardedRepairChecks    = { arn = local.campaign.pipeline_table_arn, keys = ["CONTRIB#*", "EVENT#*", "CANDIDATE#*"] }
+      CheckRetainedPeriodKey = { arn = local.campaign.pipeline_table_arn, keys = ["PERIOD#*"] }
       GuardedDeletionCommand = { arn = local.foundation.deletion_ledger_table_arn, keys = ["ACCOUNT#*"] }
     } : {}
     content {

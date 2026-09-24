@@ -307,3 +307,17 @@ run "candidate_condition_checks_use_supported_keys_without_old_value_disclosure"
     error_message = "Separating checks must not remove transaction requirements on publisher, cluster or repair writes."
   }
 }
+
+run "retained_period_key_guard_is_check_only_and_scoped" {
+  command = plan
+  variables { research_consent_migration = true }
+  assert {
+    condition = length([for st in data.aws_iam_policy_document.deletion_runtime[0].statement : st if
+      st.sid == "CheckRetainedPeriodKey" && st.actions == toset(["dynamodb:ConditionCheckItem"]) &&
+      st.resources == toset([local.campaign.pipeline_table_arn]) &&
+      anytrue([for c in st.condition : c.variable == "dynamodb:LeadingKeys" && c.test == "ForAllValues:StringLike" && toset(c.values) == toset(["PERIOD#*"])]) &&
+      anytrue([for c in st.condition : c.variable == "dynamodb:ReturnValues" && c.test == "StringEqualsIfExists" && toset(c.values) == toset(["NONE"])])
+    ]) == 1
+    error_message = "Retained-key proof needs only an exact pipeline PERIOD check, never registry mutation or old-value access."
+  }
+}

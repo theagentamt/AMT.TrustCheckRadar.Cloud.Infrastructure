@@ -1,0 +1,18 @@
+{
+  "added": 0,
+  "appliedPlanSha256": "aecc17bce67dcd0c1f9a3792d392b0cd76e42c4d76c8f6e1530546d8683636e6",
+  "changed": 4,
+  "destroyed": 0,
+  "erasureVerified": false,
+  "installedPoliciesMatchPlan": true,
+  "inventoryApproved": false,
+  "liveDeletionEnabled": false,
+  "observedAtUtc": "2026-09-24T21:57:44.562984+00:00",
+  "postApplyDetailedExitCode": 0,
+  "postApplyPlanSha256": "d68e87adf50d4fd8baebd8052d071dc3ecc0dcd3ef5a9774fb2683c6b077a274",
+  "releaseMerge": "78f8a78282bc602ba6e0d77a6dcaaddf382f4007",
+  "schemaVersion": 1,
+  "scope": "Dev four-policy correction only; no Lambda code or activation change",
+  "sourceRevision": "11c40045676a22f4a212e3acb550f5aa535a4a2b",
+  "unchangedRuntimeAndOtherInlinePoliciesVerified": true
+}
