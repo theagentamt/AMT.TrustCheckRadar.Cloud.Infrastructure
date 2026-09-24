@@ -32,7 +32,7 @@ preparation as well as final source selection and use actual caller identity.
    condition-check grant while preserving each old writer's users permissions.
    Review/apply both complete stack plans and read back env/IAM before proceeding.
 2. **Install:** keep transition true and select exactly the independently qualified
-   immutable post-confirmation and age-attestation packages. Select Python3.14
+   immutable post-confirmation and age-attestation packages. Select Python 3.14
    ARM64 explicitly. Verify both hashes, runtime, environment, successful update
    status and unchanged Cognito trigger map. Existing code must be compatible with
    preparation; neither install may depend on an unprepared grant/configuration.
@@ -113,8 +113,30 @@ Prepared plans (not evidence of application):
 ### Identity provider compatibility
 
 The first identity installation plan failed validation before any apply because
-its historical AWS5.100.0 provider does not support Python3.14. The identity stack
-now uses the same signed AWS6.65.0 lock and >=6.20,<7 constraint as API. Preparation
+its historical AWS 5.100.0 provider does not support Python 3.14. The identity stack
+now uses the same signed AWS 6.65.0 lock and >=6.20,<7 constraint as API. Preparation
 had already succeeded with old code/runtime; no running package was changed by the
 failed plan. Re-run identity tests/validation and generate a fresh installation
 plan with the compatible provider. Never apply the failed-plan output.
+
+## Applied and verified
+
+All six independently reviewed saved plans applied successfully: prepare both
+writers, install both qualified Python 3.14 ARM64 packages, then tighten both IAM
+policies after successful readback and the 15-second drain (both timeouts 10 seconds).
+The final function hashes match the published c4b1cae artifacts. The Cognito trigger
+map is unchanged; export, token export, deletion and identity-finalizer gates are
+still false. No real account or valid signup event was invoked for qualification.
+
+Both installed IAM policy objects exactly match the policies qualified with live
+synthetic transactions. Sixteen installed-role simulation cases passed, and each
+role has only its expected DynamoDB policy and basic Lambda execution attachment,
+with no inline policies. Fresh full API and identity plans returned exit 0/no drift.
+
+- [Six-stage-plan deployment record](evidence/profile-writer-fence-2026-09-23/deployment.json)
+- [Final runtime/configuration readback](evidence/profile-writer-fence-2026-09-23/tighten-readback.json)
+- [Installed IAM simulations](evidence/profile-writer-fence-2026-09-23/installed-iam-simulation.json)
+
+This closes the paired profile-writer deployment increment. It does not establish
+complete retained-data inventory, subject mapping, live signup/account deletion,
+Android local cleanup decisions, or permission to activate privacy/store services.
