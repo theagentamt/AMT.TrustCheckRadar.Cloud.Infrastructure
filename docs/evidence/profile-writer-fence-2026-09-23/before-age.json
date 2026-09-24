@@ -1,0 +1,13 @@
+{
+    "FunctionName": "trustcheckradar-dev-age-attestation",
+    "RevisionId": "b1bf9672-989f-47ae-992f-63dd911dd54a",
+    "Runtime": "python3.13",
+    "CodeSha256": "UYlHvpFC0zidrBQwojspVpX6MBLwnpZY9mBCjnbdcpY=",
+    "Timeout": 10,
+    "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-age-attestation-role",
+    "Handler": "app.lambda_handler",
+    "Architectures": [
+        "arm64"
+    ],
+    "LastUpdateStatus": "Successful"
+}
