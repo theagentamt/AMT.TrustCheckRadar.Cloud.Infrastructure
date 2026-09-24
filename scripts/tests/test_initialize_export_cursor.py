@@ -1,8 +1,12 @@
 import base64
+from contextlib import redirect_stdout
 import importlib.util
+import io
 import json
 from pathlib import Path
 import unittest
+from unittest.mock import patch
+from types import SimpleNamespace
 
 SPEC = importlib.util.spec_from_file_location("initializer", Path(__file__).resolve().parents[1] / "initialize_export_cursor.py")
 module = importlib.util.module_from_spec(SPEC)
@@ -60,6 +64,20 @@ class Secret:
 
 
 class InitializationTests(unittest.TestCase):
+    def test_cli_closes_sdk_clients_without_context_manager_support(self):
+        sts, secret = Sts(), Secret()
+        closed = []
+        sts.close = lambda: closed.append("sts")
+        secret.close = lambda: closed.append("secret")
+        session = SimpleNamespace(client=lambda service: sts if service == "sts" else secret)
+        fake_sdk = SimpleNamespace(Session=lambda **kwargs: session)
+        output = io.StringIO()
+        with patch.dict("sys.modules", {"boto3": fake_sdk}), patch("sys.argv", ["initializer"]), redirect_stdout(output):
+            self.assertEqual(module.main(), 0)
+        self.assertEqual(closed, ["secret", "sts"])
+        self.assertTrue(json.loads(output.getvalue())["currentVerified"])
+        self.assertNotIn(json.loads(secret.payload)["keys"]["k1"], output.getvalue())
+
     def test_generated_key_is_valid_and_result_contains_no_key(self):
         client = Secret()
         result = module.initialize(Sts(), client)

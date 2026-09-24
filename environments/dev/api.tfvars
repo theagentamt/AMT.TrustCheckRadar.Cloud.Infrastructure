@@ -113,9 +113,9 @@ play_preparation_route_throttle_enabled  = true
 
 # Closed privacy candidates; inventory/finalization and public routing remain gated.
 account_export_deployment = {
-  release_id                = "39cce61623794a123e61d25f5248b0c081eccf4a"
-  object_version            = "yXGRM6bfQinj9Wf_l6LF6Who9XTmQSRR"
-  source_hash               = "/q1/eMfOPR6OzsVxme7ACh911HqTfS7AJO34M62U5oc="
+  release_id                = "e1651f86e30fc1478f69ba16a4049be8baf0e5f3"
+  object_version            = "YNLn3_R23z7m.OIi_0AfJCu5abU2btay"
+  source_hash               = "ynYTDY4o8nhqZOq+uIuyFTckEamaec1TWt9TKmRdsSk="
   approval_reference        = "docs/PLAY-ACCOUNT-PRIVACY-DEV-DEPLOYMENT.md"
   promotion_approved        = false
   authority_hmac_secret_arn = "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/v1-authority-hmac-C7v1hG"

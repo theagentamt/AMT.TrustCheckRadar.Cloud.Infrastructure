@@ -1,6 +1,7 @@
 """Initialize only the empty Dev export cursor secret; never rotate existing keys."""
 import argparse
 import base64
+from contextlib import closing
 import hmac
 import json
 import re
@@ -56,7 +57,7 @@ def main():
     args = parser.parse_args()
     session = boto3.Session(profile_name=args.profile, region_name=REGION)
     try:
-        with session.client("sts") as sts, session.client("secretsmanager") as client:
+        with closing(session.client("sts")) as sts, closing(session.client("secretsmanager")) as client:
             result = initialize(sts, client)
     except InitializationBlocked as error:
         print(str(error))
