@@ -169,22 +169,22 @@ data "aws_iam_policy_document" "age_attestation_dynamodb" {
   statement {
     sid    = "UsersTableReadUpdate"
     effect = "Allow"
-    actions = var.profile_fence_deployment != null ? ["dynamodb:UpdateItem"] : [
+    actions = local.profile_fence_permissions_enforced ? ["dynamodb:UpdateItem"] : [
       "dynamodb:GetItem",
       "dynamodb:UpdateItem"
     ]
 
     resources = [local.users_table_arn]
     dynamic "condition" {
-      for_each = var.profile_fence_deployment != null ? [1] : []
+      for_each = local.profile_fence_permissions_enforced ? [1] : []
       content {
-        test     = "StringEquals"
+        test     = "ForAnyValue:StringEquals"
         variable = "dynamodb:EnclosingOperation"
         values   = ["TransactWriteItems"]
       }
     }
     dynamic "condition" {
-      for_each = var.profile_fence_deployment != null ? [1] : []
+      for_each = local.profile_fence_permissions_enforced ? [1] : []
       content {
         test     = "ForAllValues:StringLike"
         variable = "dynamodb:LeadingKeys"
@@ -193,15 +193,17 @@ data "aws_iam_policy_document" "age_attestation_dynamodb" {
     }
   }
   dynamic "statement" {
-    for_each = var.profile_fence_deployment != null ? [1] : []
+    for_each = local.profile_fence_configured ? [1] : []
     content {
       sid       = "PreventDeletedProfileReactivation"
       actions   = ["dynamodb:ConditionCheckItem"]
       resources = [local.deletion_ledger_table_arn]
+      # ConditionCheckItem is transaction-only by API design; EnclosingOperation
+      # is not a supported condition key for this action in the service reference.
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = "StringEqualsIfExists"
+        variable = "dynamodb:ReturnValues"
+        values   = ["NONE"]
       }
       condition {
         test     = "ForAllValues:StringLike"
@@ -885,7 +887,7 @@ resource "aws_lambda_function" "age_attestation" {
   source_code_hash  = var.profile_fence_deployment == null ? null : var.profile_fence_deployment.source_hash
 
   environment {
-    variables = merge(var.age_attestation_lambda_env, var.profile_fence_deployment == null ? {} : {
+    variables = merge(var.age_attestation_lambda_env, !local.profile_fence_configured ? {} : {
       DELETION_LEDGER_TABLE_NAME = local.deletion_ledger_table_name
       }, {
       USERS_TABLE_ARN  = local.users_table_arn
@@ -895,11 +897,11 @@ resource "aws_lambda_function" "age_attestation" {
 
   lifecycle {
     precondition {
-      condition = var.profile_fence_deployment == null ? true : (
-        local.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-deletion-ledger" &&
+      condition = !local.profile_fence_configured ? true : (
+        local.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.account_fence[0].account_id}:table/${local.name_prefix}-deletion-ledger" &&
         local.deletion_ledger_table_name == "${local.name_prefix}-deletion-ledger" &&
         local.users_table_name == "${local.name_prefix}-users" &&
-        local.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${split(":", local.users_table_arn)[4]}:table/${local.name_prefix}-users"
+        local.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.account_fence[0].account_id}:table/${local.name_prefix}-users"
       )
       error_message = "Profile fencing requires the same account, Region and environment deletion ledger."
     }
