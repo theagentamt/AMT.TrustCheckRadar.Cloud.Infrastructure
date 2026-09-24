@@ -1,0 +1,350 @@
+{
+  "accountId": "107827791950",
+  "cases": [
+    "publisher:CheckLocatorInventoryTransaction:0:condition_none_allowed",
+    "publisher:CheckLocatorInventoryTransaction:0:all_old_denied",
+    "publisher:CheckLocatorInventoryTransaction:foreign_partition_denied",
+    "publisher:CheckFixedAccountDeletionFenceTransactionally:0:condition_none_allowed",
+    "publisher:CheckFixedAccountDeletionFenceTransactionally:0:all_old_denied",
+    "publisher:CheckFixedAccountDeletionFenceTransactionally:foreign_partition_denied",
+    "publisher:CheckContributorTombstoneTransaction:0:condition_none_allowed",
+    "publisher:CheckContributorTombstoneTransaction:0:all_old_denied",
+    "publisher:CheckContributorTombstoneTransaction:foreign_partition_denied",
+    "publisher:CheckParticipationStateInTransaction:0:condition_none_allowed",
+    "publisher:CheckParticipationStateInTransaction:0:all_old_denied",
+    "publisher:CheckParticipationStateInTransaction:foreign_partition_denied",
+    "publisher:WriteFencedTransientPipeline:0:PutItem:allowed",
+    "publisher:WriteFencedTransientPipeline:0:PutItem:standalone_denied",
+    "publisher:WriteFencedTransientPipeline:0:PutItem:foreign_partition_denied",
+    "publisher:WriteFencedTransientPipeline:0:UpdateItem:allowed",
+    "publisher:WriteFencedTransientPipeline:0:UpdateItem:standalone_denied",
+    "publisher:WriteFencedTransientPipeline:0:UpdateItem:foreign_partition_denied",
+    "publisher:WriteFencedTransientPipeline:1:PutItem:allowed",
+    "publisher:WriteFencedTransientPipeline:1:PutItem:standalone_denied",
+    "publisher:WriteFencedTransientPipeline:1:PutItem:foreign_partition_denied",
+    "publisher:WriteFencedTransientPipeline:1:UpdateItem:allowed",
+    "publisher:WriteFencedTransientPipeline:1:UpdateItem:standalone_denied",
+    "publisher:WriteFencedTransientPipeline:1:UpdateItem:foreign_partition_denied",
+    "publisher:inventory_guard_atomic_no_returned_item",
+    "cluster:CheckResearchEligibilityLedger:0:condition_none_allowed",
+    "cluster:CheckResearchEligibilityLedger:0:all_old_denied",
+    "cluster:CheckResearchEligibilityLedger:foreign_partition_denied",
+    "cluster:CheckResearchEligibilityOutbox:0:condition_none_allowed",
+    "cluster:CheckResearchEligibilityOutbox:0:all_old_denied",
+    "cluster:CheckResearchEligibilityOutbox:foreign_partition_denied",
+    "cluster:CheckResearchEligibilityUsers:0:condition_none_allowed",
+    "cluster:CheckResearchEligibilityUsers:0:all_old_denied",
+    "cluster:CheckResearchEligibilityUsers:foreign_partition_denied",
+    "cluster:CheckCandidateLifecycleTransaction:0:condition_none_allowed",
+    "cluster:CheckCandidateLifecycleTransaction:0:all_old_denied",
+    "cluster:CheckCandidateLifecycleTransaction:foreign_partition_denied",
+    "cluster:CheckLocatorInventoryTransaction:0:condition_none_allowed",
+    "cluster:CheckLocatorInventoryTransaction:0:all_old_denied",
+    "cluster:CheckLocatorInventoryTransaction:foreign_partition_denied",
+    "cluster:CheckContributorTombstoneTransaction:0:condition_none_allowed",
+    "cluster:CheckContributorTombstoneTransaction:0:all_old_denied",
+    "cluster:CheckContributorTombstoneTransaction:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:0:DeleteItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:0:DeleteItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:0:DeleteItem:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:0:PutItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:0:PutItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:0:PutItem:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:0:UpdateItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:0:UpdateItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:0:UpdateItem:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:1:DeleteItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:1:DeleteItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:1:DeleteItem:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:1:PutItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:1:PutItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:1:PutItem:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:1:UpdateItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:1:UpdateItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:1:UpdateItem:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:2:DeleteItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:2:DeleteItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:2:DeleteItem:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:2:PutItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:2:PutItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:2:PutItem:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:2:UpdateItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:2:UpdateItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:2:UpdateItem:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:3:DeleteItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:3:DeleteItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:3:DeleteItem:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:3:PutItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:3:PutItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:3:PutItem:foreign_partition_denied",
+    "cluster:WriteMutableCandidateFamilies:3:UpdateItem:allowed",
+    "cluster:WriteMutableCandidateFamilies:3:UpdateItem:standalone_denied",
+    "cluster:WriteMutableCandidateFamilies:3:UpdateItem:foreign_partition_denied",
+    "cluster:inventory_guard_atomic_no_returned_item",
+    "deletion:CheckLocatorInventoryTransaction:0:condition_none_allowed",
+    "deletion:CheckLocatorInventoryTransaction:0:all_old_denied",
+    "deletion:CheckLocatorInventoryTransaction:foreign_partition_denied",
+    "deletion:GuardedDeletionCommand:0:condition_none_allowed",
+    "deletion:GuardedDeletionCommand:0:all_old_denied",
+    "deletion:GuardedDeletionCommand:foreign_partition_denied",
+    "deletion:GuardedRepairChecks:0:condition_none_allowed",
+    "deletion:GuardedRepairChecks:0:all_old_denied",
+    "deletion:GuardedRepairChecks:1:condition_none_allowed",
+    "deletion:GuardedRepairChecks:1:all_old_denied",
+    "deletion:GuardedRepairChecks:2:condition_none_allowed",
+    "deletion:GuardedRepairChecks:2:all_old_denied",
+    "deletion:GuardedRepairChecks:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:0:DeleteItem:allowed",
+    "deletion:GuardedRepairWrites:0:DeleteItem:standalone_denied",
+    "deletion:GuardedRepairWrites:0:DeleteItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:0:PutItem:allowed",
+    "deletion:GuardedRepairWrites:0:PutItem:standalone_denied",
+    "deletion:GuardedRepairWrites:0:PutItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:0:UpdateItem:allowed",
+    "deletion:GuardedRepairWrites:0:UpdateItem:standalone_denied",
+    "deletion:GuardedRepairWrites:0:UpdateItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:1:DeleteItem:allowed",
+    "deletion:GuardedRepairWrites:1:DeleteItem:standalone_denied",
+    "deletion:GuardedRepairWrites:1:DeleteItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:1:PutItem:allowed",
+    "deletion:GuardedRepairWrites:1:PutItem:standalone_denied",
+    "deletion:GuardedRepairWrites:1:PutItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:1:UpdateItem:allowed",
+    "deletion:GuardedRepairWrites:1:UpdateItem:standalone_denied",
+    "deletion:GuardedRepairWrites:1:UpdateItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:2:DeleteItem:allowed",
+    "deletion:GuardedRepairWrites:2:DeleteItem:standalone_denied",
+    "deletion:GuardedRepairWrites:2:DeleteItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:2:PutItem:allowed",
+    "deletion:GuardedRepairWrites:2:PutItem:standalone_denied",
+    "deletion:GuardedRepairWrites:2:PutItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:2:UpdateItem:allowed",
+    "deletion:GuardedRepairWrites:2:UpdateItem:standalone_denied",
+    "deletion:GuardedRepairWrites:2:UpdateItem:foreign_partition_denied",
+    "deletion:inventory_guard_atomic_no_returned_item",
+    "lifecycle:CheckLifecycleAggregate:0:condition_none_allowed",
+    "lifecycle:CheckLifecycleAggregate:0:all_old_denied",
+    "lifecycle:CheckLifecycleAggregate:foreign_partition_denied",
+    "lifecycle:CheckLifecyclePipelineProof:0:condition_none_allowed",
+    "lifecycle:CheckLifecyclePipelineProof:0:all_old_denied",
+    "lifecycle:CheckLifecyclePipelineProof:1:condition_none_allowed",
+    "lifecycle:CheckLifecyclePipelineProof:1:all_old_denied",
+    "lifecycle:CheckLifecyclePipelineProof:foreign_partition_denied",
+    "lifecycle:WriteLifecycleAggregates:0:BatchWriteItem:allowed",
+    "lifecycle:WriteLifecycleAggregates:0:BatchWriteItem:legacy_standalone_allowed",
+    "lifecycle:WriteLifecycleAggregates:0:BatchWriteItem:foreign_partition_denied",
+    "lifecycle:WriteLifecycleAggregates:0:DeleteItem:allowed",
+    "lifecycle:WriteLifecycleAggregates:0:DeleteItem:legacy_standalone_allowed",
+    "lifecycle:WriteLifecycleAggregates:0:DeleteItem:foreign_partition_denied",
+    "lifecycle:WriteLifecycleAggregates:0:PutItem:allowed",
+    "lifecycle:WriteLifecycleAggregates:0:PutItem:legacy_standalone_allowed",
+    "lifecycle:WriteLifecycleAggregates:0:PutItem:foreign_partition_denied",
+    "lifecycle:WriteLifecycleAggregates:0:UpdateItem:allowed",
+    "lifecycle:WriteLifecycleAggregates:0:UpdateItem:legacy_standalone_allowed",
+    "lifecycle:WriteLifecycleAggregates:0:UpdateItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:0:BatchWriteItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:0:BatchWriteItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:0:BatchWriteItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:0:DeleteItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:0:DeleteItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:0:DeleteItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:0:PutItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:0:PutItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:0:PutItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:0:UpdateItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:0:UpdateItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:0:UpdateItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:1:BatchWriteItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:1:BatchWriteItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:1:BatchWriteItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:1:DeleteItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:1:DeleteItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:1:DeleteItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:1:PutItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:1:PutItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:1:PutItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:1:UpdateItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:1:UpdateItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:1:UpdateItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:2:BatchWriteItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:2:BatchWriteItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:2:BatchWriteItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:2:DeleteItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:2:DeleteItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:2:DeleteItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:2:PutItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:2:PutItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:2:PutItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:2:UpdateItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:2:UpdateItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:2:UpdateItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:3:BatchWriteItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:3:BatchWriteItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:3:BatchWriteItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:3:DeleteItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:3:DeleteItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:3:DeleteItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:3:PutItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:3:PutItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:3:PutItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:3:UpdateItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:3:UpdateItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:3:UpdateItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:4:BatchWriteItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:4:BatchWriteItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:4:BatchWriteItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:4:DeleteItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:4:DeleteItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:4:DeleteItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:4:PutItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:4:PutItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:4:PutItem:foreign_partition_denied",
+    "lifecycle:WriteMutableLifecyclePipeline:4:UpdateItem:allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:4:UpdateItem:legacy_standalone_allowed",
+    "lifecycle:WriteMutableLifecyclePipeline:4:UpdateItem:foreign_partition_denied",
+    "lifecycle:inventory_guard_atomic_no_returned_item"
+  ],
+  "cleanupComplete": true,
+  "cleanupOutstanding": [],
+  "cloudExecuted": true,
+  "harnessSha256": "a6db6a6ed6e0accd888056ddb7f80f584027e04605c802072b98a63ed18c90f7",
+  "omittedStatements": {
+    "cluster": [
+      {
+        "actions": [
+          "sqs:ReceiveMessage",
+          "sqs:GetQueueAttributes",
+          "sqs:DeleteMessage",
+          "sqs:ChangeMessageVisibility"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "ConsumeClusterQueue"
+      },
+      {
+        "actions": [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "UseCampaignEncryption"
+      }
+    ],
+    "deletion": [
+      {
+        "actions": [
+          "dynamodb:ListStreams",
+          "dynamodb:GetShardIterator",
+          "dynamodb:GetRecords",
+          "dynamodb:DescribeStream"
+        ],
+        "reason": "stream_not_qualified",
+        "sid": "ReadDeletionLedgerStream"
+      },
+      {
+        "actions": [
+          "kms:GenerateMac"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "DeriveActivePeriodTokens"
+      }
+    ],
+    "lifecycle": [
+      {
+        "actions": [
+          "kms:CreateKey"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "CreatePeriodHmacKeys"
+      },
+      {
+        "actions": [
+          "kms:TagResource",
+          "kms:GetKeyPolicy",
+          "kms:EnableKey",
+          "kms:DisableKey",
+          "kms:DescribeKey"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "ManageTaggedPeriodHmacKeys"
+      },
+      {
+        "actions": [
+          "kms:TagResource"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "TagNewPeriodHmacKeys"
+      },
+      {
+        "actions": [
+          "kms:ScheduleKeyDeletion"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "ScheduleTaggedPeriodKeyDeletion"
+      },
+      {
+        "actions": [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "UseCampaignEncryption"
+      }
+    ],
+    "publisher": [
+      {
+        "actions": [
+          "dynamodb:ListStreams",
+          "dynamodb:GetShardIterator",
+          "dynamodb:GetRecords",
+          "dynamodb:DescribeStream"
+        ],
+        "reason": "stream_not_qualified",
+        "sid": "ReadCampaignOutboxStream"
+      },
+      {
+        "actions": [
+          "sqs:SendMessage"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "SendOpaqueClusterWork"
+      },
+      {
+        "actions": [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "UseTransientEncryption"
+      },
+      {
+        "actions": [
+          "kms:GenerateMac"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "GenerateCurrentPeriodToken"
+      }
+    ]
+  },
+  "passed": true,
+  "policySha256": {
+    "cluster": "9c7ab74aa136d2896324fe17fe2d14cdf54fb791a81f7404e1dc866d505c967c",
+    "deletion": "202c3b8304ee84406570af69e181570bd4c21cdb9bd6b421ef9c7ac39baea3ca",
+    "lifecycle": "a495ea245b166962435286d8c24b4684a7c6be8d828ecddb3af27cad45a83a1e",
+    "publisher": "ae91d7927827d5b02b3b7971520e9ca2ee435b9ea1744d61a48d9f5df68ccf4d"
+  },
+  "region": "us-east-1",
+  "runId": "34398f7d22e44464ad2f8dc66d821d81",
+  "schemaVersion": 1,
+  "scope": "synthetic table IAM write/check qualification; not live worker or campaign cleanup acceptance",
+  "sourcePlanSha256": "b364b1ec24130ec60750f12a8360ba38dcf7db010ffa1eb89789ab8ccf6d6fa4",
+  "unexercised": [
+    "table/index read paths",
+    "stream permissions",
+    "SQS permissions",
+    "KMS permissions",
+    "application semantics"
+  ]
+}
