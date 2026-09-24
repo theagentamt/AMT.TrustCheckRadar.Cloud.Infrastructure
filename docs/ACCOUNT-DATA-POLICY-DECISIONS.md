@@ -122,3 +122,39 @@ requirement. Clients must not describe this restriction as a network outage.
 This answer concerned export. It does not require an owner to attest to being an
 adult merely to delete an already-created account: the deletion contract retains
 fresh authentication and exact account ownership for incomplete-onboarding profiles.
+
+## Owner Decisions 2026-09-24 — accepted deletion and Android local cleanup
+
+The owner explicitly approved both decisions presented for ATCR-94:
+
+- After the server confirms acceptance of deletion, clear only that account's
+  local app data and sign out. Explain that server cleanup may still be processing;
+  acceptance and local cleanup do not establish completed server erasure.
+- When acceptance is unknown, retain one encrypted account-linked operation UUID
+  across logout and restart, without an automatic expiry. Retire it after confirmed
+  acceptance and successful approved local cleanup, or through app-data removal.
+  It must not contain submitted messages, URLs or credentials. Its account namespace
+  is pseudonymous, not anonymous.
+
+Under immutable contract `account-deletion/1.0.0-candidate.1`, a validated POST 202
+`REQUESTED`, or reconciliation GET 200 `REQUESTED`, must match the authenticated
+account and exact retained UUID to establish acceptance. A different UUID,
+`NOT_REQUESTED`, authentication failure, timeout or malformed response does not
+prove acceptance, rejection, cancellation or completion. `completionEligible`
+does not prove global completion. Retry of an unresolved server request remains
+explicit and uses the original UUID after fresh sign-in.
+
+Implementation must fence new writes and asynchronous work for the deleting
+account before cleanup, preserve necessary suppression barriers until cleanup
+succeeds, and recover interrupted or partial local cleanup truthfully. Late
+responses must never wipe or sign out a different account/session. Restart must
+not expose retained account data while accepted cleanup is pending. Exported files
+outside app control and store subscription cancellation are outside this local
+cleanup's effect.
+
+These decisions authorize implementation, automated/emulator validation, reviewed
+source integration into `release-V01` and tracker updates. They do not authorize
+feature activation, claim backend erasure acceptance, change server receipt
+retention, or approve the separate proposed five-minute Play lifecycle cleanup
+checkpoint retention. The outstanding backend work is recorded in
+[the current readiness assessment](ACCOUNT-DELETION-READINESS-2026-09-24.md).
