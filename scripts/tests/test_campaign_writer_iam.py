@@ -196,5 +196,11 @@ class CampaignIamTests(unittest.TestCase):
                 q.validate_policy(value, 'publisher')
 
 
+    def test_invalid_role_selection_stops_before_cloud_clients(self):
+        for roles in ([], ['other'], ['deletion', 'deletion']):
+            with self.assertRaisesRegex(q.QualificationError, 'invalid_role_selection'):
+                q.qualify(None, {}, {}, 'synthetic', selected_roles=roles)
+
+
 if __name__ == '__main__':
     unittest.main()

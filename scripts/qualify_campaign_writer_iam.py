@@ -101,6 +101,7 @@ def specifications():
             'GuardedRepairWrites': write(p, ['CONTRIB#*', 'EVENT#*', 'CANDIDATE#*']),
             'GuardedDeletionCommand': check(d, 'ACCOUNT#*'),
             'GuardedRepairChecks': check(p, ['CONTRIB#*', 'EVENT#*', 'CANDIDATE#*']),
+            'CheckRetainedPeriodKey': check(p, 'PERIOD#*'),
         },
         'lifecycle': {
             'LifecycleTableAccess': read([p, p + '/index/ExpirationIndex', p + '/index/CandidateBucketIndex', i]),
@@ -356,7 +357,8 @@ def qualify_role(kind, client, admin, policy, names, report):
     record('inventory_guard_atomic_no_returned_item')
 
 
-def qualify(session, policies, omitted, source_hash):
+def qualify(session, policies, omitted, source_hash, selected_roles=ROLES):
+    require(bool(selected_roles) and len(set(selected_roles)) == len(selected_roles) and set(selected_roles) <= set(ROLES), 'invalid_role_selection')
     import boto3
     from botocore.config import Config
     config = Config(retries={'total_max_attempts': 1}, connect_timeout=5, read_timeout=15)
@@ -366,7 +368,7 @@ def qualify(session, policies, omitted, source_hash):
     suffixes = ('pipeline', 'intelligence', 'outbox', 'users', 'ledger')
     names = {k: prefix + '-' + suffix for k, suffix in zip(TABLES, suffixes)}
     tables, roles, clients = [], [], []
-    report = {'schemaVersion': 1, 'accountId': ACCOUNT, 'region': REGION, 'runId': run_id, 'sourcePlanSha256': source_hash, 'harnessSha256': sha(Path(__file__).read_bytes()), 'cloudExecuted': True, 'scope': 'synthetic table IAM write/check qualification; not live worker or campaign cleanup acceptance', 'omittedStatements': omitted, 'unexercised': ['table/index read paths', 'stream permissions', 'SQS permissions', 'KMS permissions', 'application semantics'], 'cases': [], 'passed': False, 'cleanupComplete': False, 'policySha256': {k: sha(canonical(v).encode()) for k, v in policies.items()}}
+    report = {'schemaVersion': 1, 'accountId': ACCOUNT, 'region': REGION, 'runId': run_id, 'sourcePlanSha256': source_hash, 'harnessSha256': sha(Path(__file__).read_bytes()), 'cloudExecuted': True, 'scope': 'synthetic table IAM write/check qualification; not live worker or campaign cleanup acceptance', 'omittedStatements': omitted, 'unexercised': ['table/index read paths', 'stream permissions', 'SQS permissions', 'KMS permissions', 'application semantics'], 'selectedRoles': list(selected_roles), 'cases': [], 'passed': False, 'cleanupComplete': False, 'policySha256': {k: sha(canonical(v).encode()) for k, v in policies.items()}}
     try:
         identity = sts.get_caller_identity()
         require(identity['Account'] == ACCOUNT, 'wrong_account')
@@ -383,7 +385,7 @@ def qualify(session, policies, omitted, source_hash):
             ddb.create_table(TableName=name, BillingMode='PAY_PER_REQUEST', AttributeDefinitions=[{'AttributeName': x, 'AttributeType': 'S'} for x in ('PK', 'SK')], KeySchema=[{'AttributeName': 'PK', 'KeyType': 'HASH'}, {'AttributeName': 'SK', 'KeyType': 'RANGE'}], StreamSpecification={'StreamEnabled': False}, Tags=[{'Key': 'Purpose', 'Value': 'synthetic-campaign-qualification'}, {'Key': 'QualificationRun', 'Value': run_id}])
             wait_table(ddb, name, True)
             require(ddb.describe_continuous_backups(TableName=name)['ContinuousBackupsDescription']['PointInTimeRecoveryDescription']['PointInTimeRecoveryStatus'] == 'DISABLED', 'unexpected_pitr')
-        for kind in ROLES:
+        for kind in selected_roles:
             role_name = prefix + '-' + kind
             roles.append(role_name)
             trust = {'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Principal': {'AWS': principal}, 'Action': 'sts:AssumeRole'}]}
@@ -444,6 +446,7 @@ def main():
     parser.add_argument('--plan', required=True)
     parser.add_argument('--profile', default='trustcheckradar')
     parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--roles', nargs='+', choices=ROLES, default=list(ROLES), help='Validated policy roles to exercise; defaults to all four')
     args = parser.parse_args()
     try:
         policies, omitted, source_hash = load_policies(args.plan)
@@ -451,7 +454,7 @@ def main():
             print(json.dumps({'policyValidationPassed': True, 'cloudExecuted': False, 'policyCount': len(policies), 'sourcePlanSha256': source_hash, 'harnessSha256': sha(Path(__file__).read_bytes()), 'omittedStatements': omitted}, sort_keys=True))
             return 0
         import boto3
-        report = qualify(boto3.Session(profile_name=args.profile, region_name=REGION), policies, omitted, source_hash)
+        report = qualify(boto3.Session(profile_name=args.profile, region_name=REGION), policies, omitted, source_hash, selected_roles=args.roles)
         print(json.dumps(report, sort_keys=True))
         return 0 if report['passed'] and report['cleanupComplete'] else 1
     except Exception as exc:
