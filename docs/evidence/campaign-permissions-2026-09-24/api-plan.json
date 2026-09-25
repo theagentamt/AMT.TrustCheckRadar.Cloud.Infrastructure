@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "environment": "dev",
+  "scope": "reviewed disabled preparation, not applied",
+  "managedChanges": [
+    {
+      "address": "aws_iam_policy.campaign_participation_runtime",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "policy"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.account_data[0]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "policy"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.account_data[0]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "environment"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.campaign_participation",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "environment"
+      ]
+    },
+    {
+      "address": "terraform_data.campaign_recovery_preparation[0]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    }
+  ],
+  "planJsonSha256": "38d9a5a2ed5d999c467b62e381024f5212dae0b6d858c87f3e6f687a072903d4",
+  "savedPlanSha256": "fb953a500b6b075e61e44c2a42d483682be408db96b24f9cbf8ed6dd95a6623c",
+  "newLambdaArtifacts": false,
+  "activation": false
+}

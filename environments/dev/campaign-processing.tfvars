@@ -46,3 +46,8 @@ account_privacy_artifacts = {
 
 # Installed code and closed gates verified before restoring normal worker capacity.
 reserved_concurrency = 2
+
+# SECUR4ALL-207: permission/scheduling preparation only; all recovery gates stay false.
+campaign_recovery_preparation = {
+  review_reference = "docs/CAMPAIGN-RECOVERY-PERMISSION-READINESS.md"
+}

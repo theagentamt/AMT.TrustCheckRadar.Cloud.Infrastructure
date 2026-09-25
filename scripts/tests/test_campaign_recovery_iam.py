@@ -173,6 +173,58 @@ class RecoveryIamTests(unittest.TestCase):
                 with self.assertRaises(q.QualificationError):
                     q.load_policy(path)
 
+    def worker_audit(self):
+        spec = importlib.util.spec_from_file_location('writer', SCRIPT.with_name('qualify_campaign_writer_iam.py'))
+        writer = importlib.util.module_from_spec(spec); spec.loader.exec_module(writer)
+        statements = []
+        for sid, rule in writer.SPECS['deletion'].items():
+            st = {'Sid': sid, 'Effect': 'Allow', 'Action': sorted(rule['actions']),
+                  'Resource': sorted(rule['resources'])}
+            if rule['conditions']: st['Condition'] = copy.deepcopy(rule['conditions'])
+            statements.append(st)
+        name = 'trustcheckradar-dev-campaign-deletion-bridge-role'
+        return {'roles': {name: {'arn': f'arn:aws:iam::{q.ACCOUNT}:role/{name}',
+            'managed': {}, 'permissionsBoundary': None, 'inline': {
+                'deletion-runtime': {'Version': '2012-10-17', 'Statement': statements},
+                'content-free-logging': {'Version': '2012-10-17', 'Statement': [
+                    {'Effect': 'Allow', 'Action': 'logs:PutLogEvents', 'Resource': '*'},
+                    {'Effect': 'Allow', 'Action': 'cloudwatch:PutMetricData', 'Resource': '*'}]}}}}}
+
+    def test_worker_union_adds_existing_account_reads_and_checks_without_mutations(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'audit.json'; path.write_text(json.dumps(self.worker_audit()))
+            policy, digest = q.combine_worker_policy(source_policy(), path)
+            self.assertEqual(6, len(policy['Statement']))
+            self.assertEqual(64, len(digest))
+            added = policy['Statement'][-2:]
+            self.assertEqual({'dynamodb:GetItem', 'dynamodb:ConditionCheckItem'},
+                {action for st in added for action in q.seq(st['Action'])})
+            fixture = q.fixture_policy(policy, 'amt-recovery-qual-' + 'b' * 32 + '-ledger', True)
+            self.assertNotIn('trustcheckradar-dev-', q.canonical(fixture))
+            with self.assertRaises(q.QualificationError): q.fixture_policy(policy, 'amt-recovery-qual-' + 'b' * 32 + '-ledger')
+
+    def test_worker_union_rejects_additional_policy_sources_or_logging_wildcards(self):
+        for mutation in ['managed', 'boundary', 'inline', 'logging']:
+            audit = self.worker_audit(); role = next(iter(audit['roles'].values()))
+            if mutation == 'managed': role['managed']['foreign'] = {}
+            elif mutation == 'boundary': role['permissionsBoundary'] = {'PermissionsBoundaryArn': 'unknown'}
+            elif mutation == 'inline': role['inline']['foreign'] = {}
+            else: role['inline']['content-free-logging']['Statement'][0]['Action'] = '*'
+            with tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / 'audit.json'; path.write_text(json.dumps(audit))
+                with self.assertRaises(q.QualificationError): q.combine_worker_policy(source_policy(), path)
+
+    def test_worker_union_rejects_unrecognized_overlapping_ledger_grant(self):
+        for mutation in ['wildcard_resource', 'extra_write', 'extra_scan']:
+            audit = self.worker_audit(); policy = next(iter(audit['roles'].values()))['inline']['deletion-runtime']
+            row = next(st for st in policy['Statement'] if st['Sid'] == 'CompleteDeletionLedgerCommand')
+            if mutation == 'wildcard_resource': row['Resource'] = '*'
+            elif mutation == 'extra_write': row['Action'].append('dynamodb:PutItem')
+            else: policy['Statement'].append({'Sid': 'Extra', 'Effect': 'Allow', 'Action': 'dynamodb:Scan', 'Resource': q.SOURCE_TABLE})
+            with tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / 'audit.json'; path.write_text(json.dumps(audit))
+                with self.assertRaises(Exception): q.combine_worker_policy(source_policy(), path)
+
     def test_default_cli_validates_without_loading_aws_sdk(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'plan.json'

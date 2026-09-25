@@ -145,3 +145,8 @@ profile_fence_deployment = {
   approval_reference = "SECUR4ALL-244 owner-authorized Dev profile-writer safeguards; reviewed staged rollout"
   promotion_approved = false
 }
+
+# SECUR4ALL-207: permission/scheduling preparation only; all recovery gates stay false.
+campaign_recovery_preparation = {
+  review_reference = "docs/CAMPAIGN-RECOVERY-PERMISSION-READINESS.md"
+}
