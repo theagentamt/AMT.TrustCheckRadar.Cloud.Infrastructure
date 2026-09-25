@@ -1,0 +1,124 @@
+{
+  "observedAtUtc": "2026-09-25T02:56:23.961291+00:00",
+  "functions": {
+    "trustcheckradar-dev-account-data-api": {
+      "codeSha256": "1QZcQV/kDtAThdaZt4K48EOW00R3dbMOqq0pQqOH7LQ=",
+      "runtime": "python3.14",
+      "configurationMatchesPlan": true,
+      "mappingsAndConcurrencyUnchanged": true,
+      "closedGates": {
+        "CAMPAIGN_RECOVERY_WRITES_ENABLED": "false",
+        "ACCOUNT_IDENTITY_FINALIZER_ENABLED": "false",
+        "ACCOUNT_DELETION_ENABLED": "false"
+      }
+    },
+    "trustcheckradar-dev-campaign-participation": {
+      "codeSha256": "p+wPYSC7BSxN5jYSffePQAu2DLZLfDhZ+cJLKP2dnX8=",
+      "runtime": "python3.14",
+      "configurationMatchesPlan": true,
+      "mappingsAndConcurrencyUnchanged": true,
+      "closedGates": {
+        "CAMPAIGN_RECOVERY_WRITES_ENABLED": "false",
+        "CONSENT_INDEPENDENCE_ENABLED": "false"
+      }
+    },
+    "trustcheckradar-dev-campaign-deletion-bridge": {
+      "codeSha256": "FItTXNai302HOO+oHnMNj70y6t0r/5YeWjScTX7QQMQ=",
+      "runtime": "python3.14",
+      "configurationMatchesPlan": true,
+      "mappingsAndConcurrencyUnchanged": true,
+      "closedGates": {
+        "CAMPAIGN_RECOVERY_ENABLED": "false"
+      }
+    }
+  },
+  "policies": [
+    {
+      "address": "aws_iam_policy.campaign_participation_runtime",
+      "matchesPlan": true
+    },
+    {
+      "address": "aws_iam_role_policy.account_data[0]",
+      "matchesPlan": true
+    },
+    {
+      "address": "aws_iam_role_policy.recovery_runtime[0]",
+      "matchesPlan": true
+    },
+    {
+      "address": "aws_iam_role_policy.recovery_scheduler_invoke[0]",
+      "matchesExactInvocationGrant": true
+    }
+  ],
+  "alarms": [
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-budget",
+      "actionsEnabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-failures",
+      "actionsEnabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-heartbeat",
+      "actionsEnabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-overdue",
+      "actionsEnabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-pending-age",
+      "actionsEnabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-schema",
+      "actionsEnabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-truncated",
+      "actionsEnabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-unverified",
+      "actionsEnabled": false
+    }
+  ],
+  "schedules": [
+    {
+      "name": "trustcheckradar-dev-campaign-manage-keys",
+      "state": "DISABLED"
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-finalize-periods",
+      "state": "DISABLED"
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-expire-transient",
+      "state": "DISABLED"
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-reconcile-cleanup",
+      "state": "DISABLED"
+    }
+  ],
+  "asyncInvocation": {
+    "maximumEventAgeSeconds": 60,
+    "maximumRetryAttempts": 0,
+    "scope": "unqualified async calls to deletion function"
+  },
+  "campaignMappings": [
+    {
+      "uuid": "3986a9e8-4718-4b3e-bc9a-cda17b7390e2",
+      "state": "Disabled"
+    },
+    {
+      "uuid": "04c7b23a-97e3-4dd1-b705-355f9fb6713d",
+      "state": "Disabled"
+    },
+    {
+      "uuid": "45da87c1-cc6d-49da-ad0c-3e0d06da4b0c",
+      "state": "Disabled"
+    }
+  ]
+}

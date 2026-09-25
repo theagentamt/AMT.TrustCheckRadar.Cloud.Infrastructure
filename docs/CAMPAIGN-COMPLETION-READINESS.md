@@ -107,3 +107,13 @@ replay behavior. See [permission/deployment readiness](CAMPAIGN-RECOVERY-PERMISS
 for exact release commits, validation and remaining qualification. Existing Dev
 Lambda artifacts are unchanged. This supersedes the earlier implementation gap,
 not the historical, restore, retirement or runtime acceptance requirements.
+
+
+## Subsequent isolated runtime qualification
+
+[Restore/runtime qualification](CAMPAIGN-RESTORE-QUALIFICATION.md) records the
+current storage and management-history audits, owner statement, replay hardening
+in Lambda PR57 and 28 passing isolated AWS runtime cases. Existing Dev code and
+activation gates remain unchanged. Synthetic mechanical acceptance does not
+approve historical inventory, native restore admission, key/tombstone retirement
+or all-writer/publication coverage.

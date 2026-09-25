@@ -1,0 +1,29 @@
+{
+  "observedAtUtc": "2026-09-25T02:46:16.903909+00:00",
+  "metadataOnly": true,
+  "historicalReplayQualified": false,
+  "queues": [
+    {
+      "name": "trustcheckradar-dev-campaign-cluster",
+      "retentionSeconds": 345600,
+      "visibleApproximate": 0,
+      "inFlightApproximate": 0,
+      "delayedApproximate": 0,
+      "encryptedWithKms": true,
+      "hasRedrivePolicy": true
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-cluster-dlq",
+      "retentionSeconds": 1209600,
+      "visibleApproximate": 0,
+      "inFlightApproximate": 0,
+      "delayedApproximate": 0,
+      "encryptedWithKms": true,
+      "hasRedrivePolicy": false
+    }
+  ],
+  "limitations": [
+    "No messages received, peeked, purged or redriven.",
+    "Approximate current counts cannot prove past delivery, replay safety or erasure."
+  ]
+}

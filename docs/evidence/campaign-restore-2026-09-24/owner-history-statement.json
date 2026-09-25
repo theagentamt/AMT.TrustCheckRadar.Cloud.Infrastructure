@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-09-25T02:42:36.547625+00:00",
+  "question": "Has any TrustCheckRadar campaign or account data been manually exported, copied to another account/region, or restored outside tracked deployments?",
+  "ownerAnswer": "No known manual copies or restores",
+  "evidenceType": "owner statement of known activity",
+  "historicalCoverageVerified": false,
+  "limitations": [
+    "This narrows known external locations; it is not proof of complete historical writer coverage or prior-period erasure."
+  ]
+}

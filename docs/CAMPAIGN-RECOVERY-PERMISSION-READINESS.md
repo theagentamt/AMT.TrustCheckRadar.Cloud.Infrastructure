@@ -123,3 +123,13 @@ nine subtests. Root independently reran those same 46 focused cases; they are no
 additional unique coverage. The candidate remains unwired and undeployed, without
 completion IAM grants or approval markers. No historical coverage or actual
 completion runtime acceptance is claimed.
+
+
+## Subsequent isolated runtime qualification
+
+[Restore/runtime qualification](CAMPAIGN-RESTORE-QUALIFICATION.md) records the
+current storage and management-history audits, owner statement, replay hardening
+in Lambda PR57 and 28 passing isolated AWS runtime cases. Existing Dev code and
+activation gates remain unchanged. Synthetic mechanical acceptance does not
+approve historical inventory, native restore admission, key/tombstone retirement
+or all-writer/publication coverage.

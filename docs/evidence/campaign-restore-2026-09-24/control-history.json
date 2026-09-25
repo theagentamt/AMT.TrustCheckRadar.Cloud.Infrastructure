@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "accountId": "107827791950",
+  "region": "us-east-1",
+  "startUtc": "2026-09-04T02:19:26.995000+00:00",
+  "endUtc": "2026-09-25T02:49:06.188878+00:00",
+  "scope": "Management event history in this region, since earliest creation of the five current tables",
+  "events": {
+    "CreateBackup": {
+      "pages": 1,
+      "matchingKnownTables": 0,
+      "unclassifiedRecords": 0,
+      "otherRecords": 0,
+      "complete": true
+    },
+    "DeleteBackup": {
+      "pages": 1,
+      "matchingKnownTables": 0,
+      "unclassifiedRecords": 0,
+      "otherRecords": 0,
+      "complete": true
+    },
+    "RestoreTableFromBackup": {
+      "pages": 1,
+      "matchingKnownTables": 0,
+      "unclassifiedRecords": 0,
+      "otherRecords": 0,
+      "complete": true
+    },
+    "RestoreTableToPointInTime": {
+      "pages": 1,
+      "matchingKnownTables": 0,
+      "unclassifiedRecords": 0,
+      "otherRecords": 0,
+      "complete": true
+    },
+    "ExportTableToPointInTime": {
+      "pages": 1,
+      "matchingKnownTables": 0,
+      "unclassifiedRecords": 0,
+      "otherRecords": 0,
+      "complete": true
+    },
+    "ImportTable": {
+      "pages": 1,
+      "matchingKnownTables": 0,
+      "unclassifiedRecords": 0,
+      "otherRecords": 0,
+      "complete": true
+    },
+    "DeleteTable": {
+      "pages": 1,
+      "matchingKnownTables": 0,
+      "unclassifiedRecords": 0,
+      "otherRecords": 18,
+      "complete": true
+    }
+  },
+  "complete": true,
+  "historicalErasureVerified": false,
+  "limitations": [
+    "No CloudTrail event payloads, identities, arbitrary resource names or pagination cursors retained.",
+    "Records failing source/account/region/shape classification remain unclassified.",
+    "No item data-event history, backup contents, other regions/accounts or manually copied data covered.",
+    "Absence of matching management events does not prove complete historical writer coverage or erasure."
+  ],
+  "auditScriptSha256": "5ce56bdd26ff1fbc88939a5bbe3e29e6e2d2f4c96cc1e8e7a595666825ab7826"
+}
