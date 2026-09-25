@@ -88,7 +88,9 @@ call-start deadline. The output explicitly declines inventory/erasure approval.
 - Qualify complete retained-period/key/legacy and restore coverage with reviewed
   writer inventory. Empty current tables do not satisfy this requirement.
 - Establish publication ordering and safe retirement of HMAC keys and tombstones.
-- Implement and qualify durable backlog reconciliation beyond stream retention.
+- Durable recovery source/index preparation is in progress; see
+  [recovery readiness](CAMPAIGN-DURABLE-RECOVERY-READINESS.md). Actual runtime,
+  historical enrollment and atomic completion remain unqualified.
 - Produce completion receipts only from stable, complete qualified evidence.
 - Review immutable artifacts, effective IAM and runtime readback before any
   separately authorized activation. Keep account deletion and campaign gates off.

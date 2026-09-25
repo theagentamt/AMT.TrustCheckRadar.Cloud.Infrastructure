@@ -1,0 +1,6 @@
+{
+  "topicArn": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts",
+  "supportAddressSubscribed": true,
+  "supportAddressConfirmed": true,
+  "mutations": false
+}

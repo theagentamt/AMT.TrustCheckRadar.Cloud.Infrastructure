@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "environment": "dev",
+  "status": "reviewed_plan_not_applied",
+  "scope": "targeted ledger index preparation",
+  "savedPlanSha256": "5557bb04d1173c783bd548dab6a8628113f78d754862b00ec54471b79137399b",
+  "managedChanges": [
+    {
+      "address": "aws_dynamodb_table.deletion_ledger",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "attribute",
+        "global_secondary_index"
+      ]
+    }
+  ],
+  "index": {
+    "name": "CampaignRecoveryDueIndex",
+    "partitionKey": "campaignRecoveryPartition",
+    "sortKey": "nextAttemptAtEpoch",
+    "projection": "KEYS_ONLY"
+  },
+  "runtimeActivation": false,
+  "limitations": [
+    "Full plan deferred two unchanged-source IAM document recalculations after the table update; targeted plan excludes those policies.",
+    "A full post-apply plan is required to check remaining changes and publish the foundation output contract.",
+    "No data backfill, inventory marker or recovery producer/runtime selection."
+  ]
+}

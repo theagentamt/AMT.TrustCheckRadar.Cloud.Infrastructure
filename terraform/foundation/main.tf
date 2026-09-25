@@ -248,6 +248,27 @@ resource "aws_dynamodb_table" "deletion_ledger" {
     type = "S"
   }
 
+  dynamic "attribute" {
+    for_each = var.campaign_recovery_index_enabled ? {
+      campaignRecoveryPartition = "S"
+      nextAttemptAtEpoch        = "N"
+    } : {}
+    content {
+      name = attribute.key
+      type = attribute.value
+    }
+  }
+
+  dynamic "global_secondary_index" {
+    for_each = var.campaign_recovery_index_enabled ? [1] : []
+    content {
+      name            = local.campaign_recovery_index_name
+      hash_key        = "campaignRecoveryPartition"
+      range_key       = "nextAttemptAtEpoch"
+      projection_type = "KEYS_ONLY"
+    }
+  }
+
   point_in_time_recovery {
     enabled = true
   }

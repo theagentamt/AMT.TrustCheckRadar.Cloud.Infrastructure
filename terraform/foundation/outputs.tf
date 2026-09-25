@@ -108,6 +108,7 @@ output "downstream_contract" {
   value = {
     schema_version                    = 1
     device_recovery_control           = local.device_recovery_control_contract
+    campaign_recovery                 = local.campaign_recovery_contract
     artifact_bucket_name              = aws_s3_bucket.artifacts.id
     cognito_user_pool_id              = aws_cognito_user_pool.main.id
     cognito_app_client_id             = aws_cognito_user_pool_client.mobile.id

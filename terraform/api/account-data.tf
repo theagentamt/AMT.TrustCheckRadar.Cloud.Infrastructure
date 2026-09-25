@@ -69,6 +69,38 @@ resource "aws_iam_role" "account_data" {
 
 data "aws_iam_policy_document" "account_data" {
   count = var.account_data_deployment == null ? 0 : 1
+  dynamic "statement" {
+    for_each = local.campaign_recovery_preparation_selected ? [1] : []
+    content {
+      sid       = "FindAccountCampaignRecoverySidecars"
+      actions   = ["dynamodb:Query"]
+      resources = [local.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = local.campaign_recovery_preparation_selected ? [1] : []
+    content {
+      sid       = "UpdateCampaignRecoveryControlTransaction"
+      actions   = ["dynamodb:UpdateItem"]
+      resources = [local.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+      condition {
+        test     = "ForAnyValue:StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
   statement {
     sid       = "TransactionallyFenceAuthoritativeProfile"
     actions   = ["dynamodb:UpdateItem"]
@@ -104,9 +136,12 @@ data "aws_iam_policy_document" "account_data" {
       values   = ["ACCOUNT#*", "INVENTORY#${var.environment}"]
     }
     condition {
-      test     = "StringEquals"
-      variable = "dynamodb:EnclosingOperation"
-      values   = ["TransactWriteItems"]
+      # Preparation changes only this check; mutation transaction guards stay.
+      # ConditionCheckItem is inherently transactional and has no supported
+      # EnclosingOperation context. Preserve legacy/default plans until selected.
+      test     = local.campaign_recovery_preparation_selected ? "StringEqualsIfExists" : "StringEquals"
+      variable = local.campaign_recovery_preparation_selected ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+      values   = local.campaign_recovery_preparation_selected ? ["NONE"] : ["TransactWriteItems"]
     }
   }
   statement {
@@ -331,7 +366,7 @@ resource "aws_lambda_function" "account_data" {
   s3_object_version              = var.account_data_deployment.object_version
   source_code_hash               = var.account_data_deployment.source_hash
   environment {
-    variables = {
+    variables = merge({
       APP_ENVIRONMENT                                 = var.environment
       ENTITLEMENTS_TABLE_NAME                         = local.purchase_entitlements_table_name
       USERS_TABLE_NAME                                = local.users_table_name
@@ -372,7 +407,7 @@ resource "aws_lambda_function" "account_data" {
       ACCOUNT_DELETION_REQUIRED_COMPONENTS_JSON       = "[]"
       ACCOUNT_DELETION_MAX_REAUTH_AGE_SECONDS         = "300"
       ACCOUNT_DELETION_SLA_HOURS                      = "24"
-    }
+    }, local.campaign_recovery_producer_env)
   }
   lifecycle {
     precondition {

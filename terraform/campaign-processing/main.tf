@@ -1042,6 +1042,11 @@ resource "aws_lambda_function" "worker" {
       DELETION_LEDGER_TABLE_NAME            = local.foundation.deletion_ledger_table_name
       CAMPAIGN_PARTICIPATION_NOTICE_VERSION = "research-consent-2026-09-21-v2"
       CAMPAIGN_PARTICIPATION_POLICY_VERSION = "independent-research-v1"
+      } : {}, local.recovery_prepared && each.key == "deletion" ? {
+      CAMPAIGN_RECOVERY_ENABLED            = "false"
+      CAMPAIGN_RECOVERY_INDEX_NAME         = "CampaignRecoveryDueIndex"
+      CAMPAIGN_RECOVERY_INVENTORY_REVISION = "0"
+      CAMPAIGN_RECOVERY_MANIFEST_SHA256    = ""
       } : {}, each.key == "publisher" ? {
       USERS_TABLE_NAME = local.foundation.users_table_name
       } : {}, each.key == "publisher" && local.publisher_fenced ? {
