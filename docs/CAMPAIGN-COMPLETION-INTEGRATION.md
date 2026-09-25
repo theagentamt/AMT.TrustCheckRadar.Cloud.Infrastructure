@@ -73,6 +73,27 @@ includes deferred scheduler-policy rendering caused by the function update; the
 scoped apply must contain only the deletion function and new completion policy,
 then a full plan and direct readback must verify no remaining managed drift.
 
+## Applied Dev result
+
+[Infrastructure PR83](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/pull/83)
+source `6661f1dd94bba50dc3acbaf165a7c79db43a09b1` merged into release-V01 at
+`0738c8325b3cdb9fe0bed551b222173428d3a07f`. The reviewed saved target plan applied
+one new policy and one deletion-worker update, with zero destroys. The subsequent
+full plan returned zero managed or output changes; deferred scheduler policies
+needed no mutation. See [deployment](evidence/campaign-completion-integration-2026-09-24/deployment.json)
+and [direct readback](evidence/campaign-completion-integration-2026-09-24/dev-readback.json).
+
+All four worker code hashes/configurations matched the plan. Three mappings and
+four schedules remain disabled, and all eight recovery alarm actions remain off.
+The installed candidate returned the expected fixed disabled-stream error and
+disabled recovery response without account data or storage processing. These
+checks establish the campaign path's closed gates, not global account-deletion
+acceptance. No live deletion, producer enrollment or inventory approval occurred.
+
+[Independent cleanup readback](evidence/campaign-completion-integration-2026-09-24/cleanup-readback.json)
+confirmed all three synthetic runtime tables, the test function and role absent.
+Its HMAC key is PendingDeletion for 2026-10-02 UTC; it is not yet destroyed.
+
 ## Remaining acceptance
 
 SECUR4ALL-207 remains open for a whole-period producer admission fence, orphan and
