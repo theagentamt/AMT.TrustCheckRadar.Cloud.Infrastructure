@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "environment": "dev",
+  "account": "107827791950",
+  "region": "us-east-1",
+  "infrastructureSource": "6d095de9b9c12536c25b8203629c37291ce26e9e",
+  "infrastructureReleaseMerge": "cd7ddad22f5f033ed330e6617039e28a01b636b7",
+  "lambdaSource": "82dab71e1807c7249b8bb8d318463a1940779e0d",
+  "lambdaReleaseMerge": "ee7febb87f123a468a43cfa30429faf0dea95dcc",
+  "lambdaCandidateDeployed": false,
+  "activation": false,
+  "apply": {
+    "api": {
+      "summary": "Apply complete! Resources: 1 added, 4 changed, 0 destroyed.",
+      "logSha256": "cd7dd9cdaaa4b89a867c8d3700e5371895858dd1d95a26f4053398431623294c"
+    },
+    "worker": {
+      "summary": "Apply complete! Resources: 13 added, 1 changed, 0 destroyed.",
+      "logSha256": "8f5e52b0824bd773ea77e6fe91087baf0847e84537a96d5b5cf9e3d2e0370c11"
+    }
+  },
+  "postPlans": {
+    "api": {
+      "managedChanges": [],
+      "outputChanges": [],
+      "failedOrUnknownChecks": [],
+      "planJsonSha256": "c638b4021471913a6e161cda8ce0b08fde99846bbb761948c4b753194390cb27",
+      "savedPlanSha256": "0bc798aa362187d402a83612744eec8a1804396c6041baf514caad2aef8fd6a7"
+    },
+    "worker": {
+      "managedChanges": [],
+      "outputChanges": [],
+      "failedOrUnknownChecks": [],
+      "planJsonSha256": "0e88800d328eb25c6c7df0f515cbeaf46b33ad35da69ef61667125aaf47d8919",
+      "savedPlanSha256": "93f39d412eb6f43f61de85a89a8e61253a5ba963ec90355b9e053be2063cb25e"
+    }
+  },
+  "workerVerificationInputNote": "Initial post-plan with the saved null legacy artifact_release had no drift but the existing enabled_dependencies check warned. Final read-only verification supplies artifact_release=d98ffd65b42d54953ad83e980e58846b6fc02c5d, equal to the already-selected immutable account_privacy_artifacts.release_id. No managed or output changes; all checks pass. This verification plan was not applied."
+}

@@ -1,0 +1,43 @@
+{
+  "observedAtUtc": "2026-09-25T02:20:13.130706+00:00",
+  "functions": {
+    "trustcheckradar-dev-account-data-api": {
+      "codeSha256": "1QZcQV/kDtAThdaZt4K48EOW00R3dbMOqq0pQqOH7LQ=",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-account-data-api-role",
+      "beforeEnvironmentSha256": "7dcb7dd80c31237ba8c2838df37e3d70511561167a1da94414f2aae9669ca6d0",
+      "mappingStates": {
+        "ff30bbcc-351b-488d-9b7b-e132c130ed20": "Disabled"
+      },
+      "reservedConcurrency": 1
+    },
+    "trustcheckradar-dev-campaign-participation": {
+      "codeSha256": "p+wPYSC7BSxN5jYSffePQAu2DLZLfDhZ+cJLKP2dnX8=",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-participation-role",
+      "beforeEnvironmentSha256": "c3caeda60ec6626993f2898b9910c0eb491ccd5229045398b938c4dcd00e1ff2",
+      "mappingStates": {},
+      "reservedConcurrency": 5
+    },
+    "trustcheckradar-dev-campaign-deletion-bridge": {
+      "codeSha256": "FItTXNai302HOO+oHnMNj70y6t0r/5YeWjScTX7QQMQ=",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-deletion-bridge-role",
+      "beforeEnvironmentSha256": "387597c10b7d90ff84cdd8971971893fe03946b393baf5c140db0caeb2e66b4d",
+      "mappingStates": {
+        "04c7b23a-97e3-4dd1-b705-355f9fb6713d": "Disabled"
+      },
+      "reservedConcurrency": 2
+    }
+  },
+  "rolePoliciesMatchQualificationAudit": true
+}
