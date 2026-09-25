@@ -56,8 +56,14 @@ observations. Existing account-data Get/Put/Delete grants allow all ACCOUNT# sor
 keys and standalone operations; new transaction-only statements cannot override
 another Allow. IAM does not prove the authenticated subject or a particular sort
 key. Unrelated purchase-check IAM statements remain outside this correction.
-New recovery permissions still require actual AWS synthetic qualification; the
-previous 202/44-case campaign IAM reports do not cover this increment.
+The new standalone recovery policy passed 36 recorded actual AWS cases using a
+disposable ledger/GSI and assumed fixture role. The [qualification report](evidence/campaign-recovery-2026-09-24/synthetic-iam-qualification.json)
+records permitted sixteen-shard queries, inventory reads/checks, transactional
+updates, denied foreign partitions/scans/standalone writes, and atomic rollback.
+The temporary table and role were removed and absence independently verified.
+This qualifies the new policy in isolation; effective live role unions and the
+producer policies still require qualification. The previous 202/44-case campaign
+IAM reports do not cover this new policy.
 
 ## Bounds and validation
 
@@ -73,7 +79,8 @@ not a whole-backlog or deadline-SLA qualification.
 
 Local mocked Terraform validation: foundation8, campaign-processing24, API63
 cases pass, including cross-account/index rejection and closed-gate assertions.
-Campaign guardrails and formatting/diff checks pass. Independent review covers
+Campaign guardrails and formatting/diff checks pass. The new isolated IAM
+qualification harness has 15 offline tests; root independently reran them. Independent review covers
 foundation/campaign setup and API IAM. Lambda has separate SDK/Moto, ordinary
 regression and package evidence; none is presented as AWS execution evidence.
 
@@ -83,12 +90,35 @@ in three independent bounded strong COUNT traversals. These are not one frozen
 snapshot or historical/restore inventory approval. No item data or pagination
 identifiers were retained.
 [The index plan](evidence/campaign-recovery-2026-09-24/index-plan.json) changes only
-the existing ledger's attributes and GSI. No worker, producer or policy is selected
-by that targeted plan. Full foundation planning is required after application.
+the existing ledger's attributes and GSI. No worker, producer or policy was selected
+by that targeted plan. The [Dev deployment](evidence/campaign-recovery-2026-09-24/index-deployment.json)
+applied the single in-place index change. The full post-apply plan had zero
+managed-resource changes; its only remaining change published the new index
+field in the downstream output contract and was applied separately.
+[Readback](evidence/campaign-recovery-2026-09-24/index-readback.json) confirms the
+index is ACTIVE, unchanged worker code, disabled mappings/schedules and closed
+live account deletion. No Lambda candidate or new scheduler was deployed.
+
+## Source integration
+
+[Infrastructure PR78](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/pull/78)
+merged source `910eaf4dae40a6efbd1e7816264266ff5290fccc` into release-V01 at
+`566c9c43772079d07bf3d30e12033cdc6f0411e7`.
+[Lambda PR55](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/pull/55)
+merged source `27d757bf8af635d46c337b3453a29c5fe35da3eb` into release-V01 at
+`d935d75f9aca1ab10af6519b14336349acb0c99d`. Both remote heads were verified.
+
+Lambda validation records 205 SDK/Moto cases across the combined and separate
+suites, plus 55 ordinary tests and 27 subtests. Root independently reran 31 recovery
+cases; another reviewer ran 68 producer/backfill/finalizer cases. Those independent
+runs overlap the main suites and are not additional unique coverage counts. Nine
+local package checks passed: two complete campaign archives and seven source-only
+archives without external dependencies. These packages were not uploaded or
+deployed; Linux dependency/runtime qualification remains separate.
 
 ## Remaining acceptance
 
-1. Qualify new effective recovery/producer IAM on disposable AWS fixtures, review
+1. Qualify effective recovery role unions and producer IAM, review
    exact package pins and select disabled API/worker preparation separately.
 2. Qualify all historical producers, retained keys, legacy/restore copies and
    controlled pending-job enrollment before treating the count as authoritative.
@@ -98,3 +128,5 @@ by that targeted plan. Full foundation planning is required after application.
    inventory pins and actual runtime evidence before requesting activation.
 
 No Android or physical-device dependency blocks these backend steps.
+
+Reproduce the isolated policy validation with `python scripts/qualify_campaign_recovery_iam.py --plan <selected-campaign-plan.json>` (offline default). After reviewing the selected policy, `--execute --profile trustcheckradar` creates only tagged disposable resources, validates the fixed Dev boundary and removes them. This does not apply the campaign preparation plan.
