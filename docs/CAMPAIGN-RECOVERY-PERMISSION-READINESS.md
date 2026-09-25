@@ -8,7 +8,7 @@ account deletion. UAT/Production and main remain unchanged.
 ## Qualification boundary
 
 The worker test composes the new recovery policy with every observed overlapping
-worker ledger grant. The current role has only deletion-runtime and content-free
+worker ledger grant. The pre-deployment audited role had only deletion-runtime and content-free
 logging inline policies, no managed policy and no boundary. The base runtime is
 validated against the existing strict deletion policy specification; pipeline,
 users, streams, KMS and logging grants cannot overlap ledger item/index actions.
