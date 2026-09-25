@@ -21,25 +21,25 @@ tags = {
 # Owner-authorized Dev migration; new contribution/cleanup activation remains closed.
 research_consent_migration = true
 account_privacy_artifacts = {
-  release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
-  approval_reference = "docs/DEV-RESEARCH-RUNTIME-MIGRATION.md"
+  release_id         = "cab9a2a3976e52b64b75057a8432b1506a365b02"
+  approval_reference = "docs/CAMPAIGN-PERIOD-ADMISSION.md"
   promotion_approved = false
   workers = {
     publisher = {
-      object_version = "Qdy6.zZRjmqTNEpeCR.TKn4RCVjzcUz8"
-      source_hash    = "n/08qq/fpGZx/fob8iTvxitMVRpACwfTvt7ScUJuSbE="
+      object_version = "Wun74uNFT5jALtlplbXYXAM.gPxNmRH0"
+      source_hash    = "RAIFC3HCgwfCIOZK/+rVWC0LyHTp7xpz42lLAuOc56w="
     }
     cluster = {
-      object_version = "KRIssk3ZBbu.Shm2HFhKZ1HkyviAUrNB"
-      source_hash    = "ppaduE5zmMxeKYX1w8JBuRrVgTtFMp39+RyzMF+C4ho="
+      object_version = "HnHIU59qeJdL9enK_BD_.0VlT1uPzuIZ"
+      source_hash    = "ATkFbdQyn5uDD4nEYb6A7s0ceOQIYWzJiIucTPSCPwk="
     }
     deletion = {
-      object_version = "lqMTcToIkcZ.uaznyAVY5ffZPZEARnV9"
-      source_hash    = "FItTXNai302HOO+oHnMNj70y6t0r/5YeWjScTX7QQMQ="
+      object_version = "Obz.qyXSypzZXcH3oA55V5BdjCxPtfCB"
+      source_hash    = "Fy8gTcYd/ZYILh/7hu1Vnd01Ma7MK0YbUNKk8Y7q9GM="
     }
     lifecycle = {
-      object_version = "Ll8L1RLM2Uxn8LPnAmzES5hZFXO6QG8H"
-      source_hash    = "PehVB8VPv4/tkcNrigxD6Ce64mUwsET9qX10P+UAkJo="
+      object_version = "9GrjFGD4qPFc5eZ3XZjTOUYvqGiegKy8"
+      source_hash    = "/skIiDDzLddciU3V55Je4NlVNDYT3OCrnCmT6knaBRs="
     }
   }
 }
@@ -54,8 +54,13 @@ campaign_recovery_preparation = {
 
 # SECUR4ALL-207: install actual completion integration with every gate closed.
 campaign_completion_artifact = {
-  release_id       = "dffa7eaae79632db58bc366cc48434125a9c10dc"
-  object_version   = "KkZ41ahNfyfR_p_m8R05WdXtL1O3Y0o5"
-  source_hash      = "DrIvLOAPOU57Fer654myVhVIkfsfoLTsjj+KsWMKJoc="
-  review_reference = "docs/CAMPAIGN-COMPLETION-INTEGRATION.md"
+  release_id       = "cab9a2a3976e52b64b75057a8432b1506a365b02"
+  object_version   = "Obz.qyXSypzZXcH3oA55V5BdjCxPtfCB"
+  source_hash      = "Fy8gTcYd/ZYILh/7hu1Vnd01Ma7MK0YbUNKk8Y7q9GM="
+  review_reference = "docs/CAMPAIGN-PERIOD-ADMISSION.md"
+}
+
+# SECUR4ALL-207: coordinated period admission candidate; all gates remain closed.
+campaign_period_fence_preparation = {
+  review_reference = "docs/CAMPAIGN-PERIOD-ADMISSION.md"
 }
