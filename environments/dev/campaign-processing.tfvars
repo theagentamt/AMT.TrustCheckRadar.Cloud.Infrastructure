@@ -51,3 +51,11 @@ reserved_concurrency = 2
 campaign_recovery_preparation = {
   review_reference = "docs/CAMPAIGN-RECOVERY-PERMISSION-READINESS.md"
 }
+
+# SECUR4ALL-207: install actual completion integration with every gate closed.
+campaign_completion_artifact = {
+  release_id       = "dffa7eaae79632db58bc366cc48434125a9c10dc"
+  object_version   = "KkZ41ahNfyfR_p_m8R05WdXtL1O3Y0o5"
+  source_hash      = "DrIvLOAPOU57Fer654myVhVIkfsfoLTsjj+KsWMKJoc="
+  review_reference = "docs/CAMPAIGN-COMPLETION-INTEGRATION.md"
+}

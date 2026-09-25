@@ -22,7 +22,18 @@ class FixtureTests(unittest.TestCase):
             resources.extend(statement['Resource'] if isinstance(statement['Resource'],list) else [statement['Resource']])
             self.assertNotIn('*',statement['Action'])
             self.assertFalse(any(x.startswith(('cognito','secretsmanager','s3:','dynamodb:Restore','kms:Decrypt')) for x in statement['Action']))
-        self.assertEqual(len(resources),4);self.assertFalse(any('*' in x for x in resources))
+        self.assertEqual(len(resources),5);self.assertFalse(any('*' in x for x in resources))
         self.assertTrue(all(doc['prefix'] in x or x==doc['keyArn'] for x in resources))
+        self.assertEqual(p['Statement'][1]['Action'],['dynamodb:Query'])
+        self.assertEqual(p['Statement'][1]['Resource'],f'arn:aws:dynamodb:{m.REGION}:{m.ACCOUNT}:table/'+doc['tables']['ledger']+'/index/CampaignRecoveryDueIndex')
+    def test_recovery_index_only_on_ledger(self):
+        doc=self.doc()
+        for kind,name in doc['tables'].items():
+            request=m.table_request(name,kind,doc['tags'])
+            if kind!='ledger':self.assertNotIn('GlobalSecondaryIndexes',request);continue
+            index=request['GlobalSecondaryIndexes'][0]
+            self.assertEqual(index['Projection'],{'ProjectionType':'KEYS_ONLY'})
+            self.assertEqual(index['KeySchema'],[{'AttributeName':'campaignRecoveryPartition','KeyType':'HASH'},{'AttributeName':'nextAttemptAtEpoch','KeyType':'RANGE'}])
+            self.assertIn({'AttributeName':'nextAttemptAtEpoch','AttributeType':'N'},request['AttributeDefinitions'])
 
 if __name__=='__main__':unittest.main()

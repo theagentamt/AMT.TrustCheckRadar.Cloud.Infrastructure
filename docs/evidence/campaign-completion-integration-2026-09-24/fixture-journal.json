@@ -1,0 +1,44 @@
+{
+  "account": "107827791950",
+  "cleanup": {
+    "amt-campaign-completion-qual-b72e964fc130-ledger": "absent",
+    "amt-campaign-completion-qual-b72e964fc130-pipeline": "absent",
+    "amt-campaign-completion-qual-b72e964fc130-users": "absent",
+    "functionDeleted": true,
+    "keyDeletionDate": "2026-10-01T22:49:34.072000-05:00",
+    "keyState": "PendingDeletion",
+    "roleDeleted": true
+  },
+  "cleanupAtUtc": "2026-09-25T03:49:40.413109+00:00",
+  "created": [
+    "amt-campaign-completion-qual-b72e964fc130-pipeline",
+    "amt-campaign-completion-qual-b72e964fc130-ledger",
+    "amt-campaign-completion-qual-b72e964fc130-users",
+    "amt-campaign-completion-qual-b72e964fc130-role",
+    "amt-campaign-completion-qual-b72e964fc130-runner"
+  ],
+  "createdAtUtc": "2026-09-25T03:47:03.659570+00:00",
+  "function": "amt-campaign-completion-qual-b72e964fc130-runner",
+  "keyArn": "arn:aws:kms:us-east-1:107827791950:key/92595d35-49b9-4eab-ac54-ae0db33ffcee",
+  "keyCreateAttempted": true,
+  "policySha256": "ec88a3595c6f4ebc1967fd252d0bef3533f919a3097e94b250e62fcc48be9360",
+  "prefix": "amt-campaign-completion-qual-b72e964fc130",
+  "prepared": true,
+  "region": "us-east-1",
+  "role": "amt-campaign-completion-qual-b72e964fc130-role",
+  "runId": "b72e964fc130",
+  "schemaVersion": 1,
+  "sourceSha": "dffa7eaae79632db58bc366cc48434125a9c10dc",
+  "tables": {
+    "ledger": "amt-campaign-completion-qual-b72e964fc130-ledger",
+    "pipeline": "amt-campaign-completion-qual-b72e964fc130-pipeline",
+    "users": "amt-campaign-completion-qual-b72e964fc130-users"
+  },
+  "tags": {
+    "Environment": "dev",
+    "Project": "trustcheckradar",
+    "Purpose": "campaign-completion-qualification",
+    "QualificationRunId": "b72e964fc130"
+  },
+  "zipSha256": "a00be737a24244260e1b1bd80fc32e69cfed71dfd106b8aa6dc2b0901741085a"
+}

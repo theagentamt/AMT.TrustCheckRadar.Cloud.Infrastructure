@@ -1,0 +1,15 @@
+{
+  "sourceSha": "dffa7eaae79632db58bc366cc48434125a9c10dc",
+  "bucket": "trustcheckradar-dev-107827791950-artifacts",
+  "key": "releases/dffa7eaae79632db58bc366cc48434125a9c10dc/campaign_deletion_bridge.zip",
+  "objectVersion": "KkZ41ahNfyfR_p_m8R05WdXtL1O3Y0o5",
+  "sourceCodeHash": "DrIvLOAPOU57Fer654myVhVIkfsfoLTsjj+KsWMKJoc=",
+  "sha256": "0eb22f2ce00f394e7b15eafae789b256154891fb1fa0b4ec8e3f8ab1630a2687",
+  "bytes": 37373,
+  "runtime": "python3.14",
+  "architecture": "arm64",
+  "handler": "app.lambda_handler",
+  "publicationComplete": true,
+  "runtimeUpdated": false,
+  "activationApproved": false
+}
