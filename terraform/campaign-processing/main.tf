@@ -1000,17 +1000,17 @@ resource "aws_lambda_function" "worker" {
   reserved_concurrent_executions = var.reserved_concurrency
 
   s3_bucket = local.foundation.artifact_bucket_name
-  s3_key = local.account_privacy_candidate ? "releases/${var.account_privacy_artifacts.release_id}/${each.value.artifact}" : (
+  s3_key = each.key == "deletion" && local.completion_prepared ? "releases/${var.campaign_completion_artifact.release_id}/campaign_deletion_bridge.zip" : local.account_privacy_candidate ? "releases/${var.account_privacy_artifacts.release_id}/${each.value.artifact}" : (
     each.key == "publisher" && var.publisher_fence_artifact != null ? "releases/${var.publisher_fence_artifact.release_id}/campaign_observation_publisher.zip" : (
       each.key == "deletion" && var.deletion_bridge_artifact != null ? "releases/${var.deletion_bridge_artifact.release_id}/campaign_deletion_bridge.zip" : "${local.artifact_key}/${each.value.artifact}"
     )
   )
-  s3_object_version = local.account_privacy_candidate ? var.account_privacy_artifacts.workers[each.key].object_version : (
+  s3_object_version = each.key == "deletion" && local.completion_prepared ? var.campaign_completion_artifact.object_version : local.account_privacy_candidate ? var.account_privacy_artifacts.workers[each.key].object_version : (
     each.key == "publisher" && var.publisher_fence_artifact != null ? var.publisher_fence_artifact.object_version : (
       each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.object_version : null
     )
   )
-  source_code_hash = local.account_privacy_candidate ? var.account_privacy_artifacts.workers[each.key].source_hash : (
+  source_code_hash = each.key == "deletion" && local.completion_prepared ? var.campaign_completion_artifact.source_hash : local.account_privacy_candidate ? var.account_privacy_artifacts.workers[each.key].source_hash : (
     each.key == "publisher" && var.publisher_fence_artifact != null ? var.publisher_fence_artifact.source_hash : (
       each.key == "deletion" && var.deletion_bridge_artifact != null ? var.deletion_bridge_artifact.source_hash : null
     )
@@ -1047,6 +1047,11 @@ resource "aws_lambda_function" "worker" {
       CAMPAIGN_RECOVERY_INDEX_NAME         = "CampaignRecoveryDueIndex"
       CAMPAIGN_RECOVERY_INVENTORY_REVISION = "0"
       CAMPAIGN_RECOVERY_MANIFEST_SHA256    = ""
+      } : {}, local.completion_prepared && each.key == "deletion" ? {
+      CAMPAIGN_DELETION_STREAM_ENABLED       = "false"
+      CAMPAIGN_COMPLETION_ENABLED            = "false"
+      CAMPAIGN_COMPLETION_MANIFEST_SHA256    = ""
+      CAMPAIGN_COMPLETION_INVENTORY_REVISION = "0"
       } : {}, each.key == "publisher" ? {
       USERS_TABLE_NAME = local.foundation.users_table_name
       } : {}, each.key == "publisher" && local.publisher_fenced ? {

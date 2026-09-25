@@ -34,7 +34,15 @@ def validate_journal(doc, run):
 
 def runtime_policy(tables, key):
     resources = [f'arn:aws:dynamodb:{REGION}:{ACCOUNT}:table/{name}' for name in tables.values()]
-    return {'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Action': ['dynamodb:DescribeTable', 'dynamodb:ListTagsOfResource', 'dynamodb:GetItem', 'dynamodb:Query', 'dynamodb:Scan', 'dynamodb:PutItem', 'dynamodb:UpdateItem', 'dynamodb:DeleteItem', 'dynamodb:ConditionCheckItem'], 'Resource': resources}, {'Effect': 'Allow', 'Action': ['kms:DescribeKey', 'kms:ListResourceTags', 'kms:GenerateMac'], 'Resource': key}]}
+    index=f'arn:aws:dynamodb:{REGION}:{ACCOUNT}:table/{tables["ledger"]}/index/CampaignRecoveryDueIndex'
+    return {'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Action': ['dynamodb:DescribeTable', 'dynamodb:ListTagsOfResource', 'dynamodb:GetItem', 'dynamodb:Query', 'dynamodb:Scan', 'dynamodb:PutItem', 'dynamodb:UpdateItem', 'dynamodb:DeleteItem', 'dynamodb:ConditionCheckItem'], 'Resource': resources}, {'Effect':'Allow','Action':['dynamodb:Query'],'Resource':index}, {'Effect': 'Allow', 'Action': ['kms:DescribeKey', 'kms:ListResourceTags', 'kms:GenerateMac'], 'Resource': key}]}
+
+def table_request(name,kind,tags):
+    request=dict(TableName=name,KeySchema=[{'AttributeName':'PK','KeyType':'HASH'},{'AttributeName':'SK','KeyType':'RANGE'}],AttributeDefinitions=[{'AttributeName':x,'AttributeType':'S'} for x in ['PK','SK']],BillingMode='PAY_PER_REQUEST',OnDemandThroughput={'MaxReadRequestUnits':25,'MaxWriteRequestUnits':25},Tags=[{'Key':k,'Value':v} for k,v in tags.items()])
+    if kind=='ledger':
+        request['AttributeDefinitions'] += [{'AttributeName':'campaignRecoveryPartition','AttributeType':'S'},{'AttributeName':'nextAttemptAtEpoch','AttributeType':'N'}]
+        request['GlobalSecondaryIndexes']=[{'IndexName':'CampaignRecoveryDueIndex','KeySchema':[{'AttributeName':'campaignRecoveryPartition','KeyType':'HASH'},{'AttributeName':'nextAttemptAtEpoch','KeyType':'RANGE'}],'Projection':{'ProjectionType':'KEYS_ONLY'},'OnDemandThroughput':{'MaxReadRequestUnits':25,'MaxWriteRequestUnits':25}}]
+    return request
 
 def main():
     import boto3
@@ -85,8 +93,8 @@ def main():
             raise ValueError('FIXTURE_BOUNDARY_REJECTED')
         doc = {'schemaVersion': 1, 'runId': args.run_id, 'account': ACCOUNT, 'region': REGION, 'prefix': prefix, 'tags': tags, 'tables': {x: prefix + '-' + x for x in ('pipeline', 'ledger', 'users')}, 'role': prefix + '-role', 'function': prefix + '-runner', 'sourceSha': args.source_sha, 'zipSha256': args.zip_sha256, 'createdAtUtc': datetime.now(timezone.utc).isoformat(), 'created': []}
         save()
-        for name in doc['tables'].values():
-            ddb.create_table(TableName=name, KeySchema=[{'AttributeName': 'PK', 'KeyType': 'HASH'}, {'AttributeName': 'SK', 'KeyType': 'RANGE'}], AttributeDefinitions=[{'AttributeName': x, 'AttributeType': 'S'} for x in ['PK', 'SK']], BillingMode='PAY_PER_REQUEST', OnDemandThroughput={'MaxReadRequestUnits': 25, 'MaxWriteRequestUnits': 25}, Tags=[{'Key': k, 'Value': v} for k, v in tags.items()])
+        for kind,name in doc['tables'].items():
+            ddb.create_table(**table_request(name,kind,tags))
             doc['created'].append(name)
             save()
         doc['keyCreateAttempted'] = True
@@ -102,7 +110,7 @@ def main():
         doc['policySha256'] = hashlib.sha256(json.dumps(policy, sort_keys=True).encode()).hexdigest()
         save()
         for name in doc['tables'].values():
-            poll(lambda n=name: ddb.describe_table(TableName=n), lambda x: x['Table']['TableStatus'] == 'ACTIVE')
+            poll(lambda n=name: ddb.describe_table(TableName=n), lambda x: x['Table']['TableStatus'] == 'ACTIVE' and all(i['IndexStatus']=='ACTIVE' for i in x['Table'].get('GlobalSecondaryIndexes',[])))
         env = {'QUALIFICATION_RUN_ID': args.run_id, 'QUALIFICATION_KEY_ARN': key, 'QUALIFICATION_FUNCTION_NAME': doc['function'], 'QUALIFICATION_SOURCE_SHA': args.source_sha}
         env.update({'QUALIFICATION_' + x.upper() + '_TABLE': name for x, name in doc['tables'].items()})
         for attempt in range(20):
