@@ -681,6 +681,38 @@ resource "aws_iam_role_policy_attachment" "entitlement_snapshot_runtime" {
 
 data "aws_iam_policy_document" "campaign_participation_runtime" {
   dynamic "statement" {
+    for_each = local.campaign_recovery_preparation_selected ? [1] : []
+    content {
+      sid       = "FindAccountCampaignRecoverySidecars"
+      actions   = ["dynamodb:Query"]
+      resources = [local.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = local.campaign_recovery_preparation_selected ? [1] : []
+    content {
+      sid       = "UpdateCampaignRecoveryControlTransaction"
+      actions   = ["dynamodb:UpdateItem"]
+      resources = [local.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+      condition {
+        test     = "ForAnyValue:StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+  }
+
+  dynamic "statement" {
     for_each = var.campaign_participation_fence_deployment == null && !local.research_migration_selected ? {} : {
       users  = { arn = local.users_table_arn, keys = ["USER#*"] }
       ledger = { arn = local.deletion_ledger_table_arn, keys = ["ACCOUNT#*"] }
@@ -695,9 +727,11 @@ data "aws_iam_policy_document" "campaign_participation_runtime" {
         values   = statement.value.keys
       }
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        # Only the two selected producer checks change during preparation.
+        # Mutation transaction guards and unselected legacy policies stay intact.
+        test     = local.campaign_recovery_preparation_selected ? "StringEqualsIfExists" : "StringEquals"
+        variable = local.campaign_recovery_preparation_selected ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
+        values   = local.campaign_recovery_preparation_selected ? ["NONE"] : ["TransactWriteItems"]
       }
     }
   }
@@ -1108,7 +1142,7 @@ resource "aws_lambda_function" "campaign_participation" {
       ENTITLEMENT_NONTERMINAL_STATUSES            = jsonencode(var.entitlement_nonterminal_statuses)
       ENTITLEMENT_PLATFORM                        = "google_play"
       ENTITLEMENT_PRODUCT_ID                      = var.google_play_subscription_product_id
-    }, local.research_migration_consent_env)
+    }, local.research_migration_consent_env, local.campaign_recovery_producer_env)
   }
 
   lifecycle {

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "type": "source_preparation_not_runtime_acceptance",
+  "terraformMockCases": {
+    "foundation": 8,
+    "campaignProcessing": 24,
+    "api": 63
+  },
+  "independentReview": {
+    "foundationCampaign": "No blocking findings; scheduler trust and closed gates reviewed.",
+    "api": "No blocking findings; existing Allow-union limitations retained."
+  },
+  "sourceSha256": {
+    "terraform/foundation/main.tf": "af3bd14e848773ad46cfdf3cde5c64afc11a9b89a2b6325a1e8d3755a4bc45ba",
+    "terraform/foundation/campaign-recovery.tf": "7af19022ad254e7b7384c9661577181eac16f8be5a504471bc55300d5b304112",
+    "terraform/foundation/outputs.tf": "ce800a9ef39ab3832bf6508171acb27abc1e5803f78b2cba2a5a4d851006f59d",
+    "terraform/campaign-processing/recovery.tf": "34c6be44e7bfa3255611fb05c0c960afc187bc758d235411becac2401985f1da",
+    "terraform/campaign-processing/main.tf": "e4a9e081cc03c14ccb8a6918452c0bdb1ae974a0818eabe27999ebf8ec7a272d",
+    "terraform/api/campaign-recovery.tf": "05158e4cce7201236849e916f03c694a32b01f86fbd08a8836673800af0bbb63",
+    "terraform/api/main.tf": "a78c55597496bf6140d0abf04e7b95d2d035fd9b1489193dadad1319d5d4dd5c",
+    "terraform/api/account-data.tf": "444ae8bec52d1a294ac3e329ad97e1b8e430f06b0b729cd17a1bf341b5693f49"
+  },
+  "actualRecoveryIamQualified": false,
+  "runtimeActivated": false
+}

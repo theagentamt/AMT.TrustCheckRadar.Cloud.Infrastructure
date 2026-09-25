@@ -26,3 +26,6 @@ device_recovery_policy = {
   rate_retention_hours   = 24
   pitr_days              = 7
 }
+
+# SECUR4ALL-207: sparse index preparation only; producers and recovery remain disabled.
+campaign_recovery_index_enabled = true
