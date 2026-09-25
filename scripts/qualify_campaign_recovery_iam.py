@@ -64,6 +64,48 @@ def expected():
     }
 
 
+def worker_specs():
+    guard = {'ForAllValues:StringLike': {'dynamodb:LeadingKeys': ['ACCOUNT#*']}}
+    return {
+        'CompleteDeletionLedgerCommand': ('dynamodb:GetItem', SOURCE_TABLE, guard),
+        'GuardedDeletionCommand': ('dynamodb:ConditionCheckItem', SOURCE_TABLE,
+            {**guard, 'StringEqualsIfExists': {'dynamodb:ReturnValues': ['NONE']}}),
+    }
+
+
+def combine_worker_policy(policy, audit_path):
+    """Validate every current identity policy before isolating its ledger union.
+
+    Other exact tables, streams, KMS and logging are intentionally not exercised.
+    This is not a claim about SCPs or live table resource policies.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('campaign_writer_validation',
+        Path(__file__).with_name('qualify_campaign_writer_iam.py'))
+    writer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(writer)
+    raw = Path(audit_path).read_bytes()
+    audit = json.loads(raw)
+    name = 'trustcheckradar-dev-campaign-deletion-bridge-role'
+    role = audit['roles'][name]
+    require(role['arn'] == f'arn:aws:iam::{ACCOUNT}:role/{name}', 'worker_role_identity')
+    require(not role['managed'] and role['permissionsBoundary'] is None, 'worker_extra_policy_source')
+    require(set(role['inline']) == {'content-free-logging', 'deletion-runtime'}, 'worker_inline_sources')
+    logging = role['inline']['content-free-logging']
+    require(logging.get('Version') == '2012-10-17' and len(logging.get('Statement', [])) == 2, 'worker_logging_schema')
+    for st in logging['Statement']:
+        require(st.get('Effect') == 'Allow' and set(seq(st.get('Action'))) <=
+            {'logs:PutLogEvents', 'logs:CreateLogStream', 'cloudwatch:PutMetricData'} and
+            'NotAction' not in st and 'NotResource' not in st, 'worker_logging_overlap')
+    validated, omitted = writer.validate_policy(role['inline']['deletion-runtime'], 'deletion')
+    additions = [st for st in validated['Statement'] if SOURCE_TABLE in seq(st['Resource'])]
+    require({st['Sid'] for st in additions} == set(worker_specs()), 'worker_ledger_overlap')
+    combined = copy.deepcopy(policy)
+    combined['Statement'].extend(additions)
+    validate_policy(combined, worker_union=True)
+    return combined, sha(raw)
+
+
 def conditions(value):
     require(isinstance(value, dict), 'condition_schema')
     result = {}
@@ -77,10 +119,12 @@ def conditions(value):
     return result
 
 
-def validate_policy(policy):
+def validate_policy(policy, worker_union=False):
     require(isinstance(policy, dict) and set(policy) == {'Version', 'Statement'}, 'policy_schema')
     require(policy['Version'] == '2012-10-17' and isinstance(policy['Statement'], list), 'policy_schema')
     specs, seen = expected(), set()
+    if worker_union:
+        specs.update(worker_specs())
     require(len(policy['Statement']) == len(specs), 'statement_count')
     for st in policy['Statement']:
         require(isinstance(st, dict) and set(st) == {'Sid', 'Effect', 'Action', 'Resource', 'Condition'}, 'statement_fields')
@@ -108,9 +152,9 @@ def load_policy(path):
     return validate_policy(json.loads(change['after']['policy'])), sha(raw)
 
 
-def fixture_policy(policy, table_name):
+def fixture_policy(policy, table_name, worker_union=False):
     require(re.fullmatch(FIXTURE_PREFIX + r'[a-f0-9]{32}-ledger', table_name) is not None, 'fixture_table_name')
-    result = validate_policy(policy)
+    result = validate_policy(policy, worker_union)
     replacements = {SOURCE_TABLE: TABLE_ROOT + table_name, SOURCE_INDEX: TABLE_ROOT + table_name + '/index/' + INDEX}
     for st in result['Statement']:
         original = st['Resource']
@@ -180,7 +224,7 @@ def wait_table(client, table_name, present):
     raise QualificationError('table_wait_timeout')
 
 
-def exercise(client, admin, table_name, report):
+def exercise(client, admin, table_name, report, worker_union=False):
     # Sixteen independent synthetic rows, one per permitted padded partition.
     for n, shard in enumerate(SHARDS):
         admin.put_item(TableName=table_name, Item={**key('ACCOUNT#shard-' + str(n)),
@@ -220,14 +264,26 @@ def exercise(client, admin, table_name, report):
     for label, args in [('base', {'TableName': table_name}), ('index', {'TableName': table_name, 'IndexName': INDEX})]:
         denied(lambda: client.scan(**args))
         report['cases'].append(label + '_scan_denied')
-    for label, pk in [('account', 'ACCOUNT#retry'), ('foreign_inventory', 'INVENTORY#prod')]:
+    if worker_union:
+        result = client.get_item(TableName=table_name, Key=key('ACCOUNT#retry'), ConsistentRead=True)
+        require(result.get('Item', {}).get('seed') == {'BOOL': True}, 'worker_account_get_failed')
+        report['cases'].append('worker_account_get_allowed')
+    for label, pk in ([('foreign_namespace', 'OTHER#retry')] if worker_union else [('account', 'ACCOUNT#retry')]) + [('foreign_inventory', 'INVENTORY#prod')]:
         report['phase'] = label + '_get'
         denied(lambda: client.get_item(TableName=table_name, Key=key(pk, INVENTORY_SK)))
         report['cases'].append(label + '_get_denied')
     report['phase'] = 'inventory_checks'
     client.transact_write_items(TransactItems=[{'ConditionCheck': check_args(table_name)}])
     report['cases'].append('exact_inventory_condition_none_allowed')
-    for label, pk, rv in [('foreign_inventory', 'INVENTORY#prod', 'NONE'), ('account', 'ACCOUNT#retry', 'NONE'), ('failure_return_values', INVENTORY_PK, 'ALL_OLD')]:
+    if worker_union:
+        args = check_args(table_name, 'ACCOUNT#retry'); args['Key'] = key('ACCOUNT#retry')
+        client.transact_write_items(TransactItems=[{'ConditionCheck': args}])
+        report['cases'].append('worker_account_condition_allowed')
+        args['ConditionExpression'] = 'attribute_not_exists(PK)'
+        args['ReturnValuesOnConditionCheckFailure'] = 'ALL_OLD'
+        denied(lambda: client.transact_write_items(TransactItems=[{'ConditionCheck': args}]))
+        report['cases'].append('worker_account_condition_all_old_denied')
+    for label, pk, rv in [('foreign_inventory', 'INVENTORY#prod', 'NONE'), ('foreign_namespace', 'OTHER#retry', 'NONE') if worker_union else ('account', 'ACCOUNT#retry', 'NONE'), ('failure_return_values', INVENTORY_PK, 'ALL_OLD')]:
         denied(lambda: client.transact_write_items(TransactItems=[{'ConditionCheck': check_args(table_name, pk, rv, fail=True)}]))
         report['cases'].append(label + '_condition_denied')
     report['phase'] = 'transaction_update'
@@ -255,7 +311,7 @@ def exercise(client, admin, table_name, report):
     report['phase'] = 'completed'
 
 
-def qualify(session, policy, plan_hash):
+def qualify(session, policy, plan_hash, worker_union=False, audit_hash=None):
     import boto3
     from botocore.config import Config
     config = Config(retries={'total_max_attempts': 1}, connect_timeout=5, read_timeout=15)
@@ -268,8 +324,9 @@ def qualify(session, policy, plan_hash):
         'accountId': ACCOUNT, 'region': REGION, 'runId': run_id,
         'sourcePlanSha256': plan_hash, 'sourcePolicySha256': sha(canonical(policy).encode()),
         'harnessSha256': sha(Path(__file__).read_bytes()), 'cloudExecuted': True,
-        'scope': 'new recovery policy alone against disposable synthetic ledger/GSI and assumed fixture role',
-        'limitations': ['Does not qualify effective deployed role policy unions.', 'Does not qualify producer policies, workload behavior, completion, retention or activation.'],
+        'scope': ('selected recovery + observed worker ledger identity-policy union' if worker_union else 'new recovery policy alone') + ' against disposable synthetic ledger/GSI and assumed fixture role',
+        'workerLedgerUnionSelected': worker_union, 'sourceRoleAuditSha256': audit_hash,
+        'limitations': ['Does not qualify live SCPs, table resource policies, other tables/services or deployment; observed identity-policy union is qualified only when explicitly selected.', 'Does not qualify producer policies, workload behavior, completion, retention or activation.'],
         'cases': [], 'passed': False, 'cleanupComplete': False, 'phase': 'caller_validation'}
     try:
         identity = sts.get_caller_identity()
@@ -282,7 +339,7 @@ def qualify(session, policy, plan_hash):
             require(re.fullmatch(r'arn:aws:iam::' + ACCOUNT + r':user/.+', caller) is not None, 'unsupported_caller')
             principal = caller
         require(principal.startswith(f'arn:aws:iam::{ACCOUNT}:'), 'wrong_trust_account')
-        fixture = fixture_policy(policy, table_name)
+        fixture = fixture_policy(policy, table_name, worker_union)
         report['fixturePolicySha256'] = sha(canonical(fixture).encode())
         report['phase'] = 'create_fixture_table'
         table_started = True  # Lost create responses receive ownership-checked cleanup.
@@ -310,7 +367,7 @@ def qualify(session, policy, plan_hash):
         require(credentials is not None, 'trust_propagation_timeout')
         client = boto3.client('dynamodb', region_name=REGION, aws_access_key_id=credentials['AccessKeyId'], aws_secret_access_key=credentials['SecretAccessKey'], aws_session_token=credentials['SessionToken'], config=config)
         del credentials
-        exercise(client, ddb, table_name, report)
+        exercise(client, ddb, table_name, report, worker_union)
         report['passed'] = True
     except Exception as exc:
         report['failure'] = str(exc) if isinstance(exc, QualificationError) else 'qualification_operation_failed'
@@ -348,16 +405,20 @@ def main():
     parser.add_argument('--plan', required=True)
     parser.add_argument('--profile', default='trustcheckradar')
     parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--role-audit', help='Select the strictly verified observed worker ledger policy union')
     args = parser.parse_args()
     try:
         policy, plan_hash = load_policy(args.plan)
+        audit_hash = None
+        if args.role_audit:
+            policy, audit_hash = combine_worker_policy(policy, args.role_audit)
         if not args.execute:
-            print(json.dumps({'policyValidationPassed': True, 'cloudExecuted': False, 'statementCount': 4,
+            print(json.dumps({'policyValidationPassed': True, 'cloudExecuted': False, 'statementCount': len(policy['Statement']), 'workerLedgerUnionSelected': bool(args.role_audit), 'sourceRoleAuditSha256': audit_hash,
                 'sourcePlanSha256': plan_hash, 'sourcePolicySha256': sha(canonical(policy).encode()),
                 'harnessSha256': sha(Path(__file__).read_bytes())}, sort_keys=True))
             return 0
         import boto3
-        report = qualify(boto3.Session(profile_name=args.profile, region_name=REGION), policy, plan_hash)
+        report = qualify(boto3.Session(profile_name=args.profile, region_name=REGION), policy, plan_hash, bool(args.role_audit), audit_hash)
         print(json.dumps(report, sort_keys=True))
         return 0 if report['passed'] and report['cleanupComplete'] else 1
     except Exception as exc:

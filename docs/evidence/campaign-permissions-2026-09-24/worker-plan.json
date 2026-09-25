@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "environment": "dev",
+  "scope": "reviewed disabled preparation, not applied",
+  "managedChanges": [
+    {
+      "address": "aws_cloudwatch_metric_alarm.recovery[\"budget\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.recovery[\"failures\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.recovery[\"heartbeat\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.recovery[\"overdue\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.recovery[\"pending_age\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.recovery[\"schema\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.recovery[\"truncated\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_metric_alarm.recovery[\"unverified\"]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_iam_role.recovery_scheduler[0]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.recovery_runtime[0]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.recovery_scheduler_invoke[0]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"deletion\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "environment"
+      ]
+    },
+    {
+      "address": "aws_lambda_function_event_invoke_config.recovery[0]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    },
+    {
+      "address": "aws_scheduler_schedule.recovery[0]",
+      "actions": [
+        "create"
+      ],
+      "changedFields": [
+        "new reviewed resource"
+      ]
+    }
+  ],
+  "planJsonSha256": "e114f3038b173cfec65f8c1ea2d3dd2d147a415b07c17383409d5cac20656063",
+  "savedPlanSha256": "17e45f7423d5a582b8a2f0e3ef836b7692fa0d642829bc5fe336bfbfcb1dcb2e",
+  "newLambdaArtifacts": false,
+  "activation": false
+}

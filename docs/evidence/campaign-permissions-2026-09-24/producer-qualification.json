@@ -1,0 +1,260 @@
+{
+  "accountId": "107827791950",
+  "cases": [
+    "account_data:new_command_job_control_transaction_allowed",
+    "account_data:new_base_account_query_allowed",
+    "account_data:new_owned_command_get_allowed",
+    "account_data:new_replay_rolls_back_no_increment",
+    "account_data:existing_command_job_control_transaction_allowed",
+    "account_data:existing_base_account_query_allowed",
+    "account_data:existing_owned_command_get_allowed",
+    "account_data:existing_replay_rolls_back_no_increment",
+    "account_data:receipt_race_atomic_without_returned_item",
+    "account_data:profile_race_atomic_without_returned_item",
+    "account_data:control_race_atomic_without_returned_item",
+    "account_data:inventory_race_atomic_without_returned_item",
+    "account_data:standalone_updates_denied",
+    "account_data:foreign_partition_point_reads_queries_and_mutations_denied",
+    "account_data:ledger_account_condition_none_allowed",
+    "account_data:ledger_inventory_condition_none_allowed",
+    "account_data:ledger_foreign_and_all_old_conditions_denied",
+    "account_data:inventory_get_allowed",
+    "account_data:legacy_whole_ledger_scan_allowed_including_other_partition",
+    "account_data:legacy_lifecycle_checkpoint_get_put_allowed",
+    "account_data:foreign_environment_checkpoint_put_denied",
+    "account_data:legacy_standalone_account_put_delete_allowed",
+    "account_data:legacy_users_query_delete_allowed",
+    "account_data:users_scan_denied",
+    "account_data:users_conditioncheck_not_granted",
+    "participation:new_command_job_control_transaction_allowed",
+    "participation:new_base_account_query_allowed",
+    "participation:new_owned_command_get_allowed",
+    "participation:new_replay_rolls_back_no_increment",
+    "participation:existing_command_job_control_transaction_allowed",
+    "participation:existing_base_account_query_allowed",
+    "participation:existing_owned_command_get_allowed",
+    "participation:existing_replay_rolls_back_no_increment",
+    "participation:receipt_race_atomic_without_returned_item",
+    "participation:profile_race_atomic_without_returned_item",
+    "participation:control_race_atomic_without_returned_item",
+    "participation:fence_race_atomic_without_returned_item",
+    "participation:standalone_updates_denied",
+    "participation:foreign_partition_point_reads_queries_and_mutations_denied",
+    "participation:ledger_account_condition_none_allowed",
+    "participation:ledger_foreign_and_all_old_conditions_denied",
+    "participation:standalone_put_delete_and_scans_denied",
+    "participation:users_query_not_granted",
+    "participation:inventory_get_and_condition_not_granted",
+    "participation:owned_profile_get_allowed",
+    "participation:owned_profile_condition_none_allowed",
+    "participation:profile_all_old_and_foreign_conditions_denied"
+  ],
+  "cleanupComplete": true,
+  "cleanupOutstanding": [],
+  "cloudExecuted": true,
+  "fixturePolicySha256": {
+    "account_data": "5d3eff23e81bfbcaff5c51058417a4cb2137fc7855d61f270a9c0afa681c4d9f",
+    "participation": "29667758beb7bf1c6affa1baa398f0ccac1897b43cd3bfd2b714292d206815f6"
+  },
+  "fullSourcePolicySha256": {
+    "account_data": "46bcf8688e5e7574403016432b2e53523dc0344de84675e4891056ff7de85031",
+    "participation": "cc6490bc3e9e378bb9d74d524cc8c97fbfb41124e5cd520a80753a679a99a0e4"
+  },
+  "harnessSha256": "1006a2a720b298d4c8e74a5a9b3acf815368560ea64b6eb4c026ca96d6017d7a",
+  "limitations": [
+    "Identity-policy scope uses a dated exact role-audit snapshot with selected replacements; it excludes SCPs, resource policies and later policy changes.",
+    "Unrelated tables/services/stream operations are omitted only after nonoverlap checks.",
+    "Synthetic transaction shapes test IAM and atomic predicates, not complete producer handler semantics.",
+    "Account-data legacy ledger Scan, LIFECYCLE checkpoint, standalone ACCOUNT Put/Delete and USER Query/Delete remain permitted.",
+    "IAM LeadingKeys does not enforce exact account equality or sort-key ownership.",
+    "No live data, code deployment, activation, backfill or completed erasure is exercised."
+  ],
+  "observedAtUtc": "2026-09-25T02:10:53.455108+00:00",
+  "omittedAncillaryPolicies": [
+    {
+      "reason": "exact_logging_actions_disjoint_from_dynamodb",
+      "role": "participation",
+      "source": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    },
+    {
+      "reason": "exact_denies_on_other_services_and_purchase_table_disjoint_from_users_ledger",
+      "role": "participation",
+      "source": "trustcheckradar-dev-research-migration-participation"
+    }
+  ],
+  "omittedStatements": {
+    "account_data": [
+      {
+        "actions": [
+          "dynamodb:GetItem"
+        ],
+        "reason": "exact_disjoint_table_resource",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        ],
+        "sid": "ReadOwnedPurchaseCleanupTargets"
+      },
+      {
+        "actions": [
+          "dynamodb:Query"
+        ],
+        "reason": "exact_disjoint_table_resource",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        ],
+        "sid": "FindOwnedPurchaseCleanupTargets"
+      },
+      {
+        "actions": [
+          "dynamodb:DeleteItem"
+        ],
+        "reason": "exact_disjoint_table_resource",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        ],
+        "sid": "EraseOwnedPurchaseTransaction"
+      },
+      {
+        "actions": [
+          "dynamodb:ConditionCheckItem"
+        ],
+        "reason": "exact_disjoint_table_resource",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        ],
+        "sid": "CheckPurchaseCleanupInventory"
+      },
+      {
+        "actions": [
+          "dynamodb:Query",
+          "dynamodb:DeleteItem"
+        ],
+        "reason": "exact_disjoint_table_resource",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-bindings"
+        ],
+        "sid": "EraseFencedUserDeviceBindings"
+      },
+      {
+        "actions": [
+          "dynamodb:Query",
+          "dynamodb:DeleteItem"
+        ],
+        "reason": "exact_disjoint_table_resource",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control"
+        ],
+        "sid": "EnumerateAndEraseFencedAnalysisState"
+      },
+      {
+        "actions": [
+          "dynamodb:PutItem"
+        ],
+        "reason": "exact_disjoint_table_resource",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control"
+        ],
+        "sid": "MinimizeAnalysisRequestContent"
+      },
+      {
+        "actions": [
+          "dynamodb:Query"
+        ],
+        "reason": "exact_disjoint_table_resource",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox"
+        ],
+        "sid": "EnumerateAccountOutboxLocators"
+      },
+      {
+        "actions": [
+          "dynamodb:DeleteItem"
+        ],
+        "reason": "exact_disjoint_table_resource",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox"
+        ],
+        "sid": "EraseAccountOutboxContent"
+      },
+      {
+        "actions": [
+          "dynamodb:GetItem"
+        ],
+        "reason": "exact_disjoint_table_resource",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox"
+        ],
+        "sid": "ReadAccountOutboxTarget"
+      },
+      {
+        "actions": [
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "disjoint_service_resource",
+        "resources": [
+          "arn:aws:kms:us-east-1:107827791950:key/be146e79-877b-462c-b2ff-509cb8c6b02a"
+        ],
+        "sid": "DecryptAccountOutboxThroughDynamoDB"
+      },
+      {
+        "actions": [
+          "cognito-idp:AdminUserGlobalSignOut"
+        ],
+        "reason": "disjoint_service_resource",
+        "resources": [
+          "arn:aws:cognito-idp:us-east-1:107827791950:userpool/us-east-1_wzN0wUSdQ"
+        ],
+        "sid": "RevokeSessionsInOwnPool"
+      },
+      {
+        "actions": [
+          "dynamodb:GetShardIterator",
+          "dynamodb:GetRecords",
+          "dynamodb:DescribeStream"
+        ],
+        "reason": "stream_reads_not_table_operations",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091"
+        ],
+        "sid": "ReadOwnDeletionStream"
+      },
+      {
+        "actions": [
+          "dynamodb:ListStreams"
+        ],
+        "reason": "stream_discovery_not_table_operation",
+        "resources": [
+          "*"
+        ],
+        "sid": "DiscoverDeletionStreamsInRegion"
+      },
+      {
+        "actions": [
+          "logs:PutLogEvents",
+          "logs:CreateLogStream"
+        ],
+        "reason": "disjoint_service_resource",
+        "resources": [
+          "arn:aws:logs:us-east-1:107827791950:log-group:/aws/lambda/trustcheckradar-dev-account-data-api:*"
+        ],
+        "sid": "WriteOwnLogs"
+      }
+    ],
+    "participation": []
+  },
+  "passed": true,
+  "phase": "completed",
+  "projectedPolicySha256": {
+    "account_data": "ab8e2a12e0dc724d4ac649b38f7559bb7e410f788215408ece965c659a11e7b6",
+    "participation": "cc6490bc3e9e378bb9d74d524cc8c97fbfb41124e5cd520a80753a679a99a0e4"
+  },
+  "region": "us-east-1",
+  "roleAuditObservedAtUtc": "2026-09-25T02:00:43.896788+00:00",
+  "runId": "4915beba6627487293a5d29a14dae5bd",
+  "schemaVersion": 1,
+  "scope": "complete selected-policy users/ledger projections on disposable tables and assumed fixture roles",
+  "sourcePlanSha256": "38d9a5a2ed5d999c467b62e381024f5212dae0b6d858c87f3e6f687a072903d4",
+  "sourceRoleAuditSha256": "b7eaf62e8f34cea337e55fc39fdb442a5de0c0b63359a73c1639707cf93d32f8",
+  "independentCleanupReadback": "all fixture tables and roles absent"
+}
