@@ -8,7 +8,7 @@ def need(v):
 s=boto3.Session(profile_name='trustcheckradar',region_name='us-east-1');cfg=Config(connect_timeout=5,read_timeout=15,retries={'total_max_attempts':1})
 need(s.client('sts',config=cfg).get_caller_identity()['Account']=='107827791950')
 l=s.client('lambda',config=cfg);iam=s.client('iam',config=cfg);scheduler=s.client('scheduler',config=cfg);cw=s.client('cloudwatch',config=cfg)
-r={'observedAtUtc':datetime.now(timezone.utc).isoformat(),'workers':[],'eventMappings':[],'schedules':[],'alarmActions':[],'allVerified':False,'liveDeletionEnabled':False}
+r={'observedAtUtc':datetime.now(timezone.utc).isoformat(),'workers':[],'eventMappings':[],'schedules':[],'alarmActions':[],'allVerified':False,'campaignDeletionEnabled':False}
 for resource in p['resource_changes']:
  b=resource['change']['before'];addr=resource['address']
  if resource['type']=='aws_lambda_function' and b:

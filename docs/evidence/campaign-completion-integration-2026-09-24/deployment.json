@@ -1,0 +1,17 @@
+{
+  "verified": true,
+  "fullPlanManagedChanges": 0,
+  "fullPlanOutputChanges": 0,
+  "postPlanSha256": "9a4a36bbaeddf92f7561f010e84d872475753c000858ff4eae490df06da6b3f7",
+  "applied": {
+    "added": 1,
+    "changed": 1,
+    "destroyed": 0
+  },
+  "appliedPlanSha256": "2e8a371fb07547cac848c348eddf812f4d430075163622114ce4eb0087bf0ed6",
+  "infrastructureSource": "6661f1dd94bba50dc3acbaf165a7c79db43a09b1",
+  "infrastructureMerge": "0738c8325b3cdb9fe0bed551b222173428d3a07f",
+  "lambdaSource": "dffa7eaae79632db58bc366cc48434125a9c10dc",
+  "lambdaMerge": "5fdd2611a6a1e98b04ddace5517ff5937ea3b4f3",
+  "campaignActivation": false
+}
