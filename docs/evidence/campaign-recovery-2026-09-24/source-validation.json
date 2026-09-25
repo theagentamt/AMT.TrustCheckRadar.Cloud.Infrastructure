@@ -20,6 +20,9 @@
     "terraform/api/main.tf": "a78c55597496bf6140d0abf04e7b95d2d035fd9b1489193dadad1319d5d4dd5c",
     "terraform/api/account-data.tf": "444ae8bec52d1a294ac3e329ad97e1b8e430f06b0b729cd17a1bf341b5693f49"
   },
-  "actualRecoveryIamQualified": false,
-  "runtimeActivated": false
+  "runtimeActivated": false,
+  "standaloneRecoveryPolicyQualified": true,
+  "effectiveRecoveryRoleUnionQualified": false,
+  "producerRecoveryIamQualified": false,
+  "standalonePolicyEvidence": "synthetic-iam-qualification.json"
 }

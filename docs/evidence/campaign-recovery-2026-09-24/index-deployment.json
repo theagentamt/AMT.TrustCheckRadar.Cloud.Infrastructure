@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "environment": "dev",
+  "accountId": "107827791950",
+  "region": "us-east-1",
+  "appliedSource": "910eaf4dae40a6efbd1e7816264266ff5290fccc",
+  "releaseMerge": "566c9c43772079d07bf3d30e12033cdc6f0411e7",
+  "savedIndexPlanSha256": "5557bb04d1173c783bd548dab6a8628113f78d754862b00ec54471b79137399b",
+  "indexApply": {
+    "added": 0,
+    "changed": 1,
+    "destroyed": 0
+  },
+  "fullPostApplyPlanManagedChanges": 0,
+  "outputOnlyFollowupApplied": true,
+  "outputOnlySavedPlanSha256": "028b74b665800aaeac0e60deb3787a5258410fe386c2f93c8db866c98f6d1e62",
+  "publishedContract": {
+    "coverage_qualified": false,
+    "enabled": true,
+    "environment": "dev",
+    "index_arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/index/CampaignRecoveryDueIndex",
+    "index_name": "CampaignRecoveryDueIndex",
+    "partition_key": "campaignRecoveryPartition",
+    "projection": "KEYS_ONLY",
+    "schema_version": 1,
+    "shard_count": 16,
+    "sort_key": "nextAttemptAtEpoch",
+    "table_arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+    "table_name": "trustcheckradar-dev-deletion-ledger",
+    "writes_enabled": false
+  },
+  "recoveryRuntimeDeployed": false,
+  "producerWritesEnabled": false,
+  "inventoryApproved": false
+}

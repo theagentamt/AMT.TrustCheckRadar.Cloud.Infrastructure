@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-09-25T01:49:41.900924+00:00",
+  "environment": "dev",
+  "accountId": "107827791950",
+  "region": "us-east-1",
+  "table": {
+    "name": "trustcheckradar-dev-deletion-ledger",
+    "status": "ACTIVE",
+    "keys": [
+      {
+        "AttributeName": "PK",
+        "KeyType": "HASH"
+      },
+      {
+        "AttributeName": "SK",
+        "KeyType": "RANGE"
+      }
+    ],
+    "billing": "PAY_PER_REQUEST",
+    "index": {
+      "IndexName": "CampaignRecoveryDueIndex",
+      "IndexStatus": "ACTIVE",
+      "KeySchema": [
+        {
+          "AttributeName": "campaignRecoveryPartition",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "nextAttemptAtEpoch",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "KEYS_ONLY"
+      }
+    },
+    "pitr": {
+      "status": "ENABLED",
+      "days": 35
+    },
+    "ttl": {
+      "TimeToLiveStatus": "DISABLED"
+    },
+    "stream": {
+      "StreamEnabled": true,
+      "StreamViewType": "NEW_IMAGE"
+    }
+  },
+  "workers": {
+    "cluster": {
+      "name": "trustcheckradar-dev-campaign-cluster-aggregator",
+      "codeSha256": "ppaduE5zmMxeKYX1w8JBuRrVgTtFMp39+RyzMF+C4ho=",
+      "codeUnchanged": true,
+      "runtime": "python3.14",
+      "mappingStates": [
+        "Disabled"
+      ],
+      "recoveryFlag": "absent"
+    },
+    "deletion": {
+      "name": "trustcheckradar-dev-campaign-deletion-bridge",
+      "codeSha256": "FItTXNai302HOO+oHnMNj70y6t0r/5YeWjScTX7QQMQ=",
+      "codeUnchanged": true,
+      "runtime": "python3.14",
+      "mappingStates": [
+        "Disabled"
+      ],
+      "recoveryFlag": "absent"
+    },
+    "lifecycle": {
+      "name": "trustcheckradar-dev-campaign-lifecycle",
+      "codeSha256": "PehVB8VPv4/tkcNrigxD6Ce64mUwsET9qX10P+UAkJo=",
+      "codeUnchanged": true,
+      "runtime": "python3.14",
+      "mappingStates": [],
+      "recoveryFlag": "absent"
+    },
+    "publisher": {
+      "name": "trustcheckradar-dev-campaign-observation-publisher",
+      "codeSha256": "n/08qq/fpGZx/fob8iTvxitMVRpACwfTvt7ScUJuSbE=",
+      "codeUnchanged": true,
+      "runtime": "python3.14",
+      "mappingStates": [
+        "Disabled"
+      ],
+      "recoveryFlag": "absent"
+    }
+  },
+  "schedules": [
+    {
+      "name": "trustcheckradar-dev-campaign-manage-keys",
+      "state": "DISABLED"
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-finalize-periods",
+      "state": "DISABLED"
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-expire-transient",
+      "state": "DISABLED"
+    }
+  ],
+  "accountDeletionEnabled": false,
+  "recoverySourceDeployed": false,
+  "inventoryApproved": false,
+  "limitations": [
+    "Read-only current configuration, not historical inventory or erasure proof.",
+    "Missing recovery environment flag reflects unselected current artifacts; new source was not deployed.",
+    "No items, messages, secrets or log events read."
+  ]
+}
