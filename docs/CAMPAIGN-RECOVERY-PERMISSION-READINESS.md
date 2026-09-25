@@ -26,7 +26,7 @@ The actual attached/inline policy inventory is checked for additional overlappin
 permissions. Application ownership and sort-key checks still require runtime
 validation; IAM prefixes do not identify the authenticated account.
 
-## Proposed Dev changes
+## Reviewed Dev changes
 
 API selects the reviewed account-data and participation policy updates and forces
 CAMPAIGN_RECOVERY_WRITES_ENABLED=false in both existing functions. The account
@@ -86,5 +86,40 @@ contains five managed changes: two policies, two false-only environment updates,
 and the Terraform preparation guard. The reviewed [worker scoped plan](evidence/campaign-permissions-2026-09-24/worker-plan.json)
 contains thirteen creates and one environment-only function update; it excludes
 the deferred existing scheduler policy. No replacement or deletion is planned.
-Source publication, applying these plans, readback and runtime activation remain
-separate steps.
+These plan files record the pre-apply review. The deployment record below
+establishes the subsequent apply; runtime activation remains separate.
+
+
+## Deployed disabled preparation — 2026-09-24
+
+Infrastructure [PR80](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/pull/80)
+merged into release-V01 at `cd7ddad22f5f033ed330e6617039e28a01b636b7`.
+The exact reviewed saved plans were hash-checked and applied manually in Dev:
+API one create/four updates; worker thirteen creates/one update; zero destroys.
+The [preflight](evidence/campaign-permissions-2026-09-24/deployment-preflight.json)
+verified live source hashes and the complete audited role policy inventory first.
+The [readback](evidence/campaign-permissions-2026-09-24/deployment-readback.json)
+confirms three affected functions retain code/runtime/role/architecture/concurrency
+and mapping states, the changed policies match, four schedules and three campaign
+mappings are disabled, and all eight recovery alarm actions are disabled.
+Live account deletion and recovery enrollment/execution remain false.
+
+Both full post-deployment plans have no managed or output drift and all checks
+pass. The [deployment summary](evidence/campaign-permissions-2026-09-24/deployment-summary.json)
+records hashes and the final campaign verification inputs. Its legacy
+`artifact_release` must also be supplied as the existing `d98ffd65...` release to
+satisfy the older dependency check, even though all four immutable worker pins
+already select that same release. The initial null-input warning was not a code
+change or missing deployed artifact. The final verification plan was not applied.
+
+Lambda [PR56](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/pull/56)
+merged candidate `82dab71e1807c7249b8bb8d318463a1940779e0d` into release-V01 at
+`ee7febb87f123a468a43cfa30429faf0dea95dcc`. It implements separate inventory-pinned
+stable per-period proof and atomic completion transactions. Legacy terminal
+commands alone cannot assert campaign erasure; positive replays require matching,
+unexpired proof and absence of the owned job. Validation passed 217 combined
+SDK/Moto cases including 46 focused completion cases, plus six ordinary tests and
+nine subtests. Root independently reran those same 46 focused cases; they are not
+additional unique coverage. The candidate remains unwired and undeployed, without
+completion IAM grants or approval markers. No historical coverage or actual
+completion runtime acceptance is claimed.

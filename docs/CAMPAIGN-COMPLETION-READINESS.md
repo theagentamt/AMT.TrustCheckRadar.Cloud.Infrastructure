@@ -88,7 +88,7 @@ call-start deadline. The output explicitly declines inventory/erasure approval.
 - Qualify complete retained-period/key/legacy and restore coverage with reviewed
   writer inventory. Empty current tables do not satisfy this requirement.
 - Establish publication ordering and safe retirement of HMAC keys and tombstones.
-- Durable recovery source/index preparation is in progress; see
+- Durable recovery source/index and disabled Dev permission preparation are delivered; see
   [recovery readiness](CAMPAIGN-DURABLE-RECOVERY-READINESS.md). Actual runtime,
   historical enrollment and atomic completion remain unqualified.
 - Produce completion receipts only from stable, complete qualified evidence.
@@ -97,3 +97,13 @@ call-start deadline. The output explicitly declines inventory/erasure approval.
 
 See [account deletion dependencies](ACCOUNT-DELETION-READINESS-2026-09-24.md) for
 identity mapping, other receipt producers and full-account inventory requirements.
+
+
+## Subsequent completion candidate
+
+Lambda PR56 adds an unwired, separately inventory-pinned stable completion primitive,
+including atomic recovery-job/control/seal/receipt transitions and conservative
+replay behavior. See [permission/deployment readiness](CAMPAIGN-RECOVERY-PERMISSION-READINESS.md)
+for exact release commits, validation and remaining qualification. Existing Dev
+Lambda artifacts are unchanged. This supersedes the earlier implementation gap,
+not the historical, restore, retirement or runtime acceptance requirements.

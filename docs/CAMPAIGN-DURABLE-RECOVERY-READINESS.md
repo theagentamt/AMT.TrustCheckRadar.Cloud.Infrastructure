@@ -24,8 +24,8 @@ Qualified future withdrawal completion must consume its job and decrement the
 control atomically. Account CAMPAIGN completion must consume the last job,
 transition OPEN1 to SEALED0 and write the qualified receipt atomically. The
 finalizer requires SEALED0 before identity deletion and removes it in the terminal
-transaction. These completion builders are still unimplemented; no gate in this
-increment enables or substitutes for them. Backfill only builds guarded actions;
+transaction. These completion builders were subsequently integrated as an unwired candidate
+in Lambda PR56; no gate in this increment enables or substitutes for them. Backfill only builds guarded actions;
 it has no executor or automatic approval-marker writer.
 
 ## Infrastructure preparation
@@ -118,12 +118,14 @@ deployed; Linux dependency/runtime qualification remains separate.
 
 ## Remaining acceptance
 
-1. Qualify effective recovery role unions and producer IAM, review
-   exact package pins and select disabled API/worker preparation separately.
+1. Recovery role unions and producer IAM are qualified, and disabled Dev
+   preparation is deployed; see [deployment evidence](CAMPAIGN-RECOVERY-PERMISSION-READINESS.md).
+   Exact new packages and actual runtime qualification remain separate.
 2. Qualify all historical producers, retained keys, legacy/restore copies and
    controlled pending-job enrollment before treating the count as authoritative.
-3. Implement stable completion proof and atomic job consumption/sealing/receipts;
-   qualify overlapping withdrawals, account deletion, retries and restore races.
+3. The stable completion candidate and atomic job consumption/sealing/receipts
+   are integrated in PR56. Qualify real runtime behavior, historical inventory,
+   overlapping withdrawals, account deletion, retries and restore races before wiring.
 4. Review publication ordering, HMAC-key and tombstone retirement, full account
    inventory pins and actual runtime evidence before requesting activation.
 
