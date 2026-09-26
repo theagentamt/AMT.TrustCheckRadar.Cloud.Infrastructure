@@ -1,0 +1,24 @@
+{
+  "readOnly": true,
+  "observedAtEpoch": 1790432854,
+  "rows": [
+    {
+      "rowSha256": "f957e2fb3965d0a8e3f4588afc8ac9303d6ab7eb4196d1140a787b5c7553e8f2",
+      "classification": "V1_DELETION_RECONCILIATION_CURSOR",
+      "observedRecordType": "ABSENT_OR_UNKNOWN",
+      "v1ShapeMatches": true,
+      "knownAttributeNames": [
+        "PK",
+        "SK",
+        "cursor"
+      ],
+      "attributeCount": 6,
+      "exactSchemaValid": true,
+      "continuationPresent": false,
+      "passHadFailures": null,
+      "pendingAccountCommand": false
+    }
+  ],
+  "complete": true,
+  "inventoryApproved": false
+}
