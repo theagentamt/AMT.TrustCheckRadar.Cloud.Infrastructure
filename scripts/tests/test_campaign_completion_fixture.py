@@ -36,4 +36,33 @@ class FixtureTests(unittest.TestCase):
             self.assertEqual(index['KeySchema'],[{'AttributeName':'campaignRecoveryPartition','KeyType':'HASH'},{'AttributeName':'nextAttemptAtEpoch','KeyType':'RANGE'}])
             self.assertIn({'AttributeName':'nextAttemptAtEpoch','AttributeType':'N'},request['AttributeDefinitions'])
 
+    def test_component_scope_is_exact_and_opt_in(self):
+        doc=self.doc();prefix=doc['prefix']
+        doc['fixtureKind']='all-components'
+        doc['tables']={k:prefix+'-'+k for k in m.table_kinds('all-components')}
+        self.assertEqual(len(doc['tables']),12)
+        self.assertEqual(m.fixture_timeout('campaign'),60)
+        self.assertEqual(m.fixture_timeout('all-components'),120)
+        with self.assertRaises(ValueError):m.fixture_timeout('other')
+        self.assertIs(m.validate_journal(doc,doc['runId']),doc)
+        for changes in [{'fixtureKind':'other'}, {'fixtureKind':'campaign'},
+                        {'tables':dict(doc['tables'],tokens='trustcheckradar-dev-play-tokens')},
+                        {'tables':dict(doc['tables'],extra=prefix+'-extra')}]:
+            with self.assertRaises(ValueError):m.validate_journal(doc|changes,doc['runId'])
+        env=m.table_environment(doc['tables'])
+        self.assertIn('QUALIFICATION_HISTORY_CONTROL_TABLE',env)
+        self.assertIn('QUALIFICATION_HISTORY_CONTENT_TABLE',env)
+        self.assertFalse(any('-' in key for key in env))
+        policy=m.runtime_policy(doc['tables'],doc['keyArn'])
+        resources=policy['Statement'][0]['Resource']
+        self.assertEqual(len(resources),12)
+        self.assertTrue(all('/'+prefix+'-' in arn for arn in resources))
+        self.assertFalse(any('*' in arn for arn in resources))
+        self.assertFalse(any(action.startswith(('cognito','secretsmanager','s3:','kms:Decrypt')) for statement in policy['Statement'] for action in statement['Action']))
+        for kind,name in doc['tables'].items():
+            request=m.table_request(name,kind,doc['tags'])
+            self.assertNotIn('StreamSpecification',request)
+            self.assertNotIn('RestoreSourceTableArn',request)
+            if kind!='ledger':self.assertNotIn('GlobalSecondaryIndexes',request)
+
 if __name__=='__main__':unittest.main()
