@@ -196,3 +196,10 @@ Only config.py differs in the account-data package; all campaign pins remain f92
 The independently verified immutable account-data version is now selected in Dev
 with activation still null. Local validation passed 44 tests, 20 subtests and eight
 SDK cases. Package publication is separate from deployment acceptance.
+
+Infrastructure PR87 merged at `4f11ae989d3075a5439ae9611729dba4040cefc7`.
+The 997e account-data guard is deployed and directly read back with unchanged
+disabled environment and no public deletion route. Full API planning reports no
+drift. Campaign control outputs and alarm descriptions were applied with all gates
+and alarm actions still disabled. The unprofiled administrative identity exception
+is tracked in SECUR4ALL-327; it was not changed or deleted.

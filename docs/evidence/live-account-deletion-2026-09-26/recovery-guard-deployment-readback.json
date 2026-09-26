@@ -1,0 +1,47 @@
+{
+  "observedAtUtc": "2026-09-26T13:42:58.929074+00:00",
+  "functions": [
+    {
+      "function": "trustcheckradar-dev-account-data-api",
+      "codeSha256": "zqfu76scnoZ9tnKTthQbFpQ1D6FGHb0WYxYHYAWxLWs=",
+      "configurationMatched": true
+    },
+    {
+      "function": "trustcheckradar-dev-account-export-api",
+      "codeSha256": "ynYTDY4o8nhqZOq+uIuyFTckEamaec1TWt9TKmRdsSk=",
+      "configurationMatched": true
+    },
+    {
+      "function": "trustcheckradar-dev-device-recovery",
+      "codeSha256": "PcZ8tfY6Hu91NeI/IWTIz719S9vRHi3cjdcS1nT7U7U=",
+      "configurationMatched": true
+    }
+  ],
+  "policies": [
+    {
+      "role": "trustcheckradar-dev-account-data-api-role",
+      "policy": "account-data-runtime",
+      "matched": true
+    },
+    {
+      "role": "trustcheckradar-dev-account-export-api-role",
+      "policy": "authenticated-read-only-account-export",
+      "matched": true
+    },
+    {
+      "role": "trustcheckradar-dev-device-recovery-role",
+      "policy": "device-recovery-control",
+      "matched": true
+    }
+  ],
+  "deletionEnabled": false,
+  "identityFinalizerEnabled": false,
+  "allVerified": true,
+  "publicDeletionRouteAbsent": true,
+  "recoveryStorage": {
+    "active": true,
+    "ttlEnabled": true,
+    "pitrDays": 7,
+    "streamEnabled": false
+  }
+}

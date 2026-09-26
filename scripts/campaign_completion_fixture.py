@@ -10,6 +10,23 @@ from datetime import datetime, timezone
 ACCOUNT = '107827791950'
 REGION = 'us-east-1'
 PURPOSE = 'campaign-completion-qualification'
+BASE_TABLES = ('pipeline', 'ledger', 'users')
+COMPONENT_TABLES = ('devices', 'recovery', 'abuse', 'outbox', 'entitlements',
+                    'history-control', 'history-content', 'authority', 'tokens')
+
+def table_kinds(kind):
+    if kind not in ('campaign', 'all-components'):
+        raise ValueError('FIXTURE_KIND_REJECTED')
+    return BASE_TABLES + (COMPONENT_TABLES if kind == 'all-components' else ())
+
+def fixture_timeout(kind):
+    table_kinds(kind)  # Validate before choosing the bounded runtime budget.
+    return 120 if kind == 'all-components' else 60
+
+def table_environment(tables):
+    return {'QUALIFICATION_' + kind.upper().replace('-', '_') + '_TABLE': name
+            for kind, name in tables.items()}
+
 
 def identity(run):
     if not re.fullmatch('[0-9a-f]{12}', run):
@@ -23,7 +40,7 @@ def validate_journal(doc, run):
         raise ValueError('FIXTURE_BOUNDARY_REJECTED')
     if not (doc['prefix'] == prefix and doc['tags'] == tags):
         raise ValueError('FIXTURE_BOUNDARY_REJECTED')
-    if not doc['tables'] == {x: prefix + '-' + x for x in ('pipeline', 'ledger', 'users')}:
+    if not doc['tables'] == {x: prefix + '-' + x for x in table_kinds(doc.get('fixtureKind', 'campaign'))}:
         raise ValueError('FIXTURE_BOUNDARY_REJECTED')
     if not (doc['role'] == prefix + '-role' and doc['function'] == prefix + '-runner'):
         raise ValueError('FIXTURE_BOUNDARY_REJECTED')
@@ -55,6 +72,7 @@ def main():
     parser.add_argument('--zip-sha256')
     parser.add_argument('--source-sha')
     parser.add_argument('--profile', default='trustcheckradar')
+    parser.add_argument('--fixture-kind', choices=['campaign', 'all-components'], default='campaign')
     args = parser.parse_args()
     prefix, tags = identity(args.run_id)
     path = Path(args.journal)
@@ -91,7 +109,7 @@ def main():
         archive = Path(args.zip).read_bytes()
         if not hashlib.sha256(archive).hexdigest() == args.zip_sha256:
             raise ValueError('FIXTURE_BOUNDARY_REJECTED')
-        doc = {'schemaVersion': 1, 'runId': args.run_id, 'account': ACCOUNT, 'region': REGION, 'prefix': prefix, 'tags': tags, 'tables': {x: prefix + '-' + x for x in ('pipeline', 'ledger', 'users')}, 'role': prefix + '-role', 'function': prefix + '-runner', 'sourceSha': args.source_sha, 'zipSha256': args.zip_sha256, 'createdAtUtc': datetime.now(timezone.utc).isoformat(), 'created': []}
+        doc = {'schemaVersion': 1, 'runId': args.run_id, 'account': ACCOUNT, 'region': REGION, 'prefix': prefix, 'tags': tags, 'fixtureKind': args.fixture_kind, 'tables': {x: prefix + '-' + x for x in table_kinds(args.fixture_kind)}, 'role': prefix + '-role', 'function': prefix + '-runner', 'sourceSha': args.source_sha, 'zipSha256': args.zip_sha256, 'createdAtUtc': datetime.now(timezone.utc).isoformat(), 'created': []}
         save()
         for kind,name in doc['tables'].items():
             ddb.create_table(**table_request(name,kind,tags))
@@ -112,10 +130,10 @@ def main():
         for name in doc['tables'].values():
             poll(lambda n=name: ddb.describe_table(TableName=n), lambda x: x['Table']['TableStatus'] == 'ACTIVE' and all(i['IndexStatus']=='ACTIVE' for i in x['Table'].get('GlobalSecondaryIndexes',[])))
         env = {'QUALIFICATION_RUN_ID': args.run_id, 'QUALIFICATION_KEY_ARN': key, 'QUALIFICATION_FUNCTION_NAME': doc['function'], 'QUALIFICATION_SOURCE_SHA': args.source_sha}
-        env.update({'QUALIFICATION_' + x.upper() + '_TABLE': name for x, name in doc['tables'].items()})
+        env.update(table_environment(doc['tables']))
         for attempt in range(20):
             try:
-                lam.create_function(FunctionName=doc['function'], Runtime='python3.14', Architectures=['arm64'], Role=f"arn:aws:iam::{ACCOUNT}:role/{doc['role']}", Handler='campaign_qualification.lambda_handler', Code={'ZipFile': archive}, Timeout=60, MemorySize=512, Environment={'Variables': env}, Tags=tags, Publish=False)
+                lam.create_function(FunctionName=doc['function'], Runtime='python3.14', Architectures=['arm64'], Role=f"arn:aws:iam::{ACCOUNT}:role/{doc['role']}", Handler='campaign_qualification.lambda_handler', Code={'ZipFile': archive}, Timeout=fixture_timeout(args.fixture_kind), MemorySize=512, Environment={'Variables': env}, Tags=tags, Publish=False)
                 break
             except Exception as exc:
                 code = getattr(exc, 'response', {}).get('Error', {}).get('Code')
