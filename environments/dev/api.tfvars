@@ -157,3 +157,21 @@ research_campaign_release_compatibility = {
   consumer_release_sha = "f92285b50561397355a5fe2e466d297041336755"
   review_reference     = "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md#closed-api-consumer-compatibility"
 }
+
+# Reviewed cleanup-only Dev qualification; all unrelated admission stays closed.
+account_data_finalization_candidate = {
+  "manifest_sha256" : "73ecea2a6f9c8c392fadba7eacd65d367cc6ab7553715f4b40cc2ce627d1885c",
+  "inventory_revision" : 1,
+  "approval_reference" : "docs/evidence/live-account-deletion-2026-09-26/external-approval.json"
+}
+
+# Reviewed cleanup-only Dev qualification; all unrelated admission stays closed.
+account_deletion_activation = {
+  "phase" : "workers",
+  "source_sha" : "65df9c7e7fe338f00df8ecc13795014ab928cdfa",
+  "policy_reference" : "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md",
+  "inventory_reference" : "docs/evidence/live-account-deletion-2026-09-26/external-approval.json",
+  "identity_reference" : "docs/evidence/live-account-deletion-2026-09-26/cognito-normal-runtime.json; docs/evidence/live-account-deletion-2026-09-26/cognito-lost-ack-runtime.json",
+  "component_reference" : "docs/evidence/live-account-deletion-2026-09-26/all-component-runtime.json",
+  "http_subjects" : []
+}

@@ -1,5 +1,11 @@
 # Live account deletion rollout
 
+Current status, September 26: the four independently qualified inventory markers
+are initialized with exact readback, and the current1480 key and registry are
+initialized without changing older periods. Cleanup-only Dev activation is selected
+for plan review but has not yet been applied. HTTP admission is absent. Earlier
+closed-preparation statements below describe the corresponding completed stages.
+
 The owner requested live-deletion implementation on September 26. The immediate
 path is an authenticated account request, durable cleanup of that account's data,
 twelve verified component receipts, and removal of its Cognito identity. Whole-period
@@ -329,3 +335,35 @@ create a genuine PENDING_AGE_GATE profile. Its private atomic journal preserves
 the owned subject and original operation; no password or JWT was persisted. This
 is administrative bootstrap, not native signup-trigger delivery qualification.
 No deletion request, inventory approval or runtime activation has occurred.
+
+## Final writer boundary
+
+The 13-store writer audit binds all 31 functions and execution roles, versions,
+aliases, API integrations, Cognito hooks and stream/scheduled targets. Current
+managed ingress does not select the four retained enabled historical versions;
+the serialized operator must not invoke or rebind those versions. Such changes,
+restores and unreviewed source/role changes invalidate the inventory qualification.
+
+History reads stay disabled. Their current cursor Put needs an atomic account
+deletion fence before read activation; follow-up SECUR4ALL-328 owns that concrete
+fix and permission/race qualification. The inactive path does not block the scoped
+Dev deletion test. No retained usage or audit records were changed.
+
+## Qualified inventory and cleanup-only activation candidate
+
+The independent reviewer verified all four immutable manifests and all 28 evidence
+digests, then the external approval and exact four-row plan. The reviewed source
+initializer conditionally created all four markers in one transaction and verified
+exact readback. It did not infer approval from an empty scan or alter existing
+ownership/HMAC controls. The independently reviewed period initializer then created
+only absent current1480 with the matching locator manifest/generation and verified
+its readback; both old period rows and keys remain unchanged.
+
+Four saved cleanup plans pass every Terraform check and change no Lambda code:
+campaign deletion processing, terminal-safe History cleanup, and subject-scoped
+V1 authority/Play token cleanup. They enable reconciliation and appropriate alarms,
+including twelve new History alarms. All research, providers, access engineering
+and History read/mutation admission remain closed. API phase is workers-only with
+an empty HTTP subject list and no routes; its final deployment plan follows the
+campaign state update. The sole selected V1/Play subject is the newly prepared
+disposable identity. No deletion command exists yet.
