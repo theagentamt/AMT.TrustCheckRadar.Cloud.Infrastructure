@@ -135,3 +135,14 @@ variable "play_alarm_notifications_enabled" {
     error_message = "Play verifier alarm integration is Dev-only."
   }
 }
+
+variable "account_cleanup_alarm_notifications_enabled" {
+  description = "Permit exactly the reviewed Dev account-data and Play cleanup alarm ARNs on the confirmed support topic."
+  type        = bool
+  default     = false
+  nullable    = false
+  validation {
+    condition     = !var.account_cleanup_alarm_notifications_enabled || var.environment == "dev"
+    error_message = "Account cleanup alarm integration is Dev-only."
+  }
+}

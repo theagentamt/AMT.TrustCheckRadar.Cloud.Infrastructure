@@ -1,0 +1,18 @@
+{
+  "account": {
+    "path": "/tmp/amt-live-manifest-draft/account-manifest.json",
+    "sha256": "73ecea2a6f9c8c392fadba7eacd65d367cc6ab7553715f4b40cc2ce627d1885c"
+  },
+  "completion": {
+    "path": "/tmp/amt-live-manifest-draft/completion-manifest.json",
+    "sha256": "ecb1ec4516f874c74711ad06b66f0d855cbf6a6990da0c8994f597f0ef9333e4"
+  },
+  "locator": {
+    "path": "/tmp/amt-live-manifest-draft/locator-manifest.json",
+    "sha256": "bde6307ac73e1a6f60533216270566b2db0c822aa1b777cbf1e1013a168eb73f"
+  },
+  "recovery": {
+    "path": "/tmp/amt-live-manifest-draft/recovery-manifest.json",
+    "sha256": "ee96ccc2f89904ef6fb29058b8d76109618ec1b5823ff9ff390b27fa7b7b6936"
+  }
+}

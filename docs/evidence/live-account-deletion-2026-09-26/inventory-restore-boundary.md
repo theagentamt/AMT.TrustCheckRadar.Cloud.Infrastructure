@@ -1,0 +1,15 @@
+# Dev account deletion inventory approval boundary
+
+This qualification covers the exact currently attached Dev tables and explicitly allowlisted newly created disposable identities. It does not assert physical destruction of historical backups, logs, external provider copies or local mobile exports.
+
+The owner reports no known manual copies or restores. Current regional native backup, export and AWS Backup metadata is bound in the final audit. Existing PITR deadlines remain disclosed: the six foundation stores and campaign intelligence have 35-day PITR, History and device recovery have seven-day PITR; campaign pipeline/outbox and Play tokens have PITR disabled. Application logs have fourteen-day retention. TTL is not immediate physical erasure.
+
+Restore and rebinding rule: a restored or replaced table must remain unattached to application readers and writers, including campaign review, until deletion suppression and the complete inventory have been requalified for its exact table identity. The original marker and source approval must not be copied as permission to serve a restored resource. Expanding writer sources, roles, provider/research admission, aliases or replay paths requires renewed review. Current scoped worker enablement is allowed only through the separately reviewed activation plans with the same source and inventory pins.
+
+For campaign markers, priorPeriodsErased means independently qualified absence of prior-period personal or influenced campaign data on these exact attached current resources under fenced writers. It does not mean historical physical destruction. Full stable strong scans after closed-writer drain, exact source and role binding, and replay/restore containment jointly support this meaning. The two legacy key-registry metadata rows remain unchanged and are not personal campaign contributions. Missing old key material is not evidence of erasure; current independent absence supplies the evidence.
+
+For full account completion, approved retained consent and device-recovery audits, minimal deletion/usage receipts and purchase-period usage remain subject to their existing finite policies. Preserving the global purchase-period count prevents account deletion from resetting paid usage. Existing accounts, administrative identities without profiles, and shared settings are not selected for deletion by this qualification.
+
+No document in this draft directory authorizes marker writes until its final evidence hashes and independent review are recorded. Marker writes, current-period registry bootstrap, cleanup worker activation, and scoped HTTP admission are separate reviewed operations.
+
+Controlled invocation boundary: current aliases, API integrations, streams and scheduled targets do not reach the four historical enabled versions. The serialized root operator must not directly invoke or rebind those versions. Keep History reads disabled: the deployed read cursor writer lacks an atomic deletion fence and requires a separate fix before read activation. These facts are bound in the all-writer audit; neither is waived by this marker.

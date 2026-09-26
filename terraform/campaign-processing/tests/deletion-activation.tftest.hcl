@@ -219,3 +219,15 @@ run "reject_without_cleanup_preparation" {
   }
   expect_failures = [var.campaign_deletion_activation]
 }
+
+run "regional_stream_discovery_preserves_exact_record_reads" {
+  command = plan
+  assert {
+    condition     = alltrue([for st in data.aws_iam_policy_document.deletion_runtime[0].statement : !contains(st.actions, "dynamodb:ListStreams") || (st.actions == toset(["dynamodb:ListStreams"]) && st.resources == toset(["*"]) && length(st.condition) == 1 && one(st.condition).test == "StringEquals" && one(st.condition).variable == "aws:RequestedRegion" && toset(one(st.condition).values) == toset(["us-east-1"]))]) && length([for st in data.aws_iam_policy_document.deletion_runtime[0].statement : st if contains(st.actions, "dynamodb:ListStreams")]) == 1
+    error_message = "ListStreams must be regional resource-less discovery, never an unsupported stream-ARN grant."
+  }
+  assert {
+    condition     = alltrue([for st in data.aws_iam_policy_document.deletion_runtime[0].statement : st.sid != "ReadDeletionLedgerStream" || (st.actions == toset(["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator"]) && st.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/1"]))])
+    error_message = "Actual record reads must remain limited to the exact deletion ledger stream."
+  }
+}

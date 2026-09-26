@@ -46,3 +46,14 @@ deployment = {
   "cognito_issuer" : "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzN0wUSdQ",
   "cognito_app_client_id" : "5kvl9a8jo4fr1qqnci27tdabk4"
 }
+
+# Reviewed cleanup-only Dev qualification; all unrelated admission stays closed.
+deletion_activation = {
+  "source_sha" : "39cce61623794a123e61d25f5248b0c081eccf4a",
+  "subjects" : [
+    "a458f4f8-0061-702a-eaf2-ba30e7cfbbf8"
+  ],
+  "inventory_reference" : "docs/evidence/live-account-deletion-2026-09-26/account-qualified-manifest.json",
+  "runtime_reference" : "docs/evidence/live-account-deletion-2026-09-26/all-component-runtime.json",
+  "permissions_reference" : "docs/evidence/live-account-deletion-2026-09-26/account-writer-binding-review.md"
+}

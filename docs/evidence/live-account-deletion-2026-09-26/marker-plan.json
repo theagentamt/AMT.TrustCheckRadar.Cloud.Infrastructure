@@ -1,0 +1,206 @@
+{
+  "approval": {
+    "path": "/tmp/amt-live-manifest-draft/external-approval.json",
+    "sha256": "db40d75360b7024904e3dbf92a5847f6941bfd09a9dfed3c77fcb0425cf1d2da"
+  },
+  "closedFunctions": {
+    "trustcheckradar-dev-account-data-api": {
+      "codeSha256": "tuYWOnIfwap0NHZOE9Bm5hC4kWFnXJHwrrV9hSjMZRk=",
+      "environmentSha256": "fade989c3c5a989505549837987aa47d620aa58b605d68f803e096dca27b06f0",
+      "revisionId": "eae16346-6bf3-4530-a2ec-ea8bd936052d"
+    },
+    "trustcheckradar-dev-age-attestation": {
+      "codeSha256": "4fcLN8YHPOZNgY3iTt4gzlicbXMHdv1ToF//NWUzeBg=",
+      "environmentSha256": "2aa4b657ff48c65b85cbca98831f49fd326d3614d7e7334a7e7b4262b7e06978",
+      "revisionId": "2ebcd59f-c6a0-4c1f-a93d-34daf1fdd3b2"
+    },
+    "trustcheckradar-dev-campaign-cluster-aggregator": {
+      "codeSha256": "HbuW0wNMYig46812A5KX43fiAYtv+jaF3TN9WuDp+xU=",
+      "environmentSha256": "8a6340ec34e108e0694d4f80ce4bb499a070023be763ae3b41cbfeecf516f11a",
+      "revisionId": "c2b97b02-b1bd-4da2-9f02-43f9cd327675"
+    },
+    "trustcheckradar-dev-campaign-deletion-bridge": {
+      "codeSha256": "w3wa+YT63hwH5qahfdB0q/JdppbzK6Uw7KAI43ImkMk=",
+      "environmentSha256": "66079307ecbe9403480e3ca4c9dd3bed4751070cf67dd1094ba23eac2106a74a",
+      "revisionId": "e3dca841-dedd-4495-a411-fb0cbfccd6e2"
+    },
+    "trustcheckradar-dev-campaign-lifecycle": {
+      "codeSha256": "OquA9UqCumRUeC2rkksCnUtQm/anyBBgHudO9jlTsx8=",
+      "environmentSha256": "00c4166a8d009679e1e52462122ac286283fab65876f1dd0fccff26a713c6bd2",
+      "revisionId": "a73c557b-9a11-4a96-9c27-0529beb0e38f"
+    },
+    "trustcheckradar-dev-campaign-observation-publisher": {
+      "codeSha256": "L6UM2rin+UF/RT03Zp9lmETYAdZeH1zVyqC95eAe2K4=",
+      "environmentSha256": "8a6340ec34e108e0694d4f80ce4bb499a070023be763ae3b41cbfeecf516f11a",
+      "revisionId": "95a2ac63-6999-477b-8934-062563ea4d65"
+    },
+    "trustcheckradar-dev-campaign-participation": {
+      "codeSha256": "p+wPYSC7BSxN5jYSffePQAu2DLZLfDhZ+cJLKP2dnX8=",
+      "environmentSha256": "6b34473ac582d402c1264435f7c7c693fd7ae6481d63c5302d954001d399676b",
+      "revisionId": "6c8804a9-256b-423e-adf5-aa47ead87f84"
+    },
+    "trustcheckradar-dev-device-recovery": {
+      "codeSha256": "PcZ8tfY6Hu91NeI/IWTIz719S9vRHi3cjdcS1nT7U7U=",
+      "environmentSha256": "29a83dafdb23127df45051d79f5cf4f6bddc2f19363fde1c65dfcdee23873c9f",
+      "revisionId": "f2d16976-4b5f-42a7-9d13-c7f533f85273"
+    },
+    "trustcheckradar-dev-device-registration": {
+      "codeSha256": "444P9ooO3cfqGUMlIGFEVXIh2YzuRkVxlaw7edHjheY=",
+      "environmentSha256": "19eeda6463e3a202e21eacc3ee563fe10ab766d51d027f933b901047dc4ef438",
+      "revisionId": "d717a1fe-7e58-49e4-999c-3e43a7103c3b"
+    },
+    "trustcheckradar-dev-history-account-deletion-bridge": {
+      "codeSha256": "z30oWQNIh/9C4iMmgw6b31RmXbLP2RjZd3HFgYW2zuw=",
+      "environmentSha256": "1c777f87d5924fb4fd9f590a8c4e420330b365ac21febd7f63f2382bccde06ce",
+      "revisionId": "978320c1-67f0-4738-88a7-725a41a2b3e9"
+    },
+    "trustcheckradar-dev-history-lifecycle": {
+      "codeSha256": "zHa0WXJftct6dx1aAfpfSyEGnKNM7ak5t49FbhV0+n8=",
+      "environmentSha256": "79defe9ff5711fccf5212805a677245b545c1ea45f9ab9569a1e02d5e866e3e7",
+      "revisionId": "3d295cb6-7ea7-4117-b216-e226c2601ff8"
+    },
+    "trustcheckradar-dev-history-mutation-api": {
+      "codeSha256": "dRT2+7WAc/AX7WRk3RGkZCxNiYv8ierMMXw8x5T2VnU=",
+      "environmentSha256": "e0a18cc718ff15bae13247f44aa3b1a99e70d5538b9008402eacf335a68819d2",
+      "revisionId": "934e0ea8-1c10-4d94-8dfa-0cf3f38e10c6"
+    },
+    "trustcheckradar-dev-history-read-api": {
+      "codeSha256": "1fc+oH3pVjk3L/dyVlX9fy9tXgNWjlmpQonAml9SaLg=",
+      "environmentSha256": "6f238d50cbcfdfca5d6ebe1dcfbee389ab0987d890fa435469692cdb4c8dbd73",
+      "revisionId": "041226b2-587e-4593-ab76-e7efa7273fbe"
+    },
+    "trustcheckradar-dev-play-token-deletion": {
+      "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+      "environmentSha256": "4a213b731123ffd6eddf8fb8ab47834b8cec480892d2e617434851562cedefdf",
+      "revisionId": "d27cebc9-9736-4c1e-a84c-6a5926dd4f58"
+    },
+    "trustcheckradar-dev-post-confirmation": {
+      "codeSha256": "ligB5iVrgSMB5kBfvYveM764yzTX2rFzN1se/Uvybog=",
+      "environmentSha256": "b6a34144c73e3acba8fa871e59fcabba74882ec5b7a0ef995d85a6bd7fb1600e",
+      "revisionId": "654ed217-c7cd-4621-a0e4-abe55196e5e0"
+    },
+    "trustcheckradar-dev-v1-authority-deletion": {
+      "codeSha256": "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc=",
+      "environmentSha256": "c2aa29b2116b2074f3ff390b7ad490f9caf885441ea415046da9a750625c1e04",
+      "revisionId": "74b76fc2-c735-4fb0-9b65-8541654629f3"
+    }
+  },
+  "manifests": {
+    "account": {
+      "path": "/tmp/amt-live-manifest-draft/account-manifest.json",
+      "sha256": "73ecea2a6f9c8c392fadba7eacd65d367cc6ab7553715f4b40cc2ce627d1885c"
+    },
+    "completion": {
+      "path": "/tmp/amt-live-manifest-draft/completion-manifest.json",
+      "sha256": "ecb1ec4516f874c74711ad06b66f0d855cbf6a6990da0c8994f597f0ef9333e4"
+    },
+    "locator": {
+      "path": "/tmp/amt-live-manifest-draft/locator-manifest.json",
+      "sha256": "bde6307ac73e1a6f60533216270566b2db0c822aa1b777cbf1e1013a168eb73f"
+    },
+    "recovery": {
+      "path": "/tmp/amt-live-manifest-draft/recovery-manifest.json",
+      "sha256": "ee96ccc2f89904ef6fb29058b8d76109618ec1b5823ff9ff390b27fa7b7b6936"
+    }
+  },
+  "markers": {
+    "account": {
+      "PK": "INVENTORY#dev",
+      "SK": "ACCOUNT_DATA_INVENTORY",
+      "approvedAtEpoch": 1790435143,
+      "coverage": "VERIFIED_COMPLETE",
+      "environment": "dev",
+      "manifestSha256": "73ecea2a6f9c8c392fadba7eacd65d367cc6ab7553715f4b40cc2ce627d1885c",
+      "recordType": "ACCOUNT_DATA_INVENTORY",
+      "requiredComponents": [
+        "SESSION_REVOCATION",
+        "DEVICE_BINDINGS",
+        "DEVICE_RECOVERY",
+        "ANALYSIS_ABUSE",
+        "HISTORY",
+        "CAMPAIGN",
+        "CAMPAIGN_OUTBOX",
+        "ENTITLEMENTS",
+        "V1_AUTHORITY",
+        "PLAY_TOKENS",
+        "USER_PROFILE",
+        "IDENTITY"
+      ],
+      "revision": 1,
+      "schemaVersion": 1,
+      "usernameIsSubVerified": true
+    },
+    "completion": {
+      "PK": "INVENTORY#dev",
+      "SK": "CAMPAIGN_COMPLETION_INVENTORY",
+      "approvedAtEpoch": 1790435143,
+      "coverage": "VERIFIED_COMPLETE",
+      "environment": "dev",
+      "invariants": [
+        "fenced_writers",
+        "legacy_locators",
+        "orphan_repairs",
+        "publication_anonymity",
+        "restore_non_resurrection",
+        "prior_period_erasure"
+      ],
+      "locatorInventoryRevision": 1,
+      "locatorManifestSha256": "bde6307ac73e1a6f60533216270566b2db0c822aa1b777cbf1e1013a168eb73f",
+      "manifestSha256": "ecb1ec4516f874c74711ad06b66f0d855cbf6a6990da0c8994f597f0ef9333e4",
+      "recordType": "CAMPAIGN_COMPLETION_INVENTORY",
+      "recoveryInventoryRevision": 1,
+      "recoveryManifestSha256": "ee96ccc2f89904ef6fb29058b8d76109618ec1b5823ff9ff390b27fa7b7b6936",
+      "revision": 1,
+      "schemaVersion": 1
+    },
+    "locator": {
+      "PK": "INVENTORY#dev",
+      "SK": "CAMPAIGN_LOCATORS",
+      "approvedAtEpoch": 1790435143,
+      "coverage": "VERIFIED_COMPLETE",
+      "environment": "dev",
+      "locatorSchemaVersion": 1,
+      "manifestSha256": "bde6307ac73e1a6f60533216270566b2db0c822aa1b777cbf1e1013a168eb73f",
+      "minimumPeriodId": 1480,
+      "priorPeriodsErased": true,
+      "recordType": "CAMPAIGN_LOCATOR_INVENTORY",
+      "revision": 1,
+      "schemaVersion": 1,
+      "writers": [
+        "publisher",
+        "cluster",
+        "deletion_bridge",
+        "lifecycle"
+      ]
+    },
+    "recovery": {
+      "PK": "INVENTORY#dev",
+      "SK": "CAMPAIGN_RECOVERY_INVENTORY",
+      "approvedAtEpoch": 1790435143,
+      "coverage": "VERIFIED_COMPLETE",
+      "environment": "dev",
+      "legacyCoverageVerified": true,
+      "manifestSha256": "ee96ccc2f89904ef6fb29058b8d76109618ec1b5823ff9ff390b27fa7b7b6936",
+      "recordType": "CAMPAIGN_RECOVERY_INVENTORY",
+      "revision": 1,
+      "schemaVersion": 1,
+      "writers": [
+        "account_data_api",
+        "campaign_participation",
+        "campaign_recovery_backfill"
+      ]
+    }
+  },
+  "schemaVersion": 1,
+  "sourceCommit": "5e2a81ee2ce3689312f4d5cc59bba28628322a64",
+  "tables": {
+    "ledger": {
+      "name": "trustcheckradar-dev-deletion-ledger",
+      "tableId": "0be6794c-d23e-4aa1-9a93-cbc711c14816"
+    },
+    "pipeline": {
+      "name": "trustcheckradar-dev-campaign-pipeline",
+      "tableId": "6a8d5278-235e-45ac-9ccc-87d0ef6c368d"
+    }
+  }
+}

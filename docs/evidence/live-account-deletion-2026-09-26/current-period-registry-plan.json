@@ -1,0 +1,49 @@
+{
+  "accountId": "107827791950",
+  "inventory": {
+    "PK": "INVENTORY#dev",
+    "SK": "CAMPAIGN_LOCATORS",
+    "approvedAtEpoch": 1790435143,
+    "coverage": "VERIFIED_COMPLETE",
+    "environment": "dev",
+    "locatorSchemaVersion": 1,
+    "manifestSha256": "bde6307ac73e1a6f60533216270566b2db0c822aa1b777cbf1e1013a168eb73f",
+    "minimumPeriodId": 1480,
+    "priorPeriodsErased": true,
+    "recordType": "CAMPAIGN_LOCATOR_INVENTORY",
+    "revision": 1,
+    "schemaVersion": 1,
+    "writers": [
+      "publisher",
+      "cluster",
+      "deletion_bridge",
+      "lifecycle"
+    ]
+  },
+  "operation": "initialize-campaign-period",
+  "region": "us-east-1",
+  "request": {
+    "generation": "9f7311a2-34c9-4fe8-8fbf-56974ab32897",
+    "keyArn": "arn:aws:kms:us-east-1:107827791950:key/3685abc7-0b30-40ac-9972-94375bf04067",
+    "locatorInventoryRevision": 1,
+    "locatorManifestSha256": "bde6307ac73e1a6f60533216270566b2db0c822aa1b777cbf1e1013a168eb73f",
+    "periodId": 1480
+  },
+  "row": {
+    "PK": "PERIOD#1480",
+    "SK": "HMAC_KEY",
+    "admissionChangedAtEpoch": 1790435240,
+    "admissionGeneration": "9f7311a2-34c9-4fe8-8fbf-56974ab32897",
+    "admissionInventoryRevision": 1,
+    "admissionManifestSha256": "bde6307ac73e1a6f60533216270566b2db0c822aa1b777cbf1e1013a168eb73f",
+    "admissionRevision": 1,
+    "admissionSchemaVersion": 1,
+    "admissionState": "OPEN",
+    "keyArn": "arn:aws:kms:us-east-1:107827791950:key/3685abc7-0b30-40ac-9972-94375bf04067",
+    "periodId": 1480,
+    "retireAfterEpoch": 1792022400,
+    "status": "ENABLED"
+  },
+  "schemaVersion": 1,
+  "tableName": "trustcheckradar-dev-campaign-pipeline"
+}

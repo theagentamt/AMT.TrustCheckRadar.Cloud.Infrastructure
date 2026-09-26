@@ -1,0 +1,18 @@
+{
+  "account": "107827791950",
+  "approvedAtEpoch": 1790435143,
+  "decision": "APPROVED_FOR_MARKER_INITIALIZATION",
+  "environment": "dev",
+  "manifestSha256": {
+    "account": "73ecea2a6f9c8c392fadba7eacd65d367cc6ab7553715f4b40cc2ce627d1885c",
+    "completion": "ecb1ec4516f874c74711ad06b66f0d855cbf6a6990da0c8994f597f0ef9333e4",
+    "locator": "bde6307ac73e1a6f60533216270566b2db0c822aa1b777cbf1e1013a168eb73f",
+    "recovery": "ee96ccc2f89904ef6fb29058b8d76109618ec1b5823ff9ff390b27fa7b7b6936"
+  },
+  "region": "us-east-1",
+  "reviewReference": "docs/evidence/live-account-deletion-2026-09-26/inventory-independent-review.md#sha256=6137235557c3801041af01772f1c6a83b4663d0307a86f73be8522b2552879cb",
+  "runtimeSnapshotSha256": "b6187214c6929773b00aa084b1ff7495eb48b48299a7ab0567c1d0a86b554351",
+  "schemaVersion": 1,
+  "sourceCommit": "5e2a81ee2ce3689312f4d5cc59bba28628322a64",
+  "tableIdentitySha256": "6a8ed5ce7cc24dd7836ba2826a425b7c97182a54b37e900e7a4768665b9b21ad"
+}

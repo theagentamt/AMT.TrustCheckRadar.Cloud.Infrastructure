@@ -1,0 +1,148 @@
+{
+  "account": "107827791950",
+  "activationException": "Separately reviewed cleanup-only activation with these exact inventory/source pins and the one synthetic subject is permitted; all unrelated admission remains closed.",
+  "admissionGeneration": "9f7311a2-34c9-4fe8-8fbf-56974ab32897",
+  "decision": "CANDIDATE_FOR_INDEPENDENT_QUALIFICATION",
+  "environment": "dev",
+  "evidence": {
+    "account-family-classification.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/account-family-classification.json",
+      "sha256": "c640921b7cf868b92f342b1b843fbfe493f28fe1b9b7be07f8e26b9d473e8d41"
+    },
+    "account-writer-binding-review.md": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/account-writer-binding-review.md",
+      "sha256": "6119f443d695cae32f55ab8723bceb68ff0578d08dd90a5d9625ae75052b150e"
+    },
+    "account-writer-binding.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/account-writer-binding.json",
+      "sha256": "e5b05e2e0efc0c971ce2d47157bdd2dc535d0bfdaf928b5733aeae7fff9f6dcb"
+    },
+    "account-writer-old-versions.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/account-writer-old-versions.json",
+      "sha256": "686051e747a672f8ac6e27db1a0e4ac12add06dd905f35376ac9dc3f265ed978"
+    },
+    "account-writer-source-bindings.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/account-writer-source-bindings.json",
+      "sha256": "e0d82f9d6db261a30c09e968b47c996d0c6149710702eb462ced232128dfdbdd"
+    },
+    "all-account-storage-readiness.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/all-account-storage-readiness.json",
+      "sha256": "f24b0e06394c3752419577ef8ba390eddc51355332761c6f9256e49d1b9fe7c6"
+    },
+    "all-component-cleanup.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/all-component-cleanup.json",
+      "sha256": "49957dfa357f332c58e37c1f11183e9eaa6f4d97200d1eb02dce23de1cc02cf3"
+    },
+    "all-component-runtime.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/all-component-runtime.json",
+      "sha256": "2cba0b50a7cc3356f981c66da1dc870304d913581013268f090ab3a969d50161"
+    },
+    "authority-cursor-schema.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/authority-cursor-schema.json",
+      "sha256": "39019a4acef806888b7a66e2873f20d95dc53bf076eb450c4c0390efdeb8a8fc"
+    },
+    "authority-inventory-readiness.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/authority-inventory-readiness.json",
+      "sha256": "1f741df56bb5a3f09aeef9d7fcfdba5d75aeea0dbb3c1e4a1fec9e9faff51040"
+    },
+    "campaign-cleanup-iam-results.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/campaign-cleanup-iam-results.json",
+      "sha256": "07d7f7b8ca1b8f9b1c65b215a2935af3f25fe94c3d97d39944fb78b979af8930"
+    },
+    "campaign-post-http-scope-assessment.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/campaign-post-http-scope-assessment.json",
+      "sha256": "2127b20970dce2c4e3971e662d5a53d25ed613ed9c63d0f5f1f39b88507e1ce1"
+    },
+    "campaign-post-http-scope-boundary.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/campaign-post-http-scope-boundary.json",
+      "sha256": "cc9e823deee2ccc7c1f3a3cae7031e35f8e67749107e9c7708fdf58f476d190d"
+    },
+    "campaign-review-source-binding.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/campaign-review-source-binding.json",
+      "sha256": "4b5e837cbfc8c0cb6622b940ed322201f2695c32061d39f085831554bda14938"
+    },
+    "cognito-cleanup-readback.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/cognito-cleanup-readback.json",
+      "sha256": "a900c88ffeceb8acba16d8a6d989bd292d539ac834826585810a99b1bcbfe596"
+    },
+    "cognito-lost-ack-runtime.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/cognito-lost-ack-runtime.json",
+      "sha256": "efa80ae03eb2a83449b44ff55878df410514880740661cd1d9794537a2c02e61"
+    },
+    "cognito-normal-runtime.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/cognito-normal-runtime.json",
+      "sha256": "61c557d5a7ad1c0857edf43daa7cdfde9247722564b353c7e4b0674ef6961131"
+    },
+    "current-period-key-result.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/current-period-key-result.json",
+      "sha256": "b8f35e7a3d1ba67e57bcc91a4a6e217780e4fd04025d72d50220d2b50c47092b"
+    },
+    "encrypted-table-read-probe.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/encrypted-table-read-probe.json",
+      "sha256": "b860b50fd8f92d8d76389f96261fbf1ad759314b9f4f5054945bf1266b591e4b"
+    },
+    "history-bridge-iam.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/history-bridge-iam.json",
+      "sha256": "2cd4c563bced162b8d321eaec5d878f829f479f0dd28d5803f2960aa8cb450b1"
+    },
+    "history-deployment-readback.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/history-deployment-readback.json",
+      "sha256": "c54f02812cc95cad7e4942afa28f0cbb0c2c75fa3574cdd0863944ea86d2c78a"
+    },
+    "history-lifecycle-iam.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/history-lifecycle-iam.json",
+      "sha256": "645b5b88394e04fa2c2070e5554823f310d0b021b226e69979875099af7152d6"
+    },
+    "http-scope-deployment-readback.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/http-scope-deployment-readback.json",
+      "sha256": "1c0dc660cfe119b301b290d5cd57590adee88284d241c948da0eb52ef3a87cfa"
+    },
+    "inventory-restore-boundary.md": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/inventory-restore-boundary.md",
+      "sha256": "bdf76f94f81e1a51fd2a2100860caf16f51fa7f2282727439ad69057df2d4f98"
+    },
+    "legacy-entitlement-classification.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/legacy-entitlement-classification.json",
+      "sha256": "6328d2343840a0a9656092595bf5609ef8860c74a7064a2a99e20f86038f58dd"
+    },
+    "ownership-history-readiness.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/ownership-history-readiness.json",
+      "sha256": "c2f8cd13472684a44c18b49c6fc52c00a98d0d6b3b73491c884f46fa3f3e0239"
+    },
+    "synthetic-dev-auth-metadata.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/synthetic-dev-auth-metadata.json",
+      "sha256": "b0b0e7eb7bf37fe3f87c7d2d3bc6f3a742bd5dd9dea28f0bc7ddf7f750dae258"
+    },
+    "synthetic-dev-prepare-result.json": {
+      "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/synthetic-dev-prepare-result.json",
+      "sha256": "330d1f84747851e7222c303805ea997e37973bf2edd1e42c86013796707fd1f2"
+    }
+  },
+  "findings": {
+    "currentAttachedAbsence": "Post-boundary full strong scans stable; two exact legacy HMAC registry metadata rows only, no contribution/feature/locator/candidate/aggregate/outbox data",
+    "futurePeriodProvisioning": "Use reviewed create-only key and registry operations before accepting deletion in the next period. The legacy age-only key manager remains disabled.",
+    "periodKey": "Current period 1480 key is verified. Its registry row does not yet exist; legacy 1478 and 1479 remain unchanged.",
+    "priorPeriodsErasedMeaning": "Qualified current-resource absence under fenced writers and restore quarantine; not historical physical erasure",
+    "writerCoverage": "All 31 role policies and current versions, aliases and triggers are bound. Four campaign workers run reviewed f922; the closed code-only 65df replacement was verified."
+  },
+  "invalidation": [
+    "Table identity or restore/rebinding changes",
+    "Unreviewed source/role/alias/trigger changes",
+    "Research/provider/History read admission expansion",
+    "Invocation or rebinding of old enabled qualified versions"
+  ],
+  "kind": "CAMPAIGN_LOCATOR_QUALIFICATION",
+  "minimumPeriodId": 1480,
+  "region": "us-east-1",
+  "schemaVersion": 1,
+  "scope": {
+    "actualHttpDeletionQualified": false,
+    "admission": "Only separately configured newly created disposable Dev subject",
+    "backupContentsInspected": false,
+    "historicalPhysicalErasureClaimed": false,
+    "inventory": "All currently attached declared stores, not only the new subject",
+    "nativeSignupTriggerQualified": false,
+    "restoreBoundary": "inventory-restore-boundary.md",
+    "testSubjectSha256": "e0e299f127156ffac48d4ea18f282b04ca9e21041fc8cd5c2f39f65a9d93bc94"
+  }
+}
