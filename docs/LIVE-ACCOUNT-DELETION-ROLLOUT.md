@@ -260,3 +260,10 @@ lifecycle behavior. This is IAM/atomicity evidence, not actual worker execution,
 KMS encryption acceptance or live deletion qualification. See the two `history-*-iam.json`
 evidence files. Local validation passed 23 History contracts, 21 URL integration
 contracts, 13 Play runtime contracts and 12 harness tests (normal and optimized).
+
+PR89 was merged into release-V01 at `68c83891ca2125b1887b8f1ac637910d2b350645`.
+The reviewed History four-resource update and authority one-policy update were
+applied to Dev. Exact History package hashes, Python 3.14 runtimes, policies and
+disabled streams/schedules were read back successfully. Subsequent full History
+and authority plans showed no drift; Play's plan had no managed changes. No live
+activation object was selected. The readback is preserved alongside the evidence.

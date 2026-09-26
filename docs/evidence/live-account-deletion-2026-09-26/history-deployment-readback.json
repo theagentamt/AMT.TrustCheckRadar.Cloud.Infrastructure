@@ -1,0 +1,39 @@
+{
+  "observedAtUtc": "2026-09-26T14:12:36.260327+00:00",
+  "functions": {
+    "history-account-deletion-bridge": {
+      "runtime": "python3.14",
+      "codeSha256": "z30oWQNIh/9C4iMmgw6b31RmXbLP2RjZd3HFgYW2zuw=",
+      "flags": {
+        "HISTORY_ACCOUNT_DELETION_ENABLED": "false"
+      },
+      "aliases": 0,
+      "mappingStates": [
+        "Disabled"
+      ]
+    },
+    "history-lifecycle": {
+      "runtime": "python3.14",
+      "codeSha256": "zHa0WXJftct6dx1aAfpfSyEGnKNM7ak5t49FbhV0+n8=",
+      "flags": {
+        "RECOGNITION_ENABLED": "false",
+        "HISTORY_LIFECYCLE_ENABLED": "false",
+        "HISTORY_MUTATIONS_ENABLED": "false",
+        "HISTORY_DURABLE_REPLAY_ENABLED": "false",
+        "HISTORY_READS_ENABLED": "false",
+        "HISTORY_WRITES_ENABLED": "false"
+      },
+      "aliases": 0,
+      "mappingStates": []
+    }
+  },
+  "policies": {
+    "account_deletion": "exact_reviewed_document",
+    "runtime": "exact_reviewed_document"
+  },
+  "rules": {
+    "history-deletion-reconcile": "DISABLED",
+    "history-lifecycle-sweep": "DISABLED"
+  },
+  "allChecksPassed": true
+}
