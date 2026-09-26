@@ -61,3 +61,33 @@ Actual identity deletion in this isolated setup will still not establish applica
 API authentication, deployed app-role IAM, production inventory coverage, paid
 store verification, or general live-deletion activation. Preserve these distinctions
 in execution evidence.
+
+The first actual Cognito attempt (source `b964c5f`) rejected configuration before
+seeding data because the provider returned a canonical UUIDv7 subject and the
+fixture assumed UUIDv4. Its complete disposable pool, function, role and twelve
+tables were removed; its test key is pending deletion. Lambda PR65 removes only
+that unsupported fixture restriction and retains exact canonical spelling plus
+independent pool/Username/sub checks. Production subject parsing was already
+version-independent. UUIDv4 requirements for application-generated operation IDs
+remain intact. A fresh fixture is required for acceptance; the rejection is not
+reported as a successful identity test.
+
+## Actual Cognito acceptance
+
+With reviewed source `2f497f13ff4276aef696a3622f46157776f228af` (Lambda PR65),
+two fresh isolated AWS runs passed `identity_complete` and
+`identity_delete_lost_ack`. Each composed the real eleven upstream receipt
+producers with the shared finalizer and actual Cognito AdminGetUser,
+AdminUserGlobalSignOut and AdminDeleteUser. An independent post-run lookup
+confirmed UserNotFound for each designated subject. The acknowledgment-loss
+case deliberately raises after a successful provider deletion, preserves the
+original request, then completes through verified absence without a fabricated
+identity receipt.
+
+These are actual identity/provider calls, with synthetic account data, inventories,
+paid records and scoped fixture IAM. No client session was issued, so the calls do
+not prove rejection of a previously minted JWT. No application account was touched
+or public API opened. The two successful fixtures and earlier rejected fixture
+were removed: pools, subjects, twelve tables each, roles and functions. Their three
+test HMAC keys remain PendingDeletion until the scheduled October 3 deadlines,
+not destroyed. See the `cognito-*-runtime.json` and cleanup readback evidence.

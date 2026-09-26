@@ -267,3 +267,10 @@ applied to Dev. Exact History package hashes, Python 3.14 runtimes, policies and
 disabled streams/schedules were read back successfully. Subsequent full History
 and authority plans showed no drift; Play's plan had no managed changes. No live
 activation object was selected. The readback is preserved alongside the evidence.
+
+Actual disposable Cognito acceptance now passes both normal finalization and
+recovery from a lost successful-delete acknowledgment. Lambda PR64/65 and
+Infrastructure PR90 are integrated in release-V01; the runtime source is
+`2f497f13ff4276aef696a3622f46157776f228af`. This removes the isolated identity SDK
+integration gap, not the remaining application inventory, deployed-worker and
+authenticated API acceptance requirements. All live activation gates remain off.
