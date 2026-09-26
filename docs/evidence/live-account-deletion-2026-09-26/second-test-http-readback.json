@@ -1,0 +1,10 @@
+{
+  "verified": true,
+  "routeCount": 2,
+  "jwtAuthorizerVerified": true,
+  "exactInvocationPermissionsVerified": true,
+  "onlyPreparedSubjectAdmitted": true,
+  "sourceHash": "7gXjecACio4Di2m383J+pwUkFz1yzLCcGqbNJ3359kY=",
+  "revisionId": "a9017349-7276-40af-877f-8b1da808f1b6",
+  "httpPlanSha256": "6e6ddbc57c5f6a0c731d203e1234524c5db088df333a920817a501d15e43c824"
+}

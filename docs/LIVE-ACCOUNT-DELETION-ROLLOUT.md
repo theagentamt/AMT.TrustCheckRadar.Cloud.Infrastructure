@@ -7,8 +7,9 @@ is deployed and all six stack post-plans have no drift. Actual runtime validatio
 found and corrected a History checkpoint expression defect. All six actual
 empty-work handlers now pass. Scoped HTTP admission
 is deployed for the one prepared disposable identity. Its first request completed with twelve validated receipts, actual Cognito absence
-and preserved unrelated records. A status-response correction and second isolated
-HTTP/token qualification are underway. No general accounts are admitted. Earlier
+and preserved unrelated records. The status-response correction is deployed and both isolated accounts completed
+erasure. A final bounded token-rejection observation is underway after transient
+HTTP503 made the second monitor inconclusive. No general accounts are admitted. Earlier
 closed-preparation statements below describe the corresponding completed stages.
 
 The owner requested live-deletion implementation on September 26. The immediate
@@ -103,8 +104,11 @@ bounds and prevent personal identifiers from entering the retained report.
    and identity mapping; write only a genuinely reviewed manifest and matching
    inventory controls. No empty scan, TTL age or passing mock can substitute.
 3. Enable workers, verify durable recovery and alerts at support@andmorethings.com,
-   and run a designated synthetic-account end-to-end test including identity removal.
-4. Record exact deployed worker acceptance, then expose authenticated API admission.
+   and record actual deployed worker acceptance.
+4. Expose authenticated HTTP admission only for designated synthetic subjects and
+   qualify end-to-end identity removal, component receipts and credential rejection.
+5. Evaluate broader rollout separately against remaining evidence and environment
+   gates; successful scoped Dev tests do not admit other accounts automatically.
 
 To stop admission, change `api` to `workers` first. Remove the public route/invoke
 grant, wait past the maximum in-flight request timeout, then confirm newly accepted
@@ -112,7 +116,7 @@ and pending requests have reconciled before changing `workers` to null. An empty
 backlog observed before admission drains is not sufficient. Terraform cannot enforce
 transition history; null is not a safe routine one-step rollback of active requests.
 
-No real account has been selected for deletion by this rollout work. Export, paid
+No existing customer account has been selected for deletion by this rollout work. Export, paid
 provider checks and physical-device testing are independent; they do not gate backend
 engineering. SECUR4ALL-200/207/245 remain open until their actual acceptance is met.
 
@@ -505,3 +509,48 @@ first-operation proof. The second admission plans only replace each exact
 single-subject list and publish corresponding V1/Play cleanup aliases; the API
 also installs the reviewed response-only correction. IAM, unrelated environments,
 retention and general admission remain unchanged.
+
+PR97 integrated at `988fd03cbada0cd6685a8b6a3149444c5e3e6626`. All three reviewed
+plans were applied in dependency order. Exact readback verified the reviewed
+account-data hash, routes/authorizer/permissions and both cleanup aliases with the
+second subject only; all three updated stacks report no drift. History error,
+failure, heartbeat and expiry alarms are now all OK, with real success metrics.
+The second distinct original operation was accepted through HTTP202 and its
+reviewed token monitor continues in memory while the scheduled workers complete.
+
+## Acceptance boundary
+
+The live tests use newly created otherwise-empty disposable accounts. Their real
+HTTP, scheduled-worker, DynamoDB receipt and Cognito evidence complements the
+prior populated-family/failure fixtures; it is not equivalent to full UAT or a
+broader account rollout. SECUR4ALL-200 retains its UAT and complete criterion-to-
+evidence mapping. SECUR4ALL-207 retains whole-period lifecycle/key retirement
+and delayed/restore work independently of individual erasure. SECUR4ALL-245
+retains its restore/replay and full resource-coverage acceptance until mapped.
+All three stay open; unavailable physical devices or mobile work are not blockers
+for their independent backend acceptance. No Production or general account
+admission is implied by these scoped Dev results.
+
+The second account completed naturally with all twelve validated receipts, actual
+Cognito absence, an empty user partition, no recovery sidecars and all thirty-seven
+baseline unrelated rows unchanged. The corrected monitor ran ninety-two iterations; its final HTTP observation
+received503 and the strict monitor ended
+inconclusively. The503 is not proof of access rejection. Reserved concurrency1 is
+shared with cleanup, so transient handling is appropriate; concurrency remains
+unchanged and no precise request-level throttle cause is asserted.
+
+Lambda PR71 source `0e3ece226c9f6f116bbc0606eebfa203d81e0748` changes only the operator
+monitor: bounded GET transport/429/500/502/503/504 retries preserve the600-second/
+120-poll ceiling, same-poll dual denial and postnetwork pre-expiry checks. A
+persistent transient remains inconclusive. Twenty-two normal/optimized tests
+pass; no production artifact or prior operation was changed.
+
+A third isolated identity is prepared for this credential-only acceptance gap.
+The prior two scheduled completions remain authoritative and untouched. Third
+cleanup may use at most three operator-triggered real reconciler ticks after its
+one HTTP request, guarded by exact source/revision/single-subject configuration
+and a full strong ledger pass rejecting every other pending command. No command
+or receipt is injected. Six normal/optimized tests check containment and bounds.
+Terminal-status observation from those ticks is not completion evidence; the
+independent twelve-receipt/Cognito/baseline observer must still pass. The third
+baseline covers thirteen table identities and fifty-one non-target rows.
