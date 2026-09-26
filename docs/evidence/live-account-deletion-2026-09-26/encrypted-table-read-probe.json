@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-09-26T13:27:06.651645+00:00",
+  "probeSourceSha256": "d3fae5e9412648200ab2a34ae75f0acd199fb55186662c26c955b1fc806590e7",
+  "probeZipSha256": "d7ee37db1c4e9e80037aeb9a1c0c63ec1f881fbacafded647dd86f9bc01d87fc",
+  "temporaryFunctionNameSha256": "55c086e0d263ae2b29ca70d4e917953420d4012c0551194c58dd4d879a23b6c7",
+  "actualDeployedRoleUsed": true,
+  "readOnly": true,
+  "noContentReturned": true,
+  "passed": true,
+  "cleanupComplete": true,
+  "kmsColdDecryptObserved": false,
+  "kmsEvidenceComplete": false,
+  "limitations": [
+    "Strongly consistent missing-key reads with PK-only projection; no writes, scans or application content requested.",
+    "Fresh Lambda execution does not guarantee a cold DynamoDB KMS cache or a Decrypt invocation.",
+    "Bounded CloudTrail lookup may precede event delivery; successful reads alone do not prove fresh KMS Decrypt."
+  ],
+  "tableCmkSha256": {
+    "pipeline": "7ea31ccfc9e525f1a3215cb4fcfbeb0d5be4193b2ed6bf4cf56633fdd4887c7f",
+    "intelligence": "607fff8b56501b9a5fdfcc584a00e99911735451a0d6f89f6ed04a5cc8faea77"
+  },
+  "reads": {
+    "pipeline": {
+      "requestSucceeded": true,
+      "expectedMissing": true
+    },
+    "intelligence": {
+      "requestSucceeded": true,
+      "expectedMissing": true
+    }
+  },
+  "cloudTrail": {
+    "lookupSucceeded": true,
+    "windowCompletelyEnumerated": true,
+    "matchedTableCmkSha256": [],
+    "pagesRead": 1
+  },
+  "temporaryFunctionAbsent": true,
+  "temporaryLogGroupAbsent": true,
+  "productionFunctionUnchanged": true,
+  "delayedCloudTrailObservations": [
+    {
+      "observedAtUtc": "2026-09-26T13:33:34.373262+00:00",
+      "lookupSucceeded": true,
+      "windowCompletelyEnumerated": true,
+      "kmsEvidenceComplete": true,
+      "matchedTableCmkSha256": [
+        "607fff8b56501b9a5fdfcc584a00e99911735451a0d6f89f6ed04a5cc8faea77",
+        "7ea31ccfc9e525f1a3215cb4fcfbeb0d5be4193b2ed6bf4cf56633fdd4887c7f"
+      ],
+      "readOnly": true,
+      "pagesRead": 1
+    }
+  ]
+}

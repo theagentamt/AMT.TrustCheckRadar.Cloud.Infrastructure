@@ -1,5 +1,5 @@
 variable "account_privacy_artifacts" {
-  description = "Coordinated immutable campaign privacy candidates. Every consumer remains disabled; selecting artifacts is not approval of cleanup coverage or activation."
+  description = "Coordinated immutable campaign privacy candidates. Research consumers remain disabled; deletion requires a separate reviewed activation; selecting artifacts is not approval of cleanup coverage or activation."
   type = object({
     release_id         = string
     approval_reference = string
@@ -33,7 +33,7 @@ locals {
 }
 
 variable "research_consent_migration" {
-  description = "Select reviewed independent-consent publisher/cluster code within the pinned privacy release. Consumers remain paused."
+  description = "Select reviewed independent-consent publisher/cluster code within the pinned privacy release. Research consumers remain paused."
   type        = bool
   default     = false
   nullable    = false
@@ -45,11 +45,13 @@ variable "research_consent_migration" {
 
 output "research_consent_migration_contract" {
   value = {
-    selected         = var.research_consent_migration
-    environment      = var.environment
-    account_id       = data.aws_caller_identity.current.account_id
-    release_id       = try(var.account_privacy_artifacts.release_id, null)
-    consumers_paused = local.account_privacy_candidate && var.kill_switch_enabled && !local.active
-    live_qualified   = false
+    selected                  = var.research_consent_migration
+    environment               = var.environment
+    account_id                = data.aws_caller_identity.current.account_id
+    release_id                = try(var.account_privacy_artifacts.release_id, null)
+    consumers_paused          = local.account_privacy_candidate && var.kill_switch_enabled && !local.active && !local.campaign_deletion_active
+    research_producers_paused = local.account_privacy_candidate && var.kill_switch_enabled && !local.active
+    deletion_workers_enabled  = local.campaign_deletion_active
+    live_qualified            = false
   }
 }

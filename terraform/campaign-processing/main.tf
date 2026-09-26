@@ -1065,7 +1065,7 @@ resource "aws_lambda_function" "worker" {
       DELETION_LEDGER_TABLE_NAME = local.foundation.deletion_ledger_table_name
       PARTICIPATION_ITEM_SK      = "CAMPAIGN_PARTICIPATION"
       PARTICIPATION_AUDIT_DAYS   = "400"
-    } : {})
+    } : {}, each.key == "deletion" ? local.campaign_deletion_activation_env : {})
   }
 
   lifecycle {
@@ -1147,7 +1147,7 @@ resource "aws_lambda_event_source_mapping" "deletion" {
   function_name     = aws_lambda_function.worker["deletion"].arn
   starting_position = "LATEST"
   batch_size        = 10
-  enabled           = local.active
+  enabled           = local.active || local.campaign_deletion_active
 
   bisect_batch_on_function_error = true
   maximum_retry_attempts         = -1
@@ -1159,7 +1159,7 @@ resource "aws_lambda_event_source_mapping" "deletion" {
     }
   }
 
-  depends_on = [aws_iam_role_policy.deletion_runtime]
+  depends_on = [aws_iam_role_policy.deletion_runtime, aws_iam_role_policy.account_cleanup, aws_iam_role_policy.account_cleanup_decryption, aws_iam_role_policy.completion_runtime, aws_iam_role_policy.recovery_runtime]
 }
 
 data "aws_iam_policy_document" "scheduler_assume" {

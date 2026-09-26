@@ -1,0 +1,225 @@
+{
+  "accountId": "107827791950",
+  "bounds": {
+    "callStartSeconds": 120,
+    "maxPagesPerList": 10
+  },
+  "historicalCoverageVerified": false,
+  "limitations": [
+    "Current control-plane observations are not a frozen snapshot or historical erasure proof.",
+    "No table items, backup contents, export objects, key material or customer identifiers read.",
+    "Exact five tables only; other names, regions/accounts, deleted copies and manual dumps are unqualified.",
+    "ListExports covers its service history window (90 days), not all surviving S3 copies.",
+    "A missing or denied observation remains unavailable, never an empty successful inventory.",
+    "No restore, backup, key change, approval marker or application mutation performed."
+  ],
+  "metadataComplete": true,
+  "observedAtUtc": "2026-09-26T13:32:35.529001+00:00",
+  "region": "us-east-1",
+  "restoreApproved": false,
+  "schemaVersion": 1,
+  "tables": {
+    "trustcheckradar-dev-campaign-intelligence": {
+      "currentTableWasRestored": false,
+      "dataClass": "aggregate",
+      "hasReplicas": false,
+      "observations": {
+        "awsBackup": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "exports": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "nativeBackups": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "pitr": {
+          "complete": true,
+          "hasEarliestRestoreTime": true,
+          "hasLatestRestoreTime": true,
+          "recoveryPeriodDays": 35,
+          "status": "ENABLED"
+        },
+        "ttl": {
+          "complete": true,
+          "expiresAtAttribute": true,
+          "status": "ENABLED"
+        }
+      },
+      "streamEnabled": false,
+      "tableIdentityVerified": true,
+      "tableStatus": "ACTIVE"
+    },
+    "trustcheckradar-dev-campaign-outbox": {
+      "currentBackupPolicyMatches": true,
+      "currentTableWasRestored": false,
+      "dataClass": "transient",
+      "hasReplicas": false,
+      "observations": {
+        "awsBackup": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "exports": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "nativeBackups": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "pitr": {
+          "complete": true,
+          "hasEarliestRestoreTime": false,
+          "hasLatestRestoreTime": false,
+          "recoveryPeriodDays": null,
+          "status": "DISABLED"
+        },
+        "ttl": {
+          "complete": true,
+          "expiresAtAttribute": true,
+          "status": "ENABLED"
+        }
+      },
+      "streamEnabled": true,
+      "tableIdentityVerified": true,
+      "tableStatus": "ACTIVE"
+    },
+    "trustcheckradar-dev-campaign-pipeline": {
+      "currentBackupPolicyMatches": true,
+      "currentTableWasRestored": false,
+      "dataClass": "transient",
+      "hasReplicas": false,
+      "observations": {
+        "awsBackup": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "exports": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "nativeBackups": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "pitr": {
+          "complete": true,
+          "hasEarliestRestoreTime": false,
+          "hasLatestRestoreTime": false,
+          "recoveryPeriodDays": null,
+          "status": "DISABLED"
+        },
+        "ttl": {
+          "complete": true,
+          "expiresAtAttribute": true,
+          "status": "ENABLED"
+        }
+      },
+      "streamEnabled": false,
+      "tableIdentityVerified": true,
+      "tableStatus": "ACTIVE"
+    },
+    "trustcheckradar-dev-deletion-ledger": {
+      "currentTableWasRestored": false,
+      "dataClass": "account-control",
+      "hasReplicas": false,
+      "observations": {
+        "awsBackup": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "exports": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "nativeBackups": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "pitr": {
+          "complete": true,
+          "hasEarliestRestoreTime": true,
+          "hasLatestRestoreTime": true,
+          "recoveryPeriodDays": 35,
+          "status": "ENABLED"
+        },
+        "ttl": {
+          "complete": true,
+          "expiresAtAttribute": false,
+          "status": "DISABLED"
+        }
+      },
+      "streamEnabled": true,
+      "tableIdentityVerified": true,
+      "tableStatus": "ACTIVE"
+    },
+    "trustcheckradar-dev-users": {
+      "currentTableWasRestored": false,
+      "dataClass": "account-control",
+      "hasReplicas": false,
+      "observations": {
+        "awsBackup": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "exports": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "nativeBackups": {
+          "categories": {},
+          "complete": true,
+          "count": 0,
+          "pages": 1
+        },
+        "pitr": {
+          "complete": true,
+          "hasEarliestRestoreTime": true,
+          "hasLatestRestoreTime": true,
+          "recoveryPeriodDays": 35,
+          "status": "ENABLED"
+        },
+        "ttl": {
+          "complete": true,
+          "expiresAtAttribute": true,
+          "status": "ENABLED"
+        }
+      },
+      "streamEnabled": false,
+      "tableIdentityVerified": true,
+      "tableStatus": "ACTIVE"
+    }
+  }
+}
