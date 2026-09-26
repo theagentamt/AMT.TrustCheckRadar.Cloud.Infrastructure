@@ -174,5 +174,5 @@ account_deletion_activation = {
   "identity_reference" : "docs/evidence/live-account-deletion-2026-09-26/cognito-normal-runtime.json; docs/evidence/live-account-deletion-2026-09-26/cognito-lost-ack-runtime.json",
   "component_reference" : "docs/evidence/live-account-deletion-2026-09-26/all-component-runtime.json",
   "worker_acceptance_reference" : "docs/evidence/live-account-deletion-2026-09-26/cleanup-worker-corrected-runtime.json",
-  "http_subjects" : ["f42804a8-60b1-706e-eac4-113371eab1ee"]
+  "http_subjects" : ["c4685448-1021-7014-8ef4-b326afee90ae"]
 }

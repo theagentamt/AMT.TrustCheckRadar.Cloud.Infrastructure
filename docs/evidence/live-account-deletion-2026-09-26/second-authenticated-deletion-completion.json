@@ -1,0 +1,10 @@
+{
+  "receiptCount": 12,
+  "complete": true,
+  "cognitoAbsent": true,
+  "otherRowsPreserved": true,
+  "otherRowsCompared": 37,
+  "originalOperationMatched": true,
+  "recoveryControlAbsent": true,
+  "userPartitionEmpty": true
+}

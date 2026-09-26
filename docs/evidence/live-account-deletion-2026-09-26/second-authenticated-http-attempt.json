@@ -1,0 +1,19 @@
+{
+  "httpAccepted": true,
+  "monitor": {
+    "stage": "ACCEPTED",
+    "httpGet": 200,
+    "httpPost": 202,
+    "erasureVerified": false,
+    "nativeSignupTriggerQualified": false,
+    "httpAccepted": true,
+    "monitorCompleted": false,
+    "polls": 92,
+    "applicationGetDenied": false,
+    "cognitoGetUserRejected": false,
+    "httpStatus": 503,
+    "httpErrorCode": null,
+    "category": "HTTP_OBSERVATION_UNAVAILABLE"
+  },
+  "interpretation": "The original operation completed independently; one503terminated the strict observer without proving credential rejection. No response retry or credential reset was used."
+}

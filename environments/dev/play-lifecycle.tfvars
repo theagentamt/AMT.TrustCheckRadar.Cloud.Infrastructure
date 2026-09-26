@@ -51,7 +51,7 @@ deployment = {
 deletion_activation = {
   "source_sha" : "39cce61623794a123e61d25f5248b0c081eccf4a",
   "subjects" : [
-    "f42804a8-60b1-706e-eac4-113371eab1ee"
+    "c4685448-1021-7014-8ef4-b326afee90ae"
   ],
   "inventory_reference" : "docs/evidence/live-account-deletion-2026-09-26/account-qualified-manifest.json",
   "runtime_reference" : "docs/evidence/live-account-deletion-2026-09-26/all-component-runtime.json",
