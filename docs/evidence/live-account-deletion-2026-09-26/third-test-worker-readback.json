@@ -1,0 +1,143 @@
+{
+  "observedAtUtc": "2026-09-26T16:22:22.544066+00:00",
+  "readOnly": true,
+  "allVerified": true,
+  "stacks": {
+    "campaign": [
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"budget\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"failures\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"heartbeat\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"overdue\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"pending_age\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"schema\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"truncated\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"unverified\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_iam_role_policy.deletion_runtime[0]",
+        "verified": true,
+        "policyMatched": true
+      },
+      {
+        "address": "aws_iam_role_policy.recovery_scheduler_invoke[0]",
+        "verified": true,
+        "policyMatched": true
+      },
+      {
+        "address": "aws_iam_role_policy.scheduler_invoke[0]",
+        "verified": true,
+        "policyMatched": true
+      },
+      {
+        "address": "aws_lambda_event_source_mapping.deletion[0]",
+        "verified": true,
+        "state": "Enabled"
+      },
+      {
+        "address": "aws_lambda_function.worker[\"deletion\"]",
+        "verified": true,
+        "codeSha256": "w3wa+YT63hwH5qahfdB0q/JdppbzK6Uw7KAI43ImkMk=",
+        "revisionId": "9e89d50c-0954-4773-ba86-8612892ca2f8"
+      },
+      {
+        "address": "aws_scheduler_schedule.recovery[0]",
+        "verified": true,
+        "state": "ENABLED"
+      }
+    ],
+    "history": [
+      {
+        "address": "aws_lambda_function.account_deletion[0]",
+        "verified": true,
+        "codeSha256": "z30oWQNIh/9C4iMmgw6b31RmXbLP2RjZd3HFgYW2zuw=",
+        "revisionId": "fe060658-5cf6-4285-923d-ca698a5b6120"
+      },
+      {
+        "address": "aws_lambda_function.lifecycle[0]",
+        "verified": true,
+        "codeSha256": "M3HltayXPA3yle/4K7YeQXGnXyiRMgBliT8FN6o9zqo=",
+        "revisionId": "33654b9d-b57f-4be3-bce2-13bf22c50118"
+      }
+    ],
+    "v1": [
+      {
+        "address": "aws_lambda_alias.runtime[\"deletion\"]",
+        "verified": true,
+        "version": "9"
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"deletion\"]",
+        "verified": true,
+        "codeSha256": "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc=",
+        "revisionId": "c891d1ca-aede-4cdf-9957-1008f5b0ed69"
+      }
+    ],
+    "play": [
+      {
+        "address": "aws_lambda_alias.runtime[\"deletion\"]",
+        "verified": true,
+        "version": "4"
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"deletion\"]",
+        "verified": true,
+        "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+        "revisionId": "9760c619-2e2c-4475-9359-d2ed7da19d5a"
+      }
+    ],
+    "alerts": [
+      {
+        "address": "aws_sns_topic_policy.operations[0]",
+        "verified": true,
+        "policyMatched": true
+      }
+    ],
+    "api": [
+      {
+        "address": "aws_lambda_function.account_data[0]",
+        "verified": true,
+        "codeSha256": "7gXjecACio4Di2m383J+pwUkFz1yzLCcGqbNJ3359kY=",
+        "revisionId": "2acf5986-f0b1-48eb-9248-023372cb4e7b"
+      }
+    ]
+  }
+}

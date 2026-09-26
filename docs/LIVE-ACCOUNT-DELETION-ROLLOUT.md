@@ -1,16 +1,15 @@
 # Live account deletion rollout
 
-Current status, September 26: the four independently qualified inventory markers
-are initialized with exact readback, and the current1480 key and registry are
-initialized without changing older periods. Cleanup-only Dev worker configuration
-is deployed and all six stack post-plans have no drift. Actual runtime validation
-found and corrected a History checkpoint expression defect. All six actual
-empty-work handlers now pass. Scoped HTTP admission
-is deployed for the one prepared disposable identity. Its first request completed with twelve validated receipts, actual Cognito absence
-and preserved unrelated records. The status-response correction is deployed and both isolated accounts completed
-erasure. A final bounded token-rejection observation is underway after transient
-HTTP503 made the second monitor inconclusive. No general accounts are admitted. Earlier
-closed-preparation statements below describe the corresponding completed stages.
+Current status, September 26: scoped Dev live deletion is verified. All three
+separate disposable accounts completed with twelve validated component receipts,
+actual Cognito absence, empty user partitions and preserved unrelated baseline
+rows. The third test also verified application 401 UNAUTHORIZED and Cognito
+GetUser rejection in the same observation before the original token expired.
+The corrected monitor tolerated one transient 503 without resubmitting deletion.
+All cleanup workers are deployed; the updated stacks have no drift. HTTP admission
+remains limited to the third, now-deleted test identity. General account admission,
+UAT and Production are not enabled. SECUR4ALL-200/207/245 retain their broader
+acceptance described below. Earlier preparation statements are historical stages.
 
 The owner requested live-deletion implementation on September 26. The immediate
 path is an authenticated account request, durable cleanup of that account's data,
@@ -554,3 +553,49 @@ or receipt is injected. Six normal/optimized tests check containment and bounds.
 Terminal-status observation from those ticks is not completion evidence; the
 independent twelve-receipt/Cognito/baseline observer must still pass. The third
 baseline covers thirteen table identities and fifty-one non-target rows.
+
+The final single-subject plans were applied after PR98 integration at
+`b9f56226d313435fe6a563d12c002d7a7379dfc8`. All three post-plans have no drift;
+direct readback matches exact workers/aliases and authenticated HTTP settings.
+The third distinct operation was accepted with 202 and the corrected monitor
+continues with credentials held only in memory.
+
+The guarded operator attempted one real reconciliation and stopped at its strict
+policy-counter check. The preceding source-version, response and zero-failure
+checks passed; the raw payload was not retained and no full-response success is
+claimed. Independent readback shows analysis progress advanced from family2 to3.
+The source intentionally flags USER_PROFILE_PREREQUISITES while analysis remains
+incomplete, which the conservative wrapper treated as a stop. No retry or report
+overwrite occurred; normal scheduling finishes the remaining work. This auxiliary
+operator result is not a completion proof and does not invalidate the accepted
+request. Its frozen source and honest partial report are retained.
+
+## Final scoped Dev result
+
+The third original HTTP operation completed through the real workers after the
+single guarded tick described above. The independent production-finalizer-based
+observer validates all twelve receipts against the original operation, actual
+Cognito absence, an empty user partition and absent recovery controls. All
+fifty-one baseline non-target rows across thirteen unchanged table identities
+remain preserved. The prior two completions separately preserved twenty-three
+and thirty-seven rows. No command or receipt was fabricated, and no direct
+Cognito deletion or retry of the accepted POST was performed.
+
+The corrected monitor completed after forty-one polls. One 503 was retried within
+its bound; its final same-poll observation received 401 UNAUTHORIZED from the
+application and Cognito GetUser rejected the original credential. The monitor
+checks expiry again after both responses. This proves credential rejection before
+expiry, independently of the observer's erasure proof. Credentials remained in
+memory. The original first and second inconclusive monitor reports are retained.
+
+Retained final reports are `third-test-http-result.jsonl` and
+`third-test-completion-result.json` in the September 26 evidence directory. Exact
+worker/HTTP readbacks and three no-drift results are also retained. The auxiliary
+reconciliation wrapper's conservative stop has a seventh regression test; all
+seven tests pass both normally and with Python optimization. Its partial report
+remains a partial result, not a success claim.
+
+This completes the scoped Dev HTTP/deletion/credential qualification. It does not
+prove native signup-trigger delivery, general account admission, full UAT,
+whole-period key retirement, restore/replay coverage or the complete acceptance
+of SECUR4ALL-200/207/245. Their remaining work is independent of mobile hardware.
