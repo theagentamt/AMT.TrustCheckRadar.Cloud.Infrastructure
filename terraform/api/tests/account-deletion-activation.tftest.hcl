@@ -121,7 +121,7 @@ run "null_leaves_candidate_closed" {
 run "workers_enable_reconciliation_before_admission" {
   command = plan
   assert {
-    condition     = (!output.account_data_candidate_contract.enabled && output.account_data_candidate_contract.workers_enabled && length(aws_apigatewayv2_route.account_deletion) == 0 && length(aws_lambda_permission.account_deletion_gateway) == 0 && aws_lambda_event_source_mapping.account_data_revocation[0].enabled && aws_cloudwatch_event_rule.account_data_reconcile[0].state == "ENABLED" && aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_IDENTITY_FINALIZER_ENABLED == "true" && aws_lambda_function.account_data[0].environment[0].variables.CAMPAIGN_RECOVERY_WRITES_ENABLED == "true" && length(jsondecode(aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_DELETION_REQUIRED_COMPONENTS_JSON)) == 12 && aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].actions_enabled && aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].treat_missing_data == "breaching" && aws_lambda_function.campaign_participation.environment[0].variables.CAMPAIGN_RECOVERY_WRITES_ENABLED == "false")
+    condition     = (!output.account_data_candidate_contract.enabled && output.account_data_candidate_contract.workers_enabled && length(aws_apigatewayv2_route.account_deletion) == 0 && length(aws_lambda_permission.account_deletion_gateway) == 0 && aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_DELETION_HTTP_SUBJECTS_JSON == "[]" && aws_lambda_event_source_mapping.account_data_revocation[0].enabled && aws_cloudwatch_event_rule.account_data_reconcile[0].state == "ENABLED" && aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_IDENTITY_FINALIZER_ENABLED == "true" && aws_lambda_function.account_data[0].environment[0].variables.CAMPAIGN_RECOVERY_WRITES_ENABLED == "true" && length(jsondecode(aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_DELETION_REQUIRED_COMPONENTS_JSON)) == 12 && aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].actions_enabled && aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].treat_missing_data == "breaching" && aws_lambda_function.campaign_participation.environment[0].variables.CAMPAIGN_RECOVERY_WRITES_ENABLED == "false")
     error_message = "Workers must enable durable reconciliation and heartbeat monitoring without opening routes or other producer gates."
   }
 }
@@ -150,10 +150,11 @@ run "api_exposes_only_authenticated_exact_routes" {
       identity_reference          = "synthetic-identity"
       component_reference         = "synthetic-components"
       worker_acceptance_reference = "synthetic-deployed-worker-evidence"
+      http_subjects               = ["01959cef-9123-7abc-8def-0123456789ab"]
     }
   }
   assert {
-    condition     = (output.account_data_candidate_contract.enabled && toset(output.account_data_candidate_contract.routes) == toset(["GET /v1/users/account-deletion", "POST /v1/users/account-deletion"]) && alltrue([for route in aws_apigatewayv2_route.account_deletion : route.authorization_type == "JWT" && route.authorization_scopes == toset(["aws.cognito.signin.user.admin"])]) && length(aws_lambda_permission.account_deletion_gateway) == 2 && alltrue([for permission in aws_lambda_permission.account_deletion_gateway : permission.principal == "apigateway.amazonaws.com" && permission.source_account == "107827791950" && endswith(permission.source_arn, "/v1/users/account-deletion") && !endswith(permission.source_arn, "*")]) && aws_apigatewayv2_integration.account_deletion[0].payload_format_version == "2.0")
+    condition     = (aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_DELETION_HTTP_SUBJECTS_JSON == jsonencode(["01959cef-9123-7abc-8def-0123456789ab"]) && output.account_data_candidate_contract.enabled && toset(output.account_data_candidate_contract.routes) == toset(["GET /v1/users/account-deletion", "POST /v1/users/account-deletion"]) && alltrue([for route in aws_apigatewayv2_route.account_deletion : route.authorization_type == "JWT" && route.authorization_scopes == toset(["aws.cognito.signin.user.admin"])]) && length(aws_lambda_permission.account_deletion_gateway) == 2 && alltrue([for permission in aws_lambda_permission.account_deletion_gateway : permission.principal == "apigateway.amazonaws.com" && permission.source_account == "107827791950" && endswith(permission.source_arn, "/v1/users/account-deletion") && !endswith(permission.source_arn, "*")]) && aws_apigatewayv2_integration.account_deletion[0].payload_format_version == "2.0")
     error_message = "Only scoped JWT GET and POST routes may invoke the activated account-data function."
   }
 }
@@ -340,4 +341,89 @@ run "reject_missing_deletion_stream" {
     } } }
   }
   expect_failures = [aws_lambda_function.account_data]
+}
+
+run "api_rejects_unscoped_admission" {
+  command = plan
+  variables {
+    account_deletion_activation = {
+      phase                       = "api"
+      source_sha                  = "1111111111111111111111111111111111111111"
+      policy_reference            = "synthetic-policy"
+      inventory_reference         = "synthetic-inventory"
+      identity_reference          = "synthetic-identity"
+      component_reference         = "synthetic-components"
+      worker_acceptance_reference = "synthetic-deployed-worker-evidence"
+      http_subjects               = []
+    }
+  }
+  expect_failures = [var.account_deletion_activation]
+}
+
+run "api_rejects_malformed_subject" {
+  command = plan
+  variables {
+    account_deletion_activation = {
+      phase                       = "api"
+      source_sha                  = "1111111111111111111111111111111111111111"
+      policy_reference            = "synthetic-policy"
+      inventory_reference         = "synthetic-inventory"
+      identity_reference          = "synthetic-identity"
+      component_reference         = "synthetic-components"
+      worker_acceptance_reference = "synthetic-deployed-worker-evidence"
+      http_subjects               = ["not-a-subject"]
+    }
+  }
+  expect_failures = [var.account_deletion_activation]
+}
+
+run "api_rejects_noncanonical_subject" {
+  command = plan
+  variables {
+    account_deletion_activation = {
+      phase                       = "api"
+      source_sha                  = "1111111111111111111111111111111111111111"
+      policy_reference            = "synthetic-policy"
+      inventory_reference         = "synthetic-inventory"
+      identity_reference          = "synthetic-identity"
+      component_reference         = "synthetic-components"
+      worker_acceptance_reference = "synthetic-deployed-worker-evidence"
+      http_subjects               = ["01959CEF-9123-7abc-8def-0123456789ab"]
+    }
+  }
+  expect_failures = [var.account_deletion_activation]
+}
+
+run "api_rejects_more_than_ten_subjects" {
+  command = plan
+  variables {
+    account_deletion_activation = {
+      phase                       = "api"
+      source_sha                  = "1111111111111111111111111111111111111111"
+      policy_reference            = "synthetic-policy"
+      inventory_reference         = "synthetic-inventory"
+      identity_reference          = "synthetic-identity"
+      component_reference         = "synthetic-components"
+      worker_acceptance_reference = "synthetic-deployed-worker-evidence"
+      http_subjects               = [for i in range(11) : format("01959cef-9123-7abc-8def-%012d", i)]
+    }
+  }
+  expect_failures = [var.account_deletion_activation]
+}
+
+run "workers_reject_http_subjects" {
+  command = plan
+  variables {
+    account_deletion_activation = {
+      phase                       = "workers"
+      source_sha                  = "1111111111111111111111111111111111111111"
+      policy_reference            = "synthetic-policy"
+      inventory_reference         = "synthetic-inventory"
+      identity_reference          = "synthetic-identity"
+      component_reference         = "synthetic-components"
+      worker_acceptance_reference = "synthetic-deployed-worker-evidence"
+      http_subjects               = ["01959cef-9123-7abc-8def-0123456789ab"]
+    }
+  }
+  expect_failures = [var.account_deletion_activation]
 }

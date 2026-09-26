@@ -8,6 +8,7 @@ variable "account_deletion_activation" {
     identity_reference          = string
     component_reference         = string
     worker_acceptance_reference = optional(string, "")
+    http_subjects               = optional(set(string), [])
   })
   default = null
   validation {
@@ -26,10 +27,13 @@ variable "account_deletion_activation" {
         var.account_deletion_activation.identity_reference,
         var.account_deletion_activation.component_reference
       ] : length(trimspace(ref)) > 0]) &&
-      (var.account_deletion_activation.phase != "api" || length(trimspace(var.account_deletion_activation.worker_acceptance_reference)) > 0),
+      (var.account_deletion_activation.phase != "api" || (length(trimspace(var.account_deletion_activation.worker_acceptance_reference)) > 0 && length(var.account_deletion_activation.http_subjects) >= 1)) &&
+      length(var.account_deletion_activation.http_subjects) <= 10 &&
+      (var.account_deletion_activation.phase != "workers" || length(var.account_deletion_activation.http_subjects) == 0) &&
+      alltrue([for sub in var.account_deletion_activation.http_subjects : can(regex("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", sub))]),
       false
     )
-    error_message = "Deletion activation requires reviewed Dev source, finalization pins, exact storage/index contracts, monitoring and policy/inventory/identity/component evidence; API admission also requires prior deployed worker acceptance."
+    error_message = "Deletion activation requires reviewed Dev source, finalization pins, exact storage/index contracts, monitoring and policy/inventory/identity/component evidence; API admission also requires prior deployed worker acceptance and one to ten explicit canonical Dev subjects; workers-only accepts no HTTP subjects."
   }
 }
 
@@ -45,6 +49,7 @@ locals {
   # verify the independent inventory marker and every account-owned receipt.
   account_deletion_activation_env = local.account_deletion_workers_enabled ? {
     ACCOUNT_DELETION_ENABLED                        = "true"
+    ACCOUNT_DELETION_HTTP_SUBJECTS_JSON             = jsonencode(sort(tolist(var.account_deletion_activation.http_subjects)))
     ACCOUNT_IDENTITY_FINALIZER_ENABLED              = "true"
     COGNITO_USERNAME_IS_SUB                         = "true"
     ACCOUNT_DELETION_POLICY_STATUS                  = "approved"

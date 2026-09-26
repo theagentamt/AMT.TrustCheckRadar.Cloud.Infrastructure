@@ -122,9 +122,9 @@ account_export_deployment = {
 }
 account_export_play_token_table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens"
 account_data_deployment = {
-  release_id         = "997e265f7edf10ce7369481f7d576b4276e8c418"
-  object_version     = "OeipIkLHDEYtdsQbFyg02nz.tmKaoDV5"
-  source_hash        = "zqfu76scnoZ9tnKTthQbFpQ1D6FGHb0WYxYHYAWxLWs="
+  release_id         = "65df9c7e7fe338f00df8ecc13795014ab928cdfa"
+  object_version     = "mYHSx6PF_fe0d8DiOTxUJZjyhx3jWA2_"
+  source_hash        = "tuYWOnIfwap0NHZOE9Bm5hC4kWFnXJHwrrV9hSjMZRk="
   approval_reference = "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md"
   promotion_approved = false
 }

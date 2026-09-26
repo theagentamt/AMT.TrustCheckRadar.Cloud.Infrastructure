@@ -1,0 +1,162 @@
+{
+  "account": "107827791950",
+  "historicalCoverageApproved": false,
+  "historyBootstrap": {
+    "earliestRetainedCheckpointHour": null,
+    "earliestRetainedExpiryHour": null,
+    "emptyCurrentAttachedHistory": true,
+    "observationHour": 1790431200
+  },
+  "limits": [
+    "Strong paginated scans are not an atomic snapshot; closed writer/drain evidence is independently required.",
+    "Projection excludes account content, tokens, credentials and assessments; identifiers used only in memory for classification.",
+    "No mutation, invoke, marker approval, historical erasure or backup/restore coverage claim."
+  ],
+  "markerApproval": false,
+  "observedAtUtc": "2026-09-26T14:40:26.054668+00:00",
+  "ownershipMarker": {
+    "coverageVerifiedComplete": true,
+    "exists": true,
+    "matchesRuntimeSchema": true,
+    "revision": 1,
+    "schemaVersion": 1,
+    "sha256": "3a2515b89670467e03ee369b1e5500046d35074c6729558b6560693fb1ef2f5e"
+  },
+  "readOnly": true,
+  "region": "us-east-1",
+  "schemaVersion": 1,
+  "tables": {
+    "entitlements": {
+      "earliestCheckpointHour": null,
+      "earliestExpiryEpoch": null,
+      "families": {
+        "AUTHORITY_HMAC_INVENTORY": 1,
+        "ENTITLEMENT": 2,
+        "LEGACY_AUTHORITY_CHECKPOINT": 2,
+        "OWNERSHIP_INVENTORY": 1
+      },
+      "indexes": [
+        {
+          "keys": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "GSI1",
+          "projection": {
+            "ProjectionType": "ALL"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "metadataCounts": {
+        "noExpiresAt": 6
+      },
+      "observedRows": 6,
+      "pages": 1,
+      "recordTypes": {
+        "MISSING_OR_OTHER": 5,
+        "PURCHASE_OWNERSHIP_INVENTORY": 1
+      },
+      "scanComplete": true,
+      "scanned": 6,
+      "schemas": {
+        "1": 2,
+        "MISSING_OR_OTHER": 4
+      },
+      "statuses": {
+        "MISSING_OR_OTHER": 4,
+        "expired": 2
+      },
+      "tableName": "trustcheckradar-dev-purchase-entitlements"
+    },
+    "history-content": {
+      "earliestCheckpointHour": null,
+      "earliestExpiryEpoch": null,
+      "families": {},
+      "indexes": [
+        {
+          "keys": [
+            {
+              "AttributeName": "expiryBucket",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "expiresAt",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "ExpirationIndex",
+          "projection": {
+            "ProjectionType": "KEYS_ONLY"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "metadataCounts": {},
+      "observedRows": 0,
+      "pages": 1,
+      "recordTypes": {},
+      "scanComplete": true,
+      "scanned": 0,
+      "schemas": {},
+      "statuses": {},
+      "tableName": "trustcheckradar-dev-history-content"
+    },
+    "history-control": {
+      "earliestCheckpointHour": null,
+      "earliestExpiryEpoch": null,
+      "families": {},
+      "indexes": [
+        {
+          "keys": [
+            {
+              "AttributeName": "expiryBucket",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "expiresAt",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "ExpirationIndex",
+          "projection": {
+            "ProjectionType": "KEYS_ONLY"
+          },
+          "status": "ACTIVE"
+        },
+        {
+          "keys": [
+            {
+              "AttributeName": "lifecycleBucket",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "lifecycleAt",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "PendingLifecycleIndex",
+          "projection": {
+            "ProjectionType": "KEYS_ONLY"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "metadataCounts": {},
+      "observedRows": 0,
+      "pages": 1,
+      "recordTypes": {},
+      "scanComplete": true,
+      "scanned": 0,
+      "schemas": {},
+      "statuses": {},
+      "tableName": "trustcheckradar-dev-history-control"
+    }
+  }
+}
