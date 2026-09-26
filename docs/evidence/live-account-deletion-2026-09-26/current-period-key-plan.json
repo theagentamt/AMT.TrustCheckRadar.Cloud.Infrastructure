@@ -1,0 +1,25 @@
+{
+  "accountId": "107827791950",
+  "candidateKeyArn": null,
+  "discovery": {
+    "complete": true,
+    "keysExamined": 17,
+    "listPages": 1,
+    "matches": []
+  },
+  "mode": "create",
+  "observedAtEpoch": 1790434501,
+  "operation": "provision-current-campaign-hmac-key",
+  "periodId": 1480,
+  "periodSeconds": 1209600,
+  "region": "us-east-1",
+  "registryAbsent": true,
+  "schemaVersion": 1,
+  "tableName": "trustcheckradar-dev-campaign-pipeline",
+  "tags": {
+    "Environment": "dev",
+    "PeriodId": "1480",
+    "Project": "trustcheckradar",
+    "Purpose": "campaign-contributor-token"
+  }
+}
