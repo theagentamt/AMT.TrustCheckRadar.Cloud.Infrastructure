@@ -1,0 +1,12 @@
+{
+  "sourceSha": "1dd917057527e58cf07c70eb0155991cb6c5bb3c",
+  "infraMerge": "2cac07db8af22196fa6ea3e186349ab5149e9739",
+  "savedPlanSha256": "ea5bf20bab6d8d24083f58d06c064cba732d7314e0fec35b5d65b93e50fc5a7c",
+  "runtimePlanSha256": "59e87e6f18b8a5ec2a36c5104cce7c6c3fdac03880d33efc7f9f614e33b8cbf9",
+  "runtimeHelperSha256": "9c7199af6db538fb455ee00a670ae284b073d6f55118490c819e9960d024950e",
+  "allSixWorkersPassed": true,
+  "historyPostPlanNoDrift": true,
+  "postPlanLogSha256": "274d8b790945c2cf2bc6b63ce5bc354d1c2bf06f7b31eb050256c931fcbdacb5",
+  "noCommandsInjected": true,
+  "httpRequestSent": false
+}

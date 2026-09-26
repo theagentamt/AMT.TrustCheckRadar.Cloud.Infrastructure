@@ -1,0 +1,48 @@
+{
+  "planSha256": "3aa9692489bfa6d95d53f6268898f975dcb8caf3d41307f717210de870e20b92",
+  "allChecksPassed": true,
+  "sourceSha": "65df9c7e7fe338f00df8ecc13795014ab928cdfa",
+  "codeChanged": false,
+  "workerPermissionsChanged": false,
+  "onlyEnvironmentChange": "ACCOUNT_DELETION_HTTP_SUBJECTS_JSON",
+  "allowedSubjectCount": 1,
+  "target": "prepared disposable identity from original private qualification journal",
+  "changes": [
+    {
+      "address": "aws_apigatewayv2_integration.account_deletion[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.account_deletion[\"GET\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.account_deletion[\"POST\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.account_data[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.account_deletion_gateway[\"GET\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.account_deletion_gateway[\"POST\"]",
+      "actions": [
+        "create"
+      ]
+    }
+  ]
+}

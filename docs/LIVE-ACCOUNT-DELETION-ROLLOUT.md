@@ -4,8 +4,9 @@ Current status, September 26: the four independently qualified inventory markers
 are initialized with exact readback, and the current1480 key and registry are
 initialized without changing older periods. Cleanup-only Dev worker configuration
 is deployed and all six stack post-plans have no drift. Actual runtime validation
-found a History checkpoint expression defect; correction is underway. HTTP
-admission remains absent pending real worker acceptance. Earlier
+found and corrected a History checkpoint expression defect. All six actual
+empty-work handlers now pass. Scoped HTTP admission is selected for planning
+for the one prepared disposable identity and is not yet deployed. Earlier
 closed-preparation statements below describe the corresponding completed stages.
 
 The owner requested live-deletion implementation on September 26. The immediate
@@ -436,3 +437,24 @@ pass. This narrow correction supplements the qualified inventory's writer bindin
 it changes no schema, admission gate, IAM grant, receipt semantics or data family.
 Original inventory markers are not rewritten. Actual deployment and successful
 reconciliation must still be verified before HTTP admission.
+
+After PR95 integration, the exact History-only plan was applied and direct
+readback matched every changed artifact and preserved environment. The subsequent
+History plan reported no drift. All six real cleanup invocations then passed with
+no deletion commands or receipts injected. The repeated plan updated only the
+verified History code/revision pins; the reviewed helper retained actual outcomes.
+
+The next API plan selects only the prepared disposable subject, retaining all
+worker flags and adding exact authenticated GET/POST routes. It authorizes no
+other account or device test. The private original operation journal and hashed
+other-row baseline remain the test inputs; successful HTTP acceptance is distinct
+from final erasure evidence.
+
+Scoped API plan `3aa9692489bfa6d95d53f6268898f975dcb8caf3d41307f717210de870e20b92`
+passed independent review: five exact authenticated route/integration/permission
+creates and one environment change containing the prepared subject. No source,
+role grant, other environment or admission changes occur. Eighteen activation
+contract tests pass. History successful-sweep metrics are now ingested and its
+heartbeat/expiry alarms recovered; older error/failure alarm observations remain
+visible while evaluation windows drain. The broad monitoring reread was throttled;
+a bounded targeted metric/alarm read succeeded without changing alarm states.

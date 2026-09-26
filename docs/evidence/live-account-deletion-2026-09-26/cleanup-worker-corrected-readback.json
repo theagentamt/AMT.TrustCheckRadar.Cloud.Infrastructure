@@ -1,0 +1,214 @@
+{
+  "observedAtUtc": "2026-09-26T15:44:45.247318+00:00",
+  "readOnly": true,
+  "allVerified": true,
+  "stacks": {
+    "campaign": [
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"budget\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"failures\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"heartbeat\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"overdue\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"pending_age\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"schema\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"truncated\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"unverified\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_iam_role_policy.deletion_runtime[0]",
+        "verified": true,
+        "policyMatched": true
+      },
+      {
+        "address": "aws_iam_role_policy.recovery_scheduler_invoke[0]",
+        "verified": true,
+        "policyMatched": true
+      },
+      {
+        "address": "aws_iam_role_policy.scheduler_invoke[0]",
+        "verified": true,
+        "policyMatched": true
+      },
+      {
+        "address": "aws_lambda_event_source_mapping.deletion[0]",
+        "verified": true,
+        "state": "Enabled"
+      },
+      {
+        "address": "aws_lambda_function.worker[\"deletion\"]",
+        "verified": true,
+        "codeSha256": "w3wa+YT63hwH5qahfdB0q/JdppbzK6Uw7KAI43ImkMk=",
+        "revisionId": "9e89d50c-0954-4773-ba86-8612892ca2f8"
+      },
+      {
+        "address": "aws_scheduler_schedule.recovery[0]",
+        "verified": true,
+        "state": "ENABLED"
+      }
+    ],
+    "history": [
+      {
+        "address": "aws_lambda_function.account_deletion[0]",
+        "verified": true,
+        "codeSha256": "z30oWQNIh/9C4iMmgw6b31RmXbLP2RjZd3HFgYW2zuw=",
+        "revisionId": "fe060658-5cf6-4285-923d-ca698a5b6120"
+      },
+      {
+        "address": "aws_lambda_function.lifecycle[0]",
+        "verified": true,
+        "codeSha256": "M3HltayXPA3yle/4K7YeQXGnXyiRMgBliT8FN6o9zqo=",
+        "revisionId": "33654b9d-b57f-4be3-bce2-13bf22c50118"
+      }
+    ],
+    "v1": [
+      {
+        "address": "aws_cloudwatch_event_rule.maintenance[\"deletion\"]",
+        "verified": true,
+        "state": "ENABLED"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.deletion_full_pass_age[0]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.worker_heartbeat[\"deletion\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_lambda_alias.runtime[\"deletion\"]",
+        "verified": true,
+        "version": "7"
+      },
+      {
+        "address": "aws_lambda_event_source_mapping.v1_deletion[0]",
+        "verified": true,
+        "state": "Enabled"
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"deletion\"]",
+        "verified": true,
+        "codeSha256": "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc=",
+        "revisionId": "2261df88-8f64-4edb-b8af-31d5c88a5d72"
+      }
+    ],
+    "play": [
+      {
+        "address": "aws_cloudwatch_metric_alarm.operational[\"deletion-heartbeat\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_lambda_alias.runtime[\"deletion\"]",
+        "verified": true,
+        "version": "2"
+      },
+      {
+        "address": "aws_lambda_event_source_mapping.deletion[0]",
+        "verified": true,
+        "state": "Enabled"
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"deletion\"]",
+        "verified": true,
+        "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+        "revisionId": "5d661934-3ecb-4e8c-b3a1-55dedd361791"
+      },
+      {
+        "address": "aws_scheduler_schedule.lifecycle[\"deletion\"]",
+        "verified": true,
+        "state": "ENABLED"
+      }
+    ],
+    "alerts": [
+      {
+        "address": "aws_sns_topic_policy.operations[0]",
+        "verified": true,
+        "policyMatched": true
+      }
+    ],
+    "api": [
+      {
+        "address": "aws_cloudwatch_event_rule.account_data_reconcile[0]",
+        "verified": true,
+        "state": "ENABLED"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"heartbeat\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"no_full_pass\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.account_data_reconciliation[\"stale_full_pass\"]",
+        "verified": true,
+        "actionsEnabled": true,
+        "state": "OK"
+      },
+      {
+        "address": "aws_iam_role_policy.account_data[0]",
+        "verified": true,
+        "policyMatched": true
+      },
+      {
+        "address": "aws_lambda_event_source_mapping.account_data_revocation[0]",
+        "verified": true,
+        "state": "Enabled"
+      },
+      {
+        "address": "aws_lambda_function.account_data[0]",
+        "verified": true,
+        "codeSha256": "tuYWOnIfwap0NHZOE9Bm5hC4kWFnXJHwrrV9hSjMZRk=",
+        "revisionId": "b926c78a-45c3-40e4-9d12-2aac71b101f4"
+      }
+    ]
+  }
+}
