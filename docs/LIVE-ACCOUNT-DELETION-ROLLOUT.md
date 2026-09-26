@@ -188,3 +188,11 @@ Turning `campaign_deletion_activation` back to null stops accepted campaign work
 First close public admission, drain in-flight requests and reconcile all accepted
 account/withdrawal work; only then stop the campaign workers. Their stream and
 schedule both wait for the required runtime policies during initial activation.
+
+Lambda PR61 source `997e265f7edf10ce7369481f7d576b4276e8c418`, merged at
+`218769da5b482f98b8cb7e0be93d16e656c38c3e`, adds a fail-closed configuration
+check requiring durable campaign recovery enrollment whenever deletion is enabled.
+Only config.py differs in the account-data package; all campaign pins remain f922.
+The independently verified immutable account-data version is now selected in Dev
+with activation still null. Local validation passed 44 tests, 20 subtests and eight
+SDK cases. Package publication is separate from deployment acceptance.
