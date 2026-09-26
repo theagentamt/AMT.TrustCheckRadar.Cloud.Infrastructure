@@ -296,3 +296,36 @@ review verified the exact21-member package and handler tests.
 The new package changes the account-data writer source binding. Earlier campaign
 cutover evidence remains historical; repeat final source/role/gate and strong
 inventory checks after this closed deployment before writing qualified markers.
+
+## Scoped HTTP guard installed, inventory qualification continuing
+
+Infrastructure PR92 integrated at `a216c3a65b07ae1674cd68c3fa913824dfc8f1b1`.
+The sole reviewed Dev change installed account-data65df; direct readback matched
+its immutable hash and all unchanged environments/policies, with deletion gates
+false and routes absent. The subsequent full API plan had no drift.
+
+The five-store full-read audit recognized all observed profiles, participation,
+operation receipts, retained consent audits and device bindings. Recovery, abuse
+and shared URL cache were empty. Existing entitlement controls and legacy usage
+are independently classified; no unknown family remains in observed rows.
+These observations are not marker approval or historical backup erasure. Final
+writer binding and post-installation campaign qualification precede any marker.
+
+The separately reviewed create-only current-period key operator uses bounded
+metadata discovery and a durable single-attempt journal. AWS-managed keys are
+excluded only after exact DescribeKey classification. It never changes existing
+keys, writes a registry or approves inventory; those remain separate operations.
+
+The fresh campaign audit passed after the installed HTTP guard and a new closed
+writer boundary; its sole allowed source difference is the reviewed65df package.
+The create-only period1480 key plan passed independent review and execution,
+including full discovery before/after creation; the absent registry remains
+untouched. No legacy key was changed or scheduled for deletion.
+
+The prepare-only Dev account harness passed independent review and sixteen local
+tests. It created one unique disposable example.invalid identity with message
+delivery suppressed and invoked the exact deployed post-confirmation writer to
+create a genuine PENDING_AGE_GATE profile. Its private atomic journal preserves
+the owned subject and original operation; no password or JWT was persisted. This
+is administrative bootstrap, not native signup-trigger delivery qualification.
+No deletion request, inventory approval or runtime activation has occurred.

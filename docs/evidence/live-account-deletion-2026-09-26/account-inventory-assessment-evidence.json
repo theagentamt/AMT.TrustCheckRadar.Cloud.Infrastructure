@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "approval": false,
+  "markerWrite": false,
+  "fileSha256": {
+    "/tmp/amt-account-inventory-assessment-2026-09-26.md": "514b0fcbada7831cfd9ff993f9d520b8338b8f65032fbe2917525c4a112a6fc2",
+    "/tmp/amt-account-family-classification.json": "c640921b7cf868b92f342b1b843fbfe493f28fe1b9b7be07f8e26b9d473e8d41",
+    "/tmp/amt-legacy-entitlement-shapes.json": "ece3cf0a3868f1705eaa9873bf6e21fef6597f6125bc1ba5efad5e17bd5c2087",
+    "/tmp/amt-authority-inventory-readiness.json": "e2e8ea9e4d7489ea9441121b77044fd62dd56dc1da438d1bd30b142c19e58897",
+    "/tmp/amt-ownership-history-readiness.json": "f2ae335b2150f738f25caf72e3d1a7c4b7e69c449077a74caf6480264aa21d4b",
+    "/tmp/amt-all-account-storage-readiness.json": "f24b0e06394c3752419577ef8ba390eddc51355332761c6f9256e49d1b9fe7c6",
+    "/tmp/amt-authority-cursor-schema-observation.json": "9cd5f96f867f0faa25703a9af40d49d5772f474a09f7301356fbf089e3ebb5cb",
+    "/tmp/amt-ownership-history-readiness-handoff.md": "ce20b28a0855d7fe0847cb1a0f1f59741f744e5f0a5b55afc60a07ed4f4adf4c"
+  }
+}

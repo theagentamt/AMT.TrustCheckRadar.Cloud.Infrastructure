@@ -1,0 +1,390 @@
+{
+  "schemaVersion": 1,
+  "readOnly": true,
+  "observedAtUtc": "2026-09-26T14:44:57.905352+00:00",
+  "sourceCommit": "65df9c7e7fe338f00df8ecc13795014ab928cdfa",
+  "sourceServiceSha256": "212f4ec0cfae185c2dbdf4a56c5d8ca53d60c30980117086ded4700bbc236c70",
+  "participationValidatorSourceSha256": "b9cf8dcacc61481a20391428c5171fc8746a87f58f7392b12ffd98945c015364",
+  "classifierSha256": "8896be7da1ac4894f9ee33c1af05d48df05d263b5cd10196c0df518185be5e21",
+  "complete": true,
+  "tables": {
+    "users": {
+      "tableArnSha256": "8ac49f8c8686d3eba244c2ed42948f7b4cc24a337a7a3bd30eb7bcfe4103cdf0",
+      "tableIdSha256": "713bfed42fabf2273632e109a64325fb0c241cbd408426a24cd379da1b531db4",
+      "passes": [
+        {
+          "rows": 8,
+          "pages": 1,
+          "complete": true,
+          "tableContentsSha256": "f878ced9b00736941a5e33be4d62d267bb00c5c4849f05e2407f62c3e3b1ee0f"
+        },
+        {
+          "rows": 8,
+          "pages": 1,
+          "complete": true,
+          "tableContentsSha256": "f878ced9b00736941a5e33be4d62d267bb00c5c4849f05e2407f62c3e3b1ee0f"
+        }
+      ],
+      "stable": true,
+      "familyCounts": {
+        "CONSENT_AUDIT": 2,
+        "CAMPAIGN_OPERATION": 2,
+        "CAMPAIGN_PARTICIPATION": 2,
+        "USER_PROFILE": 2
+      },
+      "records": [
+        {
+          "rowSha256": "d6e96db655821fd93ffc7e53f611f15a5cf9ccb930f27bd5f158eaa6e89829da",
+          "family": "CONSENT_AUDIT",
+          "shapeRecognized": true,
+          "coverageImpact": "APPROVED_400_DAY_MINIMIZED_AUDIT_RETAINED",
+          "schemaFieldNames": [
+            "PK",
+            "SK",
+            "consentEpochId",
+            "effectiveMonthlyScanLimit",
+            "eventType",
+            "expiresAt",
+            "noticeVersion",
+            "occurredAt",
+            "operationId",
+            "policyVersion",
+            "recordVersion",
+            "resultingState",
+            "schemaVersion",
+            "stateVersion"
+          ],
+          "nonstandardFieldNameCount": 0,
+          "fieldSetSha256": "92324cdb07be39d1abd32267e0d554b171c035e8d5572c14489b13933114f008",
+          "unknownFieldCount": 0,
+          "unknownFieldNames": [],
+          "expiredAtObservation": false
+        },
+        {
+          "rowSha256": "c3d4fb96f7208c27d619728a8a16fd9dca22a487518ddf9bcadcdbc203b81590",
+          "family": "CAMPAIGN_OPERATION",
+          "shapeRecognized": true,
+          "coverageImpact": "RECOGNIZED_OWNED_OPERATION_ERASE_WITH_PROFILE",
+          "schemaFieldNames": [
+            "PK",
+            "SK",
+            "action",
+            "consentEpochId",
+            "expiresAt",
+            "occurredAt",
+            "operationId",
+            "recordVersion",
+            "resultingState",
+            "schemaVersion"
+          ],
+          "nonstandardFieldNameCount": 0,
+          "fieldSetSha256": "183a6abc512db4fb6e43a6830e4d9641b375aa77b50b8779a88e4aa9a91c5bf9",
+          "unknownFieldCount": 0,
+          "unknownFieldNames": [],
+          "expiredAtObservation": false
+        },
+        {
+          "rowSha256": "5acb2fd40f0bb1460f60064cf27a73c2944b0c4012abee3e69b867eb9eb8c65b",
+          "family": "CAMPAIGN_PARTICIPATION",
+          "shapeRecognized": true,
+          "coverageImpact": "RECOGNIZED_OWNED_STATE_ERASE_WITH_PROFILE",
+          "schemaFieldNames": [
+            "PK",
+            "SK",
+            "consentEpochId",
+            "effectiveFrom",
+            "environment",
+            "lastOperationId",
+            "noticeVersion",
+            "policyVersion",
+            "recordVersion",
+            "schemaVersion",
+            "state",
+            "stateVersion",
+            "updatedAt"
+          ],
+          "nonstandardFieldNameCount": 0,
+          "fieldSetSha256": "2eb84b78e359b8618802a31b9b868098e56fe27595cdc3d8a0dbbf1fe9b4a7a7",
+          "unknownFieldCount": 0,
+          "unknownFieldNames": [],
+          "expiredAtObservation": false
+        },
+        {
+          "rowSha256": "8faa8bf6696708b2107cb1e07f75f19dd584795055c409913beee829bd80b85e",
+          "family": "USER_PROFILE",
+          "shapeRecognized": true,
+          "coverageImpact": "OWNED_PROFILE_FENCE_THEN_DELETE",
+          "schemaFieldNames": [
+            "PK",
+            "SK",
+            "agePolicyVersion",
+            "ageVerified",
+            "ageVerifiedAt",
+            "createdAt",
+            "email",
+            "family_name",
+            "given_name",
+            "over_18",
+            "phone_number",
+            "status",
+            "sub",
+            "updatedAt"
+          ],
+          "nonstandardFieldNameCount": 0,
+          "fieldSetSha256": "b9e61e48713f6753c141ded0beb7a7eeb884d570af073193754a1909063cc0df",
+          "unknownFieldCount": 0,
+          "unknownFieldNames": [],
+          "expiredAtObservation": false
+        },
+        {
+          "rowSha256": "ef72fec460c41b154d3f514902be8d7035c9787cb67d2d57a50e84abe575c2d5",
+          "family": "CONSENT_AUDIT",
+          "shapeRecognized": true,
+          "coverageImpact": "APPROVED_400_DAY_MINIMIZED_AUDIT_RETAINED",
+          "schemaFieldNames": [
+            "PK",
+            "SK",
+            "consentEpochId",
+            "effectiveMonthlyScanLimit",
+            "eventType",
+            "expiresAt",
+            "noticeVersion",
+            "occurredAt",
+            "operationId",
+            "policyVersion",
+            "recordVersion",
+            "resultingState",
+            "schemaVersion",
+            "stateVersion"
+          ],
+          "nonstandardFieldNameCount": 0,
+          "fieldSetSha256": "92324cdb07be39d1abd32267e0d554b171c035e8d5572c14489b13933114f008",
+          "unknownFieldCount": 0,
+          "unknownFieldNames": [],
+          "expiredAtObservation": false
+        },
+        {
+          "rowSha256": "39d12b4665cbdccf7a2d5ba2f0b0e1cd1f2cd5cc0cb4a8c846a2b90ad1bfd6cc",
+          "family": "CAMPAIGN_OPERATION",
+          "shapeRecognized": true,
+          "coverageImpact": "RECOGNIZED_OWNED_OPERATION_ERASE_WITH_PROFILE",
+          "schemaFieldNames": [
+            "PK",
+            "SK",
+            "action",
+            "consentEpochId",
+            "expiresAt",
+            "occurredAt",
+            "operationId",
+            "recordVersion",
+            "resultingState",
+            "schemaVersion"
+          ],
+          "nonstandardFieldNameCount": 0,
+          "fieldSetSha256": "183a6abc512db4fb6e43a6830e4d9641b375aa77b50b8779a88e4aa9a91c5bf9",
+          "unknownFieldCount": 0,
+          "unknownFieldNames": [],
+          "expiredAtObservation": false
+        },
+        {
+          "rowSha256": "507428fa94bac5e05f5a9f93ca083a02dd14444fa2b749f4f63e5918d5197221",
+          "family": "CAMPAIGN_PARTICIPATION",
+          "shapeRecognized": true,
+          "coverageImpact": "RECOGNIZED_OWNED_STATE_ERASE_WITH_PROFILE",
+          "schemaFieldNames": [
+            "PK",
+            "SK",
+            "consentEpochId",
+            "effectiveFrom",
+            "environment",
+            "lastOperationId",
+            "noticeVersion",
+            "policyVersion",
+            "recordVersion",
+            "schemaVersion",
+            "state",
+            "stateVersion",
+            "updatedAt"
+          ],
+          "nonstandardFieldNameCount": 0,
+          "fieldSetSha256": "2eb84b78e359b8618802a31b9b868098e56fe27595cdc3d8a0dbbf1fe9b4a7a7",
+          "unknownFieldCount": 0,
+          "unknownFieldNames": [],
+          "expiredAtObservation": false
+        },
+        {
+          "rowSha256": "1b526631adf9f4012fa78b61c0a804def50c111b881a3b8e02eafb73d7b9f968",
+          "family": "USER_PROFILE",
+          "shapeRecognized": true,
+          "coverageImpact": "OWNED_PROFILE_FENCE_THEN_DELETE",
+          "schemaFieldNames": [
+            "PK",
+            "SK",
+            "agePolicyVersion",
+            "ageVerified",
+            "ageVerifiedAt",
+            "createdAt",
+            "email",
+            "family_name",
+            "given_name",
+            "over_18",
+            "phone_number",
+            "status",
+            "sub",
+            "updatedAt"
+          ],
+          "nonstandardFieldNameCount": 0,
+          "fieldSetSha256": "b9e61e48713f6753c141ded0beb7a7eeb884d570af073193754a1909063cc0df",
+          "unknownFieldCount": 0,
+          "unknownFieldNames": [],
+          "expiredAtObservation": false
+        }
+      ]
+    },
+    "device-bindings": {
+      "tableArnSha256": "b064e00caacad168a7a0c50260df3910664dd319fe9da7abf2c71ca97af70750",
+      "tableIdSha256": "9ab677f72e73c1b40dd8778ab2aac5a9bd2a7654d35541e8fbf3251a115b7ede",
+      "passes": [
+        {
+          "rows": 2,
+          "pages": 1,
+          "complete": true,
+          "tableContentsSha256": "ae762df2daad2a77576c2aaaff7856fc1279342610a24621f72330c607b05f72"
+        },
+        {
+          "rows": 2,
+          "pages": 1,
+          "complete": true,
+          "tableContentsSha256": "ae762df2daad2a77576c2aaaff7856fc1279342610a24621f72330c607b05f72"
+        }
+      ],
+      "stable": true,
+      "familyCounts": {
+        "DEVICE_BINDING": 2
+      },
+      "records": [
+        {
+          "rowSha256": "c3ec3b5c38e7354e9a62522fc16fa798ef52f3e251f8caf038026add607a5fd1",
+          "family": "DEVICE_BINDING",
+          "shapeRecognized": true,
+          "coverageImpact": "ENTIRE_OWNED_PARTITION_DELETED",
+          "schemaFieldNames": [
+            "GSI1PK",
+            "GSI1SK",
+            "PK",
+            "SK",
+            "accountId",
+            "bindingFingerprint",
+            "deactivatedAt",
+            "firstSeenAt",
+            "lastSeenAt",
+            "osVersion",
+            "platform",
+            "status"
+          ],
+          "nonstandardFieldNameCount": 0,
+          "fieldSetSha256": "648961c65b429513d395f4421ad99bfc25cc7e1e37017c8e24c35ec4f3215108",
+          "unknownFieldCount": 0,
+          "unknownFieldNames": [],
+          "expiredAtObservation": false
+        },
+        {
+          "rowSha256": "9ff02731a8c5a9ded14ee743619cd4a9df7fb091db01987c0c6d33efeb1a7dde",
+          "family": "DEVICE_BINDING",
+          "shapeRecognized": true,
+          "coverageImpact": "ENTIRE_OWNED_PARTITION_DELETED",
+          "schemaFieldNames": [
+            "GSI1PK",
+            "GSI1SK",
+            "PK",
+            "SK",
+            "accountId",
+            "bindingFingerprint",
+            "deactivatedAt",
+            "expiresAt",
+            "firstSeenAt",
+            "lastSeenAt",
+            "osVersion",
+            "platform",
+            "status"
+          ],
+          "nonstandardFieldNameCount": 0,
+          "fieldSetSha256": "48d791e8f5878697b4bf22c963fe115349ef7c6cfc0c9146ab3f315cefce3f80",
+          "unknownFieldCount": 0,
+          "unknownFieldNames": [],
+          "expiredAtObservation": false
+        }
+      ]
+    },
+    "device-recovery-control": {
+      "tableArnSha256": "095da0b231ac059d82cb8109fd648072ddb0bb206edb28d0feddeeb5ab54fa84",
+      "tableIdSha256": "f5774489379378635bf43b3ce6e4f17d3a0fbe89f9d80875f618586bedbeaaaa",
+      "passes": [
+        {
+          "rows": 0,
+          "pages": 1,
+          "complete": true,
+          "tableContentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "rows": 0,
+          "pages": 1,
+          "complete": true,
+          "tableContentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ],
+      "stable": true,
+      "familyCounts": {},
+      "records": []
+    },
+    "analysis-abuse-control": {
+      "tableArnSha256": "e75413e648db59e2c599dcc0d1bdd070007bdcead11f145c42d52b495619fe2c",
+      "tableIdSha256": "8271f9748658fea97d35bd3abe2cb47221c1ebad14761fe23c810970cca78cac",
+      "passes": [
+        {
+          "rows": 0,
+          "pages": 1,
+          "complete": true,
+          "tableContentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "rows": 0,
+          "pages": 1,
+          "complete": true,
+          "tableContentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ],
+      "stable": true,
+      "familyCounts": {},
+      "records": []
+    },
+    "web-risk-cache": {
+      "tableArnSha256": "52655f497915ae991d75955ef7c172733a76da4f8373941b0f2ca6396b52af0a",
+      "tableIdSha256": "1fc269def16372553492e7325dbff18bc710934868592b0c667d70bc6ea1d786",
+      "passes": [
+        {
+          "rows": 0,
+          "pages": 1,
+          "complete": true,
+          "tableContentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "rows": 0,
+          "pages": 1,
+          "complete": true,
+          "tableContentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ],
+      "stable": true,
+      "familyCounts": {},
+      "records": []
+    }
+  },
+  "inventoryApproved": false,
+  "limits": [
+    "Full row contents read only in memory. No account keys, attribute values, tokens, URLs or identities retained.",
+    "Shape and cleanup-path classification is not approval of the legitimacy of stored values, completed erasure or historical backup coverage.",
+    "Two strong scans are separate observations; source/writer boundary and final manifest approval are independent."
+  ],
+  "elapsedSeconds": 2.19
+}

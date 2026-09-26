@@ -1,0 +1,29 @@
+{
+  "observedAtEpoch": 1790434494,
+  "account": "107827791950",
+  "region": "us-east-1",
+  "poolId": "us-east-1_wzN0wUSdQ",
+  "clientId": "5kvl9a8jo4fr1qqnci27tdabk4",
+  "poolSettingsSha256": "00782360cebf2224a034b32d85d3d53df5b0f07ce8a9cbec112674f6ca4af429",
+  "clientSettingsSha256": "f0cd67f3f866e51b0b960708bac2f84134668dc8a8ad37fc51c0e3cdd09d5176",
+  "emailUsernameOnly": true,
+  "mfaOff": true,
+  "exactPostConfirmationOnly": true,
+  "userPasswordAuth": true,
+  "clientSecretAbsent": true,
+  "writerCodeSha256": "ligB5iVrgSMB5kBfvYveM764yzTX2rFzN1se/Uvybog=",
+  "writerRevisionId": "654ed217-c7cd-4621-a0e4-abe55196e5e0",
+  "writerRuntime": "python3.14",
+  "writerArchitecture": [
+    "arm64"
+  ],
+  "writerUsersLedgerMatch": true,
+  "requiredAttributeNames": [
+    "sub",
+    "email",
+    "given_name",
+    "family_name"
+  ],
+  "unsupportedRequiredAttributes": false,
+  "readOnly": true
+}
