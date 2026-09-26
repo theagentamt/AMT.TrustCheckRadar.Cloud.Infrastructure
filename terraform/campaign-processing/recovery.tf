@@ -132,7 +132,7 @@ resource "aws_scheduler_schedule" "recovery" {
   group_name                   = aws_scheduler_schedule_group.campaign[0].name
   schedule_expression          = "rate(5 minutes)"
   schedule_expression_timezone = "Etc/UTC"
-  state                        = "DISABLED"
+  state                        = local.campaign_deletion_active ? "ENABLED" : "DISABLED"
   flexible_time_window { mode = "OFF" }
   target {
     arn      = aws_lambda_function.worker["deletion"].arn
@@ -143,7 +143,7 @@ resource "aws_scheduler_schedule" "recovery" {
       maximum_retry_attempts       = 0
     }
   }
-  depends_on = [aws_iam_role_policy.recovery_scheduler_invoke, aws_iam_role_policy.recovery_runtime]
+  depends_on = [aws_iam_role_policy.recovery_scheduler_invoke, aws_iam_role_policy.recovery_runtime, aws_iam_role_policy.deletion_runtime, aws_iam_role_policy.account_cleanup, aws_iam_role_policy.account_cleanup_decryption, aws_iam_role_policy.completion_runtime]
 }
 resource "aws_lambda_function_event_invoke_config" "recovery" {
   count                        = local.recovery_prepared ? 1 : 0
@@ -163,7 +163,7 @@ resource "aws_cloudwatch_metric_alarm" "recovery" {
     overdue     = { metric = "ObservedOverdueCommands", statistic = "Sum", threshold = 0, comparison = "GreaterThanThreshold", periods = 1, missing = "notBreaching" }
   } : {}
   alarm_name          = "${local.name_prefix}-recovery-${replace(each.key, "_", "-")}"
-  alarm_description   = "Campaign recovery ${each.key}; observed work only, not full coverage or completed erasure. Candidate actions remain disabled."
+  alarm_description   = "Campaign recovery ${each.key}; observed work only, not full coverage or completed erasure. Actions follow reviewed deletion-only activation."
   namespace           = "TrustCheckRadar/Campaign"
   metric_name         = each.value.metric
   statistic           = each.value.statistic
@@ -172,7 +172,7 @@ resource "aws_cloudwatch_metric_alarm" "recovery" {
   threshold           = each.value.threshold
   comparison_operator = each.value.comparison
   treat_missing_data  = each.value.missing
-  actions_enabled     = false
+  actions_enabled     = local.campaign_deletion_active
   alarm_actions       = [local.campaign.budget_alert_topic_arn]
   dimensions          = { Environment = var.environment }
   tags                = local.common_tags
@@ -180,10 +180,10 @@ resource "aws_cloudwatch_metric_alarm" "recovery" {
 output "campaign_recovery_preparation_contract" {
   value = {
     prepared                      = local.recovery_prepared
-    recovery_enabled              = false
+    recovery_enabled              = local.campaign_deletion_active
     producer_writes_enabled       = false
     historical_coverage_qualified = false
-    schedule_enabled              = false
-    alarm_actions_enabled         = false
+    schedule_enabled              = local.campaign_deletion_active
+    alarm_actions_enabled         = local.campaign_deletion_active
   }
 }

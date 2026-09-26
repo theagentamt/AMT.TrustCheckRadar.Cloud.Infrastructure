@@ -1,0 +1,16 @@
+tests/research-release-compatibility.tftest.hcl... in progress
+  run "reviewed_exact_pair_preserves_api_artifacts"... pass
+  run "default_still_rejects_different_releases"... pass
+  run "reject_stale_api"... pass
+  run "reject_stale_consumer"... pass
+  run "reject_missing_review"... pass
+  run "reject_active_consumers"... pass
+  run "reject_foreign_account"... pass
+  run "reject_wrong_environment"... pass
+  run "reject_no_migration"... pass
+  run "allow_cleanup_only_with_research_paused"... pass
+  run "reject_research_active_even_if_legacy_paused"... pass
+tests/research-release-compatibility.tftest.hcl... tearing down
+tests/research-release-compatibility.tftest.hcl... pass
+
+Success! 11 passed, 0 failed.

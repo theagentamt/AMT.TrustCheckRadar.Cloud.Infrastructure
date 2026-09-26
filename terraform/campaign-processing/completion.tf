@@ -89,9 +89,9 @@ resource "aws_iam_role_policy" "completion_runtime" {
 output "campaign_completion_preparation_contract" {
   value = {
     prepared           = local.completion_prepared
-    stream_enabled     = false
-    recovery_enabled   = false
-    completion_enabled = false
+    stream_enabled     = local.campaign_deletion_active
+    recovery_enabled   = local.campaign_deletion_active
+    completion_enabled = local.campaign_deletion_active
     inventory_approved = false
     selected_release   = try(var.campaign_completion_artifact.release_id, null)
   }

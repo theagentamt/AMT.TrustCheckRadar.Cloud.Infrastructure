@@ -58,8 +58,9 @@ research-consent authority, notice/policy constants, feature contract and incomi
 publisher contract. Added shared metadata handles bounded transient contribution
 repair; it does not change the outbox consent envelope. Runtime admission remains
 closed. This pair is not approval for subsequent releases or enabled research.
-Deletion-only activation will need a separate truthful applied contract describing
-paused research producers independently from active cleanup workers.
+The deletion-only activation contract distinguishes paused research producers from
+active cleanup workers. The API accepts this explicit research state and preserves
+the prior all-consumers check when reading older contracts.
 
 ## Current evidence and exceptions
 
@@ -147,5 +148,43 @@ role, whose prior policy contained only period-key GenerateMac access. Preparati
 adds Decrypt on exactly the transient and persistent campaign keys, constrained to
 this account and regional DynamoDB through kms:ViaService. It grants no direct
 KMS use or key management. The default-encrypted IAM fixtures do not qualify this
-CMK path. A cold read through the deployed worker identity remains required before
-worker activation; this closed deployment does not claim that acceptance.
+CMK path. The later actual-role probe and delayed CloudTrail correlation below qualify the
+fresh decrypt path; the original IAM fixture alone does not establish it.
+
+## Closed deployment verified
+
+Infrastructure PR86 merged at `4135af1b5143a92fd443a61c75224b9dc0920c6e`.
+The recovery control table, four f922 campaign packages, exact cleanup/decrypt
+policies and f922 account-data package were deployed manually to Dev. API recovery
+storage wiring also refreshed account export and device-recovery configuration;
+self recovery remains false and the operator allowlist is empty. Direct readback
+matched package hashes, environment and policies, confirmed seven-day recovery
+PITR/TTL and no public deletion route. Full foundation, campaign and API plans all
+reported no differences after deployment.
+
+A temporary function using the actual deployed deletion role successfully made
+strongly consistent, projected reads of absent synthetic keys in both encrypted
+campaign tables. It made no table writes and returned no item data. The function
+and its possible log group were removed; the production function was unchanged.
+The immediate CloudTrail lookup was empty. A delayed bounded lookup then confirmed
+successful Decrypt events for both exact CMKs, the unique temporary function role
+session and matching DynamoDB table encryption contexts. Both observations remain
+in the evidence; the delayed result qualifies fresh KMS access for this probe.
+
+## Deletion-only activation control
+
+`campaign_deletion_activation` is null by default and is not selected in Dev.
+It pins the reviewed campaign source, UUIDv4 generation and three manifest/revision
+pairs, requiring existing cleanup preparations plus inventory/runtime/encryption
+evidence. Selection enables only the deletion bridge, ledger stream, five-minute
+recovery and its alerts. Research publisher, aggregator and whole-period lifecycle
+remain paused under the global kill switch. This object does not create or approve
+inventory records; live workers independently verify their exact stored proofs.
+The all-consumers output becomes false when cleanup is active; a separate research
+producer output stays true, avoiding a false claim that all consumers are paused.
+All-component nonempty fixtures and synthetic Cognito deletion remain outstanding.
+
+Turning `campaign_deletion_activation` back to null stops accepted campaign work.
+First close public admission, drain in-flight requests and reconcile all accepted
+account/withdrawal work; only then stop the campaign workers. Their stream and
+schedule both wait for the required runtime policies during initial activation.

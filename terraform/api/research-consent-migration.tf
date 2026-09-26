@@ -30,7 +30,7 @@ variable "research_consent_migration_deployment" {
 }
 
 variable "research_campaign_release_compatibility" {
-  description = "Reviewed exact Dev API/consumer release pair after the initial same-release cutover. Only permitted while consent and all campaign consumers remain paused."
+  description = "Reviewed exact Dev API/consumer release pair after the initial same-release cutover. Only permitted while consent and research producers remain paused; independently qualified cleanup may run."
   type = object({
     api_release_sha      = string
     consumer_release_sha = string
@@ -178,7 +178,7 @@ resource "terraform_data" "research_migration_cutover" {
         data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.environment == var.environment &&
         data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.release_id == local.research_expected_consumer_release &&
         data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.selected &&
-        data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.consumers_paused &&
+        try(data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.research_producers_paused, data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.consumers_paused) &&
         data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.account_id == data.aws_caller_identity.account_fence[0].account_id,
         false
       )

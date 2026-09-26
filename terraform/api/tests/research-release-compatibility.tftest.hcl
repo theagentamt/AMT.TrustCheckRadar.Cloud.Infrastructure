@@ -173,3 +173,37 @@ run "reject_no_migration" {
   variables { research_consent_migration_deployment = null }
   expect_failures = [var.research_campaign_release_compatibility]
 }
+run "allow_cleanup_only_with_research_paused" {
+  command = plan
+  override_data {
+    target = data.terraform_remote_state.research_campaign_processing
+    values = { outputs = { research_consent_migration_contract = {
+      selected                  = true
+      environment               = "dev"
+      account_id                = "107827791950"
+      release_id                = "2222222222222222222222222222222222222222"
+      consumers_paused          = false
+      research_producers_paused = true
+      deletion_workers_enabled  = true
+    } } }
+  }
+  assert {
+    condition     = aws_lambda_function.campaign_participation.environment[0].variables.CONSENT_INDEPENDENCE_ENABLED == "false"
+    error_message = "Cleanup-only consumers must not enable consent."
+  }
+}
+run "reject_research_active_even_if_legacy_paused" {
+  command = plan
+  override_data {
+    target = data.terraform_remote_state.research_campaign_processing
+    values = { outputs = { research_consent_migration_contract = {
+      selected                  = true
+      environment               = "dev"
+      account_id                = "107827791950"
+      release_id                = "2222222222222222222222222222222222222222"
+      consumers_paused          = true
+      research_producers_paused = false
+    } } }
+  }
+  expect_failures = [terraform_data.research_migration_cutover]
+}

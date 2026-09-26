@@ -1,0 +1,55 @@
+{
+  "verified": true,
+  "mode": "target",
+  "sourceSha": "f92285b50561397355a5fe2e466d297041336755",
+  "allGatesClosed": true,
+  "planJsonSha256": "0b0ecf375ba5d216869b370ce098ebd62f6056292d74a9a484f60994e9b498ec",
+  "changes": [
+    {
+      "address": "aws_iam_role_policy.account_cleanup[\"deletion\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.account_cleanup[\"lifecycle\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.account_cleanup_decryption[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"cluster\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"deletion\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"lifecycle\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"publisher\"]",
+      "actions": [
+        "update"
+      ]
+    }
+  ],
+  "newPolicySha256": {
+    "deletion": "e48bb12845dca92a87e84304e4f15450d3c5539ee99fcf1b87cdc3095a4786fc",
+    "lifecycle": "d861cc613c31a05d85dba10c6ba73328bb429c6e02ac785ea39bba885dc5473a"
+  }
+}
