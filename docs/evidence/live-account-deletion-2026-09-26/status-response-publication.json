@@ -1,0 +1,20 @@
+{
+  "sourceSha": "eba5d938c1da5cf36540cf654e674f46bba3fa71",
+  "publicationComplete": true,
+  "runtimeUpdated": false,
+  "activationApproved": false,
+  "artifacts": {
+    "account_data": {
+      "function": "account_data_api",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/eba5d938c1da5cf36540cf654e674f46bba3fa71/account_data_api.zip",
+      "objectVersion": "Hmz9pOvMLuHr4x45wL3B05i.EaVe4CZg",
+      "sourceCodeHash": "7gXjecACio4Di2m383J+pwUkFz1yzLCcGqbNJ3359kY=",
+      "sha256": "ee05e379c0028a8e038b69b7f3727ea70524173d72ccb09c1aa6cd277df9f646",
+      "bytes": 47971,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "httpAccepted": true,
+  "monitor": {
+    "stage": "ACCEPTED",
+    "httpGet": 200,
+    "httpPost": 202,
+    "erasureVerified": false,
+    "nativeSignupTriggerQualified": false,
+    "httpAccepted": true,
+    "monitorCompleted": false,
+    "polls": 1,
+    "applicationGetDenied": false,
+    "cognitoGetUserRejected": false,
+    "category": "HTTP_OBSERVATION_UNAVAILABLE"
+  },
+  "interpretation": "The original operation is accepted; token-rejection observation was inconclusive and is not an erasure failure. No HTTP retry or credential reset was performed."
+}

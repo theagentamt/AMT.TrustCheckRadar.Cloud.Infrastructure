@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "eventsObserved": 36,
+  "traversalComplete": true,
+  "errorCategories": {
+    "Account-data Lambda failed": 1
+  },
+  "serviceActions": {},
+  "sourceFrames": {},
+  "rawMessagesRetained": false
+}
