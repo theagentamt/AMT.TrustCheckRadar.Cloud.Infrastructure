@@ -1,0 +1,1595 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-09-26T15:10:59.879523+00:00",
+  "readOnly": true,
+  "complete": true,
+  "topics": {
+    "trustcheckradar-dev-url-resolver-alerts": {
+      "arn": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts",
+      "confirmedSupportEmailCount": 1,
+      "pendingSupportEmailCount": 0,
+      "otherSubscriptionCount": 0,
+      "kmsMasterKeyIdPresent": false,
+      "policy": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "AccountAdministration",
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": "arn:aws:iam::107827791950:root"
+            },
+            "Action": [
+              "SNS:GetTopicAttributes",
+              "SNS:SetTopicAttributes",
+              "SNS:AddPermission",
+              "SNS:RemovePermission",
+              "SNS:DeleteTopic",
+              "SNS:Subscribe",
+              "SNS:ListSubscriptionsByTopic",
+              "SNS:Publish"
+            ],
+            "Resource": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+          },
+          {
+            "Sid": "OnlyApprovedSafetyAlarms",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "cloudwatch.amazonaws.com"
+            },
+            "Action": "sns:Publish",
+            "Resource": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts",
+            "Condition": {
+              "StringEquals": {
+                "aws:SourceAccount": "107827791950"
+              },
+              "ArnEquals": {
+                "aws:SourceArn": [
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-resolver-partial",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-resolver-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-resolver-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-assessment-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-assessment-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-assessment-dependency-failures",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-consumer-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-consumer-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-entitlements-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-entitlements-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-lease-recovery-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-lease-recovery-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-lease-recovery-failed-items",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-lease-recovery-heartbeat",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-failed-items",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-heartbeat",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-lease-recovery-expiry-overdue",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-overdue",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-full-pass-age",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-play-handoff-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-play-handoff-throttles"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "trustcheckradar-dev-campaign-budget-alerts": {
+      "arn": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts",
+      "confirmedSupportEmailCount": 1,
+      "pendingSupportEmailCount": 0,
+      "otherSubscriptionCount": 0,
+      "kmsMasterKeyIdPresent": false,
+      "policy": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "AllowBudgetsPublish",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "budgets.amazonaws.com"
+            },
+            "Action": "sns:Publish",
+            "Resource": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts",
+            "Condition": {
+              "StringEquals": {
+                "aws:SourceAccount": "107827791950"
+              }
+            }
+          },
+          {
+            "Sid": "AllowCloudWatchPublish",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "cloudwatch.amazonaws.com"
+            },
+            "Action": "sns:Publish",
+            "Resource": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts",
+            "Condition": {
+              "StringEquals": {
+                "aws:SourceAccount": "107827791950"
+              },
+              "ArnLike": {
+                "aws:SourceArn": [
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-campaign-*",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-history-*",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-*"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "alarms": [
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-errors",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-account-data-api"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-lag",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "IteratorAge",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-account-data-api"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 300000.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-command_failure",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "AccountDeletionReconciliationCommandFailures",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-failure",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "SessionRevocationReconciliationFailure",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-heartbeat",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "SessionRevocationReconciliationSuccess",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 1.0,
+      "ComparisonOperator": "LessThanThreshold",
+      "EvaluationPeriods": 3
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-no_full_pass",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "SessionRevocationReconciliationFullPassCompleted",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 1.0,
+      "ComparisonOperator": "LessThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-outbox_blocked",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "AccountDeletionCampaignOutboxPolicyBlocked",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-pass_failure",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "AccountDeletionReconciliationPassFailures",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-policy_blocked",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "AccountDeletionAnalysisAbusePolicyBlocked",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-profile_blocked",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "AccountDeletionUserProfilePolicyBlocked",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-stale_full_pass",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "SessionRevocationReconciliationFullPassAgeSeconds",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 21600.0,
+      "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-session-revocation-failure",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "AccountDeletionFailure",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        },
+        {
+          "Name": "Operation",
+          "Value": "session-revocation"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-throttles",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-account-data-api"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-deletion-bridge-errors",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "InsufficientDataActions": [],
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-deletion-bridge"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-budget",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "InsufficientDataActions": [],
+      "MetricName": "RecoveryBudgetExhausted",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-failures",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "InsufficientDataActions": [],
+      "MetricName": "RecoveryFailures",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-heartbeat",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "InsufficientDataActions": [],
+      "MetricName": "RecoveryTicks",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "breaching",
+      "StateValue": "ALARM",
+      "Threshold": 1.0,
+      "ComparisonOperator": "LessThanThreshold",
+      "EvaluationPeriods": 3
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-overdue",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "InsufficientDataActions": [],
+      "MetricName": "ObservedOverdueCommands",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-pending-age",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "InsufficientDataActions": [],
+      "MetricName": "ObservedPendingAgeSeconds",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 72000.0,
+      "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-schema",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "InsufficientDataActions": [],
+      "MetricName": "SidecarSchemaFailures",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-truncated",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "InsufficientDataActions": [],
+      "MetricName": "RecoveryShardTruncated",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-unverified",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "InsufficientDataActions": [],
+      "MetricName": "CommandsUnverified",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-account-deletion-bridge-errors",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-account-deletion-bridge"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-account-deletion-bridge-lag",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "IteratorAge",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-account-deletion-bridge"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 300000.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-account-deletion-bridge-throttles",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-account-deletion-bridge"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-deletion-failed",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "deletion-failed",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "Dimensions": [],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 1.0,
+      "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-deletion-fullPassAgeSeconds",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "deletion-fullPassAgeSeconds",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "Dimensions": [],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 600.0,
+      "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-deletion-heartbeat",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "deletion-heartbeat",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "Dimensions": [],
+      "TreatMissingData": "breaching",
+      "StateValue": "ALARM",
+      "Threshold": 1.0,
+      "ComparisonOperator": "LessThanThreshold",
+      "EvaluationPeriods": 5
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-deletion-overdue",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "deletion-overdue",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "Dimensions": [],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 1.0,
+      "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-token-deletion-errors",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-play-token-deletion"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 1.0,
+      "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-token-deletion-throttles",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-play-token-deletion"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 1.0,
+      "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-errors",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-v1-authority-deletion"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-failed-items",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "v1-authority-deletion-failed",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "Dimensions": [],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-full-pass-age",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "v1-authority-deletion-full-pass-age",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "Dimensions": [],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 21600.0,
+      "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-heartbeat",
+      "ActionsEnabled": false,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "v1-authority-deletion-heartbeat",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "Dimensions": [],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 1.0,
+      "ComparisonOperator": "LessThanThreshold",
+      "EvaluationPeriods": 2
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-overdue",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "v1-authority-deletion-overdue",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "Dimensions": [],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-throttles",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "InsufficientDataActions": [],
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-v1-authority-deletion"
+        }
+      ],
+      "TreatMissingData": "notBreaching",
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "EvaluationPeriods": 1
+    }
+  ],
+  "workers": {
+    "account-data-api": {
+      "codeSha256": "tuYWOnIfwap0NHZOE9Bm5hC4kWFnXJHwrrV9hSjMZRk=",
+      "role": {
+        "name": "trustcheckradar-dev-account-data-api-role",
+        "trust": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "LambdaAssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "boundaryPresent": false,
+        "policyHashes": [
+          "121ed29e40e368098c43e15f069a7117f695536a2c580c2d298fa14cb933e079"
+        ],
+        "invokeStreamStatements": [
+          {
+            "policyName": "account-data-runtime",
+            "statement": {
+              "Action": [
+                "dynamodb:GetShardIterator",
+                "dynamodb:GetRecords",
+                "dynamodb:DescribeStream"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+              "Sid": "ReadOwnDeletionStream"
+            }
+          },
+          {
+            "policyName": "account-data-runtime",
+            "statement": {
+              "Action": "dynamodb:ListStreams",
+              "Condition": {
+                "StringEquals": {
+                  "aws:RequestedRegion": "us-east-1"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+              "Sid": "DiscoverDeletionStreamsInRegion"
+            }
+          }
+        ]
+      },
+      "gates": {
+        "CAMPAIGN_RECOVERY_WRITES_ENABLED": "false",
+        "ACCOUNT_IDENTITY_FINALIZER_ENABLED": "false",
+        "ACCOUNT_DELETION_ENABLED": "false"
+      },
+      "resourcePolicy": {
+        "Version": "2012-10-17",
+        "Id": "default",
+        "Statement": [
+          {
+            "Sid": "AllowAccountDeletionReconciliation",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "events.amazonaws.com"
+            },
+            "Action": "lambda:InvokeFunction",
+            "Resource": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-account-data-api",
+            "Condition": {
+              "StringEquals": {
+                "AWS:SourceAccount": "107827791950"
+              },
+              "ArnLike": {
+                "AWS:SourceArn": "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-account-deletion-reconcile"
+              }
+            }
+          }
+        ]
+      },
+      "aliases": [],
+      "mappings": [
+        {
+          "EventSourceArn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+          "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-account-data-api",
+          "State": "Disabled",
+          "LastProcessingResult": "No records processed"
+        }
+      ]
+    },
+    "history-account-deletion-bridge": {
+      "codeSha256": "z30oWQNIh/9C4iMmgw6b31RmXbLP2RjZd3HFgYW2zuw=",
+      "role": {
+        "name": "trustcheckradar-dev-history-account-deletion-bridge-role",
+        "trust": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "boundaryPresent": false,
+        "policyHashes": [
+          "4b6d12744ee237431621aece18b4db3b3b598e57d68c7fafce4b4d4dc16afa29"
+        ],
+        "invokeStreamStatements": [
+          {
+            "policyName": "history-account-deletion-runtime",
+            "statement": {
+              "Action": [
+                "dynamodb:GetShardIterator",
+                "dynamodb:GetRecords",
+                "dynamodb:DescribeStream"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+              "Sid": "ConsumeOnlyDeletionLedgerStream"
+            }
+          },
+          {
+            "policyName": "history-account-deletion-runtime",
+            "statement": {
+              "Action": "dynamodb:ListStreams",
+              "Condition": {
+                "StringEquals": {
+                  "aws:RequestedRegion": "us-east-1"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+              "Sid": "DiscoverRegionalStreams"
+            }
+          }
+        ]
+      },
+      "gates": {
+        "HISTORY_ACCOUNT_DELETION_ENABLED": "false"
+      },
+      "resourcePolicy": {
+        "Version": "2012-10-17",
+        "Id": "default",
+        "Statement": [
+          {
+            "Sid": "OnlyHistoryDeletionReconciliation",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "events.amazonaws.com"
+            },
+            "Action": "lambda:InvokeFunction",
+            "Resource": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-history-account-deletion-bridge",
+            "Condition": {
+              "ArnLike": {
+                "AWS:SourceArn": "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-history-deletion-reconcile"
+              }
+            }
+          }
+        ]
+      },
+      "aliases": [],
+      "mappings": [
+        {
+          "EventSourceArn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+          "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-history-account-deletion-bridge",
+          "State": "Disabled",
+          "LastProcessingResult": "No records processed"
+        }
+      ]
+    },
+    "history-lifecycle": {
+      "codeSha256": "zHa0WXJftct6dx1aAfpfSyEGnKNM7ak5t49FbhV0+n8=",
+      "role": {
+        "name": "trustcheckradar-dev-history-lifecycle-role",
+        "trust": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "boundaryPresent": false,
+        "policyHashes": [
+          "36b5a27505d46ba84ac939916ebc77cdc59b55356fa9563393a6ac6564a4c981"
+        ],
+        "invokeStreamStatements": []
+      },
+      "gates": {
+        "RECOGNITION_ENABLED": "false",
+        "HISTORY_LIFECYCLE_ENABLED": "false",
+        "HISTORY_MUTATIONS_ENABLED": "false",
+        "HISTORY_DURABLE_REPLAY_ENABLED": "false",
+        "HISTORY_READS_ENABLED": "false",
+        "HISTORY_WRITES_ENABLED": "false"
+      },
+      "resourcePolicy": {
+        "Version": "2012-10-17",
+        "Id": "default",
+        "Statement": [
+          {
+            "Sid": "OnlyHistoryLifecycleSchedule",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "events.amazonaws.com"
+            },
+            "Action": "lambda:InvokeFunction",
+            "Resource": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-history-lifecycle",
+            "Condition": {
+              "ArnLike": {
+                "AWS:SourceArn": "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-history-lifecycle-sweep"
+              }
+            }
+          }
+        ]
+      },
+      "aliases": [],
+      "mappings": []
+    },
+    "v1-authority-deletion": {
+      "codeSha256": "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc=",
+      "role": {
+        "name": "trustcheckradar-dev-v1-authority-deletion-execution",
+        "trust": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "boundaryPresent": false,
+        "policyHashes": [
+          "8cf08fed1b7cbc66ed6a827988b44e0664ac8d16256d27f52f6eeb4793d0f3e5"
+        ],
+        "invokeStreamStatements": [
+          {
+            "policyName": "v1-authority-deletion-only",
+            "statement": {
+              "Action": [
+                "dynamodb:ListStreams"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "aws:RequestedRegion": "us-east-1"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+              "Sid": "DiscoverRegionalDeletionStreams"
+            }
+          },
+          {
+            "policyName": "v1-authority-deletion-only",
+            "statement": {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+              "Sid": "ReadCommandStream"
+            }
+          },
+          {
+            "policyName": "v1-authority-deletion-only",
+            "statement": {
+              "Action": [
+                "lambda:InvokeFunction",
+                "cognito-idp:*",
+                "s3:*",
+                "ssm:*",
+                "sts:AssumeRole"
+              ],
+              "Effect": "Deny",
+              "Resource": "*",
+              "Sid": "NoProviderOrIdentityMutation"
+            }
+          }
+        ]
+      },
+      "gates": {
+        "V1_AUTHORITY_DELETION_ENABLED": "false"
+      },
+      "resourcePolicy": null,
+      "aliases": [
+        {
+          "name": "live",
+          "version": "6",
+          "policy": {
+            "Version": "2012-10-17",
+            "Id": "default",
+            "Statement": [
+              {
+                "Sid": "AllowMaintenanceSchedule",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "events.amazonaws.com"
+                },
+                "Action": "lambda:InvokeFunction",
+                "Resource": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-authority-deletion:live",
+                "Condition": {
+                  "StringEquals": {
+                    "AWS:SourceAccount": "107827791950"
+                  },
+                  "ArnLike": {
+                    "AWS:SourceArn": "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-v1-authority-deletion"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "EventSourceArn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+          "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-authority-deletion:live",
+          "State": "Disabled",
+          "LastProcessingResult": "OK"
+        }
+      ]
+    },
+    "play-token-deletion": {
+      "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+      "role": {
+        "name": "trustcheckradar-dev-play-token-deletion-execution",
+        "trust": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "boundaryPresent": false,
+        "policyHashes": [
+          "461b338e08cca4f841544f5639004e356fd2733daf01a234fc5590c12b618d91"
+        ],
+        "invokeStreamStatements": [
+          {
+            "policyName": "purpose-limited-lifecycle",
+            "statement": {
+              "Action": [
+                "lambda:InvokeFunction",
+                "s3:*",
+                "ssm:*",
+                "sts:AssumeRole",
+                "dynamodb:CreateBackup",
+                "dynamodb:StartAwsBackupJob",
+                "dynamodb:ExportTableToPointInTime",
+                "dynamodb:RestoreTableToPointInTime",
+                "dynamodb:UpdateContinuousBackups",
+                "dynamodb:BatchWriteItem"
+              ],
+              "Effect": "Deny",
+              "Resource": "*",
+              "Sid": "NoOtherServicesOrCopies"
+            }
+          },
+          {
+            "policyName": "purpose-limited-lifecycle",
+            "statement": {
+              "Action": [
+                "dynamodb:ListStreams"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "aws:RequestedRegion": "us-east-1"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+              "Sid": "RegionalStreamDiscovery"
+            }
+          },
+          {
+            "policyName": "purpose-limited-lifecycle",
+            "statement": {
+              "Action": [
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:DescribeStream"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+              "Sid": "ExactDeletionStream"
+            }
+          }
+        ]
+      },
+      "gates": {
+        "AUTHORITY_ENABLED": "false",
+        "PLAY_TOKEN_CLEANUP_ENABLED": "false",
+        "PLAY_LIFECYCLE_ENABLED": "false",
+        "PLAY_PREPARATION_ENABLED": "false"
+      },
+      "resourcePolicy": null,
+      "aliases": [
+        {
+          "name": "live",
+          "version": "1",
+          "policy": null
+        }
+      ],
+      "mappings": [
+        {
+          "EventSourceArn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+          "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-play-token-deletion:live",
+          "State": "Disabled",
+          "LastProcessingResult": "No records processed"
+        }
+      ]
+    },
+    "campaign-deletion-bridge": {
+      "codeSha256": "w3wa+YT63hwH5qahfdB0q/JdppbzK6Uw7KAI43ImkMk=",
+      "role": {
+        "name": "trustcheckradar-dev-campaign-deletion-bridge-role",
+        "trust": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "LambdaAssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "boundaryPresent": false,
+        "policyHashes": [
+          "85c2e3cabbc3f3f7ed92c9010fbd3eacc6e94487f8490449c7a924edb028526a",
+          "d7d858cc63168459dfd5a878c0049f068073fcb8385207dc1c045b0119b0ee25",
+          "e886c6d64f6f4e7daa11c946c34dfa82017fa9660579a0d771296801b0fcd600",
+          "cb80b3b018c1d08c71fdb96fd43bb4f8d1cf04212666a038b9d69772deaa1cba",
+          "e6808f06bd779af0fd2e5ce1e3bf2425180c6306109a1e9c215d544213640f40",
+          "f1185ae2f50c8e4f1f658c24ee264d0d273bbf925472d345e924f64788850549"
+        ],
+        "invokeStreamStatements": [
+          {
+            "policyName": "deletion-runtime",
+            "statement": {
+              "Action": [
+                "dynamodb:ListStreams",
+                "dynamodb:GetShardIterator",
+                "dynamodb:GetRecords",
+                "dynamodb:DescribeStream"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+              "Sid": "ReadDeletionLedgerStream"
+            }
+          }
+        ]
+      },
+      "gates": {
+        "CAMPAIGN_DELETION_STREAM_ENABLED": "false",
+        "CAMPAIGN_RECOVERY_ENABLED": "false",
+        "CAMPAIGN_COMPLETION_ENABLED": "false",
+        "CAMPAIGN_PERIOD_ADMISSION_ENABLED": "false"
+      },
+      "resourcePolicy": null,
+      "aliases": [],
+      "mappings": [
+        {
+          "EventSourceArn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+          "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-deletion-bridge",
+          "State": "Disabled",
+          "LastProcessingResult": "PROBLEM: Function call failed"
+        }
+      ]
+    }
+  },
+  "rules": [
+    {
+      "name": "trustcheckradar-dev-account-deletion-reconcile",
+      "arn": "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-account-deletion-reconcile",
+      "state": "DISABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-account-data-api",
+          "roleArn": null
+        }
+      ]
+    },
+    {
+      "name": "trustcheckradar-dev-history-deletion-reconcile",
+      "arn": "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-history-deletion-reconcile",
+      "state": "DISABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-history-account-deletion-bridge",
+          "roleArn": null
+        }
+      ]
+    },
+    {
+      "name": "trustcheckradar-dev-history-lifecycle-sweep",
+      "arn": "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-history-lifecycle-sweep",
+      "state": "DISABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-history-lifecycle",
+          "roleArn": null
+        }
+      ]
+    },
+    {
+      "name": "trustcheckradar-dev-v1-authority-deletion",
+      "arn": "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-v1-authority-deletion",
+      "state": "DISABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-authority-deletion:live",
+          "roleArn": null
+        }
+      ]
+    }
+  ],
+  "schedules": [
+    {
+      "name": "trustcheckradar-dev-campaign-reconcile-cleanup",
+      "arn": "arn:aws:scheduler:us-east-1:107827791950:schedule/trustcheckradar-dev-campaign/trustcheckradar-dev-campaign-reconcile-cleanup",
+      "group": "trustcheckradar-dev-campaign",
+      "state": "DISABLED",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-deletion-bridge",
+      "role": {
+        "name": "trustcheckradar-dev-campaign-recovery-scheduler",
+        "trust": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "scheduler.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": "107827791950"
+                },
+                "ArnEquals": {
+                  "aws:SourceArn": "arn:aws:scheduler:us-east-1:107827791950:schedule-group/trustcheckradar-dev-campaign"
+                }
+              }
+            }
+          ]
+        },
+        "boundaryPresent": false,
+        "policyHashes": [
+          "0d508015f1125820d7de0c4bea0e0618f9bdf5e96400bd8871529a4c348948db"
+        ],
+        "invokeStreamStatements": [
+          {
+            "policyName": "invoke-campaign-recovery",
+            "statement": {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-deletion-bridge"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "trustcheckradar-dev-play-token-deletion",
+      "arn": "arn:aws:scheduler:us-east-1:107827791950:schedule/trustcheckradar-dev-play-lifecycle/trustcheckradar-dev-play-token-deletion",
+      "group": "trustcheckradar-dev-play-lifecycle",
+      "state": "DISABLED",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-play-token-deletion:live",
+      "role": {
+        "name": "trustcheckradar-dev-play-token-deletion-schedule",
+        "trust": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "scheduler.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": "107827791950"
+                },
+                "ArnEquals": {
+                  "aws:SourceArn": "arn:aws:scheduler:us-east-1:107827791950:schedule-group/trustcheckradar-dev-play-lifecycle"
+                }
+              }
+            }
+          ]
+        },
+        "boundaryPresent": false,
+        "policyHashes": [
+          "b781f78d2eab324dba741b29d1edb7e7d29ee8aaf7319f4e7ab026a43c871fe5"
+        ],
+        "invokeStreamStatements": [
+          {
+            "policyName": "invoke-exact-live-alias",
+            "statement": {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-play-token-deletion:live"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "notificationsSent": false,
+  "limitations": [
+    "Confirmed subscriptions and configured actions prove configuration readiness, not successful message delivery.",
+    "IAM statements are inspected, not live worker invocation proof. Conditions, SCP and service context still apply.",
+    "Preactivation gates/actions are expected to be disabled until the root reviewed activation plan."
+  ]
+}

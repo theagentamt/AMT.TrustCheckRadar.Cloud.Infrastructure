@@ -654,9 +654,20 @@ data "aws_iam_policy_document" "deletion_runtime" {
       "dynamodb:DescribeStream",
       "dynamodb:GetRecords",
       "dynamodb:GetShardIterator",
-      "dynamodb:ListStreams",
     ]
     resources = [local.foundation.deletion_ledger_stream_arn]
+  }
+
+  statement {
+    sid       = "DiscoverDeletionLedgerStreams"
+    effect    = "Allow"
+    actions   = ["dynamodb:ListStreams"]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestedRegion"
+      values   = [var.aws_region]
+    }
   }
 
   statement {

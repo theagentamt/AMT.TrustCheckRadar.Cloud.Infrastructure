@@ -239,3 +239,49 @@ run "no_prod_play_topic_grant" {
   }
   expect_failures = [var.play_alarm_notifications_enabled]
 }
+
+run "exact_cleanup_alarm_publishers" {
+  command = apply
+  variables {
+    enabled                                     = true
+    account_cleanup_alarm_notifications_enabled = true
+    artifact = {
+      bucket         = "test-bucket"
+      key            = "releases/test/url_redirect_resolver.zip"
+      object_version = "test-version"
+      source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  assert {
+    condition = toset(jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"]) == toset(concat(local.resolver_alarm_arns, [
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-errors",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-lag",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-command_failure",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-failure",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-heartbeat",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-no_full_pass",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-outbox_blocked",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-pass_failure",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-policy_blocked",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-profile_blocked",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-stale_full_pass",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-session-revocation-failure",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-throttles",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-deletion-failed",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-deletion-fullPassAgeSeconds",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-deletion-heartbeat",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-deletion-overdue",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-token-deletion-errors",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-token-deletion-throttles",
+    ]))
+    error_message = "Cleanup monitoring must authorize exactly its nineteen current alarms, without wildcard publishers."
+  }
+}
+run "reject_prod_cleanup_topic_grant" {
+  command = plan
+  variables {
+    environment                                 = "prod"
+    account_cleanup_alarm_notifications_enabled = true
+  }
+  expect_failures = [var.account_cleanup_alarm_notifications_enabled]
+}

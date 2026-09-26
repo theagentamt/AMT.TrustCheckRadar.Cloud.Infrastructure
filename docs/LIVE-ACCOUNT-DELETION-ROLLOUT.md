@@ -367,3 +367,18 @@ and History read/mutation admission remain closed. API phase is workers-only wit
 an empty HTTP subject list and no routes; its final deployment plan follows the
 campaign state update. The sole selected V1/Play subject is the newly prepared
 disposable identity. No deletion command exists yet.
+
+The final preactivation check found and corrected two infrastructure gaps before
+any worker was enabled: the support SNS policy omitted thirteen account-data and
+six Play cleanup alarm ARNs, and campaign ListStreams was incorrectly scoped to
+a stream ARN. The replacement plans add exactly those nineteen CloudWatch source
+ARNs and separate regional ListStreams discovery from exact-stream record reads.
+All existing data mutation grants remain byte-equivalent by statement. This
+reviewed cleanup-activation delta supplements the original closed-role binding;
+it does not expand data-writer admission or invalidate the unchanged qualified
+source/inventory. Both existing topics have confirmed support@andmorethings.com
+subscriptions. No alert message was sent as part of the read-only check.
+
+Eight campaign activation and fourteen resolver security tests pass. The old
+campaign activation plan is withdrawn; only the replacement v2 plan is eligible
+after independent review. Other three cleanup plans are unchanged.

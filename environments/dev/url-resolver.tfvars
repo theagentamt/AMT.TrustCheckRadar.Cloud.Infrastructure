@@ -25,3 +25,5 @@ assessment_alarm_notifications_enabled = true
 consumer_alarm_notifications_enabled   = true
 
 play_alarm_notifications_enabled = true
+
+account_cleanup_alarm_notifications_enabled = true
