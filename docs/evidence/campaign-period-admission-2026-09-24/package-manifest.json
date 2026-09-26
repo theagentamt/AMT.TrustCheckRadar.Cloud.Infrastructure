@@ -1,0 +1,80 @@
+{
+  "architecture": "arm64",
+  "archive": "campaign_completion_qualification.zip",
+  "handler": "campaign_qualification.lambda_handler",
+  "historicalCoverageApproved": false,
+  "memberSha256": {
+    "__init__.py": "584d46fb58cc60fb249d9a9aa3b09d9c1a04d66882285d1c5440ccc7ea787185",
+    "_qualification_workers/campaign_cluster_aggregator/__init__.py": "644c8ff192eba4f55dc97d31a5bfdbf335ca39f084ee9c176925a77f355b0484",
+    "_qualification_workers/campaign_cluster_aggregator/app.py": "72b9c03941939e55d6e6befb66d200874bb62e4ec6f3d1c979489d7afc05089c",
+    "_qualification_workers/campaign_cluster_aggregator/config.py": "fda4902911bac01570395cda38f902e879d1ef0957fa2ce635d6f4801d6b46bf",
+    "_qualification_workers/campaign_cluster_aggregator/scoring.py": "01605078471e45dbbf9f7d16351eda7ba911a039a37c31491ac7079359efc216",
+    "_qualification_workers/campaign_cluster_aggregator/service.py": "06a98ffd9efb9c37c3c1ad13a18b20d8c0b72668a0d4c502e09bf1071932cba2",
+    "_qualification_workers/campaign_lifecycle/__init__.py": "4947972c7586f94db5ce5b1f184a4d9960283a96d9f0b1e4a3e25a0634e7e96c",
+    "_qualification_workers/campaign_lifecycle/app.py": "10706a33b8c84b1ce65bb72c78e0e0760d3034cadd9f5c5c27a7cb171d284c6d",
+    "_qualification_workers/campaign_lifecycle/config.py": "1bf538aaa1dd61a84c02ebe5915f228f8888791689cd1108779bfe4547b19f04",
+    "_qualification_workers/campaign_lifecycle/publication.py": "e865ec81692d734705456687381823bde776191399b2ebb9f29d3c80088f9ef3",
+    "_qualification_workers/campaign_lifecycle/service.py": "c5ba86896f67ab62b15c6c2d854296588465b228af18e1d1f3050cfab06d3a5b",
+    "_qualification_workers/campaign_observation_publisher/__init__.py": "198e57f978b90ae40e9522a39dc1203cf2eda70ab0c27478f66801e6e02d6a64",
+    "_qualification_workers/campaign_observation_publisher/app.py": "d71ce199c099a5ab2d9d1fbced2ce6e34e82de61b7871205e48718d6bf3d9bd6",
+    "_qualification_workers/campaign_observation_publisher/config.py": "9a4194b355a1b03b1c63ef362d0e25de414b63b5e89f005d0367845a2957e1bf",
+    "_qualification_workers/campaign_observation_publisher/contracts.py": "e4b73f903ac74b5683dc01a13353e8cacc5f75d82d05a592d1d58df3cf00e449",
+    "_qualification_workers/campaign_observation_publisher/service.py": "c6028556855a41561dfae8b652186bd758d88f2f3d3fd1321f189d4d9cedb552",
+    "app.py": "1a4ddfb105954e55697cf5cd0fa40cf794e36b8d1074618ef34665547fbebfae",
+    "campaign_qualification.py": "39c9a4e1998998616f089e9e4d045464bf4bf3131b256c14a462b4bb1d44669a",
+    "cleanup_errors.py": "ce990ff2ede3976de57d80b9caa91f0d895beeebe3eae7bfefef36f75392e7c8",
+    "completion.py": "5ab76e08f642f3b54d4cf76064d593b695487d51f3fd91c7b9153592d310705c",
+    "config.py": "61291f01ea7883f12cec2422c3b34c489fdb008eec88540515d116a97b4a568d",
+    "coverage_assessment.py": "55bef002a8fdab9745cd58ff704b323c4bb8854d95b68979f13a639f68de525a",
+    "locator_progress.py": "944562467d570d8f847ea080d5b06a101ba5f7a1dd58f1135be322d0f6e584d5",
+    "orchestration.py": "d58b108ec6902a15580b5f2fed55e29889bc1dcac0fb4bfa3a5355b2ad0ad740",
+    "progress.py": "66a74999476beb8e63f717675e5e15de48bf66439766d47ae3f3831d74c0238d",
+    "retained_periods.py": "7084366a503322e120c2abdda614536d0360a29f9be812f8b595c6d60a359ec1",
+    "service.py": "0b97dd72cf8170cb70b9e40ace88109a5af9c0765102435276c64989b778c2d2",
+    "shared_campaign_contracts/__init__.py": "a8fad066d036ff0e2867ed9db0375d4e32135c82fd682b7f75d63c8f989d8637",
+    "shared_campaign_contracts/app_features.py": "1a332e627932291cab3cd8f3ab227f5b454bcf544fba9a9d18dc81d382c23596",
+    "shared_campaign_contracts/metadata.py": "174015187b62faf33e551ff47b9d96eea1babd958d202669ead87fb434ff400c",
+    "shared_campaign_locators/__init__.py": "4113ac36717091e12f55a8c66d47e860bb40314586a58c963223909cd1b03804",
+    "shared_campaign_locators/core.py": "7950779b71110d6805b62214c6c1745f6846e3e59d3721a32fa0c2bd8bae7971",
+    "shared_campaign_locators/period.py": "52b7177cf30d16744053cc9a8444225d9bb7bb1737a288abf469585973c5829d",
+    "shared_campaign_recovery/__init__.py": "9fda4a47941d5bc4c4a6231301893a4b434934371728c4b833b95916141c73b3",
+    "shared_campaign_recovery/jobs.py": "2cdb530ab118cf475debfd3701789ed99de0d81a1942d568fb9df2adffacd0c4",
+    "shared_campaign_recovery/records.py": "cd8c2788a198257626749e43881d98b0f17d08230cfd37d3f371774b06bdc84c",
+    "shared_campaign_recovery/worker.py": "52bd271de3efc241f842dfa7104e053bf900ff535e2fa48cf5cf7ded31fdf9fd",
+    "shared_research_consent/__init__.py": "e4825ddc062eca35bfa8122130523cbf9aad2992acf45f4336a217ea4e9c69d7",
+    "shared_research_consent/authority.py": "eeac14d53aba3f7477028f9e2b1dc954e5b124be9c7f8875e9e15f17980cde89",
+    "tombstone.py": "7dd9df15d669ec4940cfda9ad3a621c296e2b577113f3c28d95519905bd98c26"
+  },
+  "productionArchive": "campaign_deletion_bridge.zip",
+  "productionArchives": {
+    "campaign_cluster_aggregator": {
+      "handler": "app.lambda_handler",
+      "sha256": "0139056dd4329f9b830f89c461be80eecd1c78e408616cc9888b9c4cf4823f09",
+      "sizeBytes": 17356
+    },
+    "campaign_deletion_bridge": {
+      "handler": "app.lambda_handler",
+      "sha256": "172f204dc61dfd96082e1ffb86ed559ddd3531aecc2b461b50d2a4f18eeaf463",
+      "sizeBytes": 39837
+    },
+    "campaign_lifecycle": {
+      "handler": "app.lambda_handler",
+      "sha256": "fec9088830f32dd75c894dd5e7925ee0d955343613dce0ab9c2993ea49da051b",
+      "sizeBytes": 17442
+    },
+    "campaign_observation_publisher": {
+      "handler": "app.lambda_handler",
+      "sha256": "4402050b71c28307c220e64affead5582d0bc874e9ef1a73e3694b02e39ce7ac",
+      "sizeBytes": 18189
+    }
+  },
+  "productionHandler": "app.lambda_handler",
+  "productionZipSha256": "172f204dc61dfd96082e1ffb86ed559ddd3531aecc2b461b50d2a4f18eeaf463",
+  "productionZipSizeBytes": 39837,
+  "qualificationZipSha256": "d636d5de87603c72e8179bb308f14092c428dbaad8c4f664049f7d66d1387bc6",
+  "qualificationZipSizeBytes": 80623,
+  "runtime": "python3.14",
+  "schemaVersion": 1,
+  "sourceSha": "cab9a2a3976e52b64b75057a8432b1506a365b02",
+  "syntheticOnly": true
+}

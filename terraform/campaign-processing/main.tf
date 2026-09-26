@@ -802,7 +802,7 @@ data "aws_iam_policy_document" "lifecycle_runtime" {
 
   dynamic "statement" {
     for_each = local.account_privacy_candidate ? {
-      WriteMutableLifecyclePipeline = { arn = local.campaign.pipeline_table_arn, keys = ["PERIOD#*", "EVENT#*", "CONTRIB#*", "CANDIDATE#*", "BUCKET#*"] }
+      WriteMutableLifecyclePipeline = { arn = local.campaign.pipeline_table_arn, keys = concat(local.period_fence_prepared ? [] : ["PERIOD#*"], ["EVENT#*", "CONTRIB#*", "CANDIDATE#*", "BUCKET#*"]) }
       WriteLifecycleAggregates      = { arn = local.campaign.intelligence_table_arn, keys = ["CAMPAIGN#*"] }
     } : {}
     content {
@@ -1052,6 +1052,10 @@ resource "aws_lambda_function" "worker" {
       CAMPAIGN_COMPLETION_ENABLED            = "false"
       CAMPAIGN_COMPLETION_MANIFEST_SHA256    = ""
       CAMPAIGN_COMPLETION_INVENTORY_REVISION = "0"
+      } : {}, local.period_fence_prepared ? {
+      CAMPAIGN_PERIOD_ADMISSION_ENABLED    = "false"
+      CAMPAIGN_PERIOD_ADMISSION_GENERATION = ""
+      CAMPAIGN_PERIOD_ADMISSION_ACCOUNT_ID = data.aws_caller_identity.current.account_id
       } : {}, each.key == "publisher" ? {
       USERS_TABLE_NAME = local.foundation.users_table_name
       } : {}, each.key == "publisher" && local.publisher_fenced ? {
