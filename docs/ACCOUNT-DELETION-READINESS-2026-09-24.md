@@ -1,5 +1,10 @@
 # ATCR-94 backend readiness after profile-writer deployment
 
+Historical September 24 assessment. Current account-specific readiness and resolved
+source gaps are tracked in [the September 26 rollout](LIVE-ACCOUNT-DELETION-ROLLOUT.md).
+The old missing-CAMPAIGN-implementation statement below no longer describes current
+source; whole-period key retirement is not an individual-account prerequisite.
+
 Read-only assessment of latest Lambda `origin/release-V01` at
 `859fd3f3029633262b0d5f5a0c5741fe5b6345dc`. Assessed deletion/finalizer/campaign/token
 sources equal that release. No account records, provider calls, runtime changes or

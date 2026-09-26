@@ -94,7 +94,7 @@ override_data {
   } } }
 }
 
-run "null_preserves_existing_producer_checks" {
+run "null_preserves_participation_checks_and_corrects_account_data_checks" {
   command = plan
   variables { campaign_recovery_preparation = null }
   assert {
@@ -102,15 +102,15 @@ run "null_preserves_existing_producer_checks" {
       length(terraform_data.campaign_recovery_preparation) == 0 &&
       !output.campaign_recovery_preparation_contract.selected &&
       alltrue([for st in concat(tolist(data.aws_iam_policy_document.account_data[0].statement), tolist(data.aws_iam_policy_document.campaign_participation_runtime.statement)) :
-        contains(["CheckDeletionProofTransaction", "CheckParticipationAuthorityUsers", "CheckParticipationAuthorityLedger"], st.sid) ?
+        contains(["CheckParticipationAuthorityUsers", "CheckParticipationAuthorityLedger"], st.sid) ?
         anytrue([for c in st.condition : c.variable == "dynamodb:EnclosingOperation" && c.test == "StringEquals" && toset(c.values) == toset(["TransactWriteItems"])]) : true
       ])
     )
-    error_message = "No preparation must preserve the existing checks and add no preparation resources."
+    error_message = "No preparation must preserve existing participation checks and add no preparation resources; account-data check corrections apply independently."
   }
 }
 
-run "preparation_corrects_only_three_checks" {
+run "preparation_retains_exact_account_data_and_participation_checks" {
   command = plan
   assert {
     condition = alltrue([for st in concat(tolist(data.aws_iam_policy_document.account_data[0].statement), tolist(data.aws_iam_policy_document.campaign_participation_runtime.statement)) :
@@ -126,11 +126,18 @@ run "preparation_corrects_only_three_checks" {
   }
   assert {
     condition = (
-      anytrue([for c in one([for st in data.aws_iam_policy_document.account_data[0].statement : st if st.sid == "CheckPurchaseCleanupInventory"]).condition : c.variable == "dynamodb:EnclosingOperation"]) &&
+      alltrue([for st in [one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "CheckPurchaseCleanupInventory"])] :
+        st.actions == toset(["dynamodb:ConditionCheckItem"]) &&
+        st.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"]) &&
+        length(st.condition) == 2 &&
+        alltrue([for c in st.condition : c.variable != "dynamodb:EnclosingOperation"]) &&
+        anytrue([for c in st.condition : c.test == "ForAllValues:StringEquals" && c.variable == "dynamodb:LeadingKeys" && toset(c.values) == toset(["PURCHASE#CONTROL"])]) &&
+        anytrue([for c in st.condition : c.test == "StringEqualsIfExists" && c.variable == "dynamodb:ReturnValues" && toset(c.values) == toset(["NONE"])])
+      ]) &&
       one([for st in data.aws_iam_policy_document.account_data[0].statement : st if st.sid == "ReadCommandAndWriteRevocationReceipt"]).actions == toset(["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem"]) &&
       alltrue([for st in data.aws_iam_policy_document.campaign_participation_runtime.statement : contains(st.actions, "dynamodb:PutItem") ? anytrue([for c in st.condition : c.variable == "dynamodb:EnclosingOperation"]) : true])
     )
-    error_message = "Preparation must preserve unrelated purchase checks, existing account-data receipt permissions and transaction-only participation writes."
+    error_message = "Preparation must retain the corrected exact purchase inventory check, existing account-data receipt permissions and transaction-only participation writes."
   }
 }
 

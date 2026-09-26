@@ -675,9 +675,11 @@ run "purchase_cleanup_and_inventory_proofs_are_fenced" {
       one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "EraseOwnedPurchaseTransaction"]).actions == toset(["dynamodb:DeleteItem"]) &&
       one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "EraseOwnedPurchaseTransaction"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"]) &&
       one(one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "FindOwnedPurchaseCleanupTargets"]).condition).values == tolist(["USER#*"]) &&
-      alltrue([for sid in ["EraseOwnedPurchaseTransaction", "CheckPurchaseCleanupInventory", "CheckDeletionProofTransaction"] :
+      alltrue([for sid in ["EraseOwnedPurchaseTransaction", "TransactionallyFenceAuthoritativeProfile"] :
         anytrue([for c in one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == sid]).condition :
-          c.test == "StringEquals" && c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])
+          c.test == "ForAnyValue:StringEquals" && c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])
+          ]) && anytrue([for c in one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == sid]).condition :
+          c.test == "StringEqualsIfExists" && c.variable == "dynamodb:ReturnValues" && toset(c.values) == toset(["NONE"])
         ])
       ]) &&
       alltrue([for s in data.aws_iam_policy_document.account_data[0].statement :
@@ -686,6 +688,31 @@ run "purchase_cleanup_and_inventory_proofs_are_fenced" {
       ])
     )
     error_message = "Purchase erasure must be subject/transaction bounded, and workers must not write their own authoritative inventory approval rows."
+  }
+}
+
+run "account_data_checks_have_supported_context_without_recovery_preparation" {
+  command = plan
+  assert {
+    condition = alltrue([for sid, scope in {
+      CheckDeletionProofTransaction = {
+        arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        keys = ["ACCOUNT#*", "INVENTORY#dev"]
+        test = "ForAllValues:StringLike"
+      }
+      CheckPurchaseCleanupInventory = {
+        arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        keys = ["PURCHASE#CONTROL"]
+        test = "ForAllValues:StringEquals"
+      }
+      } : alltrue([for st in [one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == sid])] :
+        st.actions == toset(["dynamodb:ConditionCheckItem"]) && st.resources == toset([scope.arn]) &&
+        length(st.condition) == 2 &&
+        alltrue([for c in st.condition : c.variable != "dynamodb:EnclosingOperation"]) &&
+        anytrue([for c in st.condition : c.test == scope.test && c.variable == "dynamodb:LeadingKeys" && toset(c.values) == toset(scope.keys)]) &&
+        anytrue([for c in st.condition : c.test == "StringEqualsIfExists" && c.variable == "dynamodb:ReturnValues" && toset(c.values) == toset(["NONE"])])
+    ])])
+    error_message = "Both account-data checks must preserve exact resources/key families and NONE without unsupported enclosing context, even when campaign recovery is unselected."
   }
 }
 

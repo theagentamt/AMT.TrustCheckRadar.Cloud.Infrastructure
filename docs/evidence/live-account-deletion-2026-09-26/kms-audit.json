@@ -1,0 +1,184 @@
+{
+  "be146e79-877b-462c-b2ff-509cb8c6b02a": {
+    "policy": {
+      "Version": "2012-10-17",
+      "Id": "key-default-1",
+      "Statement": [
+        {
+          "Sid": "Enable IAM User Permissions",
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::107827791950:root"
+          },
+          "Action": "kms:*",
+          "Resource": "*"
+        }
+      ]
+    },
+    "grants": [
+      {
+        "KeyId": "arn:aws:kms:us-east-1:107827791950:key/be146e79-877b-462c-b2ff-509cb8c6b02a",
+        "GrantId": "061d57804a809b5d88c1c2a88c85e9c93c36d6197f8b49d7ddf78d0332c0deac",
+        "Name": "37dda667-d982-4568-8bcf-ce5297362eda",
+        "CreationDate": "2026-09-06 18:21:14-05:00",
+        "GranteePrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "RetiringPrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "IssuingAccount": "arn:aws:iam::107827791950:root",
+        "Operations": [
+          "Decrypt",
+          "Encrypt",
+          "GenerateDataKey",
+          "ReEncryptFrom",
+          "ReEncryptTo",
+          "RetireGrant",
+          "DescribeKey"
+        ],
+        "Constraints": {
+          "EncryptionContextSubset": {
+            "aws:dynamodb:subscriberId": "107827791950",
+            "aws:dynamodb:tableName": "trustcheckradar-dev-campaign-outbox"
+          }
+        }
+      },
+      {
+        "KeyId": "arn:aws:kms:us-east-1:107827791950:key/be146e79-877b-462c-b2ff-509cb8c6b02a",
+        "GrantId": "243db4a7122e39c62745d73efee553516762d453a93e50c21d67a472576615fd",
+        "Name": "6a8d5278-235e-45ac-9ccc-87d0ef6c368d",
+        "CreationDate": "2026-09-06 18:21:12-05:00",
+        "GranteePrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "RetiringPrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "IssuingAccount": "arn:aws:iam::107827791950:root",
+        "Operations": [
+          "Decrypt",
+          "Encrypt",
+          "GenerateDataKey",
+          "ReEncryptFrom",
+          "ReEncryptTo",
+          "RetireGrant",
+          "DescribeKey"
+        ],
+        "Constraints": {
+          "EncryptionContextSubset": {
+            "aws:dynamodb:subscriberId": "107827791950",
+            "aws:dynamodb:tableName": "trustcheckradar-dev-campaign-pipeline"
+          }
+        }
+      },
+      {
+        "KeyId": "arn:aws:kms:us-east-1:107827791950:key/be146e79-877b-462c-b2ff-509cb8c6b02a",
+        "GrantId": "8063451a93c3890987ffc9d49eb06a539dcdf39a8a7b4be6d3fd90de7e393eff",
+        "Name": "37dda667-d982-4568-8bcf-ce5297362eda",
+        "CreationDate": "2026-09-06 18:21:14-05:00",
+        "GranteePrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "RetiringPrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "IssuingAccount": "arn:aws:iam::107827791950:root",
+        "Operations": [
+          "Decrypt",
+          "Encrypt",
+          "GenerateDataKey",
+          "ReEncryptFrom",
+          "ReEncryptTo",
+          "RetireGrant",
+          "DescribeKey"
+        ],
+        "Constraints": {
+          "EncryptionContextSubset": {
+            "aws:dynamodb:subscriberId": "107827791950",
+            "aws:dynamodb:tableName": "trustcheckradar-dev-campaign-outbox"
+          }
+        }
+      },
+      {
+        "KeyId": "arn:aws:kms:us-east-1:107827791950:key/be146e79-877b-462c-b2ff-509cb8c6b02a",
+        "GrantId": "989e9a78843644307f3817cc8a5a36a950034ea9aa6d890d20456524b3038488",
+        "Name": "6a8d5278-235e-45ac-9ccc-87d0ef6c368d",
+        "CreationDate": "2026-09-06 18:21:12-05:00",
+        "GranteePrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "RetiringPrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "IssuingAccount": "arn:aws:iam::107827791950:root",
+        "Operations": [
+          "Decrypt",
+          "Encrypt",
+          "GenerateDataKey",
+          "ReEncryptFrom",
+          "ReEncryptTo",
+          "RetireGrant",
+          "DescribeKey"
+        ],
+        "Constraints": {
+          "EncryptionContextSubset": {
+            "aws:dynamodb:subscriberId": "107827791950",
+            "aws:dynamodb:tableName": "trustcheckradar-dev-campaign-pipeline"
+          }
+        }
+      }
+    ]
+  },
+  "a1c1aa6a-eb80-49ee-ba93-4f823a319857": {
+    "policy": {
+      "Version": "2012-10-17",
+      "Id": "key-default-1",
+      "Statement": [
+        {
+          "Sid": "Enable IAM User Permissions",
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::107827791950:root"
+          },
+          "Action": "kms:*",
+          "Resource": "*"
+        }
+      ]
+    },
+    "grants": [
+      {
+        "KeyId": "arn:aws:kms:us-east-1:107827791950:key/a1c1aa6a-eb80-49ee-ba93-4f823a319857",
+        "GrantId": "b8d59776e710f5b7c4a6ac0bad85f9ebb0e348c6a26e4033e5fb5935310e4ad1",
+        "Name": "4fe35db2-8130-4050-8547-3a1d2717fbde",
+        "CreationDate": "2026-09-06 18:21:12-05:00",
+        "GranteePrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "RetiringPrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "IssuingAccount": "arn:aws:iam::107827791950:root",
+        "Operations": [
+          "Decrypt",
+          "Encrypt",
+          "GenerateDataKey",
+          "ReEncryptFrom",
+          "ReEncryptTo",
+          "RetireGrant",
+          "DescribeKey"
+        ],
+        "Constraints": {
+          "EncryptionContextSubset": {
+            "aws:dynamodb:subscriberId": "107827791950",
+            "aws:dynamodb:tableName": "trustcheckradar-dev-campaign-intelligence"
+          }
+        }
+      },
+      {
+        "KeyId": "arn:aws:kms:us-east-1:107827791950:key/a1c1aa6a-eb80-49ee-ba93-4f823a319857",
+        "GrantId": "f59e73ac869bbecaa693c2074cdef131543f6715e7c363ce014fcef201ece76e",
+        "Name": "4fe35db2-8130-4050-8547-3a1d2717fbde",
+        "CreationDate": "2026-09-06 18:21:12-05:00",
+        "GranteePrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "RetiringPrincipal": "dynamodb.us-east-1.amazonaws.com",
+        "IssuingAccount": "arn:aws:iam::107827791950:root",
+        "Operations": [
+          "Decrypt",
+          "Encrypt",
+          "GenerateDataKey",
+          "ReEncryptFrom",
+          "ReEncryptTo",
+          "RetireGrant",
+          "DescribeKey"
+        ],
+        "Constraints": {
+          "EncryptionContextSubset": {
+            "aws:dynamodb:subscriberId": "107827791950",
+            "aws:dynamodb:tableName": "trustcheckradar-dev-campaign-intelligence"
+          }
+        }
+      }
+    ]
+  }
+}

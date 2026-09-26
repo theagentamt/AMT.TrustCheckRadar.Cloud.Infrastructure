@@ -122,10 +122,10 @@ account_export_deployment = {
 }
 account_export_play_token_table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens"
 account_data_deployment = {
-  release_id         = "39cce61623794a123e61d25f5248b0c081eccf4a"
-  object_version     = "zJDzK5ozh5t4gVkrzAlHVbRfQqxMIlMo"
-  source_hash        = "1QZcQV/kDtAThdaZt4K48EOW00R3dbMOqq0pQqOH7LQ="
-  approval_reference = "docs/PLAY-ACCOUNT-PRIVACY-DEV-DEPLOYMENT.md"
+  release_id         = "f92285b50561397355a5fe2e466d297041336755"
+  object_version     = "0VLEpJVTWtbjASM_aZ1liooaHJH4TfnE"
+  source_hash        = "gjo1nhjoKKpI5WH677W7dswRYhub06q70OE4Y0YRNRA="
+  approval_reference = "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md"
   promotion_approved = false
 }
 account_export_monitoring = {
@@ -149,4 +149,11 @@ profile_fence_deployment = {
 # SECUR4ALL-207: permission/scheduling preparation only; all recovery gates stay false.
 campaign_recovery_preparation = {
   review_reference = "docs/CAMPAIGN-RECOVERY-PERMISSION-READINESS.md"
+}
+
+# Exact reviewed closed-runtime compatibility after the initial migration.
+research_campaign_release_compatibility = {
+  api_release_sha      = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
+  consumer_release_sha = "f92285b50561397355a5fe2e466d297041336755"
+  review_reference     = "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md#closed-api-consumer-compatibility"
 }

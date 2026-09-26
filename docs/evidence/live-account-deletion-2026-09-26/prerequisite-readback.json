@@ -1,0 +1,91 @@
+{
+  "observedAtUtc": "2026-09-26T12:59:32.680501+00:00",
+  "workers": [
+    {
+      "function": "trustcheckradar-dev-campaign-cluster-aggregator",
+      "codeSha256": "ATkFbdQyn5uDD4nEYb6A7s0ceOQIYWzJiIucTPSCPwk=",
+      "configurationMatched": true,
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-deletion-bridge",
+      "codeSha256": "Fy8gTcYd/ZYILh/7hu1Vnd01Ma7MK0YbUNKk8Y7q9GM=",
+      "configurationMatched": true,
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-lifecycle",
+      "codeSha256": "/skIiDDzLddciU3V55Je4NlVNDYT3OCrnCmT6knaBRs=",
+      "configurationMatched": true,
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-observation-publisher",
+      "codeSha256": "RAIFC3HCgwfCIOZK/+rVWC0LyHTp7xpz42lLAuOc56w=",
+      "configurationMatched": true,
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ]
+    }
+  ],
+  "policies": [
+    {
+      "role": "trustcheckradar-dev-campaign-lifecycle-role",
+      "name": "lifecycle-runtime",
+      "matched": true
+    },
+    {
+      "role": "trustcheckradar-dev-campaign-cluster-aggregator-role",
+      "name": "campaign-period-admission",
+      "matched": true
+    },
+    {
+      "role": "trustcheckradar-dev-campaign-lifecycle-role",
+      "name": "campaign-period-admission",
+      "matched": true
+    },
+    {
+      "role": "trustcheckradar-dev-campaign-observation-publisher-role",
+      "name": "campaign-period-admission",
+      "matched": true
+    }
+  ],
+  "disabledMappings": 3,
+  "disabledSchedules": 4,
+  "disabledAlarmActions": 8,
+  "negativeSmoke": [
+    {
+      "function": "campaign-observation-publisher",
+      "disabledRefusal": true,
+      "error": "Campaign locator coverage is unavailable"
+    },
+    {
+      "function": "campaign-cluster-aggregator",
+      "disabledRefusal": true,
+      "error": "Campaign locator coverage is unavailable"
+    },
+    {
+      "function": "campaign-lifecycle",
+      "disabledRefusal": true,
+      "error": "Campaign lifecycle candidate is disabled"
+    },
+    {
+      "function": "campaign-deletion-bridge",
+      "disabledRefusal": true,
+      "error": "CAMPAIGN_DELETION_STREAM_DISABLED"
+    }
+  ],
+  "allVerified": true,
+  "admissionEnabled": false,
+  "campaignDeletionEnabled": false
+}

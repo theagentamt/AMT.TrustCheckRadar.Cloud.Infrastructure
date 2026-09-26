@@ -111,9 +111,14 @@ data "aws_iam_policy_document" "account_data" {
       values   = ["USER#*"]
     }
     condition {
-      test     = "StringEquals"
+      test     = "ForAnyValue:StringEquals"
       variable = "dynamodb:EnclosingOperation"
       values   = ["TransactWriteItems"]
+    }
+    condition {
+      test     = "StringEqualsIfExists"
+      variable = "dynamodb:ReturnValues"
+      values   = ["NONE"]
     }
   }
   statement {
@@ -136,12 +141,11 @@ data "aws_iam_policy_document" "account_data" {
       values   = ["ACCOUNT#*", "INVENTORY#${var.environment}"]
     }
     condition {
-      # Preparation changes only this check; mutation transaction guards stay.
-      # ConditionCheckItem is inherently transactional and has no supported
-      # EnclosingOperation context. Preserve legacy/default plans until selected.
-      test     = local.campaign_recovery_preparation_selected ? "StringEqualsIfExists" : "StringEquals"
-      variable = local.campaign_recovery_preparation_selected ? "dynamodb:ReturnValues" : "dynamodb:EnclosingOperation"
-      values   = local.campaign_recovery_preparation_selected ? ["NONE"] : ["TransactWriteItems"]
+      # ConditionCheckItem is inherently transactional; EnclosingOperation is
+      # unsupported for checks. Suppress returned items on failed conditions.
+      test     = "StringEqualsIfExists"
+      variable = "dynamodb:ReturnValues"
+      values   = ["NONE"]
     }
   }
   statement {
@@ -174,9 +178,14 @@ data "aws_iam_policy_document" "account_data" {
       values   = ["USER#*", "TOKEN#*"]
     }
     condition {
-      test     = "StringEquals"
+      test     = "ForAnyValue:StringEquals"
       variable = "dynamodb:EnclosingOperation"
       values   = ["TransactWriteItems"]
+    }
+    condition {
+      test     = "StringEqualsIfExists"
+      variable = "dynamodb:ReturnValues"
+      values   = ["NONE"]
     }
   }
   statement {
@@ -189,9 +198,9 @@ data "aws_iam_policy_document" "account_data" {
       values   = ["PURCHASE#CONTROL"]
     }
     condition {
-      test     = "StringEquals"
-      variable = "dynamodb:EnclosingOperation"
-      values   = ["TransactWriteItems"]
+      test     = "StringEqualsIfExists"
+      variable = "dynamodb:ReturnValues"
+      values   = ["NONE"]
     }
   }
   # IAM LeadingKeys constrains PK, not SK. The reviewed handler must enforce
@@ -407,7 +416,7 @@ resource "aws_lambda_function" "account_data" {
       ACCOUNT_DELETION_REQUIRED_COMPONENTS_JSON       = "[]"
       ACCOUNT_DELETION_MAX_REAUTH_AGE_SECONDS         = "300"
       ACCOUNT_DELETION_SLA_HOURS                      = "24"
-    }, local.campaign_recovery_producer_env)
+    }, local.campaign_recovery_producer_env, local.account_deletion_activation_env)
   }
   lifecycle {
     precondition {
@@ -441,7 +450,7 @@ resource "aws_lambda_event_source_mapping" "account_data_revocation" {
   count                          = var.account_data_deployment == null ? 0 : 1
   event_source_arn               = local.account_data_stream_arn
   function_name                  = aws_lambda_function.account_data[0].arn
-  enabled                        = false
+  enabled                        = local.account_deletion_workers_enabled
   starting_position              = "TRIM_HORIZON"
   batch_size                     = 10
   parallelization_factor         = 1
@@ -470,7 +479,7 @@ resource "aws_cloudwatch_event_rule" "account_data_reconcile" {
   count               = var.account_data_deployment == null ? 0 : 1
   name                = "${local.name_prefix}-account-deletion-reconcile"
   schedule_expression = "rate(5 minutes)"
-  state               = "DISABLED"
+  state               = local.account_deletion_workers_enabled ? "ENABLED" : "DISABLED"
   tags                = local.common_tags
 }
 
@@ -507,11 +516,14 @@ output "account_data_candidate_contract" {
     schema_version                        = 1
     environment                           = var.environment
     deployed                              = var.account_data_deployment != null
-    enabled                               = false
-    routes                                = []
+    enabled                               = local.account_deletion_routes_enabled
+    workers_enabled                       = local.account_deletion_workers_enabled
+    routes                                = [for route in aws_apigatewayv2_route.account_deletion : route.route_key]
     planned_routes                        = ["POST /v1/users/account-deletion", "GET /v1/users/account-deletion"]
     full_account_export_available         = false
     overall_deletion_completion_available = false
+    identity_finalizer_configured          = local.account_deletion_workers_enabled
+    runtime_completion_attested            = false
     function_arn                          = try(aws_lambda_function.account_data[0].arn, null)
   }
 }
