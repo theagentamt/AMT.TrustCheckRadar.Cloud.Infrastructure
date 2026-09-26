@@ -181,10 +181,214 @@ run "access_only_keeps_providers_and_trial_closed" {
 run "access_only_and_full_modes_cannot_overlap" {
   command = plan
   variables {
-    activate_engineering          = true
-    activate_access_engineering   = true
-    engineering_subjects          = ["00000000-0000-4000-8000-000000000001"]
+    activate_engineering           = true
+    activate_access_engineering    = true
+    engineering_subjects           = ["00000000-0000-4000-8000-000000000001"]
     access_qualification_reference = "synthetic test evidence"
   }
   expect_failures = [var.activate_access_engineering]
+}
+
+run "deletion_only_exact_subjects_keep_other_capabilities_closed" {
+  command = apply
+  variables {
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["deletion"].environment[0].variables.V1_AUTHORITY_DELETION_ENABLED == "true" &&
+      aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002"]) &&
+      aws_lambda_function.runtime["deletion"].s3_key == "releases/${var.deletion_activation.source_sha}/v1_authority_deletion.zip" &&
+      aws_lambda_event_source_mapping.v1_deletion[0].enabled &&
+      aws_cloudwatch_event_rule.maintenance["deletion"].state == "ENABLED" &&
+      aws_cloudwatch_metric_alarm.worker_heartbeat["deletion"].actions_enabled &&
+      aws_cloudwatch_metric_alarm.worker_heartbeat["deletion"].treat_missing_data == "breaching" &&
+      aws_cloudwatch_metric_alarm.deletion_full_pass_age[0].actions_enabled &&
+      jsondecode(aws_cloudwatch_event_target.maintenance["deletion"].input) == { schemaVersion = 1, operation = "reconcile-v1-authority-deletion" }
+    )
+    error_message = "Reviewed cleanup must bind exact source and sorted subjects, enable its stream/reconciliation and arm deletion monitoring."
+  }
+  assert {
+    condition = (
+      alltrue([for role in ["consumer", "entitlements"] : alltrue([for gate in ["CONSUMER_ENABLED", "AUTHORITY_ENABLED", "V1_ENTITLEMENTS_ENABLED"] : aws_lambda_function.runtime[role].environment[0].variables[gate] == "false"])]) &&
+      alltrue([for role in ["consumer", "entitlements"] : aws_lambda_function.runtime[role].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == "[]"]) &&
+      aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "false" &&
+      aws_cloudwatch_event_rule.maintenance["recovery"].state == "DISABLED" &&
+      !aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"].actions_enabled &&
+      !aws_cloudwatch_metric_alarm.expiry_overdue[0].actions_enabled &&
+      output.candidate_contract.deletion_enabled && !output.candidate_contract.consumer_enabled &&
+      !output.candidate_contract.access_enabled && !output.candidate_contract.recovery_enabled &&
+      !output.candidate_contract.trial_activation_enabled && !output.candidate_contract.general_customer_access
+    )
+    error_message = "Deletion-only activation must not activate providers, access, entitlements, trial checks or lease recovery."
+  }
+}
+
+run "deletion_only_rejects_source_mismatch" {
+  command = plan
+  variables {
+    deletion_activation = {
+      source_sha            = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      subjects              = ["00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  expect_failures = [var.deletion_activation]
+}
+
+run "deletion_only_rejects_empty_subjects" {
+  command = plan
+  variables {
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = []
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  expect_failures = [var.deletion_activation]
+}
+
+run "deletion_only_rejects_invalid_subject" {
+  command = plan
+  variables {
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["not-a-uuid"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  expect_failures = [var.deletion_activation]
+}
+
+run "deletion_only_rejects_too_many_subjects" {
+  command = plan
+  variables {
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000000", "00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000003", "00000000-0000-4000-8000-000000000004", "00000000-0000-4000-8000-000000000005", "00000000-0000-4000-8000-000000000006", "00000000-0000-4000-8000-000000000007", "00000000-0000-4000-8000-000000000008", "00000000-0000-4000-8000-000000000009", "00000000-0000-4000-8000-000000000010"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  expect_failures = [var.deletion_activation]
+}
+
+run "deletion_only_rejects_missing_inventory_reference" {
+  command = plan
+  variables {
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "  "
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  expect_failures = [var.deletion_activation]
+}
+
+run "deletion_only_rejects_missing_runtime_reference" {
+  command = plan
+  variables {
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "  "
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  expect_failures = [var.deletion_activation]
+}
+
+run "deletion_only_rejects_missing_permissions_reference" {
+  command = plan
+  variables {
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "  "
+    }
+  }
+  expect_failures = [var.deletion_activation]
+}
+
+run "deletion_only_rejects_non_dev" {
+  command = plan
+  variables {
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+    environment = "uat"
+  }
+  # Dev-scoped artifact/dependency validation rejects before dependent activation checks.
+  expect_failures = [var.deployment]
+}
+
+run "deletion_only_rejects_missing_alerting" {
+  command = plan
+  variables {
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+    alert_topic_arn = null
+  }
+  expect_failures = [var.deletion_activation]
+}
+
+run "deletion_only_rejects_collides_with_activate_engineering" {
+  command = plan
+  variables {
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+    activate_engineering           = true
+    engineering_subjects           = ["00000000-0000-4000-8000-000000000001"]
+    access_qualification_reference = "synthetic qualification evidence"
+  }
+  expect_failures = [var.deletion_activation]
+}
+
+run "deletion_only_rejects_collides_with_activate_access_engineering" {
+  command = plan
+  variables {
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002", "00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+    activate_access_engineering    = true
+    engineering_subjects           = ["00000000-0000-4000-8000-000000000001"]
+    access_qualification_reference = "synthetic qualification evidence"
+  }
+  expect_failures = [var.deletion_activation]
 }

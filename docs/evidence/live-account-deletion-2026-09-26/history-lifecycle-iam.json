@@ -1,0 +1,69 @@
+{
+  "accountId": "107827791950",
+  "cases": [
+    "guarded_control_put_update_and_ledger_receipt_atomic_allowed",
+    "control_race_rolls_back_without_returned_item",
+    "ledger_race_rolls_back_without_returned_item",
+    "both_namespace_condition_checks_none_allowed",
+    "both_condition_checks_all_old_denied",
+    "foreign_namespace_and_content_condition_checks_denied",
+    "standalone_ledger_receipt_put_denied",
+    "legacy_standalone_control_put_update_allowed",
+    "ledger_receipt_all_old_denied",
+    "legacy_control_all_old_allowed",
+    "foreign_mutation_prefix_denied",
+    "retained_legacy_access_and_role_specific_boundaries_verified"
+  ],
+  "cleanupComplete": true,
+  "cleanupOutstanding": [],
+  "cloudExecuted": true,
+  "fixturePolicySha256": "264975a7e82cd6a7c117710b8eeadaef7b2740f7d88bf83fd95ea5b45a050700",
+  "fullSourcePolicySha256": "2c2a3bb603b4cf2b35a9b26effc78585fe8053896ad21638b2dcbfda3905aa91",
+  "harnessSha256": "cbc14421e3b71d9ff9e8774e34a49f81144f05993c88c0cad3533ec15222494e",
+  "helperSha256": {
+    "qualify_campaign_completion_iam": "9e450a1ae26e25ef8903cbf7a9a245064cfb75c24ab5488207a1380ad81b8f7a",
+    "qualify_campaign_recovery_iam": "f0a7e8e63ffe4cd75c36d837cecc9588c1d64c263c8579986757e0351e848294",
+    "qualify_campaign_writer_iam": "f49bf801a9874ecd896cd9e91539ec90a55db065921a6a179a4ccf66b6511431"
+  },
+  "identityPolicyNames": [
+    "history-lifecycle-runtime"
+  ],
+  "limitations": [
+    "Full dated identity-policy projection for exact three base tables; no SCP, table-resource-policy or later policy-change qualification.",
+    "Exact indexes, ledger stream, separate analysis-abuse table and logging are excluded and not exercised.",
+    "LeadingKeys qualifies namespace only, not caller ownership or sort keys.",
+    "Lifecycle legacy control standalone mutation and ALL_OLD remain allowed; bridge ledger Scan and checkpoint Put remain allowed.",
+    "Synthetic IAM/atomicity cases do not qualify actual handler behavior, encrypted-table KMS access or live deletion activation."
+  ],
+  "observedAtUtc": "2026-09-26T14:08:45.717352+00:00",
+  "omittedStatements": [
+    {
+      "reason": "exact_distinct_analysis_abuse_table",
+      "sid": "ReplayContentErasure",
+      "source": "history-lifecycle-runtime",
+      "statementSha256": "68a2dc17158618966faa1d207d44c647614e9b3a38121d3abf93f5dd54b965e6"
+    },
+    {
+      "reason": "exact_index_arns_do_not_authorize_base_table_operations",
+      "sid": "BoundedLifecycleIndexQueries",
+      "source": "history-lifecycle-runtime",
+      "statementSha256": "4cf6aaa70560e66f2711614db390c6f4ea89042706a8e80b74154bb21c3d59d7"
+    },
+    {
+      "reason": "logging_actions_cannot_authorize_dynamodb",
+      "sid": "ContentFreeLogsAndEmbeddedMetrics",
+      "source": "history-lifecycle-runtime",
+      "statementSha256": "29dbe7460740a963251fa262c5208ed90f4da35e00cbf22aac42bafdc6efd276"
+    }
+  ],
+  "passed": true,
+  "phase": "completed",
+  "projectedUnionSha256": "4b83eaaa83410cfc4bf8d6d88643747b3b639e42da6784f85227e76367f05374",
+  "region": "us-east-1",
+  "roleAuditObservedAtUtc": "2026-09-26T14:05:08.522106+00:00",
+  "roleKind": "lifecycle",
+  "runId": "60e12cfa3c834b2b9532ac311fb694a2",
+  "schemaVersion": 1,
+  "sourcePlanSha256": "7a00e90cce16250cff21e575c2c5e1001b442ba9b1d120416c7bdbc74f5f03f8",
+  "sourceRoleAuditSha256": "2347fb0f38209161e17844a1f14cefbb485ebf98b5616f9f0a520fcbf4b13159"
+}

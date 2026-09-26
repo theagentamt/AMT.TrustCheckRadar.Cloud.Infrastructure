@@ -74,9 +74,9 @@ data "aws_iam_policy_document" "runtime" {
         values   = ["USER#*"]
       }
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = "StringEqualsIfExists"
+        variable = "dynamodb:ReturnValues"
+        values   = ["NONE"]
       }
     }
   }
@@ -141,7 +141,7 @@ data "aws_iam_policy_document" "runtime" {
     for_each = var.account_deletion_terminal_candidate && local.account_deletion_deployed ? [1] : []
     content {
       sid       = "GuardHistoryCompletionReceiptTransaction"
-      actions   = ["dynamodb:PutItem", "dynamodb:ConditionCheckItem"]
+      actions   = ["dynamodb:PutItem"]
       resources = [local.foundation.deletion_ledger_table_arn]
       condition {
         test     = "ForAllValues:StringLike"
@@ -149,9 +149,32 @@ data "aws_iam_policy_document" "runtime" {
         values   = ["ACCOUNT#*"]
       }
       condition {
-        test     = "StringEquals"
+        test     = "ForAnyValue:StringEquals"
         variable = "dynamodb:EnclosingOperation"
         values   = ["TransactWriteItems"]
+      }
+      condition {
+        test     = "StringEqualsIfExists"
+        variable = "dynamodb:ReturnValues"
+        values   = ["NONE"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.account_deletion_terminal_candidate && local.account_deletion_deployed ? [1] : []
+    content {
+      sid       = "CheckAuthoritativeHistoryCompletion"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.foundation.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+      condition {
+        test     = "StringEqualsIfExists"
+        variable = "dynamodb:ReturnValues"
+        values   = ["NONE"]
       }
     }
   }

@@ -203,3 +203,60 @@ disabled environment and no public deletion route. Full API planning reports no
 drift. Campaign control outputs and alarm descriptions were applied with all gates
 and alarm actions still disabled. The unprofiled administrative identity exception
 is tracked in SECUR4ALL-327; it was not changed or deleted.
+
+## Dependent cleanup workers
+
+The History bridge and lifecycle packages are pinned to reviewed Lambda source
+`997e265f7edf10ce7369481f7d576b4276e8c418`, with independently verified Python
+members, immutable S3 versions and disabled-handler checks. The proposed Dev plan
+updates only those two packages/runtimes and their two IAM policies; Python 3.14
+replaces 3.13/3.12. All consumer gates remain false. ConditionCheckItem receives
+namespace-scoped permission without unsupported enclosing-operation context;
+receipt Put uses ForAnyValue transaction context and NONE returned values. Existing
+lifecycle control writes remain broader and are explicitly tested as such.
+
+Three separate, null-by-default activation objects prepare later coordinated
+cleanup. History requires terminal-safe source, runtime/IAM references and existing
+observability/runtime policy gates. V1 authority and Play token cleanup each require
+an exact deployed source, one to ten explicitly named subjects and inventory,
+runtime and permissions references. They enable only deletion workers and recovery;
+they grant no provider or paid-access activation. No activation object is selected
+in Dev. These attestations are not substitutes for actual evidence or admission
+scope alignment. Do not open public account deletion while downstream workers
+accept only a designated test subject.
+
+History and V1 stream discovery now separate ListStreams (regional Resource `*`,
+as required by AWS) from exact-stream read permissions. This grants no base-table
+read through the stream statement.
+
+## Campaign inventory and restore boundary observations
+
+The September 26 complete, strongly consistent base-table traversals found the
+same two period registry rows before and after; the outbox and intelligence tables
+were empty. Their exact resource lineage and backup settings were recorded. These
+are current-state observations, not historical per-account erasure or approved
+inventories. The retired legacy key was not found, while its old registry remains.
+Do not fabricate a locator or completion marker to conceal that limitation.
+
+The enabled campaign-review API was independently bound byte-for-byte to tracked
+source: it cannot create an absent aggregate, and updates require state/version
+checks. It must nevertheless remain in the restore-quarantine inventory because
+it can mutate a restored aggregate. The trends API is read-only. Any restore or
+resource rebinding must invalidate prior generation/manifest qualification, keep
+all writers including review quarantined, re-enumerate restored data and key
+coverage, then qualify fresh manifests before attaching the restored tables to
+runtime roles. Existing PITR retention is disclosed; a clean live scan does not
+prove those backups contain no historic contributions. The observation includes
+the known managed deployment scope and the owner's statement of no known manual
+copies, not a claim to discover all possible unmanaged copies.
+
+Both History execution-role policy projections passed all twelve grouped cases
+against actual isolated AWS resources (24 total), including conditional atomic
+rollback, permitted namespace checks, forbidden returned items and standalone
+receipt writes. The three temporary tables and fixture role for each run were
+removed. The harness binds the exact Terraform plan and complete dated role audit;
+it rejects unknown overlapping grants and preserves the measured broader legacy
+lifecycle behavior. This is IAM/atomicity evidence, not actual worker execution,
+KMS encryption acceptance or live deletion qualification. See the two `history-*-iam.json`
+evidence files. Local validation passed 23 History contracts, 21 URL integration
+contracts, 13 Play runtime contracts and 12 harness tests (normal and optimized).

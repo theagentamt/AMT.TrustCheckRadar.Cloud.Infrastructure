@@ -1,0 +1,68 @@
+{
+  "account": "107827791950",
+  "allPythonMembersMatchTrackedSource": true,
+  "auditScriptSha256": "c46eb28ccd9d65fafe34618d10436d3e22d38c6fdcb58115444237c7456a7b81",
+  "codeSha256Verified": true,
+  "configurationStableDuringObservation": true,
+  "deployedHandler": "app.lambda_handler",
+  "deployedLastModified": "2026-09-08T05:05:39.000+0000",
+  "deployedRuntime": "python3.13",
+  "functionArnSha256": "b0f1fe9cdfdccb8cf06068fc9d6add148dc75e0a07a5cfffb6226b12402ea51b",
+  "functionName": "trustcheckradar-dev-campaign-review",
+  "members": [
+    {
+      "exactMatch": true,
+      "member": "__init__.py",
+      "python": true,
+      "sha256": "16a1be830c09e50470594adf10b4490787db3b463c82e640c6d20fe8de2cb590",
+      "sizeBytes": 34,
+      "sourceFound": true,
+      "sourcePath": "src/campaign_review/__init__.py",
+      "sourceSha256": "16a1be830c09e50470594adf10b4490787db3b463c82e640c6d20fe8de2cb590"
+    },
+    {
+      "exactMatch": true,
+      "member": "app.py",
+      "python": true,
+      "sha256": "a048361109dde5891a8384e5f429b04a3748470fe2609b701fd2e995c6c3edc2",
+      "sizeBytes": 1163,
+      "sourceFound": true,
+      "sourcePath": "src/campaign_review/app.py",
+      "sourceSha256": "a048361109dde5891a8384e5f429b04a3748470fe2609b701fd2e995c6c3edc2"
+    },
+    {
+      "exactMatch": true,
+      "member": "config.py",
+      "python": true,
+      "sha256": "a0750adea24a7ee617ea959592b426d9920587492c7c4371ffc347c151c5e0ae",
+      "sizeBytes": 700,
+      "sourceFound": true,
+      "sourcePath": "src/campaign_review/config.py",
+      "sourceSha256": "a0750adea24a7ee617ea959592b426d9920587492c7c4371ffc347c151c5e0ae"
+    },
+    {
+      "exactMatch": true,
+      "member": "service.py",
+      "python": true,
+      "sha256": "76850240dd2af6ece402040ee775e97d644d51a072093eb88dfa93e267a49234",
+      "sizeBytes": 4868,
+      "sourceFound": true,
+      "sourcePath": "src/campaign_review/service.py",
+      "sourceSha256": "76850240dd2af6ece402040ee775e97d644d51a072093eb88dfa93e267a49234"
+    }
+  ],
+  "nonPythonMemberCount": 0,
+  "observedAtUtc": "2026-09-26T13:46:11.919656+00:00",
+  "packageBytes": 3176,
+  "packageSha256": "46def3c7fdce627c3305e0b8c19565ac5217b4ec6d2dd2bf8bd9c4ad7a801fd5",
+  "pythonMemberCount": 4,
+  "region": "us-east-1",
+  "schemaVersion": 1,
+  "scope": [
+    "Read-only GetFunction/GetFunctionConfiguration and package download; no invocation or application data read.",
+    "Exact Python byte correspondence to tracked revision; not proof of original build provenance or every historical deployment.",
+    "CAS behavior is an application-source constraint, not an IAM no-upsert permission guarantee.",
+    "No external generation/period guard in review handler; restored matching aggregate remains editable unless quarantined."
+  ],
+  "sourceRevision": "218769da5b482f98b8cb7e0be93d16e656c38c3e"
+}

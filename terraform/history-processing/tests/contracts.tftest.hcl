@@ -146,7 +146,7 @@ run "account_deletion_candidate_is_disabled_scoped_and_filtered" {
       if statement.sid == "ConsumeOnlyDeletionLedgerStream" &&
       toset(statement.resources) == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-14T00:00:00.000"])
       ]) == 1 && alltrue([for statement in data.aws_iam_policy_document.account_deletion[0].statement :
-      !contains(statement.resources, "*") && (
+      (!contains(statement.resources, "*") || (statement.sid == "DiscoverRegionalStreams" && statement.actions == toset(["dynamodb:ListStreams"]) && anytrue([for c in statement.condition : c.variable == "aws:RequestedRegion" && c.test == "StringEquals" && toset(c.values) == toset(["us-east-1"])]))) && (
         !contains(statement.actions, "dynamodb:Scan") || (statement.sid == "ReconcileDurableDeletionFences" &&
         toset(statement.resources) == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]))
       )
@@ -206,8 +206,11 @@ run "reconciliation_alarms_cover_missing_first_pass_and_stalled_progress" {
     account_deletion_active                 = true
     account_deletion_observability_approved = true
     alarm_topic_arn                         = "arn:aws:sns:us-east-1:107827791950:synthetic"
+    account_deletion_terminal_candidate = true
+    account_deletion_terminal_activation = { source_sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", runtime_reference = "fixture-only", permissions_reference = "fixture-only" }
+    artifact = { release_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", object_version = "fixture", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
     account_deletion_artifact = {
-      release_id = "synthetic-test-only", object_version = "bridge-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      release_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", object_version = "bridge-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
     }
   }
   assert {
@@ -491,20 +494,20 @@ run "terminal_fence_candidate_scopes_reads_and_transactional_receipts" {
         one([for s in policy.statement : s if s.sid == "CheckHistoryStateForCompletion"]).actions == toset(["dynamodb:ConditionCheckItem"]) &&
         one([for s in policy.statement : s if s.sid == "CheckHistoryStateForCompletion"]).resources == toset([local.history.control_table_arn]) &&
         anytrue([for c in one([for s in policy.statement : s if s.sid == "CheckHistoryStateForCompletion"]).condition : c.variable == "dynamodb:LeadingKeys" && toset(c.values) == toset(["USER#*"])]) &&
-        anytrue([for c in one([for s in policy.statement : s if s.sid == "CheckHistoryStateForCompletion"]).condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])
+        anytrue([for c in one([for s in policy.statement : s if s.sid == "CheckHistoryStateForCompletion"]).condition : c.variable == "dynamodb:ReturnValues" && c.test == "StringEqualsIfExists" && toset(c.values) == toset(["NONE"])])
       ]) &&
       aws_lambda_function.account_deletion[0].runtime == "python3.14" &&
       aws_lambda_function.lifecycle[0].runtime == "python3.14" &&
       aws_lambda_function.lifecycle[0].environment[0].variables["HISTORY_LIFECYCLE_ENABLED"] == "false" &&
       one([for s in data.aws_iam_policy_document.runtime[0].statement : s if s.sid == "HistoryComponentCompletionReceipt"]).actions == toset(["dynamodb:GetItem"]) &&
-      anytrue([for c in one([for s in data.aws_iam_policy_document.runtime[0].statement : s if s.sid == "GuardHistoryCompletionReceiptTransaction"]).condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.runtime[0].statement : s if s.sid == "GuardHistoryCompletionReceiptTransaction"]).condition : c.variable == "dynamodb:EnclosingOperation" && c.test == "ForAnyValue:StringEquals" && toset(c.values) == toset(["TransactWriteItems"])]) &&
       aws_lambda_function.account_deletion[0].environment[0].variables["HISTORY_ACCOUNT_DELETION_ENABLED"] == "false" &&
       !aws_lambda_event_source_mapping.account_deletion[0].enabled &&
       aws_cloudwatch_event_rule.account_deletion_reconcile[0].state == "DISABLED" &&
       one([for s in data.aws_iam_policy_document.account_deletion[0].statement : s if s.sid == "ReadAuthoritativeAccountFence"]).actions == toset(["dynamodb:GetItem"]) &&
       one([for s in data.aws_iam_policy_document.account_deletion[0].statement : s if s.sid == "ReadAuthoritativeAccountFence"]).resources == toset([local.foundation.deletion_ledger_table_arn]) &&
       one(one([for s in data.aws_iam_policy_document.account_deletion[0].statement : s if s.sid == "ReadAuthoritativeAccountFence"]).condition).values == tolist(["ACCOUNT#*"]) &&
-      anytrue([for c in one([for s in data.aws_iam_policy_document.account_deletion[0].statement : s if s.sid == "RecordHistoryAbsentCompletion"]).condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])
+      anytrue([for c in one([for s in data.aws_iam_policy_document.account_deletion[0].statement : s if s.sid == "RecordHistoryAbsentCompletion"]).condition : c.variable == "dynamodb:EnclosingOperation" && c.test == "ForAnyValue:StringEquals" && toset(c.values) == toset(["TransactWriteItems"])])
     )
     error_message = "The corrected History candidate must read only account fences, write receipts only transactionally and stay disabled."
   }
@@ -527,5 +530,18 @@ run "terminal_fence_candidate_rejects_active_lifecycle" {
       release_id = "synthetic-test-only", object_version = "terminal-bridge-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
     }
   }
-  expect_failures = [var.account_deletion_terminal_candidate]
+  expect_failures = [aws_lambda_function.account_deletion]
+}
+
+run "terminal_activation_requires_matching_source_and_evidence" {
+  command = plan
+  variables {
+    lifecycle_deployment_enabled = true
+    lifecycle_active = true
+    account_deletion_terminal_candidate = true
+    alarm_topic_arn = "arn:aws:sns:us-east-1:107827791950:synthetic"
+    account_deletion_artifact = { release_id = "synthetic-test-only", object_version = "fixture", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+    account_deletion_terminal_activation = { source_sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", runtime_reference = "fixture-only", permissions_reference = "fixture-only" }
+  }
+  expect_failures = [var.account_deletion_terminal_activation]
 }

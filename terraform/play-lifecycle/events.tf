@@ -23,10 +23,11 @@ resource "aws_iam_role_policy" "schedule" {
   policy   = jsonencode({ Version = "2012-10-17", Statement = [{ Effect = "Allow", Action = "lambda:InvokeFunction", Resource = aws_lambda_alias.runtime[each.key].arn }] })
 }
 resource "aws_scheduler_schedule" "lifecycle" {
+  depends_on          = [aws_iam_role_policy.schedule, aws_iam_role_policy.runtime]
   for_each            = local.schedules
   name                = "${local.prefix}-${each.value.suffix}"
   group_name          = aws_scheduler_schedule_group.lifecycle[0].name
-  state               = "DISABLED"
+  state               = each.key == "deletion" && local.token_deletion_active ? "ENABLED" : "DISABLED"
   schedule_expression = "rate(1 minute)"
   flexible_time_window { mode = "OFF" }
   target {
@@ -40,10 +41,11 @@ resource "aws_scheduler_schedule" "lifecycle" {
   }
 }
 resource "aws_lambda_event_source_mapping" "deletion" {
+  depends_on                     = [aws_iam_role_policy.runtime]
   count                          = length(local.functions) > 0 ? 1 : 0
   event_source_arn               = var.deployment.deletion_stream_arn
   function_name                  = aws_lambda_alias.runtime["deletion"].arn
-  enabled                        = false
+  enabled                        = local.token_deletion_active
   starting_position              = "TRIM_HORIZON"
   batch_size                     = 5
   maximum_retry_attempts         = 2
