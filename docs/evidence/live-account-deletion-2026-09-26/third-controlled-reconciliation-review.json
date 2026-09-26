@@ -1,0 +1,22 @@
+{
+  "helperSha256": "edda9d5731120ac86c02c14187c773d58d47816089ebcb10527488b57f4474b1",
+  "planSha256": "607e0559a857ead7647ab56fbfa2fe507d92f097b8c8a81255f2125b6029a54f",
+  "offlineTestsNormal": 6,
+  "offlineTestsOptimized": 6,
+  "actualInvocationAttempts": 1,
+  "operatorAcceptedResult": false,
+  "stoppedAt": "nonzero policy-blocked counter validation",
+  "precedingResponseChecksPassed": [
+    "StatusCode200",
+    "no FunctionError",
+    "source version LATEST",
+    "commandFailures0",
+    "passHadFailures false"
+  ],
+  "rawResponseRetained": false,
+  "independentReadbackAnalysisFamilyIndex": 3,
+  "noRetry": true,
+  "scope": "one real tick of the already-accepted third operation; no commands or receipts injected",
+  "postObservationRegressionTestsNormal": 7,
+  "postObservationRegressionTestsOptimized": 7
+}
