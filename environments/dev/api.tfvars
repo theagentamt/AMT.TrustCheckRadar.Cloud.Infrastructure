@@ -122,9 +122,9 @@ account_export_deployment = {
 }
 account_export_play_token_table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens"
 account_data_deployment = {
-  release_id         = "65df9c7e7fe338f00df8ecc13795014ab928cdfa"
-  object_version     = "mYHSx6PF_fe0d8DiOTxUJZjyhx3jWA2_"
-  source_hash        = "tuYWOnIfwap0NHZOE9Bm5hC4kWFnXJHwrrV9hSjMZRk="
+  release_id         = "eba5d938c1da5cf36540cf654e674f46bba3fa71"
+  object_version     = "Hmz9pOvMLuHr4x45wL3B05i.EaVe4CZg"
+  source_hash        = "7gXjecACio4Di2m383J+pwUkFz1yzLCcGqbNJ3359kY="
   approval_reference = "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md"
   promotion_approved = false
 }
@@ -168,11 +168,11 @@ account_data_finalization_candidate = {
 # Reviewed cleanup-only Dev qualification; all unrelated admission stays closed.
 account_deletion_activation = {
   "phase" : "api",
-  "source_sha" : "65df9c7e7fe338f00df8ecc13795014ab928cdfa",
+  "source_sha" : "eba5d938c1da5cf36540cf654e674f46bba3fa71",
   "policy_reference" : "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md",
   "inventory_reference" : "docs/evidence/live-account-deletion-2026-09-26/external-approval.json",
   "identity_reference" : "docs/evidence/live-account-deletion-2026-09-26/cognito-normal-runtime.json; docs/evidence/live-account-deletion-2026-09-26/cognito-lost-ack-runtime.json",
   "component_reference" : "docs/evidence/live-account-deletion-2026-09-26/all-component-runtime.json",
   "worker_acceptance_reference" : "docs/evidence/live-account-deletion-2026-09-26/cleanup-worker-corrected-runtime.json",
-  "http_subjects" : ["a458f4f8-0061-702a-eaf2-ba30e7cfbbf8"]
+  "http_subjects" : ["f42804a8-60b1-706e-eac4-113371eab1ee"]
 }

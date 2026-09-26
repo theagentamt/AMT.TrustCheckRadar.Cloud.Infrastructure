@@ -5,8 +5,10 @@ are initialized with exact readback, and the current1480 key and registry are
 initialized without changing older periods. Cleanup-only Dev worker configuration
 is deployed and all six stack post-plans have no drift. Actual runtime validation
 found and corrected a History checkpoint expression defect. All six actual
-empty-work handlers now pass. Scoped HTTP admission is selected for planning
-for the one prepared disposable identity and is not yet deployed. Earlier
+empty-work handlers now pass. Scoped HTTP admission
+is deployed for the one prepared disposable identity. Its first request completed with twelve validated receipts, actual Cognito absence
+and preserved unrelated records. A status-response correction and second isolated
+HTTP/token qualification are underway. No general accounts are admitted. Earlier
 closed-preparation statements below describe the corresponding completed stages.
 
 The owner requested live-deletion implementation on September 26. The immediate
@@ -458,3 +460,48 @@ contract tests pass. History successful-sweep metrics are now ingested and its
 heartbeat/expiry alarms recovered; older error/failure alarm observations remain
 visible while evaluation windows drain. The broad monitoring reread was throttled;
 a bounded targeted metric/alarm read succeeded without changing alarm states.
+
+PR96 integrated at `7f43a43a668c0e23a22693dfc6dbfbccdaf06190`; the exact scoped API
+plan was applied, direct readback verified both routes/authorizer/permissions and
+the sole account allowlist, and the full API post-plan had no drift. The reviewed
+operator authenticated the owned disposable identity and the actual HTTP endpoint
+accepted its single original operation with 202. No credentials were persisted.
+
+The postacceptance monitor ended inconclusively after its first GET observation;
+its private journal remains ACCEPTED and no second POST/password reset occurred.
+Nine genuine component receipts were observed. Analysis cleanup advances one
+family per pass and reached family index3; USER_PROFILE/IDENTITY correctly wait
+for its receipt. A source review found a separate pending-status serialization
+defect with DynamoDB Decimal timestamps. The Lambda owner is reproducing and
+correcting it. No completion or token-rejection claim is inferred from acceptance.
+
+The first accepted operation completed through the genuine scheduled workers:
+twelve source-validated receipts and the original operation match, recovery
+sidecars are absent, the user partition is empty, and actual Cognito AdminGetUser
+reports the identity absent. Every one of the twenty-three baseline unrelated
+rows across thirteen unchanged table identities is preserved. No manual receipt,
+command repair or Cognito deletion was used. Its token monitor remains separately
+inconclusive; successful erasure does not rewrite that result.
+
+Lambda PR70 source `eba5d938c1da5cf36540cf654e674f46bba3fa71` fixes only native JSON
+conversion of the already-validated pending-response timestamps. The reviewer
+verified all twenty-one package members against Git and found only service.py
+changed from the deployed source. Actual SDK/handler regression covers persisted
+GET and duplicate POST responses and preserves malformed-record rejection. The
+first live unretained error is not retroactively labeled with an observed status.
+This response-only correction changes no data writer, schema, receipt, retention
+or inventory admission; it is an explicit narrow supplement to source bindings.
+
+A second uniquely created suppressed-delivery disposable identity has a genuine
+pending-age profile and its own durable operation journal. It is prepared solely
+to qualify corrected pending HTTP and token rejection without retrying/resetting
+the completed first account. The three subject lists select only the second
+identity after first completion. Actual enrollment is administrative bootstrap,
+not proof of native signup-trigger delivery.
+
+The second test baseline was captured after the first terminal result, covering
+thirteen table identities and thirty-seven non-target rows, including retained
+first-operation proof. The second admission plans only replace each exact
+single-subject list and publish corresponding V1/Play cleanup aliases; the API
+also installs the reviewed response-only correction. IAM, unrelated environments,
+retention and general admission remain unchanged.
