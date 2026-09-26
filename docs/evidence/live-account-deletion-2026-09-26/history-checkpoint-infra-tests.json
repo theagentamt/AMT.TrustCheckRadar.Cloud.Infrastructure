@@ -1,0 +1,7 @@
+{
+  "suite": "terraform/history-processing/tests/contracts.tftest.hcl",
+  "passed": 23,
+  "failed": 0,
+  "execution": "mocked provider outside sandbox after local plugin handshake restriction",
+  "logSha256": "42c4ff032f650699aa381526e59e81d8e1e83dff9a3949a6bcd61c9c0fac8d2d"
+}

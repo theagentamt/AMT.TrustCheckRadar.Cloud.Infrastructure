@@ -1,0 +1,29 @@
+{
+  "stacks": {
+    "api": {
+      "noDrift": true,
+      "planLogSha256": "3202a6fe5ae8f789650213803fdb0b729f79edaedf376d524fbc0bcbe194b9e2"
+    },
+    "campaign-processing": {
+      "noDrift": true,
+      "planLogSha256": "6ad8d68c8d7f26245db670b0cb6cb5d33fecd842357e0e55ad5ca6477a17be7c"
+    },
+    "history-processing": {
+      "noDrift": true,
+      "planLogSha256": "1973306eceb6814c930c78b9274e9e4d131b5bc2961e9cabd807d0a5c04d3f13"
+    },
+    "url-consumer": {
+      "noDrift": true,
+      "planLogSha256": "0e9f95ef8f945f47b2f47562bd955011e4332243b2d22aee3e6753e14f875200"
+    },
+    "play-lifecycle": {
+      "noDrift": true,
+      "planLogSha256": "204ff6ea0a9758725d3981f15273f039e6a0230367eb7655b25d66d00d07aaca"
+    },
+    "url-resolver": {
+      "noDrift": true,
+      "planLogSha256": "02f81a9e868342c37ade40e53dcc903978d6546d0f4b0c19f2d810f6d8cfc69c"
+    }
+  },
+  "allNoDrift": true
+}
