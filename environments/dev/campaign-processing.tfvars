@@ -21,25 +21,25 @@ tags = {
 # Owner-authorized Dev migration; new contribution/cleanup activation remains closed.
 research_consent_migration = true
 account_privacy_artifacts = {
-  release_id         = "cab9a2a3976e52b64b75057a8432b1506a365b02"
-  approval_reference = "docs/CAMPAIGN-PERIOD-ADMISSION.md"
+  release_id         = "f92285b50561397355a5fe2e466d297041336755"
+  approval_reference = "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md"
   promotion_approved = false
   workers = {
     publisher = {
-      object_version = "Wun74uNFT5jALtlplbXYXAM.gPxNmRH0"
-      source_hash    = "RAIFC3HCgwfCIOZK/+rVWC0LyHTp7xpz42lLAuOc56w="
+      object_version = "GcUQQJ.bJHeSpTYMmrxi0PGHUjOWeVsI"
+      source_hash    = "L6UM2rin+UF/RT03Zp9lmETYAdZeH1zVyqC95eAe2K4="
     }
     cluster = {
-      object_version = "HnHIU59qeJdL9enK_BD_.0VlT1uPzuIZ"
-      source_hash    = "ATkFbdQyn5uDD4nEYb6A7s0ceOQIYWzJiIucTPSCPwk="
+      object_version = "0lE7FKR3KAjsBo5mJ9x8KamqYF5WqaCL"
+      source_hash    = "HbuW0wNMYig46812A5KX43fiAYtv+jaF3TN9WuDp+xU="
     }
     deletion = {
-      object_version = "Obz.qyXSypzZXcH3oA55V5BdjCxPtfCB"
-      source_hash    = "Fy8gTcYd/ZYILh/7hu1Vnd01Ma7MK0YbUNKk8Y7q9GM="
+      object_version = "G1uslDwsopxaCLifNnmZ3FhM1ziv2wTR"
+      source_hash    = "w3wa+YT63hwH5qahfdB0q/JdppbzK6Uw7KAI43ImkMk="
     }
     lifecycle = {
-      object_version = "9GrjFGD4qPFc5eZ3XZjTOUYvqGiegKy8"
-      source_hash    = "/skIiDDzLddciU3V55Je4NlVNDYT3OCrnCmT6knaBRs="
+      object_version = "wr6e6uiYfWq1AU9TG0RrpZyURkH9Bd3I"
+      source_hash    = "OquA9UqCumRUeC2rkksCnUtQm/anyBBgHudO9jlTsx8="
     }
   }
 }
@@ -54,13 +54,17 @@ campaign_recovery_preparation = {
 
 # SECUR4ALL-207: install actual completion integration with every gate closed.
 campaign_completion_artifact = {
-  release_id       = "cab9a2a3976e52b64b75057a8432b1506a365b02"
-  object_version   = "Obz.qyXSypzZXcH3oA55V5BdjCxPtfCB"
-  source_hash      = "Fy8gTcYd/ZYILh/7hu1Vnd01Ma7MK0YbUNKk8Y7q9GM="
-  review_reference = "docs/CAMPAIGN-PERIOD-ADMISSION.md"
+  release_id       = "f92285b50561397355a5fe2e466d297041336755"
+  object_version   = "G1uslDwsopxaCLifNnmZ3FhM1ziv2wTR"
+  source_hash      = "w3wa+YT63hwH5qahfdB0q/JdppbzK6Uw7KAI43ImkMk="
+  review_reference = "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md"
 }
 
 # SECUR4ALL-207: coordinated period admission candidate; all gates remain closed.
 campaign_period_fence_preparation = {
-  review_reference = "docs/CAMPAIGN-PERIOD-ADMISSION.md"
+  review_reference = "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md"
+}
+
+campaign_account_cleanup_preparation = {
+  review_reference = "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md"
 }

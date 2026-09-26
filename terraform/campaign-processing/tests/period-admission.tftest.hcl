@@ -91,7 +91,7 @@ override_data {
 run "period_admission_default_absent" {
   command = plan
   assert {
-    condition = length(aws_iam_role_policy.period_admission) == 0 && !output.campaign_period_admission_preparation_contract.prepared
+    condition     = length(aws_iam_role_policy.period_admission) == 0 && !output.campaign_period_admission_preparation_contract.prepared
     error_message = "Period admission must not be prepared implicitly."
   }
 }
@@ -101,20 +101,20 @@ run "period_admission_closed_coordinated_workers" {
 
     campaign_recovery_preparation = { review_reference = "synthetic-recovery" }
     account_privacy_artifacts = {
-      release_id = "1111111111111111111111111111111111111111"
+      release_id         = "1111111111111111111111111111111111111111"
       approval_reference = "synthetic-privacy"
       promotion_approved = false
       workers = {
         publisher = { object_version = "publisher-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
-        cluster = { object_version = "cluster-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
-        deletion = { object_version = "deletion-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        cluster   = { object_version = "cluster-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        deletion  = { object_version = "deletion-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
         lifecycle = { object_version = "lifecycle-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
       }
     }
     campaign_completion_artifact = {
-      release_id = "1111111111111111111111111111111111111111"
-      object_version = "deletion-version"
-      source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      release_id       = "1111111111111111111111111111111111111111"
+      object_version   = "deletion-version"
+      source_hash      = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
       review_reference = "synthetic-completion"
     }
     campaign_period_fence_preparation = { review_reference = "synthetic-period-admission" }
@@ -129,19 +129,19 @@ run "period_admission_closed_coordinated_workers" {
     error_message = "All four selected workers must have closed admission and one reviewed source."
   }
   assert {
-    condition = toset(keys(aws_iam_role_policy.period_admission)) == toset(["publisher", "cluster", "lifecycle"]) && alltrue([for p in data.aws_iam_policy_document.period_admission : contains([for s in p.statement : s.sid], "CheckExactPeriodAdmission")])
+    condition     = toset(keys(aws_iam_role_policy.period_admission)) == toset(["publisher", "cluster", "lifecycle"]) && alltrue([for p in data.aws_iam_policy_document.period_admission : contains([for s in p.statement : s.sid], "CheckExactPeriodAdmission")])
     error_message = "Only the three missing PERIOD check grants may be added."
   }
   assert {
-    condition = !contains(one([for s in data.aws_iam_policy_document.lifecycle_runtime[0].statement : one([for c in s.condition : c.values if c.variable == "dynamodb:LeadingKeys"]) if s.sid == "WriteMutableLifecyclePipeline"]), "PERIOD#*")
+    condition     = !contains(one([for s in data.aws_iam_policy_document.lifecycle_runtime[0].statement : one([for c in s.condition : c.values if c.variable == "dynamodb:LeadingKeys"]) if s.sid == "WriteMutableLifecyclePipeline"]), "PERIOD#*")
     error_message = "The broad lifecycle write grant must no longer include PERIOD keys."
   }
   assert {
-    condition = toset(one([for s in data.aws_iam_policy_document.period_admission["lifecycle"].statement : s.actions if s.sid == "ClosePeriodAdmissionTransaction"])) == toset(["dynamodb:UpdateItem"])
+    condition     = toset(one([for s in data.aws_iam_policy_document.period_admission["lifecycle"].statement : s.actions if s.sid == "ClosePeriodAdmissionTransaction"])) == toset(["dynamodb:UpdateItem"])
     error_message = "Closure grants UpdateItem only; PutItem and DeleteItem are excluded."
   }
   assert {
-    condition = alltrue([for s in aws_scheduler_schedule.lifecycle : s.state == "DISABLED"]) && !output.campaign_period_admission_preparation_contract.retirement_enabled && !output.campaign_period_admission_preparation_contract.closure_approved
+    condition     = alltrue([for s in aws_scheduler_schedule.lifecycle : s.state == "DISABLED"]) && !output.campaign_period_admission_preparation_contract.retirement_enabled && !output.campaign_period_admission_preparation_contract.closure_approved
     error_message = "Preparation cannot activate closure, retirement or lifecycle scheduling."
   }
 }
@@ -151,20 +151,20 @@ run "period_admission_rejects_mixed_source" {
 
     campaign_recovery_preparation = { review_reference = "synthetic-recovery" }
     account_privacy_artifacts = {
-      release_id = "2222222222222222222222222222222222222222"
+      release_id         = "2222222222222222222222222222222222222222"
       approval_reference = "synthetic-privacy"
       promotion_approved = false
       workers = {
         publisher = { object_version = "publisher-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
-        cluster = { object_version = "cluster-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
-        deletion = { object_version = "deletion-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        cluster   = { object_version = "cluster-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        deletion  = { object_version = "deletion-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
         lifecycle = { object_version = "lifecycle-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
       }
     }
     campaign_completion_artifact = {
-      release_id = "1111111111111111111111111111111111111111"
-      object_version = "deletion-version"
-      source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      release_id       = "1111111111111111111111111111111111111111"
+      object_version   = "deletion-version"
+      source_hash      = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
       review_reference = "synthetic-completion"
     }
     campaign_period_fence_preparation = { review_reference = "synthetic-period-admission" }

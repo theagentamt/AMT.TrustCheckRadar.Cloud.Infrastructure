@@ -29,9 +29,31 @@ variable "research_consent_migration_deployment" {
   }
 }
 
+variable "research_campaign_release_compatibility" {
+  description = "Reviewed exact Dev API/consumer release pair after the initial same-release cutover. Only permitted while consent and all campaign consumers remain paused."
+  type = object({
+    api_release_sha      = string
+    consumer_release_sha = string
+    review_reference     = string
+  })
+  default = null
+  validation {
+    condition = var.research_campaign_release_compatibility == null ? true : try(
+      var.environment == "dev" && var.research_consent_migration_deployment != null &&
+      !var.research_consent_migration_deployment.consent_enabled &&
+      var.research_campaign_release_compatibility.api_release_sha == var.research_consent_migration_deployment.release_id &&
+      alltrue([for sha in [var.research_campaign_release_compatibility.api_release_sha, var.research_campaign_release_compatibility.consumer_release_sha] : can(regex("^[0-9a-f]{40}$", sha))]) &&
+      length(trimspace(var.research_campaign_release_compatibility.review_reference)) > 0,
+      false
+    )
+    error_message = "Compatibility requires a reviewed exact Dev API/consumer SHA pair, the selected API release and closed consent."
+  }
+}
+
 locals {
-  research_purchase_fenced    = var.purchase_handoff_fence_deployment != null || var.research_consent_migration_deployment != null
-  research_migration_selected = var.research_consent_migration_deployment != null
+  research_expected_consumer_release = var.research_campaign_release_compatibility == null ? try(var.research_consent_migration_deployment.release_id, "") : var.research_campaign_release_compatibility.consumer_release_sha
+  research_purchase_fenced           = var.purchase_handoff_fence_deployment != null || var.research_consent_migration_deployment != null
+  research_migration_selected        = var.research_consent_migration_deployment != null
   research_migration_consent_env = local.research_migration_selected ? {
     CONSENT_INDEPENDENCE_ENABLED          = tostring(var.research_consent_migration_deployment.consent_enabled)
     CAMPAIGN_PARTICIPATION_NOTICE_VERSION = "research-consent-2026-09-21-v2"
@@ -154,13 +176,13 @@ resource "terraform_data" "research_migration_cutover" {
     precondition {
       condition = try(
         data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.environment == var.environment &&
-        data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.release_id == var.research_consent_migration_deployment.release_id &&
+        data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.release_id == local.research_expected_consumer_release &&
         data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.selected &&
         data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.consumers_paused &&
         data.terraform_remote_state.research_campaign_processing[0].outputs.research_consent_migration_contract.account_id == data.aws_caller_identity.account_fence[0].account_id,
         false
       )
-      error_message = "Apply the same-release research campaign candidate with all consumers paused in this account/environment before cutting over the API. Applied state is composition evidence, not live qualification."
+      error_message = "Apply the same-release or exact reviewed compatible campaign candidate with all consumers paused in this account/environment. Applied state is composition evidence, not live qualification."
     }
     precondition {
       condition     = local.purchase_entitlements_table_name == "${local.name_prefix}-purchase-entitlements" && local.purchase_entitlements_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.account_fence[0].account_id}:table/${local.name_prefix}-purchase-entitlements"
