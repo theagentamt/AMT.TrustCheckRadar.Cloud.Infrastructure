@@ -44,15 +44,147 @@ def validate_journal(doc, run):
         raise ValueError('FIXTURE_BOUNDARY_REJECTED')
     if not (doc['role'] == prefix + '-role' and doc['function'] == prefix + '-runner'):
         raise ValueError('FIXTURE_BOUNDARY_REJECTED')
+    real = doc.get('realCognito', False)
+    if type(real) is not bool or (real and doc.get('fixtureKind') != 'all-components'):
+        raise ValueError('COGNITO_MODE_REJECTED')
+    cognito_fields = {'cognitoPoolName', 'cognitoPoolId', 'cognitoSubject', 'cognitoPoolCreateAttempted', 'cognitoUserCreateAttempted', 'cognitoPoolRecoveredByExactTags'}
+    if not real and cognito_fields.intersection(doc):
+        raise ValueError('COGNITO_MODE_REJECTED')
+    if real:
+        if any(type(doc[field]) is not bool for field in ['cognitoPoolCreateAttempted', 'cognitoUserCreateAttempted', 'cognitoPoolRecoveredByExactTags'] if field in doc):
+            raise ValueError('COGNITO_JOURNAL_FLAG_REJECTED')
+        if doc.get('cognitoPoolName') != prefix + '-cognito':
+            raise ValueError('COGNITO_POOL_BOUNDARY_REJECTED')
+        if doc.get('cognitoPoolId') is not None:
+            if doc.get('cognitoPoolCreateAttempted') is not True:
+                raise ValueError('COGNITO_JOURNAL_FLAG_REJECTED')
+            cognito_pool_arn(doc['cognitoPoolId'])
+        subject = doc.get('cognitoSubject')
+        if subject is not None and (doc.get('cognitoUserCreateAttempted') is not True or not doc.get('cognitoPoolId') or not re.fullmatch('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', subject)):
+            raise ValueError('COGNITO_SUBJECT_REJECTED')
     key = doc.get('keyArn')
     if not (key is None or re.fullmatch(f'arn:aws:kms:{REGION}:{ACCOUNT}:key/[0-9a-f-]{{36}}', key)):
         raise ValueError('FIXTURE_BOUNDARY_REJECTED')
     return doc
 
-def runtime_policy(tables, key):
+def runtime_policy(tables, key, pool_id=None):
     resources = [f'arn:aws:dynamodb:{REGION}:{ACCOUNT}:table/{name}' for name in tables.values()]
     index=f'arn:aws:dynamodb:{REGION}:{ACCOUNT}:table/{tables["ledger"]}/index/CampaignRecoveryDueIndex'
-    return {'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Action': ['dynamodb:DescribeTable', 'dynamodb:ListTagsOfResource', 'dynamodb:GetItem', 'dynamodb:Query', 'dynamodb:Scan', 'dynamodb:PutItem', 'dynamodb:UpdateItem', 'dynamodb:DeleteItem', 'dynamodb:ConditionCheckItem'], 'Resource': resources}, {'Effect':'Allow','Action':['dynamodb:Query'],'Resource':index}, {'Effect': 'Allow', 'Action': ['kms:DescribeKey', 'kms:ListResourceTags', 'kms:GenerateMac'], 'Resource': key}]}
+    policy = {'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Action': ['dynamodb:DescribeTable', 'dynamodb:ListTagsOfResource', 'dynamodb:GetItem', 'dynamodb:Query', 'dynamodb:Scan', 'dynamodb:PutItem', 'dynamodb:UpdateItem', 'dynamodb:DeleteItem', 'dynamodb:ConditionCheckItem'], 'Resource': resources}, {'Effect':'Allow','Action':['dynamodb:Query'],'Resource':index}, {'Effect': 'Allow', 'Action': ['kms:DescribeKey', 'kms:ListResourceTags', 'kms:GenerateMac'], 'Resource': key}]}
+    if pool_id is not None:
+        policy['Statement'].append({'Effect': 'Allow', 'Action': ['cognito-idp:DescribeUserPool', 'cognito-idp:AdminGetUser', 'cognito-idp:AdminUserGlobalSignOut', 'cognito-idp:AdminDeleteUser'], 'Resource': cognito_pool_arn(pool_id)})
+    return policy
+
+
+def cognito_pool_arn(pool_id):
+    if not isinstance(pool_id, str) or not re.fullmatch(REGION + r'_[A-Za-z0-9]{1,55}', pool_id):
+        raise ValueError('COGNITO_POOL_ID_REJECTED')
+    return f'arn:aws:cognito-idp:{REGION}:{ACCOUNT}:userpool/{pool_id}'
+
+
+def cognito_pool_request(run):
+    prefix, tags = identity(run)
+    return {'PoolName': prefix + '-cognito', 'UserPoolTags': tags,
+            'UsernameAttributes': ['email'], 'AutoVerifiedAttributes': [],
+            'LambdaConfig': {}, 'MfaConfiguration': 'OFF', 'DeletionProtection': 'INACTIVE',
+            'AdminCreateUserConfig': {'AllowAdminCreateUserOnly': True},
+            'AccountRecoverySetting': {'RecoveryMechanisms': [{'Priority': 1, 'Name': 'admin_only'}]}}
+
+
+def validate_cognito_pool(pool, doc):
+    if (pool.get('Name') != doc['cognitoPoolName'] or
+            pool.get('Arn') != cognito_pool_arn(pool.get('Id')) or
+            (doc.get('cognitoPoolId') is not None and pool['Id'] != doc['cognitoPoolId']) or
+            pool.get('UserPoolTags') != doc['tags'] or
+            pool.get('UsernameAttributes') != ['email'] or pool.get('AliasAttributes') or
+            pool.get('LambdaConfig') or pool.get('AutoVerifiedAttributes') or
+            pool.get('MfaConfiguration') != 'OFF' or pool.get('DeletionProtection') != 'INACTIVE' or
+            pool.get('AdminCreateUserConfig', {}).get('AllowAdminCreateUserOnly') is not True):
+        raise ValueError('COGNITO_POOL_BOUNDARY_REJECTED')
+    return pool['Id']
+
+
+def cognito_user_request(doc):
+    return {'UserPoolId': doc['cognitoPoolId'],
+            'Username': 'fixture-' + doc['runId'] + '@example.invalid',
+            'MessageAction': 'SUPPRESS', 'ForceAliasCreation': False,
+            'UserAttributes': [{'Name': 'email', 'Value': 'fixture-' + doc['runId'] + '@example.invalid'}]}
+
+
+def validate_cognito_user(user, doc):
+    entries = user.get('Attributes', user.get('UserAttributes', []))
+    attrs = {entry['Name']: entry['Value'] for entry in entries}
+    subject = attrs.get('sub')
+    if (len(attrs) != len(entries) or not isinstance(subject, str) or
+            not re.fullmatch('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', subject) or
+            user.get('Username') != subject or
+            attrs.get('email') != 'fixture-' + doc['runId'] + '@example.invalid' or
+            (doc.get('cognitoSubject') is not None and doc['cognitoSubject'] != subject)):
+        raise ValueError('COGNITO_SUBJECT_BOUNDARY_REJECTED')
+    return subject
+
+
+def discover_cognito_pool(client, doc, deadline):
+    found = []; token = None
+    for _ in range(10):
+        if time.monotonic() >= deadline:
+            raise TimeoutError('COGNITO_DISCOVERY_DEADLINE')
+        response = client.list_user_pools(MaxResults=60, **({'NextToken': token} if token else {}))
+        for entry in response['UserPools']:
+            if entry.get('Name') != doc['cognitoPoolName']:
+                continue
+            if time.monotonic() >= deadline:
+                raise TimeoutError('COGNITO_DISCOVERY_DEADLINE')
+            pool = client.describe_user_pool(UserPoolId=entry['Id'])['UserPool']
+            found.append(validate_cognito_pool(pool, doc))
+        token = response.get('NextToken')
+        if not token:
+            break
+    else:
+        raise ValueError('COGNITO_DISCOVERY_INCOMPLETE')
+    if len(found) != 1:
+        raise ValueError('AMBIGUOUS_COGNITO_POOL_CREATION')
+    return found[0]
+
+
+def cleanup_cognito(client, doc, save, poll, deadline):
+    if not doc.get('realCognito') or not doc.get('cognitoPoolCreateAttempted'):
+        return {'requested': False}
+    if not doc.get('cognitoPoolId'):
+        doc['cognitoPoolId'] = discover_cognito_pool(client, doc, deadline)
+        doc['cognitoPoolRecoveredByExactTags'] = True
+        save()
+    pool_id = doc['cognitoPoolId']
+    def missing(exc):
+        return getattr(exc, 'response', {}).get('Error', {}).get('Code') == 'ResourceNotFoundException'
+    try:
+        pool = client.describe_user_pool(UserPoolId=pool_id)['UserPool']
+        validate_cognito_pool(pool, doc)
+    except Exception as exc:
+        if not missing(exc):
+            raise
+        return {'requested': True, 'poolAbsent': True, 'subjectAbsentWithPool': True}
+    if doc.get('cognitoSubject'):
+        try:
+            user = client.admin_get_user(UserPoolId=pool_id, Username=doc['cognitoSubject'])
+            validate_cognito_user(user, doc)
+            client.admin_delete_user(UserPoolId=pool_id, Username=doc['cognitoSubject'])
+        except Exception as exc:
+            if getattr(exc, 'response', {}).get('Error', {}).get('Code') != 'UserNotFoundException':
+                raise
+    # Deleting the owned pool also removes a user whose create response was lost.
+    client.delete_user_pool(UserPoolId=pool_id)
+    def gone():
+        try:
+            client.describe_user_pool(UserPoolId=pool_id)
+            return False
+        except Exception as exc:
+            if not missing(exc):
+                raise
+            return True
+    poll(gone, bool)
+    return {'requested': True, 'poolAbsent': True, 'subjectAbsentWithPool': True}
+
 
 def table_request(name,kind,tags):
     request=dict(TableName=name,KeySchema=[{'AttributeName':'PK','KeyType':'HASH'},{'AttributeName':'SK','KeyType':'RANGE'}],AttributeDefinitions=[{'AttributeName':x,'AttributeType':'S'} for x in ['PK','SK']],BillingMode='PAY_PER_REQUEST',OnDemandThroughput={'MaxReadRequestUnits':25,'MaxWriteRequestUnits':25},Tags=[{'Key':k,'Value':v} for k,v in tags.items()])
@@ -73,15 +205,19 @@ def main():
     parser.add_argument('--source-sha')
     parser.add_argument('--profile', default='trustcheckradar')
     parser.add_argument('--fixture-kind', choices=['campaign', 'all-components'], default='campaign')
+    parser.add_argument('--real-cognito', action='store_true', help='Separate identity integration fixture; requires all-components and its separately reviewed package.')
     args = parser.parse_args()
+    if args.real_cognito and args.fixture_kind != 'all-components':
+        raise ValueError('COGNITO_MODE_REJECTED')
     prefix, tags = identity(args.run_id)
     path = Path(args.journal)
     session = boto3.Session(profile_name=args.profile, region_name=REGION)
     cfg = Config(connect_timeout=5, read_timeout=15, retries={'total_max_attempts': 1})
-    clients = {x: session.client(x, config=cfg) for x in ['sts', 'dynamodb', 'kms', 'iam', 'lambda']}
+    clients = {x: session.client(x, config=cfg) for x in ['sts', 'dynamodb', 'kms', 'iam', 'lambda', 'cognito-idp']}
     if not clients['sts'].get_caller_identity()['Account'] == ACCOUNT:
         raise ValueError('FIXTURE_BOUNDARY_REJECTED')
     ddb, kms, iam, lam = [clients[x] for x in ['dynamodb', 'kms', 'iam', 'lambda']]
+    cognito = clients['cognito-idp']
     deadline = time.monotonic() + 600
 
     def save():
@@ -110,11 +246,27 @@ def main():
         if not hashlib.sha256(archive).hexdigest() == args.zip_sha256:
             raise ValueError('FIXTURE_BOUNDARY_REJECTED')
         doc = {'schemaVersion': 1, 'runId': args.run_id, 'account': ACCOUNT, 'region': REGION, 'prefix': prefix, 'tags': tags, 'fixtureKind': args.fixture_kind, 'tables': {x: prefix + '-' + x for x in table_kinds(args.fixture_kind)}, 'role': prefix + '-role', 'function': prefix + '-runner', 'sourceSha': args.source_sha, 'zipSha256': args.zip_sha256, 'createdAtUtc': datetime.now(timezone.utc).isoformat(), 'created': []}
+        if args.real_cognito:
+            doc.update(realCognito=True, cognitoPoolName=prefix + '-cognito')
         save()
         for kind,name in doc['tables'].items():
             ddb.create_table(**table_request(name,kind,tags))
             doc['created'].append(name)
             save()
+        if args.real_cognito:
+            doc['cognitoPoolCreateAttempted'] = True
+            save()
+            pool = cognito.create_user_pool(**cognito_pool_request(args.run_id))['UserPool']
+            # Save the returned ID before response validation so cleanup can inspect it.
+            doc['cognitoPoolId'] = pool['Id']
+            save()
+            validate_cognito_pool(cognito.describe_user_pool(UserPoolId=pool['Id'])['UserPool'], doc)
+            doc['cognitoUserCreateAttempted'] = True
+            save()
+            user = cognito.admin_create_user(**cognito_user_request(doc))['User']
+            doc['cognitoSubject'] = validate_cognito_user(user, doc)
+            save()
+            validate_cognito_user(cognito.admin_get_user(UserPoolId=pool['Id'], Username=doc['cognitoSubject']), doc)
         doc['keyCreateAttempted'] = True
         save()
         key = kms.create_key(KeySpec='HMAC_256', KeyUsage='GENERATE_VERIFY_MAC', Description='Disposable campaign completion runtime qualification', Tags=[{'TagKey': k, 'TagValue': v} for k, v in tags.items()])['KeyMetadata']['Arn']
@@ -123,7 +275,7 @@ def main():
         iam.create_role(RoleName=doc['role'], AssumeRolePolicyDocument=json.dumps({'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Principal': {'Service': 'lambda.amazonaws.com'}, 'Action': 'sts:AssumeRole'}]}), Tags=[{'Key': k, 'Value': v} for k, v in tags.items()])
         doc['created'].append(doc['role'])
         save()
-        policy = runtime_policy(doc['tables'], key)
+        policy = runtime_policy(doc['tables'], key, doc.get('cognitoPoolId'))
         iam.put_role_policy(RoleName=doc['role'], PolicyName='synthetic-fixtures-only', PolicyDocument=json.dumps(policy))
         doc['policySha256'] = hashlib.sha256(json.dumps(policy, sort_keys=True).encode()).hexdigest()
         save()
@@ -131,9 +283,11 @@ def main():
             poll(lambda n=name: ddb.describe_table(TableName=n), lambda x: x['Table']['TableStatus'] == 'ACTIVE' and all(i['IndexStatus']=='ACTIVE' for i in x['Table'].get('GlobalSecondaryIndexes',[])))
         env = {'QUALIFICATION_RUN_ID': args.run_id, 'QUALIFICATION_KEY_ARN': key, 'QUALIFICATION_FUNCTION_NAME': doc['function'], 'QUALIFICATION_SOURCE_SHA': args.source_sha}
         env.update(table_environment(doc['tables']))
+        if args.real_cognito:
+            env.update(QUALIFICATION_COGNITO_POOL_ID=doc['cognitoPoolId'], QUALIFICATION_COGNITO_SUBJECT=doc['cognitoSubject'])
         for attempt in range(20):
             try:
-                lam.create_function(FunctionName=doc['function'], Runtime='python3.14', Architectures=['arm64'], Role=f"arn:aws:iam::{ACCOUNT}:role/{doc['role']}", Handler='campaign_qualification.lambda_handler', Code={'ZipFile': archive}, Timeout=fixture_timeout(args.fixture_kind), MemorySize=512, Environment={'Variables': env}, Tags=tags, Publish=False)
+                lam.create_function(FunctionName=doc['function'], Runtime='python3.14', Architectures=['arm64'], Role=f"arn:aws:iam::{ACCOUNT}:role/{doc['role']}", Handler='cognito_qualification.lambda_handler' if args.real_cognito else 'campaign_qualification.lambda_handler', Code={'ZipFile': archive}, Timeout=fixture_timeout(args.fixture_kind), MemorySize=512, Environment={'Variables': env}, Tags=tags, Publish=False)
                 break
             except Exception as exc:
                 code = getattr(exc, 'response', {}).get('Error', {}).get('Code')
@@ -159,6 +313,7 @@ def main():
         if not absent(exc):
             raise
         results['functionDeleted'] = True
+    results['cognito'] = cleanup_cognito(cognito, doc, save, poll, deadline)
     for name in doc['tables'].values():
         try:
             arn = ddb.describe_table(TableName=name)['Table']['TableArn']
