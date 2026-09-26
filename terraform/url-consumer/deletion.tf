@@ -24,7 +24,8 @@ resource "aws_iam_role_policy" "deletion" {
           "Null"                      = { "dynamodb:Attributes" = "false" }
         }
       },
-      { Sid = "ReadCommandStream", Effect = "Allow", Action = ["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator", "dynamodb:ListStreams"], Resource = var.deletion_stream_arn },
+      { Sid = "DiscoverRegionalDeletionStreams", Effect = "Allow", Action = ["dynamodb:ListStreams"], Resource = "*", Condition = { StringEquals = { "aws:RequestedRegion" = "us-east-1" } } },
+      { Sid = "ReadCommandStream", Effect = "Allow", Action = ["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator"], Resource = var.deletion_stream_arn },
       { Sid = "OneRetainedKeyRing", Effect = "Allow", Action = "secretsmanager:GetSecretValue", Resource = aws_secretsmanager_secret.authority_hmac[0].arn,
       Condition = { StringEquals = { "secretsmanager:VersionStage" = "AWSCURRENT" } } },
       { Sid = "NoProviderOrIdentityMutation", Effect = "Deny", Action = ["lambda:InvokeFunction", "cognito-idp:*", "s3:*", "ssm:*", "sts:AssumeRole"], Resource = "*" }
@@ -41,7 +42,7 @@ resource "aws_lambda_event_source_mapping" "v1_deletion" {
   count                          = local.deletion_provisioned ? 1 : 0
   event_source_arn               = var.deletion_stream_arn
   function_name                  = aws_lambda_alias.runtime["deletion"].arn
-  enabled                        = local.authority_engineering_active
+  enabled                        = local.authority_deletion_active
   starting_position              = "LATEST"
   batch_size                     = 5
   parallelization_factor         = 1
@@ -71,7 +72,7 @@ resource "aws_cloudwatch_event_rule" "maintenance" {
   for_each            = local.schedules
   name                = "${local.prefix}-${each.value.suffix}"
   schedule_expression = "rate(1 minute)"
-  state               = local.authority_engineering_active ? "ENABLED" : "DISABLED"
+  state               = (each.key == "deletion" ? local.authority_deletion_active : local.authority_engineering_active) ? "ENABLED" : "DISABLED"
   tags                = var.tags
 }
 resource "aws_cloudwatch_event_target" "maintenance" {

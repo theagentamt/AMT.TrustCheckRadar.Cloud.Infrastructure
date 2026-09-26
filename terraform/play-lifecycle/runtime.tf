@@ -90,11 +90,11 @@ resource "aws_lambda_function" "runtime" {
     variables = merge({
       STAGE                           = var.environment
       PLAY_LIFECYCLE_ENABLED          = "false"
-      PLAY_TOKEN_CLEANUP_ENABLED      = "false"
+      PLAY_TOKEN_CLEANUP_ENABLED      = tostring(each.key == "deletion" && local.token_deletion_active)
       PLAY_CHECKPOINT_POLICY_APPROVED = "false"
       PLAY_PREPARATION_ENABLED        = "false"
       AUTHORITY_ENABLED               = "false"
-      DEV_SUBJECT_ALLOWLIST_JSON      = "[]"
+      DEV_SUBJECT_ALLOWLIST_JSON      = each.key == "deletion" && local.token_deletion_active ? jsonencode(sort(tolist(var.deletion_activation.subjects))) : "[]"
       PLAY_TOKEN_TABLE_NAME           = aws_dynamodb_table.tokens[0].name
       AUTHORITY_TABLE_NAME            = split("/", local.authority_arn)[1]
       PURCHASE_OWNERSHIP_TABLE_NAME   = split("/", local.authority_arn)[1]

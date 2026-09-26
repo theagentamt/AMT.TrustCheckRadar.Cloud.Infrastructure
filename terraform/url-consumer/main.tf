@@ -126,8 +126,8 @@ resource "aws_lambda_function" "runtime" {
       } : each.key == "recovery" ? {
       LEASE_SWEEP_ENABLED = tostring(local.authority_engineering_active)
       } : {
-      V1_AUTHORITY_DELETION_ENABLED      = tostring(local.authority_engineering_active)
-      DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(var.engineering_subjects)))
+      V1_AUTHORITY_DELETION_ENABLED      = tostring(local.authority_deletion_active)
+      DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(local.authority_deletion_subjects)))
       DELETION_LEDGER_TABLE_NAME         = split("/", var.deployment.deletion_table_arn)[1]
       DELETION_LEDGER_STREAM_ARN         = var.deletion_stream_arn
       AUTHORITY_HMAC_SECRET_ARN          = aws_secretsmanager_secret.authority_hmac[0].arn

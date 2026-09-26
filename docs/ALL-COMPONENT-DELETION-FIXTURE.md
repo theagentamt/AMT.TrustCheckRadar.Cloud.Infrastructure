@@ -20,3 +20,17 @@ This qualifies containment, not component semantics or application IAM. The Lamb
 runner source and package must be independently reviewed before any cloud fixture
 is created. Real producers must create their own receipts; injected Cognito is
 reported explicitly and does not count as live identity removal.
+## September 26 AWS result
+
+Lambda PR62 source `a612733c162cf2ef6f6ecc740d3ca14683f62c45` was independently
+packaged and ran all 52 cases successfully in AWS Python 3.14 ARM64. The four
+additional cases composed eleven real upstream receipt producers and the finalizer
+with nonempty paginated data, lost acknowledgments, unknown recovery state and
+History retry. Identity calls were injected; paid and inventory state was synthetic.
+This does not establish native Cognito removal, store verification, historical
+coverage or production-role permissions.
+
+All twelve temporary tables, the function and the execution role were subsequently
+confirmed absent. The test HMAC key is PendingDeletion for October 3, not destroyed.
+See `evidence/live-account-deletion-2026-09-26/all-component-runtime.json` and
+`all-component-cleanup.json` for bounded evidence and explicit limitations.
