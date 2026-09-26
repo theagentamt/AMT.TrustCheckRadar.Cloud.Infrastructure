@@ -114,10 +114,13 @@ narrowing. No activation values, table rows, schedules or stream mappings change
 The full plan also renders two deferred scheduler policies; these are excluded
 from the bounded apply. Plan verification is not deployment evidence.
 
-GitHub publication awaits the owner response after automatic approval review
-rejected the Lambda push for inability to establish repository-specific
-authorization. Both repositories target release-V01; main remains unchanged.
-No current candidate has been deployed or integrated by this evidence update.
+On 2026-09-26 the owner explicitly requested retrying publication. Infrastructure
+source `755a24edb9d011177782817249fe46e19b52109e` was pushed and its exact remote
+branch verified. [Infrastructure PR85](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/pull/85)
+targets release-V01. Lambda source `cab9a2a3976e52b64b75057a8432b1506a365b02`
+was also pushed and its exact remote branch verified; [Lambda PR59](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/pull/59)
+is open against release-V01. Neither PR has merged, and no candidate has been
+deployed by this evidence update; main remains unchanged.
 
 ## Remaining acceptance
 
