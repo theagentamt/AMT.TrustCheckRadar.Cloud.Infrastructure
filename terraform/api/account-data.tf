@@ -522,8 +522,8 @@ output "account_data_candidate_contract" {
     planned_routes                        = ["POST /v1/users/account-deletion", "GET /v1/users/account-deletion"]
     full_account_export_available         = false
     overall_deletion_completion_available = false
-    identity_finalizer_configured          = local.account_deletion_workers_enabled
-    runtime_completion_attested            = false
+    identity_finalizer_configured         = local.account_deletion_workers_enabled
+    runtime_completion_attested           = false
     function_arn                          = try(aws_lambda_function.account_data[0].arn, null)
   }
 }
