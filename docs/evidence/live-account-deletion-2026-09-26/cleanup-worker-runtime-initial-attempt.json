@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "worker": "account-data-api",
+      "invocationSucceeded": true,
+      "functionError": false,
+      "counts": {
+        "schemaVersion": 1,
+        "scanned": 6,
+        "matched": 0,
+        "revoked": 0,
+        "commandFailures": 0,
+        "sessionAlreadyComplete": 0,
+        "deviceRecordsDeleted": 0,
+        "deviceComponentsCompleted": 0,
+        "recoveryRecordsDeleted": 0,
+        "recoveryRecordsMinimized": 0,
+        "recoveryComponentsCompleted": 0,
+        "analysisAbuseRecordsDeleted": 0,
+        "analysisAbuseRecordsMinimized": 0,
+        "analysisAbuseComponentsCompleted": 0,
+        "analysisAbusePolicyBlocked": 0,
+        "campaignOutboxRecordsDeleted": 0,
+        "campaignOutboxComponentsCompleted": 0,
+        "campaignOutboxPolicyBlocked": 0,
+        "userProfileRecordsDeleted": 0,
+        "userProfileComponentsCompleted": 0,
+        "userProfilePolicyBlocked": 0,
+        "worksetTruncated": false,
+        "completedFullPass": true,
+        "passHadFailures": false,
+        "completedPassAtEpoch": 1790436627,
+        "fullPassAgeSeconds": 0,
+        "completedAtEpoch": 1790436627
+      },
+      "preflightObservedRows": {
+        "trustcheckradar-dev-deletion-ledger": 6,
+        "trustcheckradar-dev-history-control": 2,
+        "trustcheckradar-dev-history-content": 0
+      }
+    },
+    {
+      "worker": "campaign-deletion-bridge",
+      "invocationSucceeded": true,
+      "functionError": false,
+      "counts": {
+        "enabled": true,
+        "complete": false,
+        "receiptEligible": false,
+        "RecoveryTicks": 1,
+        "RecoveryFailures": 0,
+        "CommandsAttempted": 0,
+        "CommandsUnverified": 0,
+        "CommandsCompleted": 0,
+        "CommandsTerminalAcknowledged": 0,
+        "SidecarSchemaFailures": 0,
+        "IndexCandidatesObserved": 0,
+        "ObservedPendingAgeSeconds": 0,
+        "ObservedOverdueCommands": 0,
+        "RecoveryBudgetExhausted": 0,
+        "RecoveryShardTruncated": 0
+      },
+      "preflightObservedRows": {
+        "trustcheckradar-dev-deletion-ledger": 6,
+        "trustcheckradar-dev-history-control": 2,
+        "trustcheckradar-dev-history-content": 0
+      }
+    },
+    {
+      "worker": "history-account-deletion-bridge",
+      "invocationSucceeded": true,
+      "functionError": false,
+      "counts": {
+        "schemaVersion": 1,
+        "scanned": 6,
+        "matched": 0,
+        "started": 0,
+        "alreadyPending": 0,
+        "completed": 0,
+        "worksetTruncated": false,
+        "completedFullPass": true,
+        "completedPassAtEpoch": 1790436629,
+        "fullPassAgeSeconds": 0,
+        "completedAtEpoch": 1790436629
+      },
+      "preflightObservedRows": {
+        "trustcheckradar-dev-deletion-ledger": 6,
+        "trustcheckradar-dev-history-control": 2,
+        "trustcheckradar-dev-history-content": 0
+      }
+    }
+  ],
+  "actualCommandsInjected": 0,
+  "cloudWatchIngestionVerified": false,
+  "attempting": "history-lifecycle"
+}

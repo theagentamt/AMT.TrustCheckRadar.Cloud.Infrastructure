@@ -2,8 +2,10 @@
 
 Current status, September 26: the four independently qualified inventory markers
 are initialized with exact readback, and the current1480 key and registry are
-initialized without changing older periods. Cleanup-only Dev activation is selected
-for plan review but has not yet been applied. HTTP admission is absent. Earlier
+initialized without changing older periods. Cleanup-only Dev worker configuration
+is deployed and all six stack post-plans have no drift. Actual runtime validation
+found a History checkpoint expression defect; correction is underway. HTTP
+admission remains absent pending real worker acceptance. Earlier
 closed-preparation statements below describe the corresponding completed stages.
 
 The owner requested live-deletion implementation on September 26. The immediate
@@ -382,3 +384,55 @@ subscriptions. No alert message was sent as part of the read-only check.
 Eight campaign activation and fourteen resolver security tests pass. The old
 campaign activation plan is withdrawn; only the replacement v2 plan is eligible
 after independent review. Other three cleanup plans are unchanged.
+
+## Worker deployment accepted as configuration
+
+Infrastructure PR94 merged at `4de3cfddb008191162d400681927724e27561ffa`.
+After the SNS policy update, the replacement campaign plan and unchanged History,
+V1 authority and Play cleanup plans were applied. The separately reviewed API
+workers-only plan passed exact review: seven in-place changes, adding only
+AdminGetUser/AdminDeleteUser for the existing Dev Cognito pool while preserving
+all prior IAM statements and keeping the HTTP subject list empty and routes absent.
+Its immutable plan digest is `c4b649c4b9350025337c740fd693ef02089a44abad25dd03911162c5e4f9b29f`.
+
+Direct readback matched all changed function environments/code, published aliases,
+stream mappings, reconciliation schedules, policies and alarm actions. All six
+subsequent full plans report no drift. This proves deployed configuration; actual
+empty-work reconciliation invocations and authenticated disposable-account
+erasure remain separate acceptance steps.
+
+The first actual empty-work attempt passed account-data, campaign cleanup and
+History bridge reconciliation, then stopped at History lifecycle without claiming
+a pass. The deployed History failure/error alarms were already active. The initial
+partial report is retained; HTTP admission stays absent while the Lambda owner
+diagnoses the runtime failure. No deletion commands or synthetic receipts were
+injected. Configuration/no-drift acceptance is not runtime health acceptance.
+
+Bounded log diagnosis identified a concrete source defect: both History lifecycle
+checkpoint updates reference the DynamoDB reserved keyword `shard` without an
+expression-name alias. Fourteen observed ValidationExceptions match the same
+checkpoint frame; the sanitized diagnostic retains only error categories/counts
+and source locations, with no raw log messages. The correction belongs to Lambda;
+no IAM expansion or permission bypass is needed.
+
+Actual CloudWatch/SNS evidence confirms five other cleanup workers emit successful
+reconciliation metrics. History lifecycle has failure metrics and no successful
+sweep yet. Both alert topics retain exactly one confirmed support subscription;
+CloudWatch action history and SNS aggregate counters show published/delivered
+notifications with no observed failed notifications. This proves the service
+pipeline, not receipt in a person's inbox. The initial alarm states are preserved.
+
+The read-only test baseline covers thirteen table identities and twenty-three
+existing non-target rows by hash, excluding documented mutable global cursors.
+The private baseline is not committed. Final observation must preserve every
+baseline row and validate the original operation and all twelve genuine receipts.
+
+The independent review approved source `1dd917057527e58cf07c70eb0155991cb6c5bb3c`
+and both deterministic History archives. All twenty-six archive members matched
+the frozen Git source. The bridge archive is byte-identical to the prior deployed
+version; the lifecycle change only aliases `shard` in two checkpoint update
+expressions. Eighteen source tests and twenty-three mocked infrastructure tests
+pass. This narrow correction supplements the qualified inventory's writer binding:
+it changes no schema, admission gate, IAM grant, receipt semantics or data family.
+Original inventory markers are not rewritten. Actual deployment and successful
+reconciliation must still be verified before HTTP admission.

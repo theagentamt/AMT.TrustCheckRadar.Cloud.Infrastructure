@@ -1,0 +1,68 @@
+{
+  "artifacts": {
+    "history_account_deletion_bridge": {
+      "architecture": "arm64",
+      "archive": "/tmp/amt-history-checkpoint-packages/history_account_deletion_bridge.zip",
+      "disabledSmoke": {
+        "expectedDisabled": true,
+        "passed": true,
+        "sdkCalls": 0
+      },
+      "handler": "app.lambda_handler",
+      "memberSha256": {
+        "__init__.py": "970b2fbb78e994d8adf963a3b0513d4aa615ce691eb3726b508c2bd64966b74f",
+        "app.py": "2649fa681603b491977cd9ca01dc140edffdef53f0c0bc0530ace7da0a0e70db",
+        "config.py": "d2b27e6e4b6f7b7b5aa95d8d126e6a3340e3a217f0ee4d17a9b19a84300e005d",
+        "service.py": "6c1f5431b407ead3b0f8507335bd56c898fe934fe5ff680e43d822661aa8d034",
+        "shared_account_finalization/__init__.py": "d25e0e244b689d9208a0975670ed5aa4caa2cfad706a0932bf8cbcf0688fb2b5",
+        "shared_account_finalization/history_receipts.py": "e1486edc95747c3fb384518d86181697827d27a502f68f581a2de9db64bfb95a",
+        "shared_account_finalization/service.py": "110a65ed3338018ab9590aa302535e1e92b5605a5dcce7e316cb088f8a8f8e3c",
+        "shared_campaign_recovery/__init__.py": "9fda4a47941d5bc4c4a6231301893a4b434934371728c4b833b95916141c73b3",
+        "shared_campaign_recovery/jobs.py": "2cdb530ab118cf475debfd3701789ed99de0d81a1942d568fb9df2adffacd0c4",
+        "shared_campaign_recovery/records.py": "cd8c2788a198257626749e43881d98b0f17d08230cfd37d3f371774b06bdc84c",
+        "shared_campaign_recovery/worker.py": "52bd271de3efc241f842dfa7104e053bf900ff535e2fa48cf5cf7ded31fdf9fd"
+      },
+      "runtime": "python3.14",
+      "sha256": "cf7d2859034887ff42e22326830e9bdf54665db2cfd918d97771c58185b6ceec",
+      "sizeBytes": 18340,
+      "source_code_hash": "z30oWQNIh/9C4iMmgw6b31RmXbLP2RjZd3HFgYW2zuw="
+    },
+    "history_lifecycle": {
+      "architecture": "arm64",
+      "archive": "/tmp/amt-history-checkpoint-packages/history_lifecycle.zip",
+      "disabledSmoke": {
+        "expectedDisabled": true,
+        "passed": true,
+        "sdkCalls": 0
+      },
+      "handler": "app.lambda_handler",
+      "memberSha256": {
+        "__init__.py": "1cbe4ee2a705a8a96186a1077a1c258c73945ecfc811d94a027d29c0626394fe",
+        "app.py": "ec5a074ed18207b36e5f0943218bd9bc15babe04b47920a87e8b54388abae83f",
+        "service.py": "0571ec23e2ce4626702e54bc56db37e8d56c178cc8a2f744d83d7f052f213f77",
+        "shared_account_finalization/__init__.py": "d25e0e244b689d9208a0975670ed5aa4caa2cfad706a0932bf8cbcf0688fb2b5",
+        "shared_account_finalization/history_receipts.py": "e1486edc95747c3fb384518d86181697827d27a502f68f581a2de9db64bfb95a",
+        "shared_account_finalization/service.py": "110a65ed3338018ab9590aa302535e1e92b5605a5dcce7e316cb088f8a8f8e3c",
+        "shared_campaign_recovery/__init__.py": "9fda4a47941d5bc4c4a6231301893a4b434934371728c4b833b95916141c73b3",
+        "shared_campaign_recovery/jobs.py": "2cdb530ab118cf475debfd3701789ed99de0d81a1942d568fb9df2adffacd0c4",
+        "shared_campaign_recovery/records.py": "cd8c2788a198257626749e43881d98b0f17d08230cfd37d3f371774b06bdc84c",
+        "shared_campaign_recovery/worker.py": "52bd271de3efc241f842dfa7104e053bf900ff535e2fa48cf5cf7ded31fdf9fd",
+        "shared_history/__init__.py": "d15d75b47d976c581e0a9367d71134f34f1945bcb7da27231e7ef99ef0a6a7be",
+        "shared_history/config.py": "fce97a98c3cb5332e6904cf80165f2d229e85c58983d375fc19fdf9dfae295dd",
+        "shared_history/contracts.py": "da093661729195de48705f7e280c355aa1fcf0b55ff315eade7a7c6c80f06133",
+        "shared_history/errors.py": "1a8afc8c4967d818240362b631c74463c9056020fe2b654913868416f4fc26de",
+        "shared_history/security.py": "71d562ee364c7a91bba0a10694316cfb1f70a552861554f19bed0a613492c5d8"
+      },
+      "runtime": "python3.14",
+      "sha256": "3371e5b5ac973c0df295eff82bb61e4171a75f2891320065893f0537aa3dceaa",
+      "sizeBytes": 30262,
+      "source_code_hash": "M3HltayXPA3yle/4K7YeQXGnXyiRMgBliT8FN6o9zqo="
+    }
+  },
+  "localHostQualificationOnly": true,
+  "nativeDependencies": [],
+  "published": false,
+  "runtimeUpdated": false,
+  "schemaVersion": 1,
+  "sourceSha": "1dd917057527e58cf07c70eb0155991cb6c5bb3c"
+}

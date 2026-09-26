@@ -1,0 +1,3771 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-09-26T15:35:51.822549+00:00",
+  "windowStartUtc": "2026-09-26T15:00:00+00:00",
+  "readOnly": true,
+  "complete": true,
+  "scriptSha256": "0c5af9ed526d08fb759d19aeb56d07a440aa9fd3ce9e5f277969c66638f490f9",
+  "topics": {
+    "trustcheckradar-dev-url-resolver-alerts": {
+      "confirmedSupportEmailCount": 1,
+      "pendingSupportEmailCount": 0,
+      "otherSubscriptionCount": 0,
+      "subscriptionIdentitySha256": [
+        "df9d6635360e6b1a497b1a4a66f2b6d656b3f1dccd4f5ab044a2cd9a832c28a8"
+      ],
+      "topicPolicySha256": "9d1f2f15e2052ec4a977a8329b5df3da84833620386db5401fa03b90d282aa71"
+    },
+    "trustcheckradar-dev-campaign-budget-alerts": {
+      "confirmedSupportEmailCount": 1,
+      "pendingSupportEmailCount": 0,
+      "otherSubscriptionCount": 0,
+      "subscriptionIdentitySha256": [
+        "fcc8affdae8bbcc19f83d6621c07ebbcec8a24a3b50a7170f4ab82ebd03aaf84"
+      ],
+      "topicPolicySha256": "2951531d0b83c9e4b33b2557350d01d19f577ad2cd6cc0deffc53cb1f4f00485"
+    }
+  },
+  "alarms": [
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-errors",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:12:09.245000-05:00",
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-account-data-api"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-lag",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:11:40.614000-05:00",
+      "MetricName": "IteratorAge",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-account-data-api"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-command_failure",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:12:21.913000-05:00",
+      "MetricName": "AccountDeletionReconciliationCommandFailures",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-failure",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:12:13.431000-05:00",
+      "MetricName": "SessionRevocationReconciliationFailure",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-heartbeat",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:12:04.069000-05:00",
+      "MetricName": "SessionRevocationReconciliationSuccess",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 3,
+      "TreatMissingData": "breaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-no_full_pass",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:11:58.002000-05:00",
+      "MetricName": "SessionRevocationReconciliationFullPassCompleted",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 21600,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "breaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-outbox_blocked",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:11:39.861000-05:00",
+      "MetricName": "AccountDeletionCampaignOutboxPolicyBlocked",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-pass_failure",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:12:35.137000-05:00",
+      "MetricName": "AccountDeletionReconciliationPassFailures",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-policy_blocked",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:12:13.410000-05:00",
+      "MetricName": "AccountDeletionAnalysisAbusePolicyBlocked",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-profile_blocked",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:12:49.922000-05:00",
+      "MetricName": "AccountDeletionUserProfilePolicyBlocked",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-reconciliation-stale_full_pass",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:11:50.457000-05:00",
+      "MetricName": "SessionRevocationReconciliationFullPassAgeSeconds",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-session-revocation-failure",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:12:03.278000-05:00",
+      "MetricName": "AccountDeletionFailure",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        },
+        {
+          "Name": "Operation",
+          "Value": "session-revocation"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-account-data-api-throttles",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 01:12:23.867000-05:00",
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-account-data-api"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-deletion-bridge-errors",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 08:40:38.378000-05:00",
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-deletion-bridge"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-budget",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-24 21:21:55.134000-05:00",
+      "MetricName": "RecoveryBudgetExhausted",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-failures",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-24 21:22:29.941000-05:00",
+      "MetricName": "RecoveryFailures",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-heartbeat",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 10:21:03.256000-05:00",
+      "MetricName": "RecoveryTicks",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 3,
+      "TreatMissingData": "breaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:21:03.256000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "69be6af5fd0b12215e6225da4181437babfeff1ee822f9314cdcbac38e2b28dc",
+          "oldState": "ALARM",
+          "newState": "OK"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-overdue",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-24 21:22:02.876000-05:00",
+      "MetricName": "ObservedOverdueCommands",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-pending-age",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-24 21:21:17.535000-05:00",
+      "MetricName": "ObservedPendingAgeSeconds",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-schema",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-24 21:21:43.182000-05:00",
+      "MetricName": "SidecarSchemaFailures",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-truncated",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-24 21:21:09.781000-05:00",
+      "MetricName": "RecoveryShardTruncated",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-unverified",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-24 21:22:11.652000-05:00",
+      "MetricName": "CommandsUnverified",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-account-deletion-bridge-errors",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 10:25:45.595000-05:00",
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-account-deletion-bridge"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:20:45.594000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "cbf82befbea40f2f01b6417b100e6fa4d72a2082984096c634c92f4fd44c22dd",
+          "oldState": "OK",
+          "newState": "ALARM"
+        },
+        {
+          "timestamp": "2026-09-26 10:20:45.627000-05:00",
+          "type": "Action",
+          "dataSha256": "26eecb0702c9ed6e0a3b09471bef2de18eee852113eb7e1501b0c744fc16e04e",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        },
+        {
+          "timestamp": "2026-09-26 10:25:45.595000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "7726624cb939e4698c188e07795a8a16e27c749681137a7008e079b2c62d3176",
+          "oldState": "ALARM",
+          "newState": "OK"
+        },
+        {
+          "timestamp": "2026-09-26 10:25:45.637000-05:00",
+          "type": "Action",
+          "dataSha256": "04a22ba52d76352dfc398eccea0441d193e980750d74ebc31e9547f7f5ea08f8",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-account-deletion-bridge-lag",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-15 20:31:54.547000-05:00",
+      "MetricName": "IteratorAge",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-account-deletion-bridge"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-account-deletion-bridge-reconciliation-failure",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "ALARM",
+      "StateUpdatedTimestamp": "2026-09-26 10:21:06.644000-05:00",
+      "MetricName": "AccountDeletionReconciliationFailure",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:21:06.644000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "8fae5fe47cad0d62d5afc813b00b6d9efa8b729a8062b04a9fec69ac8d169e15",
+          "oldState": "INSUFFICIENT_DATA",
+          "newState": "ALARM"
+        },
+        {
+          "timestamp": "2026-09-26 10:21:06.686000-05:00",
+          "type": "Action",
+          "dataSha256": "b32298f641ded5cd88042dfe438b2631611e83e49999de323262ab285474c0ae",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-account-deletion-bridge-reconciliation-heartbeat",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 10:22:06.762000-05:00",
+      "MetricName": "AccountDeletionReconciliationSuccess",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 3,
+      "TreatMissingData": "breaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:21:06.767000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "38267f1fc5c97322e74de58da6415f2c528255a7226878f82fb13b9824475fca",
+          "oldState": "INSUFFICIENT_DATA",
+          "newState": "ALARM"
+        },
+        {
+          "timestamp": "2026-09-26 10:21:06.799000-05:00",
+          "type": "Action",
+          "dataSha256": "4c9a5abc5696c5df32dab030fa3c1ee9bef32763d3e118d5d342396b532cca33",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        },
+        {
+          "timestamp": "2026-09-26 10:22:06.762000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "737f577dc761c5b18deb8d6cb6c60dd7a6ea5c1ff2750d7a5c10558f5956b032",
+          "oldState": "ALARM",
+          "newState": "OK"
+        },
+        {
+          "timestamp": "2026-09-26 10:22:06.794000-05:00",
+          "type": "Action",
+          "dataSha256": "58897142196ffe704417497874a7be87d53e8399ebc56a3270e1fd92b83d75d4",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-account-deletion-bridge-reconciliation-no_full_pass",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 10:22:29.925000-05:00",
+      "MetricName": "AccountDeletionReconciliationFullPassCompleted",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 21600,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "breaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:20:30.051000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "d4cbbf5a9ef8c6d89f3cd2c6bab531c8e52e4eefe70350805078f3d5638bf3a9",
+          "oldState": "INSUFFICIENT_DATA",
+          "newState": "ALARM"
+        },
+        {
+          "timestamp": "2026-09-26 10:20:30.097000-05:00",
+          "type": "Action",
+          "dataSha256": "b6f1aae602a07d4d99347b177f88169532561311c9e7251f4aa19ffc53a658ca",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        },
+        {
+          "timestamp": "2026-09-26 10:22:29.925000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "ca167965eed09a93978cf8e011eaddaa22a5ec7e8f72137356d7394673d21da8",
+          "oldState": "ALARM",
+          "newState": "OK"
+        },
+        {
+          "timestamp": "2026-09-26 10:22:29.958000-05:00",
+          "type": "Action",
+          "dataSha256": "c06a8d207d2095611430f8e343788f73a6155577bdab32749ea0456edef620e1",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-account-deletion-bridge-reconciliation-stale_full_pass",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 10:20:59.192000-05:00",
+      "MetricName": "AccountDeletionReconciliationFullPassAgeSeconds",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:20:59.192000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "6934b0ae998c2de02583e661b7030cff78a576e122bf19690d69a7f88b934bb4",
+          "oldState": "INSUFFICIENT_DATA",
+          "newState": "OK"
+        },
+        {
+          "timestamp": "2026-09-26 10:20:59.226000-05:00",
+          "type": "Action",
+          "dataSha256": "9b9fa7fe8308b2f88e6a15bc5b7764a08648b2acfb0f2f98d3d84959a31707e1",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-account-deletion-bridge-throttles",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-15 20:31:17.707000-05:00",
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-account-deletion-bridge"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-lifecycle-errors",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "StateValue": "ALARM",
+      "StateUpdatedTimestamp": "2026-09-26 10:21:59.593000-05:00",
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-lifecycle"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:20:59.600000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "cc3a65043ab96c0eb10f8362b7fc95f8b0c4c004d26815c099fac2c28dc25231",
+          "oldState": "INSUFFICIENT_DATA",
+          "newState": "OK"
+        },
+        {
+          "timestamp": "2026-09-26 10:21:59.593000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "3ac2b2c825803265279c6108904d84b88f4eeb638f81b063bdeb9b879ca166ea",
+          "oldState": "OK",
+          "newState": "ALARM"
+        },
+        {
+          "timestamp": "2026-09-26 10:21:59.631000-05:00",
+          "type": "Action",
+          "dataSha256": "42092375b5cef00c017104b2ea06a540832f47708e45d66cdeee5501cfbf3dd4",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-lifecycle-expiry_sla",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "INSUFFICIENT_DATA",
+      "StateUpdatedTimestamp": "2026-09-26 10:19:59.289000-05:00",
+      "MetricName": "ExpirationCheckpointLagSeconds",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "missing",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-lifecycle-failure",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "ALARM",
+      "StateUpdatedTimestamp": "2026-09-26 10:21:55.810000-05:00",
+      "MetricName": "LifecycleSweepFailure",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:20:55.813000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "97809112b11607662c5d80b6a168411ff72520dd07951e4e1dde76bfd3e0d8f3",
+          "oldState": "INSUFFICIENT_DATA",
+          "newState": "OK"
+        },
+        {
+          "timestamp": "2026-09-26 10:20:55.845000-05:00",
+          "type": "Action",
+          "dataSha256": "f7cdde72acc6e7bb6adbb4090e02275c1038c0aa4a17a53ff217ecf7d258a61b",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        },
+        {
+          "timestamp": "2026-09-26 10:21:55.810000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "a61774d7343b71c5e596cc0636f6670110bac12d9014e9c963d0399f4baea21f",
+          "oldState": "OK",
+          "newState": "ALARM"
+        },
+        {
+          "timestamp": "2026-09-26 10:21:55.871000-05:00",
+          "type": "Action",
+          "dataSha256": "3b85a42f74a39ebb42667e13f2053a2380853f4f0c736b616edf7c409acab9e0",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-lifecycle-heartbeat",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "ALARM",
+      "StateUpdatedTimestamp": "2026-09-26 10:20:33.619000-05:00",
+      "MetricName": "LifecycleSweepSuccess",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 2,
+      "TreatMissingData": "breaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:20:33.619000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "e0d809156b378947d2e7497a4d457ec7ee83cf65d7934407122f29179f5a3df8",
+          "oldState": "INSUFFICIENT_DATA",
+          "newState": "ALARM"
+        },
+        {
+          "timestamp": "2026-09-26 10:20:33.655000-05:00",
+          "type": "Action",
+          "dataSha256": "36417750bc9a77b6d87e476a120daede3ce669a35aedf9549c64caf26a8829a6",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-lifecycle-overdue",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 10:20:34.192000-05:00",
+      "MetricName": "OverdueErasureJobs",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:20:34.192000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "a51c61d5fd4ae050f30afefe917a4915eda51cff0821540e2332755c6f0e2f71",
+          "oldState": "INSUFFICIENT_DATA",
+          "newState": "OK"
+        },
+        {
+          "timestamp": "2026-09-26 10:20:34.227000-05:00",
+          "type": "Action",
+          "dataSha256": "11944d386e72a73223db26407e979f7a8d6f9e4d14414a2e0695d5d2e9710d39",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-lifecycle-stuck",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 10:21:00.369000-05:00",
+      "MetricName": "StuckPendingCompletions",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:21:00.369000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "587b03da5e8cb8b04bac29748cc1edfa8047900c438341c366c42e5b004a3be1",
+          "oldState": "INSUFFICIENT_DATA",
+          "newState": "OK"
+        },
+        {
+          "timestamp": "2026-09-26 10:21:00.402000-05:00",
+          "type": "Action",
+          "dataSha256": "efe2a3a033e94acf43eb994ae061a6dbe7b28316fdca26ea052891b4a96982a1",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-lifecycle-throttles",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 10:21:25.554000-05:00",
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-lifecycle"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:21:25.554000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "192da06f1ce967e690ab2e87257659a9f2209ddf4113f1dff0cfdca3ce477c42",
+          "oldState": "INSUFFICIENT_DATA",
+          "newState": "OK"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-history-lifecycle-truncated",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 10:21:54.207000-05:00",
+      "MetricName": "LifecycleWorksetTruncated",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:21:54.207000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "e4189187e5b25a85ca18b7d759a72424223dec3754421c0bd754eed48e5498d6",
+          "oldState": "INSUFFICIENT_DATA",
+          "newState": "OK"
+        },
+        {
+          "timestamp": "2026-09-26 10:21:54.245000-05:00",
+          "type": "Action",
+          "dataSha256": "e32dfda1842b11c3b81b23b3d7b942fdb12729ae3c00052443d673765b81918f",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-deletion-failed",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 00:02:17.445000-05:00",
+      "MetricName": "deletion-failed",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "Dimensions": [],
+      "Period": 60,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-deletion-fullPassAgeSeconds",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 00:02:01.074000-05:00",
+      "MetricName": "deletion-fullPassAgeSeconds",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "Dimensions": [],
+      "Period": 60,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-deletion-heartbeat",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 10:22:22.303000-05:00",
+      "MetricName": "deletion-heartbeat",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "Dimensions": [],
+      "Period": 60,
+      "EvaluationPeriods": 5,
+      "TreatMissingData": "breaching",
+      "history": [
+        {
+          "timestamp": "2026-09-26 10:22:22.303000-05:00",
+          "type": "StateUpdate",
+          "dataSha256": "23bd3185358667dd63c5854933077a3c13ac4384bc6e6ffdfe3e3001d2b3823f",
+          "oldState": "ALARM",
+          "newState": "OK"
+        },
+        {
+          "timestamp": "2026-09-26 10:22:22.337000-05:00",
+          "type": "Action",
+          "dataSha256": "760a6b2cfee242c7d46bab443e5da164d3fd7b76b717d1fc644df74e3a0bba07",
+          "outcome": "Succeeded",
+          "topic": "trustcheckradar-dev-url-resolver-alerts"
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-deletion-overdue",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 00:02:09.638000-05:00",
+      "MetricName": "deletion-overdue",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "Dimensions": [],
+      "Period": 60,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-token-deletion-errors",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 00:03:18.200000-05:00",
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-play-token-deletion"
+        }
+      ],
+      "Period": 60,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-play-token-deletion-throttles",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-23 00:02:57.392000-05:00",
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-play-token-deletion"
+        }
+      ],
+      "Period": 60,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-errors",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-20 18:00:19.497000-05:00",
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-v1-authority-deletion"
+        }
+      ],
+      "Period": 60,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-failed-items",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-20 18:05:31.442000-05:00",
+      "MetricName": "v1-authority-deletion-failed",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "Dimensions": [],
+      "Period": 60,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-full-pass-age",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-20 17:49:47.153000-05:00",
+      "MetricName": "v1-authority-deletion-full-pass-age",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "Dimensions": [],
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-heartbeat",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-20 18:00:27.537000-05:00",
+      "MetricName": "v1-authority-deletion-heartbeat",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "Dimensions": [],
+      "Period": 300,
+      "EvaluationPeriods": 2,
+      "TreatMissingData": "breaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-overdue",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-20 17:49:56.573000-05:00",
+      "MetricName": "v1-authority-deletion-overdue",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "Dimensions": [],
+      "Period": 60,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-v1-authority-deletion-throttles",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "OKActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+      ],
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-20 17:49:37.243000-05:00",
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-v1-authority-deletion"
+        }
+      ],
+      "Period": 60,
+      "EvaluationPeriods": 1,
+      "TreatMissingData": "notBreaching",
+      "history": []
+    }
+  ],
+  "metrics": [
+    {
+      "id": "m0",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Errors",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-account-data-api"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m1",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "IteratorAge",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-account-data-api"
+        }
+      ],
+      "points": [],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m2",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "MetricName": "AccountDeletionReconciliationCommandFailures",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m3",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "MetricName": "SessionRevocationReconciliationFailure",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m4",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "MetricName": "SessionRevocationReconciliationSuccess",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m5",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "MetricName": "SessionRevocationReconciliationFullPassCompleted",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m6",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "MetricName": "AccountDeletionCampaignOutboxPolicyBlocked",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m7",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "MetricName": "AccountDeletionReconciliationPassFailures",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m8",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "MetricName": "AccountDeletionAnalysisAbusePolicyBlocked",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m9",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "MetricName": "AccountDeletionUserProfilePolicyBlocked",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m10",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "MetricName": "SessionRevocationReconciliationFullPassAgeSeconds",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m11",
+      "Namespace": "AMT/TrustCheckRadar/AccountData",
+      "MetricName": "AccountDeletionFailure",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        },
+        {
+          "Name": "Operation",
+          "Value": "session-revocation"
+        }
+      ],
+      "points": [],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m12",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Throttles",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-account-data-api"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m13",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Errors",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-deletion-bridge"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m14",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "MetricName": "RecoveryBudgetExhausted",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m15",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "MetricName": "RecoveryFailures",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m16",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "MetricName": "RecoveryTicks",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m17",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "MetricName": "ObservedOverdueCommands",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m18",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "MetricName": "ObservedPendingAgeSeconds",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m19",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "MetricName": "SidecarSchemaFailures",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m20",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "MetricName": "RecoveryShardTruncated",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m21",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "MetricName": "CommandsUnverified",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m22",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Errors",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-account-deletion-bridge"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:19:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m23",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "IteratorAge",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-account-deletion-bridge"
+        }
+      ],
+      "points": [],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m24",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "MetricName": "AccountDeletionReconciliationFailure",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m25",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "MetricName": "AccountDeletionReconciliationSuccess",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 2.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m26",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "MetricName": "AccountDeletionReconciliationFullPassCompleted",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 2.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m27",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "MetricName": "AccountDeletionReconciliationFullPassAgeSeconds",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m28",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Throttles",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-account-deletion-bridge"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:19:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m29",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Errors",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-lifecycle"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m30",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "MetricName": "ExpirationCheckpointLagSeconds",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m31",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "MetricName": "LifecycleSweepFailure",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m32",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "MetricName": "LifecycleSweepSuccess",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m33",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "MetricName": "OverdueErasureJobs",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m34",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "MetricName": "StuckPendingCompletions",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m35",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Throttles",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-lifecycle"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m36",
+      "Namespace": "AMT/TrustCheckRadar/History",
+      "MetricName": "LifecycleWorksetTruncated",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "points": [],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m37",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "MetricName": "deletion-failed",
+      "Dimensions": [],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m38",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "MetricName": "deletion-fullPassAgeSeconds",
+      "Dimensions": [],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m39",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "MetricName": "deletion-heartbeat",
+      "Dimensions": [],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m40",
+      "Namespace": "TrustCheckRadar/dev/PlayLifecycle",
+      "MetricName": "deletion-overdue",
+      "Dimensions": [],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m41",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Errors",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-play-token-deletion"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m42",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Throttles",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-play-token-deletion"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m43",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Errors",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-v1-authority-deletion"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m44",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "MetricName": "v1-authority-deletion-failed",
+      "Dimensions": [],
+      "points": [],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m45",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "MetricName": "v1-authority-deletion-full-pass-age",
+      "Dimensions": [],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m46",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "MetricName": "v1-authority-deletion-heartbeat",
+      "Dimensions": [],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m47",
+      "Namespace": "AMT/TrustCheckRadar/V1/dev",
+      "MetricName": "v1-authority-deletion-overdue",
+      "Dimensions": [],
+      "points": [],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m48",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Throttles",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-v1-authority-deletion"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m49",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Invocations",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-account-data-api"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m50",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Invocations",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-deletion-bridge"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 3.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 3.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 3.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 3.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 4.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 3.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 3.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m51",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Invocations",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-account-deletion-bridge"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:19:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m52",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Invocations",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-history-lifecycle"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m53",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Invocations",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-v1-authority-deletion"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m54",
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Invocations",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-play-token-deletion"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:23:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:24:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:26:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:27:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:28:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:29:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:30:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:31:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:32:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:33:00-05:00",
+          "value": 1.0
+        },
+        {
+          "atUtc": "2026-09-26T10:34:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m55",
+      "Namespace": "AWS/SNS",
+      "MetricName": "NumberOfMessagesPublished",
+      "Dimensions": [
+        {
+          "Name": "TopicName",
+          "Value": "trustcheckradar-dev-url-resolver-alerts"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m56",
+      "Namespace": "AWS/SNS",
+      "MetricName": "NumberOfNotificationsDelivered",
+      "Dimensions": [
+        {
+          "Name": "TopicName",
+          "Value": "trustcheckradar-dev-url-resolver-alerts"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m57",
+      "Namespace": "AWS/SNS",
+      "MetricName": "NumberOfNotificationsFailed",
+      "Dimensions": [
+        {
+          "Name": "TopicName",
+          "Value": "trustcheckradar-dev-url-resolver-alerts"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m58",
+      "Namespace": "AWS/SNS",
+      "MetricName": "NumberOfMessagesPublished",
+      "Dimensions": [
+        {
+          "Name": "TopicName",
+          "Value": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 6.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 6.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m59",
+      "Namespace": "AWS/SNS",
+      "MetricName": "NumberOfNotificationsDelivered",
+      "Dimensions": [
+        {
+          "Name": "TopicName",
+          "Value": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 6.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 6.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 2.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 1.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    },
+    {
+      "id": "m60",
+      "Namespace": "AWS/SNS",
+      "MetricName": "NumberOfNotificationsFailed",
+      "Dimensions": [
+        {
+          "Name": "TopicName",
+          "Value": "trustcheckradar-dev-campaign-budget-alerts"
+        }
+      ],
+      "points": [
+        {
+          "atUtc": "2026-09-26T10:20:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:21:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:22:00-05:00",
+          "value": 0.0
+        },
+        {
+          "atUtc": "2026-09-26T10:25:00-05:00",
+          "value": 0.0
+        }
+      ],
+      "statuses": [
+        "Complete"
+      ]
+    }
+  ],
+  "sourceFiles": {
+    "/tmp/amt-cleanup-worker-runtime-results.json": {
+      "sha256": "f6fe167a87d04eb98c7d0994c6f6751be26bc2a66519f237647cfdbc0a70d0ea"
+    },
+    "/tmp/amt-cleanup-worker-readback.json": {
+      "sha256": "af446735e590d105a0ae8c76ac807fb776f9d11468b5f85e50a71a611e183978"
+    }
+  },
+  "notificationsSent": false,
+  "functionsInvoked": false,
+  "limitations": [
+    "Metrics are eventual observations and do not independently prove account cleanup or empty-table erasure.",
+    "Alarm history Action Succeeded establishes CloudWatch action acceptance, not support inbox receipt.",
+    "SNS delivered/failed metrics are topic aggregates; they do not identify a particular email recipient or correlate one message exactly.",
+    "A previous ALARM is retained as history even if current state is OK; a source fix is not declared recovered until post-fix success metrics or the root runtime evidence support it."
+  ],
+  "elapsedSeconds": 4.92
+}

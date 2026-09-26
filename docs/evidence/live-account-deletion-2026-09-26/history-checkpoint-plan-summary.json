@@ -1,0 +1,33 @@
+{
+  "planSha256": "ea5bf20bab6d8d24083f58d06c064cba732d7314e0fec35b5d65b93e50fc5a7c",
+  "sourceSha": "1dd917057527e58cf07c70eb0155991cb6c5bb3c",
+  "changes": [
+    {
+      "address": "aws_lambda_function.account_deletion[0]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "last_modified",
+        "s3_key",
+        "s3_object_version"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.lifecycle[0]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "last_modified",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash"
+      ]
+    }
+  ],
+  "allChecksPassed": true,
+  "iamChanged": false,
+  "environmentChanged": false,
+  "httpAdmissionChanged": false
+}
