@@ -274,3 +274,25 @@ Infrastructure PR90 are integrated in release-V01; the runtime source is
 `2f497f13ff4276aef696a3622f46157776f228af`. This removes the isolated identity SDK
 integration gap, not the remaining application inventory, deployed-worker and
 authenticated API acceptance requirements. All live activation gates remain off.
+
+## Scoped Dev HTTP admission
+
+The first authenticated Dev route test must accept only the same expressly
+selected subjects as V1 and Play cleanup. `account_deletion_activation.http_subjects`
+is empty in workers mode (routes absent, runtime HTTP closed) and requires one to
+ten canonical lowercase UUIDs in API mode. UUIDv7 Cognito subjects are supported.
+The exact sorted list is passed as `ACCOUNT_DELETION_HTTP_SUBJECTS_JSON`.
+
+Reviewed account-data source `65df9c7e7fe338f00df8ecc13795014ab928cdfa` validates
+JWT claims first, checks this HTTP-only list before service construction, and uses
+the existing fixed SERVER_UNAVAILABLE/503 response for missing, malformed, empty,
+non-Dev or out-of-scope admission. GET and POST have the same scope. Worker stream
+and reconciliation paths do not use the HTTP list. This is bounded Dev acceptance,
+not a general production rollout; no route or subject is selected yet. Eighteen
+focused Terraform tests passed, including UUIDv7, missing/bad/noncanonical/excess
+subjects and rejection of HTTP subjects in workers-only mode. Independent Lambda
+review verified the exact21-member package and handler tests.
+
+The new package changes the account-data writer source binding. Earlier campaign
+cutover evidence remains historical; repeat final source/role/gate and strong
+inventory checks after this closed deployment before writing qualified markers.

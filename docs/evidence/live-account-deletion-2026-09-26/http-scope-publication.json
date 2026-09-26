@@ -1,0 +1,20 @@
+{
+  "activationApproved": false,
+  "artifacts": {
+    "account_data": {
+      "architecture": "arm64",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "bytes": 47963,
+      "function": "account_data_api",
+      "handler": "app.lambda_handler",
+      "key": "releases/65df9c7e7fe338f00df8ecc13795014ab928cdfa/account_data_api.zip",
+      "objectVersion": "mYHSx6PF_fe0d8DiOTxUJZjyhx3jWA2_",
+      "runtime": "python3.14",
+      "sha256": "b6e6163a721fc1aa7434764e13d066e610b89161675c91f0aeb57d8528cc6519",
+      "sourceCodeHash": "tuYWOnIfwap0NHZOE9Bm5hC4kWFnXJHwrrV9hSjMZRk="
+    }
+  },
+  "publicationComplete": true,
+  "runtimeUpdated": false,
+  "sourceSha": "65df9c7e7fe338f00df8ecc13795014ab928cdfa"
+}
