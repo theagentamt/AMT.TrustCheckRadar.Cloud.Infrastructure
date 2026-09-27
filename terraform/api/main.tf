@@ -1498,6 +1498,16 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
     }
   }
 
+  dynamic "route_settings" {
+    for_each = local.account_export_route_selected ? ["POST /v1/users/account-export"] : []
+    content {
+      route_key                = route_settings.value
+      detailed_metrics_enabled = true
+      throttling_burst_limit   = 4
+      throttling_rate_limit    = 2
+    }
+  }
+
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.age_attestation_api.arn
     format = jsonencode({
@@ -1512,7 +1522,8 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
     })
   }
 
-  tags = local.common_tags
+  depends_on = [aws_apigatewayv2_route.account_export]
+  tags       = local.common_tags
 }
 
 resource "aws_lambda_permission" "allow_api_gateway_invoke_age_attestation" {

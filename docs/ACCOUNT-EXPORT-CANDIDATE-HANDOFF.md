@@ -1,11 +1,15 @@
 # Protected account export infrastructure candidate
 
-Status: source candidate for SECUR4ALL-236/245 and ATCR-94. No deployment, public
-route, secret value, inventory approval or activated export is included.
+Status as of September 27: SECUR4ALL-236/245 scoped activation source work is in progress.
+The existing Dev candidate and cursor container were previously deployed; the new
+runtime/API selection has not yet been deployed or qualified. No general export
+activation, inventory approval or secret value is introduced by this source change.
 
 The owner approved direct authenticated observed-data export on September 21;
 see [the decision record](ACCOUNT-DATA-POLICY-DECISIONS.md). Lambda owns the
-canonical contract at `c83f3d5`, path `contracts/account-export/1.0.0-candidate.1`.
+canonical contract at `39cce61623794a123e61d25f5248b0c081eccf4a`, path
+`contracts/account-export/1.0.0-candidate.3` (20 families, including minimized Play
+verification metadata). Candidate.2 consumers need the coordinated contract update.
 Android owns bounded assembly and explicit document saving. Infrastructure does
 not expand the field projection or replace missing backend readers with IAM.
 
@@ -25,10 +29,28 @@ outside Dev. It prepares:
   is supplied. The topic must deliver to `support@andmorethings.com` and be verified
   during rollout; adding alarms is not proof notification delivery works.
 
-There is no API Gateway route, integration, invocation permission, function URL
-or activation switch in this candidate. `ACCOUNT_EXPORT_ENABLED=false`,
-`ACCOUNT_EXPORT_INVENTORY_STATUS=pending`, and `COGNITO_USERNAME_IS_SUB=false`
-remain explicit. The output advertises no available full-account export.
+Without `account_export_activation`, there is no export API route or invocation
+permission; `ACCOUNT_EXPORT_ENABLED=false`, inventory pending and username mapping
+false remain explicit. No function URL is created. The optional activation input
+is Dev-only and requires one to ten canonical synthetic subjects, exact selected
+export source, all current source stores/work pins, monitoring and policy,
+inventory, identity and contract evidence references.
+
+The `runtime` phase enables the guarded handler for private qualification without
+an HTTP route. The `api` phase additionally requires runtime evidence and creates
+only JWT/scope-protected `POST /v1/users/account-export` with rate two/burst four.
+Lambda must reject signed subjects outside the supplied list before owned data
+reads for both START and CONTINUE. Work quiescence overrides activation and sets
+concurrency zero. Removing activation closes the runtime and removes the route.
+Outputs distinguish scoped HTTP availability from general availability, which
+remains false; Terraform does not attest runtime behavior.
+
+A read-only exporter may use a separately reviewed artifact through
+`account_export_work_compatibility`. Both exact source SHAs and the evidence
+reference are mandatory; the writer/work source must still match the unchanged
+account-data deployment. Stale overrides fail even when normal source equality
+would pass. Generation, manifest, revision and table identities remain bound by
+the existing work activation; no writer IAM or inventory mutation is added.
 
 The existing foundation, optional approved recovery, deployed History and optional
 campaign storage contracts supply resource identities. This creates no table,
@@ -68,8 +90,9 @@ explicitly denied. The role cannot write source tables or invoke analysis servic
 ## Cursor key and rollout requirements
 
 The cursor keyring schema is `{activeKeyId, keys}`, with at most four key IDs
-mapping to base64-encoded 32-byte AES keys. Generate approved cryptographic random
-material and populate the secret outside Terraform only during a reviewed rollout;
+mapping to base64-encoded 32-byte AES keys. The Dev keyring was initialized on September 23; do not rerun initial setup on
+a populated secret. For a new environment, generate cryptographic random
+material and populate it outside Terraform only during a reviewed rollout;
 never echo it into logs, tracker, source, plan or state. Runtime must request
 VersionStage=AWSCURRENT. Rotation retains old keys through outstanding fifteen-minute
 continuation expiry; a missing key must fail, never downgrade authentication.
@@ -99,9 +122,27 @@ large-inventory qualification. A current saved plan with real immutable artifact
 pins, verified credentials, exact alert routing and explicit activation review is
 needed before a Dev rollout. UAT/production remain separately gated.
 
-## Local source evidence
+See [the pending release-test instructions](SECUR4ALL-236-RELEASE-TESTS.md) for
+later assembled-system qualification. Required Dev runtime work remains in SECUR4ALL-236;
+UAT/physical testing does not automatically block independently complete backend work.
+
+## Historical local source evidence
 
 Terraform 1.12.1 validate, all 73 API mocked tests and repository formatting/diff
 checks pass. Independent review identified the legacy consumption prefix and
 purchase-coverage marker access gaps; both were corrected and asserted in tests,
 and the reviewer confirmed the fixes. No live export or provider calls occurred.
+
+
+## September 27 scoped activation source validation
+
+Terraform 1.12.1 passed all **167 API mock tests**, including 19 new activation
+and exact reader-compatibility cases. Null rollback, runtime-only access, JWT route
+and throttle, missing source prerequisites, bad scopes, stale source pairs and
+quiescence are covered. Independent source review found no blocker; existing
+writer and deletion protections remain intact. These are local mocked tests,
+not deployed behavior. The new selection has not been applied; real Dev runtime
+qualification, frozen source integration and story completion remain pending.
+
+Later UAT execution has linked [SECUR4ALL-331](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-331),
+with detailed pending instructions. It does not absorb unfinished Dev criteria.
