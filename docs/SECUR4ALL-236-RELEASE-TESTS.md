@@ -57,6 +57,13 @@ claiming that case; the local SDK fixture is not a deployed-runtime substitute.
 Use Android emulation/simulation for executable mobile cases. Physical/provider
 UI-only cases remain under ATCR-148 until the owner resumes that testing.
 
+ATCR-94 connected Dev work is tracked in
+[the native export qualification record](ATCR-94-CONNECTED-EXPORT-DEV.md).
+It uses a dedicated emulator, real native authentication/device registration,
+and a disposable account. Its status must be checked before reusing the runner.
+A failed or skipped native attempt is not connected acceptance; this release
+follow-up still requires the populated-family and interruption cases below.
+
 ## Cases and expected observations
 
 | Action | Required result |

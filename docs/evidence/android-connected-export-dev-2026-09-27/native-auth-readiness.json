@@ -1,0 +1,8 @@
+{
+  "amplifySrpAllowed": true,
+  "passwordAuthAllowed": true,
+  "clientHasSecret": false,
+  "mobileConfigMatchesExportClient": true,
+  "customHostMappedToExpectedApi": true,
+  "domainAvailable": true
+}

@@ -1,0 +1,15 @@
+{
+  "setupHelperSha256": "25c08d83564462729dc0221eda9f1aa4ff4c66876aea757ccba2aabc9841c77d",
+  "cleanupHelperSha256": "2e3a670e429327368802c90be277cf1a080df02893c7800c89f2c5565eab6aaa",
+  "renewalHelperSha256": "5512dc0ec7c725b7479c2c55240359212047522c2355225f7800441b4ec86682",
+  "renewalPlanSha256": "7f1fc308444c8cb6e301928ac39352401621beb830644068c1cd9b1563b8afb2",
+  "offlineTests": {
+    "setup": 11,
+    "cleanup": 18,
+    "renewal": 16
+  },
+  "independentReviewsPassed": true,
+  "renewalAfterReconciledNavigationFailure": true,
+  "replayedAgeOrApi": false,
+  "unattendedBackendFixtureRunnerDelivered": false
+}
