@@ -36,7 +36,7 @@ def validate_function(response, doc):
     c = response['Configuration']
     require(response.get('Tags') == doc['tags'], 'FUNCTION_TAGS_CHANGED')
     require(c.get('FunctionName') == doc['function'] and
-            c.get('FunctionArn') == f"arn:aws:lambda:{fixture.REGION}:{fixture.ACCOUNT}:function/{doc['function']}" and
+            c.get('FunctionArn') == f"arn:aws:lambda:{fixture.REGION}:{fixture.ACCOUNT}:function:{doc['function']}" and
             c.get('Role') == f"arn:aws:iam::{fixture.ACCOUNT}:role/{doc['role']}" and
             c.get('Handler') == 'cognito_qualification.lambda_handler' and
             c.get('Runtime') == 'python3.14' and c.get('Architectures') == ['arm64'] and

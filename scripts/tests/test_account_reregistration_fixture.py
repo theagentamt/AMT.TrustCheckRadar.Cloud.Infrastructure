@@ -34,7 +34,7 @@ class ReregistrationFixtureTests(unittest.TestCase):
         self.user = {'Username':self.new, 'Attributes':[{'Name':'sub','Value':self.new},
                     {'Name':'email','Value':'fixture-abc123def456@example.invalid'}]}
         self.config = {'FunctionName':self.doc['function'],
-                       'FunctionArn':f"arn:aws:lambda:{m.fixture.REGION}:{m.fixture.ACCOUNT}:function/{self.doc['function']}",
+                       'FunctionArn':f"arn:aws:lambda:{m.fixture.REGION}:{m.fixture.ACCOUNT}:function:{self.doc['function']}",
                        'Role':f"arn:aws:iam::{m.fixture.ACCOUNT}:role/{self.doc['role']}",
                        'Handler':'cognito_qualification.lambda_handler', 'Runtime':'python3.14',
                        'Architectures':['arm64'], 'Version':'$LATEST', 'State':'Active', 'LastUpdateStatus':'Successful',
@@ -98,6 +98,16 @@ class ReregistrationFixtureTests(unittest.TestCase):
         self.pool['UserPoolTags'] = {}
         with self.assertRaises(ValueError): self.run_prepare()
         self.cognito.admin_create_user.assert_not_called()
+
+    def test_lambda_arn_uses_provider_colon_shape_and_rejects_other_resources(self):
+        observed = 'arn:aws:lambda:us-east-1:107827791950:function:amt-campaign-completion-qual-abc123def456-runner'
+        self.config['FunctionArn'] = observed
+        m.validate_function({'Configuration':self.config,'Tags':self.doc['tags']}, self.doc)
+        for bad in [observed.replace(':function:', ':function/'), observed+':42',
+                    observed.replace('107827791950','000000000000'), observed.replace('us-east-1','us-west-2')]:
+            self.config['FunctionArn'] = bad
+            with self.assertRaises(ValueError):
+                m.validate_function({'Configuration':self.config,'Tags':self.doc['tags']}, self.doc)
 
     def test_old_identity_present_or_access_denied_is_not_absence(self):
         for response in [self.user, self.error('AccessDeniedException')]:
