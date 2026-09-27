@@ -1,0 +1,11 @@
+{
+  "prepared": false,
+  "createAttempted": false,
+  "applicationCodeChanged": false,
+  "reason": "Operator expected invalid Lambda ARN function/name shape; provider uses function:name.",
+  "correctedOperatorSource": "f72d5a1b20bef17dddc86661f5a8fea7e8e2b3e3",
+  "correctedReadOnlyPreflightPassed": true,
+  "originalFailureJournalPreserved": true,
+  "correctedStageUsedNewJournal": true,
+  "providerArnRegressionAdded": true
+}
