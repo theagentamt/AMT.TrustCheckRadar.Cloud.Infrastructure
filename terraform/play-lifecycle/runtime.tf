@@ -81,10 +81,10 @@ resource "aws_lambda_function" "runtime" {
   timeout                        = each.value.timeout
   memory_size                    = 256
   reserved_concurrent_executions = each.value.concurrency
-  s3_bucket                      = var.deployment.artifacts[each.key].bucket
-  s3_key                         = var.deployment.artifacts[each.key].key
-  s3_object_version              = var.deployment.artifacts[each.key].object_version
-  source_code_hash               = var.deployment.artifacts[each.key].source_hash
+  s3_bucket                      = local.runtime_artifacts[each.key].bucket
+  s3_key                         = local.runtime_artifacts[each.key].key
+  s3_object_version              = local.runtime_artifacts[each.key].object_version
+  source_code_hash               = local.runtime_artifacts[each.key].source_hash
   publish                        = true
   environment {
     variables = merge({
