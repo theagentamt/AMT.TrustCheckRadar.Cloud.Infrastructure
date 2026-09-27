@@ -49,11 +49,25 @@ deployment = {
 
 # Reviewed cleanup-only Dev qualification; all unrelated admission stays closed.
 deletion_activation = {
-  "source_sha" : "39cce61623794a123e61d25f5248b0c081eccf4a",
+  "source_sha" : "9123459a5c2bc9503d56235b2cb1f1e162c00da1",
   "subjects" : [
     "c4685448-1021-7014-8ef4-b326afee90ae"
   ],
   "inventory_reference" : "docs/evidence/live-account-deletion-2026-09-26/account-qualified-manifest.json",
   "runtime_reference" : "docs/evidence/live-account-deletion-2026-09-26/all-component-runtime.json",
   "permissions_reference" : "docs/evidence/live-account-deletion-2026-09-26/account-writer-binding-review.md"
+}
+
+# SECUR4ALL-332: baseline-preserving deletion-only clock serialization correction.
+deletion_artifact_override = {
+  "source_sha" : "9123459a5c2bc9503d56235b2cb1f1e162c00da1",
+  "baseline_source_sha" : "39cce61623794a123e61d25f5248b0c081eccf4a",
+  "baseline_source_hash" : "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+  "provenance_reference" : "docs/evidence/sec332-deletion-packages.json",
+  "artifact" : {
+    "bucket" : "trustcheckradar-dev-107827791950-artifacts",
+    "key" : "releases/9123459a5c2bc9503d56235b2cb1f1e162c00da1/play_token_deletion.zip",
+    "object_version" : "b3MQZJ0S9unJmY3MBnRy7DrpLDeM1BZQ",
+    "source_hash" : "EgY9o17ASfGm9RhY3Zfl7naFlw2fkrz6ZSSSyFQ4mjo="
+  }
 }
