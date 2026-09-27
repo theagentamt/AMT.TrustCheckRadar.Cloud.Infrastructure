@@ -1,0 +1,32 @@
+{
+  "aggregateIndexActive": true,
+  "approvalCreated": false,
+  "authorizedForApply": false,
+  "bootstrapApplied": false,
+  "candidateManifestSha256": "530cffa187ba552450229308407a188adcd955e4701bdb273f3780bb7e27c2ac",
+  "counts": {
+    "enabledRegistries": 2,
+    "excludedRegistries": 1,
+    "intelligence": 0,
+    "locatorInventory": 1,
+    "outbox": 0,
+    "terminalTombstones": 3
+  },
+  "eightFunctionsClosed": true,
+  "limitations": [
+    "No automatic baseline approval; marker fields are a proposed shape until explicit operator review and one-CAS bootstrap.",
+    "Pause timestamp is operator-supplied; current concurrency/gates/triggers were independently read and elapsed drain checked.",
+    "Current strong scans are not atomic whole-table snapshots. The serialized privileged-writer/restore boundary remains an external prerequisite.",
+    "Retired1478 is preserved/excluded by reviewed metadata reference; this helper proves no new historical erasure or key destruction.",
+    "The private publication includes a new analysis package, but it is not the selected installed analysis source; that function remains retired."
+  ],
+  "observedAtEpoch": 1790484991,
+  "plannedActionCount": 16,
+  "plannedActionsSha256": "0d3833ef65659c01174aac2857e369cd1de2ccaadb76568128e8005e1919ad12",
+  "recordsPersisted": false,
+  "retiredAnalysisDenyObserved": true,
+  "reviewInventorySha256": "31695c1ad9ac9d0b9382cbfd9a50dc535dcb1b03f2dbe7ad64fc612484790ef0",
+  "schemaVersion": 1,
+  "sevenNewPackagesMatchPublication": true,
+  "status": "PENDING_EXTERNAL_OPERATOR_REVIEW"
+}

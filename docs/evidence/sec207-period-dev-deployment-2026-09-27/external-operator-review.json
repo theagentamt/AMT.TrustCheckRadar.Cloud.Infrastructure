@@ -1,0 +1,21 @@
+{
+  "authority": "Owner-authorized SECUR4ALL-207 Dev completion; root infrastructure operator after two independent reviews",
+  "candidateApprovedAsOfObservedAtEpoch": 1790484991,
+  "helperSha256": "b53f9b1004667d89b64b61d528000b2e1773ecd2ea97c349c19d1e64b56bbc84",
+  "independentReviews": [
+    "account_privacy_review exact source/complete AWS snapshot/16actions",
+    "campaign_iam_qualification fresh eight-role/source/resource/baseline review"
+  ],
+  "inventorySha256": "31695c1ad9ac9d0b9382cbfd9a50dc535dcb1b03f2dbe7ad64fc612484790ef0",
+  "limitations": [
+    "No atomic whole-table snapshot assertion",
+    "No new historical1478 erasure proof",
+    "No general research or UAT/Production activation"
+  ],
+  "manifestSha256": "530cffa187ba552450229308407a188adcd955e4701bdb273f3780bb7e27c2ac",
+  "planSha256": "846c202da97253b2fa8577206dd4c872715df8251783af307c33b24c31d1dbfd",
+  "reviewedAtEpoch": 1790485498,
+  "schemaVersion": 1,
+  "scope": "Exactly16 conditional actions; preserve all existing target deadlines and excluded1478 metadata; no deletes/key actions; no research activation",
+  "serializedBoundary": "All eight writers closed and drained, event sources disabled; root serializes privileged deployment/bootstrap and agents perform read-only review; fresh policy/closure check matched immediately before submission. Any privileged write/restore invalidates approval."
+}

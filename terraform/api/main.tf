@@ -954,7 +954,7 @@ resource "aws_lambda_function" "analysis" {
   timeout                        = var.analysis_lambda_timeout_seconds
   memory_size                    = var.analysis_lambda_memory_mb
   architectures                  = var.analysis_lambda_architectures
-  reserved_concurrent_executions = var.analysis_lambda_reserved_concurrency
+  reserved_concurrent_executions = var.campaign_period_work_quiescence ? 0 : var.analysis_lambda_reserved_concurrency
 
   s3_bucket         = local.research_migration_selected ? local.foundation.artifact_bucket_name : (local.analysis_artifact_bucket_name)
   s3_key            = local.research_migration_selected ? "releases/${var.research_consent_migration_deployment.release_id}/conversation_analysis.zip" : (local.analysis_artifact_key)
@@ -993,7 +993,7 @@ resource "aws_lambda_function" "analysis" {
       CAMPAIGN_OUTBOX_TABLE_ARN  = local.campaign_outbox_table_arn
       CAMPAIGN_OUTBOX_TABLE_NAME = local.campaign_outbox_table_name
       CAMPAIGN_SCHEMA_VERSION    = "1"
-    } : {}, local.history_analysis_env, local.research_migration_replay_env)
+    } : {}, local.history_analysis_env, local.research_migration_replay_env, local.period_work_closed_env)
   }
 
   depends_on = [terraform_data.research_migration_cutover, aws_iam_role_policy.research_migration_boundary, aws_cloudwatch_log_group.analysis_lambda, aws_iam_role_policy.history_analysis, aws_iam_role_policy_attachment.analysis_runtime]

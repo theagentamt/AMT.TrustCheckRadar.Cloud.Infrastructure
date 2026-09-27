@@ -1,0 +1,29 @@
+{
+  "contentInspection": {
+    "credentialsOrApplicationRecordsObserved": false,
+    "redactionRequired": false
+  },
+  "evidenceSha256": {
+    "independent-cleanup.json": "00304b93ccfbcf640147200bee2cd2cbae17026664294fe0df95a457ce96cf71",
+    "ownership-journal.json": "9a0dd9915bc082fe807c116d7a9aebedf8db8de5b53f94f85d7706d78fffbb07",
+    "qualification.json": "62a341da263a22c176a265fe409b19b4fc3a80cd2040f8c47c412a112c0e40a9"
+  },
+  "inputSha256": {
+    "apiPlan": "26da357b0fd465a63203146aba32a1b10fcf07756c27a9e93cf47e60adf0ffc1",
+    "processingPlan": "da62a65164e594036d1dd3da79072b1caacc060ae99b4ab5160ffddf72d3a29d",
+    "roleAudit": "4f18b722f2c5e61b8509c8cdb2dc296e21448e1f99e8865dec2da75736960aa0"
+  },
+  "localValidation": {
+    "command": "/tmp/amt-live-deletion-venv/bin/python -m unittest discover -s tests -p 'test_*campaign_period_work_iam.py' -q",
+    "scope": "Offline validator and executor tests; SDK/Moto cases do not prove IAM",
+    "testsPassed": 65
+  },
+  "schemaVersion": 1,
+  "sourceSha256": {
+    "scripts/execute_campaign_period_work_iam.py": "6f99fed40816eca79f034ddd39091f11d3ff4eae2926a47fb82aa365ff2e6238",
+    "scripts/qualify_campaign_period_work_iam.py": "27e288977d6a62c7e847efb06a007e7bbf8b343fcbeadb1456fcb505fc0af3d3",
+    "scripts/qualify_campaign_writer_iam.py": "f49bf801a9874ecd896cd9e91539ec90a55db065921a6a179a4ccf66b6511431",
+    "tests/test_execute_campaign_period_work_iam.py": "c6493489d2363a47943ea92d9203f67d95fd2673f1b43ef03a6474d559141449",
+    "tests/test_qualify_campaign_period_work_iam.py": "9cbc31eb0ad9c91cb27c8aa54ef3f3b84925e644b7b1a2af5a6338753e708845"
+  }
+}

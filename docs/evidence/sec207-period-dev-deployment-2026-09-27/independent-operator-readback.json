@@ -1,0 +1,51 @@
+{
+  "allEightWritersStillClosed": true,
+  "bootstrapPlanSha256": "846c202da97253b2fa8577206dd4c872715df8251783af307c33b24c31d1dbfd",
+  "closureSha256": "789a0fd3cda2bc0ea26dd8a3d82bf563b86fae3322b06841105d2ae999f34fff",
+  "counts": {
+    "intelligence": 0,
+    "outbox": 0,
+    "pipeline": 16
+  },
+  "fullExpectedSnapshotMatch": true,
+  "manifestSha256": "530cffa187ba552450229308407a188adcd955e4701bdb273f3780bb7e27c2ac",
+  "markerExactlyMatchesApprovedCandidate": true,
+  "noAwsMutationsOrInvocations": true,
+  "observedAtEpoch": 1790485778,
+  "observedAtUtc": "2026-09-27T05:09:50.514349+00:00",
+  "preflight": {
+    "dueWorkCount": 0,
+    "earliestWorkDeadlineEpoch": 1792252251,
+    "futureKeyDeadlines": [
+      {
+        "periodId": 1479,
+        "retireAfterEpoch": 1790812800
+      },
+      {
+        "periodId": 1480,
+        "retireAfterEpoch": 1792022400
+      }
+    ],
+    "hashLimits": "Original-target hash covers three complete tombstones. Non-control hash also covers immutable work pairs, registries and inventories; legitimate registry lifecycle transitions can change it. Numeric control progress is excluded; full initial snapshot remains separately bound.",
+    "intelligenceEmpty": true,
+    "noDueWork": true,
+    "noSummaryRows": true,
+    "originalTargetRowsSha256": "3db0febd0a40d675fcbe7c97ecbd9f9840f1df8dac6f02d4fb519caad297c4c2",
+    "outboxEmpty": true,
+    "pipelineExcludingControlsSha256": "5679328a71ab5e87c5fd0f7b0b1a00b5f9dd93617e001ce9dda38962b2bbacf9",
+    "registryRetirementClocksSha256": "bae67d73aefe3b80693fb5eed65605e7629c650ca99c97be53ef01374a25062a",
+    "targetClocksMatchWork": true,
+    "workCount": 3
+  },
+  "readOnly": true,
+  "recordValuesPersisted": false,
+  "resourceBindingSha256": "f6b16838b93b7bf1b176d4c94a721ecc0ca8f221959d3bd7e46241c65717a243",
+  "schemaVersion": 1,
+  "snapshotSha256": {
+    "intelligence": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "outbox": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "pipeline": "e8d7a6fb808b3472e872e8b245d867b02eab86f6b73cf3e59e5e8562fd4105c2"
+  },
+  "sourceCommit": "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "wholeTableAtomicSnapshotClaimed": false
+}

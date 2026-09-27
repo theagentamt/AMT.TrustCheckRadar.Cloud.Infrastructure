@@ -1,0 +1,1317 @@
+{
+  "account": "107827791950",
+  "alarms": [
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-cluster-aggregator-errors",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-cluster-aggregator"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-cluster-dlq",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "QueueName",
+          "Value": "trustcheckradar-dev-campaign-cluster-dlq"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "ApproximateNumberOfMessagesVisible",
+      "Namespace": "AWS/SQS",
+      "OKActions": [],
+      "Period": 60,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-cluster-queue-age",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "QueueName",
+          "Value": "trustcheckradar-dev-campaign-cluster"
+        }
+      ],
+      "EvaluationPeriods": 5,
+      "MetricName": "ApproximateAgeOfOldestMessage",
+      "Namespace": "AWS/SQS",
+      "OKActions": [],
+      "Period": 60,
+      "StateValue": "OK",
+      "Threshold": 300.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-deletion-bridge-errors",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-deletion-bridge"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-dynamodb-throttles",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [],
+      "EvaluationPeriods": 1,
+      "OKActions": [],
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-lifecycle-errors",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-lifecycle"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-observation-publisher-errors",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-observation-publisher"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-privacy-deadline-missed",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "PrivacyDeadlineMissed",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-budget",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "RecoveryBudgetExhausted",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-failures",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "RecoveryFailures",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-heartbeat",
+      "ComparisonOperator": "LessThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "EvaluationPeriods": 3,
+      "MetricName": "RecoveryTicks",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 1.0,
+      "TreatMissingData": "breaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-overdue",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "ObservedOverdueCommands",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-pending-age",
+      "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "ObservedPendingAgeSeconds",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 72000.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-schema",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "SidecarSchemaFailures",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-truncated",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "RecoveryShardTruncated",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-recovery-unverified",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "CommandsUnverified",
+      "Namespace": "TrustCheckRadar/Campaign",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-review-errors",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-review"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-review-throttles",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-review"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-trends-errors",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-trends"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    },
+    {
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "AlarmName": "trustcheckradar-dev-campaign-trends-throttles",
+      "ComparisonOperator": "GreaterThanThreshold",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "trustcheckradar-dev-campaign-trends"
+        }
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "OKActions": [],
+      "Period": 300,
+      "StateValue": "OK",
+      "Threshold": 0.0,
+      "TreatMissingData": "notBreaching"
+    }
+  ],
+  "campaignMetricInventory": [
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "RecoveryShardTruncated"
+    },
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "CommandsUnverified"
+    },
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "CommandsAttempted"
+    },
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "SidecarSchemaFailures"
+    },
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "RecoveryTicks"
+    },
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "RecoveryBudgetExhausted"
+    },
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "ObservedPendingAgeSeconds"
+    },
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "CommandsCompleted"
+    },
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "CommandsTerminalAcknowledged"
+    },
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "ObservedOverdueCommands"
+    },
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "IndexCandidatesObserved"
+    },
+    {
+      "dimensions": [
+        {
+          "Name": "Environment",
+          "Value": "dev"
+        }
+      ],
+      "metricName": "RecoveryFailures"
+    }
+  ],
+  "campaignTableMetadata": {
+    "trustcheckradar-dev-campaign-intelligence": {
+      "creationDateTime": "2026-09-06 18:21:12.684000-05:00",
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "PublicationIndex",
+          "projection": {
+            "NonKeyAttributes": [
+              "submissionCountBand",
+              "trendDirection",
+              "taxonomyVersion",
+              "languageIds",
+              "contributorCountBand",
+              "categoryId",
+              "periodWeek",
+              "riskBand",
+              "campaignId",
+              "summaryKey"
+            ],
+            "ProjectionType": "INCLUDE"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "resourcePolicy": {
+        "Statement": [
+          {
+            "Action": "dynamodb:*",
+            "Condition": {
+              "Bool": {
+                "aws:PrincipalIsAWSService": "false"
+              },
+              "StringNotEquals": {
+                "aws:PrincipalAccount": "107827791950"
+              }
+            },
+            "Effect": "Deny",
+            "Principal": "*",
+            "Resource": [
+              "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence/index/*",
+              "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence"
+            ],
+            "Sid": "DenyCrossAccountAccess"
+          }
+        ],
+        "Version": "2012-10-17"
+      },
+      "resourcePolicySha256": "0a03033f7afc488bba53bd1ccdfa35e0770e6f4099cb7ff43f03a9294f3aec63",
+      "sseStatus": "ENABLED",
+      "streamSpecification": {},
+      "tableIdSha256": "9bbbd41237fae735bf81ddeb4f4782aac3993438020efb995c7be688b3045a5a"
+    },
+    "trustcheckradar-dev-campaign-outbox": {
+      "creationDateTime": "2026-09-06 18:21:14.722000-05:00",
+      "indexes": [],
+      "resourcePolicy": {
+        "Statement": [
+          {
+            "Action": "dynamodb:*",
+            "Condition": {
+              "Bool": {
+                "aws:PrincipalIsAWSService": "false"
+              },
+              "StringNotEquals": {
+                "aws:PrincipalAccount": "107827791950"
+              }
+            },
+            "Effect": "Deny",
+            "Principal": "*",
+            "Resource": [
+              "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox/index/*",
+              "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox"
+            ],
+            "Sid": "DenyCrossAccountAccess"
+          }
+        ],
+        "Version": "2012-10-17"
+      },
+      "resourcePolicySha256": "a26d8a0fb0814e0891030a77f4ddbb48d627e2c0f22456c27250d2619f7f0e67",
+      "sseStatus": "ENABLED",
+      "streamSpecification": {
+        "StreamEnabled": true,
+        "StreamViewType": "NEW_IMAGE"
+      },
+      "tableIdSha256": "ea07bb737c751c53a95da5ac9751b74a9f833823cd899839af95284f1dfa34c6"
+    },
+    "trustcheckradar-dev-campaign-pipeline": {
+      "creationDateTime": "2026-09-06 18:21:12.717000-05:00",
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI3PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI3SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "ExpirationIndex",
+          "projection": {
+            "ProjectionType": "KEYS_ONLY"
+          },
+          "status": "ACTIVE"
+        },
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI2PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI2SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "CandidateBucketIndex",
+          "projection": {
+            "ProjectionType": "KEYS_ONLY"
+          },
+          "status": "ACTIVE"
+        },
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "ContributorPeriodIndex",
+          "projection": {
+            "ProjectionType": "KEYS_ONLY"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "resourcePolicy": {
+        "Statement": [
+          {
+            "Action": "dynamodb:*",
+            "Condition": {
+              "Bool": {
+                "aws:PrincipalIsAWSService": "false"
+              },
+              "StringNotEquals": {
+                "aws:PrincipalAccount": "107827791950"
+              }
+            },
+            "Effect": "Deny",
+            "Principal": "*",
+            "Resource": [
+              "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline/index/*",
+              "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline"
+            ],
+            "Sid": "DenyCrossAccountAccess"
+          }
+        ],
+        "Version": "2012-10-17"
+      },
+      "resourcePolicySha256": "591707cbbbb16896fc30add0236b7709e2252eb1736cbfad7b5364f24d33254d",
+      "sseStatus": "ENABLED",
+      "streamSpecification": {},
+      "tableIdSha256": "67f506d9998a93ee7aba452a420241c5c62444606bcc7bbf14a6f700e8cf6e7e"
+    }
+  },
+  "collectorSha256": {
+    "amt-sec207-retention-operations.py": "bd1a782c7ae5cfdd0c82deda4b7fdf3e70c18b30743d58d11ef1bc966c461c66",
+    "amt-sec207-retention-supplement.py": "5e17a187cb8d3ca0ac73c341692d58684abc504594ae8fa4850b0828d5824bb3"
+  },
+  "limitations": [
+    "Only current bounded control-plane metadata and 24-hour aggregate metrics; no records, messages, log content, secrets or key material read.",
+    "No writes, invocation, notification send, purge, restore or key action.",
+    "TTL configuration and source deadlines are not timely deletion execution proof.",
+    "Stream record retention is service-controlled; stream enabled/view metadata does not prove data absence.",
+    "Current backup/export inventory is not historical or cross-account/manual-copy erasure proof; export listing window is bounded by service.",
+    "SNS delivery counters do not identify this cleanup path, a particular alarm, or inbox receipt. Missing datapoints are unavailable evidence, not zero failures."
+  ],
+  "logGroups": {
+    "/aws/lambda/trustcheckradar-dev-campaign-cluster-aggregator": {
+      "kmsEncryptionConfigured": false,
+      "retentionInDays": 14
+    },
+    "/aws/lambda/trustcheckradar-dev-campaign-deletion-bridge": {
+      "kmsEncryptionConfigured": false,
+      "retentionInDays": 14
+    },
+    "/aws/lambda/trustcheckradar-dev-campaign-lifecycle": {
+      "kmsEncryptionConfigured": false,
+      "retentionInDays": 14
+    },
+    "/aws/lambda/trustcheckradar-dev-campaign-observation-publisher": {
+      "kmsEncryptionConfigured": false,
+      "retentionInDays": 14
+    }
+  },
+  "observedAtUtc": "2026-09-27T03:07:05.171177+00:00",
+  "privacyDeadlineMetricObservation": {
+    "datapointCount": 0,
+    "observedAtUtc": "2026-09-27T03:08:07.229277+00:00",
+    "sum": null,
+    "windowHours": 24
+  },
+  "queues": {
+    "trustcheckradar-dev-campaign-cluster": {
+      "ApproximateNumberOfMessages": "0",
+      "ApproximateNumberOfMessagesDelayed": "0",
+      "ApproximateNumberOfMessagesNotVisible": "0",
+      "KmsDataKeyReusePeriodSeconds": "300",
+      "KmsMasterKeyId": "arn:aws:kms:us-east-1:107827791950:key/be146e79-877b-462c-b2ff-509cb8c6b02a",
+      "MessageRetentionPeriod": "345600",
+      "QueueArn": "arn:aws:sqs:us-east-1:107827791950:trustcheckradar-dev-campaign-cluster",
+      "RedrivePolicy": "{\"deadLetterTargetArn\":\"arn:aws:sqs:us-east-1:107827791950:trustcheckradar-dev-campaign-cluster-dlq\",\"maxReceiveCount\":5}",
+      "VisibilityTimeout": "180"
+    },
+    "trustcheckradar-dev-campaign-cluster-dlq": {
+      "ApproximateNumberOfMessages": "0",
+      "ApproximateNumberOfMessagesDelayed": "0",
+      "ApproximateNumberOfMessagesNotVisible": "0",
+      "KmsDataKeyReusePeriodSeconds": "300",
+      "KmsMasterKeyId": "arn:aws:kms:us-east-1:107827791950:key/be146e79-877b-462c-b2ff-509cb8c6b02a",
+      "MessageRetentionPeriod": "1209600",
+      "QueueArn": "arn:aws:sqs:us-east-1:107827791950:trustcheckradar-dev-campaign-cluster-dlq",
+      "RedriveAllowPolicy": "{\"redrivePermission\":\"byQueue\",\"sourceQueueArns\":[\"arn:aws:sqs:us-east-1:107827791950:trustcheckradar-dev-campaign-cluster\"]}",
+      "VisibilityTimeout": "30"
+    }
+  },
+  "region": "us-east-1",
+  "review": {
+    "concreteRemainingCriteria": [
+      {
+        "criterion": "Scheduled full-period lifecycle traversal",
+        "gap": "Current reviewed handler is operator-addressed; legacy lifecycle schedules remain disabled. New tick needs exact reviewed payload, immutable source, independent gate and finite work/time/cursor semantics; avoid activating legacy manage_keys/finalize_periods payloads."
+      },
+      {
+        "criterion": "Purge freshness and deadline observation",
+        "gap": "No current lifecycle full-pass/heartbeat/stale-purge alarm. PrivacyDeadlineMissed alarm exists but no source emitter found and no last24h datapoints; its OK state cannot establish deadline compliance. Add metrics tied to actual traversal semantics and qualify ingestion/alarms."
+      },
+      {
+        "criterion": "Key retirement and restore-safe closure",
+        "gap": "No key action performed or qualified by this audit. Pair/orphan cleanup and approximate empty queues do not prove full-period completion; preserve current generation, inventory, restore quarantine and deletion proof prerequisites."
+      },
+      {
+        "criterion": "Alert delivery acceptance",
+        "gap": "Confirmed support subscriptions and aggregate SNS delivery exist. A lifecycle-specific alarm transition/action and later recovery must be captured from actual qualified behavior; no inbox receipt claim or synthetic notification sent here."
+      }
+    ],
+    "iamCoordination": "Requested exact scheduled tick actions from Lambda owner. Existing pipeline Get/Query/indexQuery and guarded mutable-family operations cover current orphan cleanup. Additional SQS, Scan, key, checkpoint or cross-table operations require explicit selected contract review; no speculative grants proposed.",
+    "noAppDataRead": true,
+    "noMutation": true,
+    "retentionMatrix": [
+      {
+        "configuredContract": "expiresAt TTL; source Terraform tag RetentionMax72-hours; NEW_IMAGE stream; PITR disabled",
+        "limit": "Tag/TTL configuration is not expiry execution evidence. Stream copies are service-retained and cannot be selectively purged by the application.",
+        "observed": "TTL enabled; NEW_IMAGE stream enabled; no current native/AWS Backup/export entries",
+        "surface": "campaign outbox"
+      },
+      {
+        "configuredContract": "expiresAt TTL; transient ceiling21days; explicit expiration index; PITR disabled",
+        "limit": "No record reads performed; no claim all rows carry valid deadlines or purge completed. Publisher caps new expiry and cluster uses min(existing,computed) to avoid renewal.",
+        "observed": "TTL enabled; no stream; no current native/AWS Backup/export entries",
+        "surface": "campaign pipeline"
+      },
+      {
+        "configuredContract": "expiresAt TTL; aggregate lifetime400days; PITR enabled",
+        "limit": "Aggregate expiration in current publication uses original lifecycleStartedAtEpoch+400days; logical TTL does not erase retained PITR copies.",
+        "observed": "TTL enabled; PITR35days; no stream; zero listed native/AWS Backup/export entries",
+        "surface": "campaign intelligence"
+      },
+      {
+        "configuredContract": "345600 seconds (4days), visibility180seconds, redrive after5 receives",
+        "limit": "Opaque control metadata per Terraform data class. Approximate counts are not a complete drain or historical replay proof.",
+        "observed": "Matches; encrypted; approximate visible/inflight/delayed counts allzero",
+        "surface": "source queue"
+      },
+      {
+        "configuredContract": "1209600seconds (14days), redrive only from exactsourcequeue",
+        "limit": "No messages read/deleted/redriven; source event validity and period-generation guards remain required.",
+        "observed": "Matches; encrypted; approximate counts allzero",
+        "surface": "DLQ"
+      },
+      {
+        "configuredContract": "14days Dev content-free logs",
+        "limit": "No log content inspected; configured retention does not independently verify content minimization.",
+        "observed": "Allfour retention14days",
+        "surface": "four worker log groups"
+      },
+      {
+        "configuredContract": "Transient PITR off; aggregate/account-control PITR enabled",
+        "limit": "Export listing service history window and exact-table scope do not prove no manual or cross-account copies; existing restore quarantine still applies.",
+        "observed": "Five-table metadata inventory complete, native/AWS Backup/export listings zero; intelligence/users/deletion ledger PITR35days",
+        "surface": "backups/export boundaries"
+      }
+    ]
+  },
+  "schemaVersion": 1,
+  "sns": {
+    "trustcheckradar-dev-campaign-budget-alerts": {
+      "confirmedSupportEmailCount": 1,
+      "deliveryWindowEnd": "2026-09-27T03:07:05.171177+00:00",
+      "deliveryWindowStart": "2026-09-26T03:07:05.171177+00:00",
+      "metrics": {
+        "NumberOfMessagesPublished": {
+          "datapointCount": 3,
+          "observedSum": 27.0
+        },
+        "NumberOfNotificationsDelivered": {
+          "datapointCount": 3,
+          "observedSum": 27.0
+        },
+        "NumberOfNotificationsFailed": {
+          "datapointCount": 3,
+          "observedSum": 0.0
+        }
+      },
+      "otherSubscriptionCount": 0,
+      "pendingCount": 0,
+      "topicPolicy": {
+        "Statement": [
+          {
+            "Action": "sns:Publish",
+            "Condition": {
+              "StringEquals": {
+                "aws:SourceAccount": "107827791950"
+              }
+            },
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "budgets.amazonaws.com"
+            },
+            "Resource": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts",
+            "Sid": "AllowBudgetsPublish"
+          },
+          {
+            "Action": "sns:Publish",
+            "Condition": {
+              "ArnLike": {
+                "aws:SourceArn": [
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-campaign-*",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-history-*",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-*"
+                ]
+              },
+              "StringEquals": {
+                "aws:SourceAccount": "107827791950"
+              }
+            },
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "cloudwatch.amazonaws.com"
+            },
+            "Resource": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts",
+            "Sid": "AllowCloudWatchPublish"
+          }
+        ],
+        "Version": "2012-10-17"
+      },
+      "topicPolicySha256": "2951531d0b83c9e4b33b2557350d01d19f577ad2cd6cc0deffc53cb1f4f00485"
+    },
+    "trustcheckradar-dev-url-resolver-alerts": {
+      "confirmedSupportEmailCount": 1,
+      "deliveryWindowEnd": "2026-09-27T03:07:05.171177+00:00",
+      "deliveryWindowStart": "2026-09-26T03:07:05.171177+00:00",
+      "metrics": {
+        "NumberOfMessagesPublished": {
+          "datapointCount": 2,
+          "observedSum": 19.0
+        },
+        "NumberOfNotificationsDelivered": {
+          "datapointCount": 2,
+          "observedSum": 19.0
+        },
+        "NumberOfNotificationsFailed": {
+          "datapointCount": 2,
+          "observedSum": 0.0
+        }
+      },
+      "otherSubscriptionCount": 0,
+      "pendingCount": 0,
+      "topicPolicy": {
+        "Statement": [
+          {
+            "Action": [
+              "SNS:GetTopicAttributes",
+              "SNS:SetTopicAttributes",
+              "SNS:AddPermission",
+              "SNS:RemovePermission",
+              "SNS:DeleteTopic",
+              "SNS:Subscribe",
+              "SNS:ListSubscriptionsByTopic",
+              "SNS:Publish"
+            ],
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": "arn:aws:iam::107827791950:root"
+            },
+            "Resource": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts",
+            "Sid": "AccountAdministration"
+          },
+          {
+            "Action": "sns:Publish",
+            "Condition": {
+              "ArnEquals": {
+                "aws:SourceArn": [
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-resolver-partial",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-resolver-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-resolver-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-assessment-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-assessment-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-assessment-dependency-failures",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-consumer-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-consumer-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-entitlements-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-entitlements-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-lease-recovery-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-lease-recovery-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-lease-recovery-failed-items",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-lease-recovery-heartbeat",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-failed-items",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-heartbeat",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-url-lease-recovery-expiry-overdue",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-overdue",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-authority-deletion-full-pass-age",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-play-handoff-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-v1-play-handoff-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-lag",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-command_failure",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-failure",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-heartbeat",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-no_full_pass",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-outbox_blocked",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-pass_failure",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-policy_blocked",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-profile_blocked",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-stale_full_pass",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-session-revocation-failure",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-throttles",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-deletion-failed",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-deletion-fullPassAgeSeconds",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-deletion-heartbeat",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-deletion-overdue",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-token-deletion-errors",
+                  "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-token-deletion-throttles"
+                ]
+              },
+              "StringEquals": {
+                "aws:SourceAccount": "107827791950"
+              }
+            },
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "cloudwatch.amazonaws.com"
+            },
+            "Resource": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts",
+            "Sid": "OnlyApprovedSafetyAlarms"
+          }
+        ],
+        "Version": "2012-10-17"
+      },
+      "topicPolicySha256": "9d1f2f15e2052ec4a977a8329b5df3da84833620386db5401fa03b90d282aa71"
+    }
+  },
+  "source": {
+    "files": [
+      {
+        "matchesCapturedCommit": true,
+        "path": "terraform/campaign-data/main.tf",
+        "repository": "infrastructure",
+        "sha256": "c3cc8ee9dad3169a896975c97be5c01a564697368a2ec3ab4f8e793a25a2adbf"
+      },
+      {
+        "matchesCapturedCommit": true,
+        "path": "terraform/campaign-data/variables.tf",
+        "repository": "infrastructure",
+        "sha256": "6deaedaeaf7cb88978e31e8a661ac78f56ae7386d14eb3a1244b189998aea87b"
+      },
+      {
+        "matchesCapturedCommit": true,
+        "path": "terraform/campaign-processing/main.tf",
+        "repository": "infrastructure",
+        "sha256": "0d78afb55eea24a82e7c077895940af775fc4c969453fa64bb179c9b4f7a6a87"
+      },
+      {
+        "matchesCapturedCommit": true,
+        "path": "terraform/campaign-processing/recovery.tf",
+        "repository": "infrastructure",
+        "sha256": "c2a31faf5263405f7b78edbd542458f243c6fb82ca5a99c665620fcac544fa38"
+      },
+      {
+        "matchesCapturedCommit": true,
+        "path": "environments/dev/campaign-processing.tfvars",
+        "repository": "infrastructure",
+        "sha256": "7673909d30763205caee79a96bd3ae1cf7d69f492503af2e34023c61d8d78627"
+      },
+      {
+        "matchesCapturedCommit": true,
+        "path": "src/campaign_lifecycle/app.py",
+        "repository": "lambda",
+        "sha256": "ebff9a63d7340781efcfca73ed263888922f64bf1c307cdf75d0589106c04fd4"
+      },
+      {
+        "matchesCapturedCommit": true,
+        "path": "src/campaign_lifecycle/service.py",
+        "repository": "lambda",
+        "sha256": "c5ba86896f67ab62b15c6c2d854296588465b228af18e1d1f3050cfab06d3a5b"
+      },
+      {
+        "matchesCapturedCommit": true,
+        "path": "src/campaign_lifecycle/publication.py",
+        "repository": "lambda",
+        "sha256": "e39a685d8723ebfd4028de95d3e9bc08b5931de54e7eb55a8a318832fcd9c47a"
+      },
+      {
+        "matchesCapturedCommit": true,
+        "path": "src/campaign_observation_publisher/service.py",
+        "repository": "lambda",
+        "sha256": "c6028556855a41561dfae8b652186bd758d88f2f3d3fd1321f189d4d9cedb552"
+      },
+      {
+        "matchesCapturedCommit": true,
+        "path": "src/campaign_cluster_aggregator/service.py",
+        "repository": "lambda",
+        "sha256": "06a98ffd9efb9c37c3c1ad13a18b20d8c0b72668a0d4c502e09bf1071932cba2"
+      }
+    ],
+    "infrastructureCommit": "a96ee0708ac11e861624882546e907677de4156c",
+    "lambdaCommit": "3d1a2a225422556631b18636eee10a3eba47d645"
+  },
+  "storage": {
+    "accountId": "107827791950",
+    "bounds": {
+      "callStartSeconds": 120,
+      "maxPagesPerList": 10
+    },
+    "historicalCoverageVerified": false,
+    "limitations": [
+      "Current control-plane observations are not a frozen snapshot or historical erasure proof.",
+      "No table items, backup contents, export objects, key material or customer identifiers read.",
+      "Exact five tables only; other names, regions/accounts, deleted copies and manual dumps are unqualified.",
+      "ListExports covers its service history window (90 days), not all surviving S3 copies.",
+      "A missing or denied observation remains unavailable, never an empty successful inventory.",
+      "No restore, backup, key change, approval marker or application mutation performed."
+    ],
+    "metadataComplete": true,
+    "observedAtUtc": "2026-09-27T03:07:05.213093+00:00",
+    "region": "us-east-1",
+    "restoreApproved": false,
+    "schemaVersion": 1,
+    "tables": {
+      "trustcheckradar-dev-campaign-intelligence": {
+        "currentTableWasRestored": false,
+        "dataClass": "aggregate",
+        "hasReplicas": false,
+        "observations": {
+          "awsBackup": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "exports": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "nativeBackups": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "pitr": {
+            "complete": true,
+            "hasEarliestRestoreTime": true,
+            "hasLatestRestoreTime": true,
+            "recoveryPeriodDays": 35,
+            "status": "ENABLED"
+          },
+          "ttl": {
+            "complete": true,
+            "expiresAtAttribute": true,
+            "status": "ENABLED"
+          }
+        },
+        "streamEnabled": false,
+        "tableIdentityVerified": true,
+        "tableStatus": "ACTIVE"
+      },
+      "trustcheckradar-dev-campaign-outbox": {
+        "currentBackupPolicyMatches": true,
+        "currentTableWasRestored": false,
+        "dataClass": "transient",
+        "hasReplicas": false,
+        "observations": {
+          "awsBackup": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "exports": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "nativeBackups": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "pitr": {
+            "complete": true,
+            "hasEarliestRestoreTime": false,
+            "hasLatestRestoreTime": false,
+            "recoveryPeriodDays": null,
+            "status": "DISABLED"
+          },
+          "ttl": {
+            "complete": true,
+            "expiresAtAttribute": true,
+            "status": "ENABLED"
+          }
+        },
+        "streamEnabled": true,
+        "tableIdentityVerified": true,
+        "tableStatus": "ACTIVE"
+      },
+      "trustcheckradar-dev-campaign-pipeline": {
+        "currentBackupPolicyMatches": true,
+        "currentTableWasRestored": false,
+        "dataClass": "transient",
+        "hasReplicas": false,
+        "observations": {
+          "awsBackup": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "exports": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "nativeBackups": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "pitr": {
+            "complete": true,
+            "hasEarliestRestoreTime": false,
+            "hasLatestRestoreTime": false,
+            "recoveryPeriodDays": null,
+            "status": "DISABLED"
+          },
+          "ttl": {
+            "complete": true,
+            "expiresAtAttribute": true,
+            "status": "ENABLED"
+          }
+        },
+        "streamEnabled": false,
+        "tableIdentityVerified": true,
+        "tableStatus": "ACTIVE"
+      },
+      "trustcheckradar-dev-deletion-ledger": {
+        "currentTableWasRestored": false,
+        "dataClass": "account-control",
+        "hasReplicas": false,
+        "observations": {
+          "awsBackup": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "exports": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "nativeBackups": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "pitr": {
+            "complete": true,
+            "hasEarliestRestoreTime": true,
+            "hasLatestRestoreTime": true,
+            "recoveryPeriodDays": 35,
+            "status": "ENABLED"
+          },
+          "ttl": {
+            "complete": true,
+            "expiresAtAttribute": false,
+            "status": "DISABLED"
+          }
+        },
+        "streamEnabled": true,
+        "tableIdentityVerified": true,
+        "tableStatus": "ACTIVE"
+      },
+      "trustcheckradar-dev-users": {
+        "currentTableWasRestored": false,
+        "dataClass": "account-control",
+        "hasReplicas": false,
+        "observations": {
+          "awsBackup": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "exports": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "nativeBackups": {
+            "categories": {},
+            "complete": true,
+            "count": 0,
+            "pages": 1
+          },
+          "pitr": {
+            "complete": true,
+            "hasEarliestRestoreTime": true,
+            "hasLatestRestoreTime": true,
+            "recoveryPeriodDays": 35,
+            "status": "ENABLED"
+          },
+          "ttl": {
+            "complete": true,
+            "expiresAtAttribute": true,
+            "status": "ENABLED"
+          }
+        },
+        "streamEnabled": false,
+        "tableIdentityVerified": true,
+        "tableStatus": "ACTIVE"
+      }
+    }
+  }
+}

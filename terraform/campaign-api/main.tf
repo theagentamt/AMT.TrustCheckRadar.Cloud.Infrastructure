@@ -451,16 +451,18 @@ resource "aws_lambda_function" "review" {
   function_name = "${local.name_prefix}-review"
   description   = "Performs audited campaign review transitions for the sole authorized reviewer"
   role          = aws_iam_role.review[0].arn
-  runtime       = "python3.13"
+  runtime       = var.campaign_review_expiry_deployment == null ? "python3.13" : "python3.14"
   handler       = "app.lambda_handler"
 
   timeout                        = var.lambda_timeout_seconds
   memory_size                    = var.review_memory_mb
   architectures                  = ["arm64"]
-  reserved_concurrent_executions = 1
+  reserved_concurrent_executions = var.campaign_review_reserved_concurrency
 
-  s3_bucket = local.foundation.artifact_bucket_name
-  s3_key    = "releases/${var.artifact_release}/${var.review_artifact_name}"
+  s3_bucket         = local.foundation.artifact_bucket_name
+  s3_key            = "releases/${var.campaign_review_expiry_deployment == null ? var.artifact_release : var.campaign_review_expiry_deployment.source_sha}/${var.review_artifact_name}"
+  s3_object_version = try(var.campaign_review_expiry_deployment.object_version, null)
+  source_code_hash  = try(var.campaign_review_expiry_deployment.source_hash, null)
 
   environment {
     variables = {

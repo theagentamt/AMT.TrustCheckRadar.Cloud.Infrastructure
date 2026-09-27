@@ -1,0 +1,51 @@
+{
+  "accountId": "107827791950",
+  "allAbsent": true,
+  "finishedAtUtc": "2026-09-27T04:38:22.221470+00:00",
+  "journalSha256": "9a0dd9915bc082fe807c116d7a9aebedf8db8de5b53f94f85d7706d78fffbb07",
+  "observedAtUtc": "2026-09-27T04:38:20.537542+00:00",
+  "readOnly": true,
+  "region": "us-east-1",
+  "roles": {
+    "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-acct": {
+      "absenceConfirmed": true,
+      "reason": "NoSuchEntity"
+    },
+    "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-ana": {
+      "absenceConfirmed": true,
+      "reason": "NoSuchEntity"
+    },
+    "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-clu": {
+      "absenceConfirmed": true,
+      "reason": "NoSuchEntity"
+    },
+    "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-del": {
+      "absenceConfirmed": true,
+      "reason": "NoSuchEntity"
+    },
+    "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-exp": {
+      "absenceConfirmed": true,
+      "reason": "NoSuchEntity"
+    },
+    "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-life": {
+      "absenceConfirmed": true,
+      "reason": "NoSuchEntity"
+    },
+    "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-pub": {
+      "absenceConfirmed": true,
+      "reason": "NoSuchEntity"
+    }
+  },
+  "runId": "7d053e9b32624781a6be59770587d3fa",
+  "schemaVersion": 1,
+  "tables": {
+    "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-outbox": {
+      "absenceConfirmed": true,
+      "reason": "ResourceNotFoundException"
+    },
+    "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-pipeline": {
+      "absenceConfirmed": true,
+      "reason": "ResourceNotFoundException"
+    }
+  }
+}

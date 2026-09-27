@@ -849,47 +849,54 @@ data "aws_iam_policy_document" "lifecycle_runtime" {
     }
   }
 
-  statement {
-    sid       = "CreatePeriodHmacKeys"
-    effect    = "Allow"
-    actions   = ["kms:CreateKey"]
-    resources = ["*"]
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? [] : [1]
+    content {
+      sid       = "CreatePeriodHmacKeys"
+      effect    = "Allow"
+      actions   = ["kms:CreateKey"]
+      resources = ["*"]
 
-    condition {
-      test     = "StringEquals"
-      variable = "kms:KeySpec"
-      values   = ["HMAC_256"]
-    }
+      condition {
+        test     = "StringEquals"
+        variable = "kms:KeySpec"
+        values   = ["HMAC_256"]
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "kms:KeyUsage"
-      values   = ["GENERATE_VERIFY_MAC"]
-    }
+      condition {
+        test     = "StringEquals"
+        variable = "kms:KeyUsage"
+        values   = ["GENERATE_VERIFY_MAC"]
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestTag/Project"
-      values   = [var.project_name]
-    }
+      condition {
+        test     = "StringEquals"
+        variable = "aws:RequestTag/Project"
+        values   = [var.project_name]
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestTag/Environment"
-      values   = [var.environment]
-    }
+      condition {
+        test     = "StringEquals"
+        variable = "aws:RequestTag/Environment"
+        values   = [var.environment]
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestTag/Purpose"
-      values   = ["campaign-contributor-token"]
+      condition {
+        test     = "StringEquals"
+        variable = "aws:RequestTag/Purpose"
+        values   = ["campaign-contributor-token"]
+      }
     }
   }
 
   statement {
     sid    = "ManageTaggedPeriodHmacKeys"
     effect = "Allow"
-    actions = [
+    actions = local.account_privacy_candidate ? [
+      "kms:DescribeKey",
+      "kms:ListResourceTags",
+      "kms:DisableKey",
+      ] : [
       "kms:DescribeKey",
       "kms:DisableKey",
       "kms:EnableKey",
@@ -917,28 +924,31 @@ data "aws_iam_policy_document" "lifecycle_runtime" {
     }
   }
 
-  statement {
-    sid       = "TagNewPeriodHmacKeys"
-    effect    = "Allow"
-    actions   = ["kms:TagResource"]
-    resources = ["arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:key/*"]
+  dynamic "statement" {
+    for_each = local.account_privacy_candidate ? [] : [1]
+    content {
+      sid       = "TagNewPeriodHmacKeys"
+      effect    = "Allow"
+      actions   = ["kms:TagResource"]
+      resources = ["arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:key/*"]
 
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestTag/Project"
-      values   = [var.project_name]
-    }
+      condition {
+        test     = "StringEquals"
+        variable = "aws:RequestTag/Project"
+        values   = [var.project_name]
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestTag/Environment"
-      values   = [var.environment]
-    }
+      condition {
+        test     = "StringEquals"
+        variable = "aws:RequestTag/Environment"
+        values   = [var.environment]
+      }
 
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestTag/Purpose"
-      values   = ["campaign-contributor-token"]
+      condition {
+        test     = "StringEquals"
+        variable = "aws:RequestTag/Purpose"
+        values   = ["campaign-contributor-token"]
+      }
     }
   }
 
@@ -1008,7 +1018,7 @@ resource "aws_lambda_function" "worker" {
   timeout                        = each.value.timeout
   memory_size                    = each.value.memory
   architectures                  = ["arm64"]
-  reserved_concurrent_executions = var.reserved_concurrency
+  reserved_concurrent_executions = var.campaign_period_work_quiescence ? 0 : var.reserved_concurrency
 
   s3_bucket = local.foundation.artifact_bucket_name
   s3_key = each.key == "deletion" && local.completion_prepared ? "releases/${var.campaign_completion_artifact.release_id}/campaign_deletion_bridge.zip" : local.account_privacy_candidate ? "releases/${var.account_privacy_artifacts.release_id}/${each.value.artifact}" : (
@@ -1076,7 +1086,11 @@ resource "aws_lambda_function" "worker" {
       DELETION_LEDGER_TABLE_NAME = local.foundation.deletion_ledger_table_name
       PARTICIPATION_ITEM_SK      = "CAMPAIGN_PARTICIPATION"
       PARTICIPATION_AUDIT_DAYS   = "400"
-    } : {}, each.key == "deletion" ? local.campaign_deletion_activation_env : {})
+      } : {}, each.key == "deletion" ? local.campaign_deletion_activation_env : {}, local.period_work_closed_env, local.period_work_activation_env, local.period_work_prepared && each.key == "lifecycle" ? {
+      CAMPAIGN_LIFECYCLE_CANDIDATE_ENABLED = tostring(local.period_lifecycle_active)
+      CAMPAIGN_PERIOD_LIFECYCLE_ENABLED    = tostring(local.period_lifecycle_active)
+      CAMPAIGN_PERIOD_RETIREMENT_ENABLED   = tostring(local.period_retirement_active)
+    } : {})
   }
 
   lifecycle {

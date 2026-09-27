@@ -211,13 +211,13 @@ resource "aws_lambda_function" "account_export" {
   handler                        = "app.lambda_handler"
   memory_size                    = 256
   timeout                        = 29
-  reserved_concurrent_executions = 1
+  reserved_concurrent_executions = var.campaign_period_work_quiescence ? 0 : 1
   s3_bucket                      = local.foundation.artifact_bucket_name
   s3_key                         = "releases/${var.account_export_deployment.release_id}/account_export_api.zip"
   s3_object_version              = var.account_export_deployment.object_version
   source_code_hash               = var.account_export_deployment.source_hash
   environment {
-    variables = {
+    variables = merge({
       STAGE                              = var.environment
       ACCOUNT_EXPORT_ENABLED             = "false"
       ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED = "false"
@@ -242,7 +242,7 @@ resource "aws_lambda_function" "account_export" {
       COGNITO_REQUIRED_SCOPE             = "aws.cognito.signin.user.admin"
       COGNITO_USER_POOL_ID               = local.cognito_user_pool_id
       COGNITO_USERNAME_IS_SUB            = "false"
-    }
+    }, local.period_work_closed_env, local.period_work_activation_env, local.period_work_prepared ? { APP_ENVIRONMENT = var.environment } : {})
   }
   lifecycle {
     precondition {

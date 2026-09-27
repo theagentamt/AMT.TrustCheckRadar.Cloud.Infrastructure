@@ -24,6 +24,43 @@ execution does not depend on a local skill installation.
 4. Verify actual IAM, schedules, queue/DLQ settings, alarms, source-bound inventory
    and external generation pins. Deployment success is not a behavioral pass.
 
+## Reusable Dev evidence and remaining release work
+
+The tested production source is `9147d545b719e54c1f967e35042bc502d79bc0f1`;
+Lambda fixture/documentation head is `8d4bbbd3dae0411e3ccfcbf94573180af9c45091`.
+Resolve their final release integration before promotion. See
+[Dev acceptance](SECUR4ALL-207-DEV-ACCEPTANCE.md),
+[operations](CAMPAIGN-PERIOD-OPERATIONS.md), and the
+[immutable artifact manifest](evidence/sec207-period-dev-deployment-2026-09-27/private-artifact-publication.json).
+These are a reference baseline; do not copy Dev table identities or approvals to UAT.
+
+The committed Dev fixture entry points are
+`scripts/campaign_period_lifecycle_fixture.py` (complete_replay, poison_recovery,
+lost_ack, retire_then_complete) and `scripts/campaign_period_retirement_fixture.py`
+(guards_and_complete_replay, lost_ack), each with prepare/run/cleanup operations
+and an ownership journal. They are explicitly bound to the qualified Dev account
+and dedicated resources. Do not change their account guards to call them a UAT
+runner. The whole-period composition includes real DynamoDB/KMS with controlled
+clocks and transport; authenticated HTTP, native queue/DLQ and backup restore
+still require the assembled release cases below. Existing successful Dev fixtures
+need not be repeated merely to claim UAT progress.
+
+Before UAT execution, the release owner must supply a reviewed target-bound
+runner/observer for these missing assembled paths, with a bounded clock strategy
+that does not shorten real retention or key deadlines. Verify request/response
+contracts against the selected Lambda version; retain the existing Android
+account-deletion cleanup contract and emulator cases. Link any new defect or
+runner work to its owning component. Hardware remains ATCR-148.
+
+For fresh schedule qualification, record actual scheduled invocations separately
+from any operator invocation. A two-shard-per-tick aggregate sweep takes eight
+ticks to visit all sixteen shards; at the current five-minute cadence allow
+45 minutes plus up to 10 minutes for metric/alarm ingestion. Do not reset the
+full-pass clock or change alarm thresholds to skip first-pass validation. The
+initial missing full pass may legitimately alert. Require a real completed pass,
+subsequent fresh metrics, and observed alarm recovery; notification to SNS does
+not itself prove support inbox receipt.
+
 ## Fixtures and cases
 
 Use dedicated synthetic accounts and period resources, never existing customer

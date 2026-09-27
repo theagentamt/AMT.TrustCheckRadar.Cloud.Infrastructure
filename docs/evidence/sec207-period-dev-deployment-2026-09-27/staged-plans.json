@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "planHashes": {
+    "api-pause": {
+      "savedPlanSha256": "3ac65e790b03a74acf8cd7bcd4d116788dcffe7188103917e64e1ad51f894a73",
+      "jsonSha256": "da442830787bf8fdbc08fb5f61d5099e85cb33be86d118455002469cc9299fdb",
+      "applied": true
+    },
+    "processing-pause": {
+      "savedPlanSha256": "e689a1524b2f4d33b29d71ef347be1137507aa47ebe0ab0a1a7db3ac61358884",
+      "jsonSha256": "1e95cdfbb12dd152b23f9884495f07e9e6cda806705a15ac33dc85b9f391d7c4",
+      "applied": true
+    },
+    "review-pause": {
+      "savedPlanSha256": "895ff78661649e07a4ce9ef34bd4cb41277c1719684abf50bb8b969062debef9",
+      "jsonSha256": "3bd1453f09ee5059cf095c5c6bb015262f744759343f9eb899063219ec80a6bb",
+      "applied": true
+    },
+    "data-install": {
+      "savedPlanSha256": "31d6800286e0fe7b877695a45a4e4208ee65ef30a69c65311fd3362445279cdd",
+      "jsonSha256": "882e286d7cbc0efe5d8d8174f4fd6d3a0a2137c9f93adc9dad75d4a31db2489a",
+      "applied": true
+    },
+    "processing-install-closed": {
+      "savedPlanSha256": "78e160553abb35d6b674afe2f233586fa5fcf2fea7df54120247491ef680c4c8",
+      "jsonSha256": "9e8ea488de0e26f6d78fd77e51ef2d7174666b144a0fde955cb779884dabec42",
+      "applied": true
+    },
+    "review-install-closed": {
+      "savedPlanSha256": "6bbfd503dc612aa68602586e3eb477bc79723273f1dba5160a21df3fdb263e56",
+      "jsonSha256": "faf5af18af1c852a3c93dd8c99e069dbf54b2cfdc639c0743cb2a3b3f6dd42c8",
+      "applied": true
+    },
+    "api-install-closed": {
+      "savedPlanSha256": "52c743386e6683a9fa92f2d37f2a6b0ae33471788c5d104123f4b0700db3d427",
+      "jsonSha256": "6ec3cc7e1c8d1ce615a0a8056b124804dba5cbb1fd4f2552e9fa89fd89f1982a",
+      "applied": true
+    },
+    "processing-activate": {
+      "savedPlanSha256": "ea73504040824cdd9aff75e01bd129c7059b7cd1ed8d15e265957dac3ebc6ed2",
+      "jsonSha256": "f218af2381cd383c12811651a478a94121fa603cda9acd85daab7e41611e0d48",
+      "applied": true,
+      "applyLogSha256": "3da8c9e1ff525434f10b98f509953c403f6b4666bae6b681c2513ead9f8a4db9"
+    },
+    "api-activate": {
+      "savedPlanSha256": "c6e7388fd2bd156d0009f5a36b7749f4c6a67deb547f70a358644366559b5fcb",
+      "jsonSha256": "9c134c30956ec0c3ccbf236cfd788434726b36eef7358fa06baa1ca3da986430",
+      "applied": true,
+      "applyLogSha256": "d0244088660a3737a0cfee0ee77b77ca32f997d7d2a6a570257babfaa6cf8492"
+    },
+    "review-restore": {
+      "savedPlanSha256": "94e0eb08c96aba310a395071ad89eb5035269cecd23cc40b563d109ea86c3197",
+      "jsonSha256": "a15e17fb9c742e3054fd4a67ca1d6db94969b299c5f7a4c41b0f0b9828df7bf7",
+      "applied": true,
+      "applyLogSha256": "0d08067a26b1cdbbb6a2ea29d09166818c2b8aefaa0eff5f8894e0f7af9c5979"
+    },
+    "processing-retirement": {
+      "savedPlanSha256": "3c8111050e6ce5ed7975954a13d3122d46467b2ede8404287eefd55cf00c8297",
+      "jsonSha256": "02390550e8485b4f01f8cbb5ea639e24ff8003ab06385572f82244e178f0620c",
+      "applied": true,
+      "applyLogSha256": "9b520309925d6d1a459059bf0005ebe0b4d699238f21d3222619158c7a06142a"
+    }
+  }
+}

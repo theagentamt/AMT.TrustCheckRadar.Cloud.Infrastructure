@@ -1,0 +1,11 @@
+{
+  "actionCount": 16,
+  "actionsSha256": "0d3833ef65659c01174aac2857e369cd1de2ccaadb76568128e8005e1919ad12",
+  "ambiguityPolicy": "On any missing acknowledgment, do not replay bootstrap blindly; independently inspect marker/control/index metadata and retain original plan.",
+  "attemptId": "de3aa9953f2646a4b66a0f6e48d30821",
+  "manifestSha256": "530cffa187ba552450229308407a188adcd955e4701bdb273f3780bb7e27c2ac",
+  "planSha256": "846c202da97253b2fa8577206dd4c872715df8251783af307c33b24c31d1dbfd",
+  "recordValuesPersisted": false,
+  "schemaVersion": 1,
+  "state": "APPLY_INTENT_ONLY"
+}

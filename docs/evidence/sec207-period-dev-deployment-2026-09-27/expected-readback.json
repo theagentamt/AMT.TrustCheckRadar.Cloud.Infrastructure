@@ -1,0 +1,27 @@
+{
+  "actionsSha256": "0d3833ef65659c01174aac2857e369cd1de2ccaadb76568128e8005e1919ad12",
+  "afterCounts": {
+    "intelligence": 0,
+    "outbox": 0,
+    "pipeline": 16
+  },
+  "beforeCounts": {
+    "intelligence": 0,
+    "outbox": 0,
+    "pipeline": 7
+  },
+  "beforeSnapshotSha256": {
+    "intelligence": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "outbox": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "pipeline": "54fc629518eabe36815b57bf6d25bbbb6d217b8a357ea320548c0c486a66508d"
+  },
+  "expectedAfterSnapshotSha256": {
+    "intelligence": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "outbox": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "pipeline": "e8d7a6fb808b3472e872e8b245d867b02eab86f6b73cf3e59e5e8562fd4105c2"
+  },
+  "manifestSha256": "530cffa187ba552450229308407a188adcd955e4701bdb273f3780bb7e27c2ac",
+  "planSha256": "846c202da97253b2fa8577206dd4c872715df8251783af307c33b24c31d1dbfd",
+  "recordValuesPersisted": false,
+  "schemaVersion": 1
+}

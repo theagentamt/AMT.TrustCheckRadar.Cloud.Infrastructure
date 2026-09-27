@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "scope": "Local Terraform mock/provider schema and infrastructure helper tests, not AWS deployment or application acceptance",
+  "terraform": {
+    "campaign-processing": {
+      "passed": 58,
+      "failed": 0,
+      "logSha256": "f12e28b3e70d1aa2dde9aabda3be7279df3d1e179ef204d65995fd835d49d0b4"
+    },
+    "api": {
+      "passed": 148,
+      "failed": 0,
+      "logSha256": "be20eaafe063807d71813de019d923bff88ac52f94fead17c40833b262b75604"
+    },
+    "campaign-data": {
+      "passed": 5,
+      "failed": 0,
+      "logSha256": "04d945eb132889dfce05b2471b67d78d87740974858717f10e90334bac4124bb"
+    },
+    "campaign-api": {
+      "passed": 3,
+      "failed": 0,
+      "logSha256": "e92331bd6f302b67eaecf1255dcd192233afa3a316353b96b1ffddb997a5fa46"
+    }
+  },
+  "helpers": {
+    "passed": 95,
+    "failed": 0,
+    "logSha256": "8130aad6c1928073149a72fc486fdfb89ab20877f903418eeb0dd0ba6abe1d75"
+  }
+}

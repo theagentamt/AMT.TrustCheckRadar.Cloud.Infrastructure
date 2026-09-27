@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "configurationRoot": "environments/dev",
+  "plans": {
+    "api": {
+      "noChanges": true,
+      "savedPlanSha256": "35a7d37f2791c8b0ad0ecfa442e9d49312fafdf3347a32fb4d8fbba69c7ff2e4",
+      "logSha256": "406753d3625bc6d823a11cbe5029e101204bbc891e629cbf686e9d5a980e398b",
+      "configurationFileSha256": "0fcb42d99e2d471aa2c20f4681c811f85b1a47a2c288a748c549714d9961d803"
+    },
+    "campaign-processing": {
+      "noChanges": true,
+      "savedPlanSha256": "6c64bdd61122f29d9a007fd059de8cbd9bbee5e66a7e9fdfe49bdcaa733f8c6f",
+      "logSha256": "48dfef98b4757474803b62eee75e07bd01795fbb83de7963a7f8e989b6580a53",
+      "configurationFileSha256": "d5242f7b6bb0bcffdce001bae716c86c9e5aab7e1cc59e7a640e7fe5645a848b"
+    },
+    "campaign-api": {
+      "noChanges": true,
+      "savedPlanSha256": "7fdf459da3aab33c48df77df934b2c81be9c39fcfa2bd563ebce06ae9623293a",
+      "logSha256": "dedd7821a6c7a138a5b38b97fb971a7ad622c43c6f9ae76e6501f6697f9efed1",
+      "configurationFileSha256": "65d75641f0b0f77e43340b1507f794e14e635add1ab16312c5f3e759c0fb7d7e"
+    },
+    "campaign-data": {
+      "noChanges": true,
+      "savedPlanSha256": "cbdaa14289615357868f120b160c3a09cd6dfd15f838dc0f760ab9c981c164c9",
+      "logSha256": "5ac092cf56f478fb9349f441e2cb02e6cfb52f0405586f6654ebb50ca3a53f7d",
+      "configurationFileSha256": "c88552ec8110fb49fb52c08c66215a6183257edf5eed53f75aa3cd53a6f49b09"
+    }
+  },
+  "externalInputs": "Existing backend bucket/region and base artifact selection retained privately; existing campaign reviewer username was not added to configuration or evidence."
+}
