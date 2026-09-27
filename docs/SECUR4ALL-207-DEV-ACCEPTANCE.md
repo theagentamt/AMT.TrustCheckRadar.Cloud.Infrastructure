@@ -39,6 +39,29 @@ helper as a deployed scheduler or complete erasure proof. Final retirement must
 not strand future withdrawal/account deletion by removing the key before all
 necessary unlinking and qualified proof are available.
 
+## Infrastructure baseline for the orphan cleanup increment
+
+The [read-only AWS snapshot](evidence/sec207-orphan-recovery-2026-09-26/lifecycle-readback-before.json)
+at September 27 02:42 UTC records the exact lifecycle function, four inline
+policies, no attached managed policies or permissions boundary, and three legacy
+lifecycle schedules. The function is Python 3.14 ARM64; candidate and admission
+gates are false, inventory revision is zero, and manifest/generation pins are
+absent. All three schedules are disabled. Their old operation payloads do not
+match the current handler, so enabling them is not a valid way to schedule the
+new cleanup operation.
+
+The observed identity-policy statements already cover the proposed pipeline
+Get/Query, paired candidate/contributor deletes, and period/inventory/candidate
+checks. No new permission is currently identified. This is static policy review,
+not actual application authorization, SCP/resource-policy qualification or a
+guarantee against later configuration changes. Existing mutable-family grants
+also allow standalone/batch writes; existing tagged KMS management grants remain
+present although orphan cleanup requires no KMS calls. No permission narrowing
+or new key-retirement protection is claimed by this readback.
+
+The snapshot changed no resources, read no table records and invoked no function.
+Separate deletion-recovery schedules were outside this observation and unchanged.
+
 ## Ownership and completion
 
 Lambda owns cleanup, publication, sealing/retirement protocols, recovery and
