@@ -9,6 +9,25 @@ Owner confirmed on September 27 that **AndMoreThings Labs LLC** and the monitore
 as primary and a verified email fallback for V1; no automated web flow is authorized.
 An email is a request, not proof of ownership or authority to erase an account.
 
+## Owner decisions approved September 27, 2026
+
+- Real V1 customer submissions must not be opted into provider model-training
+  sharing. Actual OpenAI organization/project settings remain unverified; this
+  decision does not claim Zero Data Retention or change provider settings.
+- Support correspondence is to be deleted 30 days after resolution. The owner
+  reports no current rule. Identify the mail provider and closure mechanism,
+  configure the rule, and check trash/archive/backup exceptions before publishing
+  an enforced deadline. Any separate verification audit needs its own policy.
+- Send independent deletion confirmation to the verified email already on the
+  account; do not rely on the incoming sender or a requester-supplied replacement.
+  Only after verified explicit intent may an authorized operator proceed. Lost
+  mailbox access requires a separately reviewed recovery path. SECUR4ALL-333 must
+  qualify this actual workflow; no new public web portal was authorized.
+
+These approvals supersede the earlier unanswered policy questions, but do not
+resolve operational verification. Draft paragraphs explicitly distinguish the
+approved target from settings that have not yet been implemented or inspected.
+
 ## Preview and source
 
 Edit `content/en/*.html` and matching `content/es/*.html`, then run:
