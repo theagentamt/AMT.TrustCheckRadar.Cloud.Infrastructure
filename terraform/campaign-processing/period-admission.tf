@@ -6,9 +6,11 @@ variable "campaign_period_fence_preparation" {
     condition = var.campaign_period_fence_preparation == null ? true : try(
       var.environment == "dev" && var.kill_switch_enabled && local.account_privacy_candidate &&
       local.recovery_prepared && local.completion_prepared &&
-      var.account_privacy_artifacts.release_id == var.campaign_completion_artifact.release_id &&
-      var.account_privacy_artifacts.workers.deletion.object_version == var.campaign_completion_artifact.object_version &&
-      var.account_privacy_artifacts.workers.deletion.source_hash == var.campaign_completion_artifact.source_hash &&
+      ((var.account_privacy_artifacts.release_id == var.campaign_completion_artifact.release_id &&
+        var.account_privacy_artifacts.workers.deletion.object_version == var.campaign_completion_artifact.object_version &&
+        var.account_privacy_artifacts.workers.deletion.source_hash == var.campaign_completion_artifact.source_hash) || try(
+        var.campaign_cleanup_work_compatibility.work_source_sha == var.account_privacy_artifacts.release_id &&
+      var.campaign_cleanup_work_compatibility.cleanup_source_sha == var.campaign_completion_artifact.release_id, false)) &&
       length(trimspace(var.campaign_period_fence_preparation.review_reference)) > 0,
       false
     )

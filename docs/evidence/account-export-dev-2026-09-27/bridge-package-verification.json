@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "9effc4f0a38d7d3191b687cb07c9dbda561d69f4",
+  "previousSourceCommit": "9147d545",
+  "previousArchiveSha256": "c694fa18f29f615bc2d876bd7ffe8b18f8e9f844d0428faa047c489098d5678c",
+  "archiveSha256": "d7ba66f6ccd133cf377ad8edf398e32316ea9a162dd4c5988ce7b3beb67dbe2f",
+  "archiveBytes": 73030,
+  "memberCount": 37,
+  "sameMemberSet": true,
+  "changedMembers": [
+    "orchestration.py"
+  ],
+  "allPythonMembersMatchGitAndCompile": true,
+  "localTestsPassed": 37,
+  "runtimeExecution": false
+}

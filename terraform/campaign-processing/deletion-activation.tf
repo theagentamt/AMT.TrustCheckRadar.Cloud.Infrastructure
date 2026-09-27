@@ -21,7 +21,9 @@ variable "campaign_deletion_activation" {
       var.campaign_account_cleanup_preparation != null &&
       can(regex("^[0-9a-f]{40}$", var.campaign_deletion_activation.source_sha)) &&
       var.campaign_deletion_activation.source_sha == var.account_privacy_artifacts.release_id &&
-      var.campaign_deletion_activation.source_sha == var.campaign_completion_artifact.release_id &&
+      (var.campaign_deletion_activation.source_sha == var.campaign_completion_artifact.release_id || try(
+        var.campaign_cleanup_work_compatibility.work_source_sha == var.campaign_deletion_activation.source_sha &&
+      var.campaign_cleanup_work_compatibility.cleanup_source_sha == var.campaign_completion_artifact.release_id, false)) &&
       can(regex("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", var.campaign_deletion_activation.generation)) &&
       alltrue([for digest in [var.campaign_deletion_activation.locator_manifest_sha256, var.campaign_deletion_activation.recovery_manifest_sha256, var.campaign_deletion_activation.completion_manifest_sha256] : can(regex("^[0-9a-f]{64}$", digest))]) &&
       alltrue([for revision in [var.campaign_deletion_activation.locator_inventory_revision, var.campaign_deletion_activation.recovery_inventory_revision, var.campaign_deletion_activation.completion_inventory_revision] : revision >= 1 && revision <= 9007199254740991 && floor(revision) == revision]) &&

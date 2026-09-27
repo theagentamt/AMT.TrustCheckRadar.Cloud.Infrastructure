@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "validation": {
+    "terraformApiMockCases": 167,
+    "terraformCampaignMockCases": 67,
+    "exportSdkCases": 96,
+    "exportOperatorCases": 21,
+    "exportOperatorModes": [
+      "normal",
+      "optimized"
+    ],
+    "cleanupAffectedSdkCases": 37,
+    "cleanupNewComposedRegressionCases": 5,
+    "androidHostCases": 2604,
+    "androidSyntheticEmulatorCases": 12
+  },
+  "environment": "dev",
+  "physicalDeviceTesting": false,
+  "uatExecuted": false,
+  "allLiveFamiliesPopulated": false,
+  "nativeSignupQualified": false,
+  "liveAndroidBackendJourneyQualified": false,
+  "mainPromoted": false
+}

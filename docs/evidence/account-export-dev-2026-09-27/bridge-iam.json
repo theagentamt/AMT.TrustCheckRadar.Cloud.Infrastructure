@@ -1,0 +1,21 @@
+{
+  "observedAtEpoch": 1790516211,
+  "functionName": "trustcheckradar-dev-campaign-deletion-bridge",
+  "codeSha256": "xpT6GPKfYVvC2Ha9f/6LGPjp+ETQQo+qBHxIkJjVZ4w=",
+  "describeTableAlreadyGranted": true,
+  "exactPipelineOutboxResources": true,
+  "newIamRequired": false,
+  "grants": [
+    {
+      "policy": "trustcheckradar-dev-campaign-deletion-period-work",
+      "actions": [
+        "dynamodb:DescribeTable"
+      ],
+      "resources": [
+        "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+        "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox"
+      ],
+      "conditions": {}
+    }
+  ]
+}
