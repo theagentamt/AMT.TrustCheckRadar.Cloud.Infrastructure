@@ -1,0 +1,28 @@
+{
+  "plans": [
+    {
+      "stack": "api",
+      "planSha256": "c3cee9332a7f4a9f552238d97e3eb9860f97e43ce1334fd51be648edc407fb0a",
+      "originalEnvironmentRestored": true,
+      "originalCodeAndRolePreserved": true,
+      "resourcesToUpdate": 1
+    },
+    {
+      "stack": "url-consumer",
+      "planSha256": "98262df616f1d5431a3530fa0964d1035101ee5796973941bcfa4a25083320dd",
+      "originalEnvironmentRestored": true,
+      "originalCodeAndRolePreserved": true,
+      "resourcesToUpdate": 2
+    },
+    {
+      "stack": "play-lifecycle",
+      "planSha256": "909cb3cb5dc7912d5074ce746b7e5c0c088cf5ba16238f155f096d0064d55690",
+      "originalEnvironmentRestored": true,
+      "originalCodeAndRolePreserved": true,
+      "resourcesToUpdate": 2
+    }
+  ],
+  "applied": false,
+  "independentReviewPassed": true,
+  "applyCondition": "Original native operation COMPLETE; twelve valid receipts; identity/profile/device absence verified"
+}

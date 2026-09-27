@@ -1,0 +1,18 @@
+{
+  "com.andmorethings.trustcheckradar.dev": {
+    "sha256": "7904eb6015b1f99ad37e12cbab0eba1b21c30ed9e0f354ab1e8b531585ef5070",
+    "installedMatches": true
+  },
+  "com.andmorethings.trustcheckradar.dev.test": {
+    "sha256": "451f257cc61af0c54c9f296e23be675ef84c6aaaf8128c1efcb95e2749b06ad0",
+    "installedMatches": true
+  },
+  "preflight": {
+    "actualDependencies": true,
+    "settingsReached": true,
+    "cancelNoDispatch": true,
+    "unauthenticated": true,
+    "journalEmpty": true
+  },
+  "sourceSha256": "23ea0699bfe53407fd41db82484827e5a5471f22c8486a18fea910b32eb23ead"
+}

@@ -1,0 +1,11 @@
+{
+  "planSha256": "f841de462a2e3f95d785d4d26f0d631001b9ebc27ae0ad7a8e82659fca9f0a93",
+  "sourceCommit": "a25e81f3ef919e65d2ec2fb702637b287e9c79d8",
+  "cleanupHelperSha256": "2e3a670e429327368802c90be277cf1a080df02893c7800c89f2c5565eab6aaa",
+  "preparedBeforeNativeRequest": true,
+  "separateNativeOperationBinding": true,
+  "readOnly": true,
+  "runtimeFunctionCount": 4,
+  "independentReviewPassed": true,
+  "credentialValuesIncluded": false
+}

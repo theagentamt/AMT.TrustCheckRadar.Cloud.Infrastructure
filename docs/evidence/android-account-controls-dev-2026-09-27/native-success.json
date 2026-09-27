@@ -1,0 +1,10 @@
+{
+  "deletionRequests": 1,
+  "localCleanupCalls": 1,
+  "localCleanupVerified": true,
+  "passed": true,
+  "privateInputRemoved": true,
+  "schemaVersion": 1,
+  "sessionCleared": true,
+  "statusRequests": 1
+}

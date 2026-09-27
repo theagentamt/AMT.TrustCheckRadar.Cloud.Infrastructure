@@ -1,0 +1,8 @@
+{
+  "explicitOwnerApprovalReceived": true,
+  "scope": "One automated deletion of the fresh disposable Dev fixture, native cleanup/sign-out and backend erasure verification",
+  "firstReviewBlockedBeforeExecution": true,
+  "nativeRequestsBeforeApproval": 0,
+  "normalCustomerAccountsIncluded": false,
+  "paidSubscriptionIncluded": false
+}

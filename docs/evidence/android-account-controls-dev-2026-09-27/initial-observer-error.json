@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "complete": false,
+  "polls": 9,
+  "commandObserved": true,
+  "originalOperationMatches": true,
+  "validComponentReceipts": 9,
+  "status": "REQUESTED",
+  "observedAtEpoch": 1790524637,
+  "observationError": "NATIVE_DELETION_OBSERVATION_UNVERIFIED"
+}

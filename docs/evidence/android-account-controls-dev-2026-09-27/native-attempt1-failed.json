@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "passed": false,
+  "deletionRequests": 0,
+  "statusRequests": 1,
+  "localCleanupCalls": 0,
+  "localCleanupVerified": false,
+  "sessionCleared": true,
+  "privateInputRemoved": true,
+  "stage": "confirmation-cancel",
+  "observerPresent": false
+}

@@ -1,0 +1,77 @@
+[
+  {
+    "stack": "api",
+    "changes": [
+      {
+        "address": "aws_lambda_function.account_data[0]",
+        "actions": [
+          "update"
+        ],
+        "changedKeys": [
+          "environment"
+        ],
+        "changedEnvironmentKeys": [
+          "ACCOUNT_DELETION_HTTP_SUBJECTS_JSON"
+        ]
+      }
+    ]
+  },
+  {
+    "stack": "url-consumer",
+    "changes": [
+      {
+        "address": "aws_lambda_alias.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ],
+        "changedKeys": [
+          "function_version"
+        ]
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ],
+        "changedKeys": [
+          "environment",
+          "qualified_arn",
+          "qualified_invoke_arn",
+          "version"
+        ],
+        "changedEnvironmentKeys": [
+          "DEV_SUBJECT_ALLOWLIST_JSON"
+        ]
+      }
+    ]
+  },
+  {
+    "stack": "play-lifecycle",
+    "changes": [
+      {
+        "address": "aws_lambda_alias.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ],
+        "changedKeys": [
+          "function_version"
+        ]
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ],
+        "changedKeys": [
+          "environment",
+          "qualified_arn",
+          "qualified_invoke_arn",
+          "version"
+        ],
+        "changedEnvironmentKeys": [
+          "DEV_SUBJECT_ALLOWLIST_JSON"
+        ]
+      }
+    ]
+  }
+]
