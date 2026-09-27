@@ -1,5 +1,5 @@
 variable "account_export_play_token_table_arn" {
-  description = "Optional Dev token metadata reader; does not enable export or candidate.3."
+  description = "Optional Dev token metadata reader; does not by itself enable export or candidate.3."
   type        = string
   default     = null
   validation {
@@ -7,12 +7,12 @@ variable "account_export_play_token_table_arn" {
       var.account_export_deployment != null && var.environment == "dev" &&
       var.account_export_play_token_table_arn == "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens"
     )
-    error_message = "Only the reviewed Dev token metadata store may be added to the disabled export candidate."
+    error_message = "Only the reviewed Dev token metadata store may be added to the export candidate."
   }
 }
 
 variable "account_export_deployment" {
-  description = "Immutable disabled account-export candidate. No route or activation; complete inventory, identity mapping and end-to-end acceptance are required separately."
+  description = "Immutable account-export candidate. Disabled unless separately reviewed scoped Dev activation is selected."
   type = object({
     release_id                = string
     object_version            = string
@@ -220,6 +220,7 @@ resource "aws_lambda_function" "account_export" {
     variables = merge({
       STAGE                              = var.environment
       ACCOUNT_EXPORT_ENABLED             = "false"
+      ACCOUNT_EXPORT_HTTP_SUBJECTS_JSON  = "[]"
       ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED = "false"
       PLAY_TOKEN_TABLE_NAME              = var.account_export_play_token_table_arn == null ? "" : split("/", var.account_export_play_token_table_arn)[1]
       ACCOUNT_EXPORT_POLICY_VERSION      = "account-export-observed-v1"
@@ -242,9 +243,15 @@ resource "aws_lambda_function" "account_export" {
       COGNITO_REQUIRED_SCOPE             = "aws.cognito.signin.user.admin"
       COGNITO_USER_POOL_ID               = local.cognito_user_pool_id
       COGNITO_USERNAME_IS_SUB            = "false"
-    }, local.period_work_closed_env, local.period_work_activation_env, local.period_work_prepared ? { APP_ENVIRONMENT = var.environment } : {})
+    }, local.period_work_closed_env, local.period_work_activation_env, local.period_work_prepared ? { APP_ENVIRONMENT = var.environment } : {}, local.account_export_activation_env)
   }
   lifecycle {
+    precondition {
+      condition = var.account_export_work_compatibility == null ? true : try(
+        var.account_export_work_compatibility.work_source_sha == var.campaign_period_work_activation.source_sha, false
+      )
+      error_message = "Reviewed export reader compatibility requires the exact selected work activation."
+    }
     precondition {
       condition = try(
         split(":", local.users_table_arn)[4] == data.aws_caller_identity.account_fence[0].account_id &&
@@ -286,10 +293,15 @@ output "account_export_candidate_contract" {
   value = {
     schema_version                = 1
     deployed                      = var.account_export_deployment != null
-    enabled                       = false
-    inventory_status              = "pending"
+    enabled                       = local.account_export_runtime_enabled
+    inventory_status              = local.account_export_runtime_enabled ? "verified_complete" : "pending"
+    scoped_dev_only               = local.account_export_runtime_enabled
+    scoped_http_available         = local.account_export_runtime_enabled && local.account_export_route_selected
+    runtime_attested_by_terraform = false
+    scoped_subject_count          = try(length(var.account_export_activation.http_subjects), 0)
+    transport_version             = local.account_export_runtime_enabled ? "1.0.0-account-export-candidate.3" : null
     full_account_export_available = false
-    routes                        = []
+    routes                        = local.account_export_route_selected ? ["POST /v1/users/account-export"] : []
     cursor_secret_arn             = try(aws_secretsmanager_secret.account_export_cursor[0].arn, null)
     payload_storage_created       = false
     observed_data_only            = true

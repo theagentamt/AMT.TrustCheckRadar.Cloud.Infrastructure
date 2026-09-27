@@ -18,7 +18,9 @@ variable "campaign_period_work_activation" {
     condition = var.campaign_period_work_activation == null ? true : try(
       var.environment == "dev" && local.period_work_prepared &&
       var.campaign_period_work_activation.source_sha == var.account_data_deployment.release_id &&
-      var.campaign_period_work_activation.source_sha == var.account_export_deployment.release_id &&
+      (var.campaign_period_work_activation.source_sha == var.account_export_deployment.release_id || try(
+        var.account_export_work_compatibility.work_source_sha == var.campaign_period_work_activation.source_sha &&
+      var.account_export_work_compatibility.export_source_sha == var.account_export_deployment.release_id, false)) &&
       !var.research_consent_migration_deployment.consent_enabled &&
       can(regex("^[0-9a-f]{40}$", var.campaign_period_work_activation.source_sha)) &&
       can(regex("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", var.campaign_period_work_activation.generation)) &&
