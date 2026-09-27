@@ -15,6 +15,8 @@ content were not retained. Evidence labels describe the performed scope.
 | Terraform phases | staged-plans.json | Reviewed plan hashes for pause, closed install, scope restoration and guarded retirement activation; no resource replacement |
 | Installed runtime | restored-runtime-smoke.json, final-runtime-config.json | Eight source/configuration matches and two identity-free handler checks; export stays disabled, scoped deletion stays unchanged |
 | Scheduled startup | scheduled-first-observation.json, independent-scheduled-runtime.json | Actual scheduled heartbeats/progress and initial full-pass alert; no claim of completed aggregate sweep at that time |
+| Completed aggregate continuation | explicit-aggregate-continuation.json, explicit-aggregate-continuation-runner.py | Four explicit bounded actual calls after four genuine scheduled calls completed the first pass; journaled and independently reviewed |
+| Final scheduled recovery | independent-scheduled-runtime-final.json | Next genuine scheduled continuation, preserved original hashes/keys, all nine alarms OK and natural ALARM-to-OK transition; no observer invocation |
 | Validation | local-validation.json, final-no-drift.json | Local test outcomes and final persisted configuration matching actual deployed state |
 | Retained copies | retention-control-plane-before.json, retention-operations.json | Current bounded metadata observations; no proof of historical or external-copy absence |
 
@@ -24,11 +26,14 @@ copy Dev inventory to another environment. Current record deadlines were never
 reset and application keys were not retired early. The original retired1478 row
 is preserved as historical metadata, not a newly proved erasure.
 
-Follow docs/CAMPAIGN-PERIOD-OPERATIONS.md and the final acceptance page. Any later
-full-pass continuation evidence must identify explicit operator invocations
-separately from genuine scheduled ticks and natural alarm transitions. Topic-level
+Follow docs/CAMPAIGN-PERIOD-OPERATIONS.md and the final acceptance page. Final
+full-pass evidence identifies four explicit operator invocations separately from
+genuine scheduled ticks and natural alarm transitions. Topic-level
 SNS delivery is not verified individual inbox receipt.
 
 General research ingestion, account export, UAT/Production and physical testing
 remain outside this activation. Later release execution belongs to SECUR4ALL-330,
 native restoration/reopening to SECUR4ALL-245 and Android physical cases to ATCR-148.
+
+The final observer’s `manualJournalSha256` hashes canonical JSON (sorted keys,
+compact separators), not the pretty-printed journal file bytes.

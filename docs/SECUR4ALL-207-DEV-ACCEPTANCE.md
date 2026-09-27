@@ -1,7 +1,8 @@
 # SECUR4ALL-207 Dev acceptance
 
-Current assessment: September 27, 2026. SECUR4ALL-207 remains In Progress until
-the final deployed observations and public Git integration are verified. The
+Current assessment: September 27, 2026. Retained Dev implementation and acceptance
+checks passed. SECUR4ALL-207 remains In Progress solely pending approved public
+publication and verified integration of the final reviewed changes into release-V01. The
 selected production source is `9147d545b719e54c1f967e35042bc502d79bc0f1`; Lambda
 fixture/documentation head is `8d4bbbd3dae0411e3ccfcbf94573180af9c45091`.
 General campaign research remains closed. Account deletion retains the original
@@ -36,13 +37,13 @@ use the later account-deletion evidence for its current qualified scope.
 
 | Retained Dev requirement | Evidence and qualified scope | Completion boundary |
 | --- | --- | --- |
-| Stop contributions and account for every family before sealing | Reviewed paired work/control protocol, exact resource/source inventory, orphan recovery, publication race/110-contributor SDK tests, and actual AWS composed 42-target lifecycle with poison and lost-ack recovery | Implementation/component acceptance passed; live scheduled preservation and full-pass observations recorded below |
-| Enforce original deadlines fairly and explicitly | Actual early-deadline and full indexed drain, TTL-independent synthetic targets, fixed recovery cap; deployed separate period and aggregate schedules with real index/cursor execution | Full aggregate pass and subsequent freshness alarm recovery must be observed before Dev acceptance is complete |
+| Stop contributions and account for every family before sealing | Reviewed paired work/control protocol, exact resource/source inventory, orphan recovery, publication race/110-contributor SDK tests, and actual AWS composed 42-target lifecycle with poison and lost-ack recovery | Passed: component acceptance plus live scheduled preservation/full-pass observations recorded below |
+| Enforce original deadlines fairly and explicitly | Actual early-deadline and full indexed drain, TTL-independent synthetic targets, fixed recovery cap; deployed separate period and aggregate schedules with real index/cursor execution | Passed: complete sixteen-shard pass, subsequent genuine scheduled continuation and natural alarm recovery observed; mixed invocation provenance recorded below |
 | Retire exact owned keys safely and preserve later cleanup | Actual computed seal → guarded disable/schedule seven days → replay → account AND withdrawal completion without KMS; independent cleanup and separate lost-response retirement case | Disposable-key behavior passed; existing future keys remain enabled until their original recovery deadlines; PendingDeletion is not destruction |
 | Complete withdrawal and refuse delayed work | Actual Python 3.14 ARM64 producer/withdrawal fixtures reach withdrawn/audit/COMPLETE and reject delayed outbox/cluster replay | Component scope passed; authenticated assembled journey and native queue redrive remain SECUR4ALL-330 |
 | Restore and operational failure remain fail-closed | Scoped source/generation proof checks, prior SECUR4ALL-200 stale-copy quarantine, actual poison/lost-response recovery, control-plane copy inventory and lifecycle runbook | Actual scheduled alarm/action observation recorded below; native backup restore and reopening remain SECUR4ALL-245, assembled release execution SECUR4ALL-330 |
 | Published data stays non-linkable | Threshold/dimension and late-tombstone race SDK tests; bounded candidate accounting, fail-closed poison/refusal, actual expired anonymous aggregate deletion preserving a future aggregate | Component scope passed; no general publication/research activation claimed |
-| Infrastructure and release handoff are durable | Exact source/version/hash pins, 109-case actual IAM qualification, reviewed conditional bootstrap, Dev configuration, local Terraform/helper tests, operational and release guides | Final no-drift verification passed; independent final review, commit, public push and verified release-V01 integration are required before Done |
+| Infrastructure and release handoff are durable | Exact source/version/hash pins, 109-case actual IAM qualification, reviewed conditional bootstrap, Dev configuration, local Terraform/helper tests, operational and release guides | No-drift verification and independent review passed; local commits prepared; approved public push and verified release-V01 integration are required before Done |
 
 Use [the operations runbook](CAMPAIGN-PERIOD-OPERATIONS.md) for fixed retention,
 recovery and alert interpretation. Existing account deletion is reused only for
@@ -332,8 +333,8 @@ progress, future-only backlog of three, no due work or deletions, and unchanged
 original data hashes and enabled keys. The first incomplete aggregate pass raised
 the expected freshness alarm. CloudWatch recorded a successful action to SNS;
 topic-level delivery was observed, but individual support inbox receipt was not
-verified. Completion of all sixteen aggregate shards and subsequent alarm recovery
-remain pending until the final readback is appended here.
+verified. Completion of all sixteen aggregate shards and subsequent alarm recovery are
+qualified by the final readback below.
 
 Final local validation passed 58 processing, 148 API, 5 campaign-data and 3
 campaign-API Terraform tests, plus 95 infrastructure helper tests. These are local
@@ -359,5 +360,31 @@ was deleted. All calls returned heartbeat1 and zero failure/deletion/unverified/
 overdue counters. The [reviewed runner](evidence/sec207-period-dev-deployment-2026-09-27/explicit-aggregate-continuation-runner.py)
 durably journaled every intent, disabled Invoke retries and stopped immediately
 when a positive completed-pass timestamp was observed. This does not claim eight
-naturally scheduled ticks. The next genuine scheduled continuation and natural
-alarm recovery remain separately observable completion requirements.
+naturally scheduled ticks. The [final independent observation](evidence/sec207-period-dev-deployment-2026-09-27/independent-scheduled-runtime-final.json)
+confirmed a subsequent genuine scheduled call advanced the cursor beyond the
+manual run's revision 16 to revision 18 while retaining the completed-pass timestamp.
+The initial aggregate alarm naturally changed from ALARM to OK at 05:35:41 UTC;
+all nine new alarms were OK. Both scheduled handlers reported zero observed
+failure/unverified counters. The original stable pipeline and tombstone hashes
+were unchanged, intelligence/outbox remained empty, and both future period keys
+remained Enabled. The observer performed no invocation or mutation.
+
+Initial alert action succeeded to the exact configured SNS topic, whose observed
+published/delivered/failed counts were 1/1/0. Both support subscriptions are
+confirmed. This establishes transport evidence, not individual inbox receipt.
+No account data was supplied and no existing contribution/key was destroyed for
+acceptance. The actual nonempty drain/retirement behavior remains the separately
+identified disposable fixture evidence.
+
+SECUR4ALL-200 is Done. SECUR4ALL-217 remains In Progress for the broader consent
+activation/assembled journey; this story reuses its implemented producer contract
+and qualifies withdrawal cleanup without claiming general join activation or
+completion of SECUR4ALL-217. SECUR4ALL-245 remains the separate native restore/reopening
+work. The open SECUR4ALL-330 guide was updated in YouTrack and its dependency,
+To Do state and Backend V1-5 release sprint were verified.
+
+The remaining completion boundary is publication: automatic approval review
+rejected the Lambda public push pending specific approval of its destination and
+payload. Both final reviewed repository payloads are prepared for that approval.
+Local commits and Dev deployment do not satisfy remote release integration;
+SECUR4ALL-207 must remain In Progress until both are pushed and verified.
