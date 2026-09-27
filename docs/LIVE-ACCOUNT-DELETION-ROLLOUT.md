@@ -11,6 +11,11 @@ remains limited to the third, now-deleted test identity. General account admissi
 UAT and Production are not enabled. SECUR4ALL-200/207/245 retain their broader
 acceptance described below. Earlier preparation statements are historical stages.
 
+The later owner-approved UAT split and remaining Dev qualification are recorded in
+[SECUR4ALL-200 Dev acceptance](SECUR4ALL-200-DEV-ACCEPTANCE.md). That record
+supersedes this historical rollout's outstanding-criteria statements for 200;
+UAT now belongs to SECUR4ALL-329. Stories 207 and 245 retain their separate scope.
+
 The owner requested live-deletion implementation on September 26. The immediate
 path is an authenticated account request, durable cleanup of that account's data,
 twelve verified component receipts, and removal of its Cognito identity. Whole-period
