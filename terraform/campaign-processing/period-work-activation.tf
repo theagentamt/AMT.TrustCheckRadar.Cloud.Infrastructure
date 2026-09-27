@@ -22,7 +22,9 @@ variable "campaign_period_work_activation" {
       var.environment == "dev" && local.period_work_prepared &&
       var.kill_switch_enabled &&
       var.campaign_period_work_activation.source_sha == var.account_privacy_artifacts.release_id &&
-      var.campaign_period_work_activation.source_sha == var.campaign_completion_artifact.release_id &&
+      (var.campaign_period_work_activation.source_sha == var.campaign_completion_artifact.release_id || try(
+        var.campaign_cleanup_work_compatibility.work_source_sha == var.campaign_period_work_activation.source_sha &&
+      var.campaign_cleanup_work_compatibility.cleanup_source_sha == var.campaign_completion_artifact.release_id, false)) &&
       (!var.campaign_period_work_activation.retirement_enabled || var.campaign_period_work_activation.lifecycle_enabled) &&
       (var.campaign_deletion_activation == null ? true : (
         var.campaign_period_work_activation.generation == var.campaign_deletion_activation.generation &&

@@ -1,0 +1,22 @@
+{
+  "stack": "play-lifecycle",
+  "planSha256": "1a8c6b7eb84f3b23e58c11e12339f4dc51ae63102f9cc5f31d3004a10594b578",
+  "changes": [
+    {
+      "address": "aws_lambda_alias.runtime[\"deletion\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.runtime[\"deletion\"]",
+      "actions": [
+        "update"
+      ],
+      "changedEnvironmentKeys": [
+        "DEV_SUBJECT_ALLOWLIST_JSON"
+      ],
+      "codeUnchanged": true
+    }
+  ]
+}

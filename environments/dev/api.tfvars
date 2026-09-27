@@ -113,12 +113,12 @@ play_preparation_route_throttle_enabled  = true
 
 # Reviewed account deletion keeps its existing scope; account export stays disabled.
 account_export_deployment = {
-  "approval_reference" : "docs/SECUR4ALL-207-DEV-ACCEPTANCE.md",
+  "approval_reference" : "docs/SECUR4ALL-236-DEV-ACCEPTANCE.md",
   "authority_hmac_secret_arn" : "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/v1-authority-hmac-C7v1hG",
-  "object_version" : "UsHu10uG0ixavGJA9n0fXYlRsGmKsV4o",
+  "object_version" : "bVkiU.RaM2mRDEyERSA1G4xG416Npxtm",
   "promotion_approved" : false,
-  "release_id" : "9147d545b719e54c1f967e35042bc502d79bc0f1",
-  "source_hash" : "jj/+DRKkVdn4TqQb5nGPMGwwdZj4TbvU/OE3zX6kkec="
+  "release_id" : "a25e81f3ef919e65d2ec2fb702637b287e9c79d8",
+  "source_hash" : "vEGM3mwVdOoUOSBo/lNMLYJsiS80OLvmM5kPmEXfxC8="
 }
 account_export_play_token_table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens"
 account_data_deployment = {
@@ -200,4 +200,11 @@ campaign_period_work_activation = {
   "inventory_reference" : "docs/evidence/sec207-period-dev-deployment-2026-09-27/external-operator-review.json",
   "runtime_reference" : "docs/evidence/sec207-period-lifecycle-2026-09-27/retire-then-complete-result.json",
   "iam_reference" : "docs/evidence/sec207-period-iam-2026-09-27/qualification.json"
+}
+
+# Read-only exporter upgrade preserves the qualified period-work writer source.
+account_export_work_compatibility = {
+  "work_source_sha" : "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "export_source_sha" : "a25e81f3ef919e65d2ec2fb702637b287e9c79d8",
+  "review_reference" : "docs/SECUR4ALL-236-DEV-ACCEPTANCE.md"
 }

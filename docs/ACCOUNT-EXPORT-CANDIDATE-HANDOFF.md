@@ -1,9 +1,9 @@
 # Protected account export infrastructure candidate
 
-Status as of September 27: SECUR4ALL-236/245 scoped activation source work is in progress.
-The existing Dev candidate and cursor container were previously deployed; the new
-runtime/API selection has not yet been deployed or qualified. No general export
-activation, inventory approval or secret value is introduced by this source change.
+September 27 update: scoped Dev runtime and HTTP export checks have executed.
+See [the current acceptance record](SECUR4ALL-236-DEV-ACCEPTANCE.md) for exact
+versions, evidence boundaries, cleanup and final restoration status. General
+export access remains unapproved; the committed configuration selects no activation.
 
 The owner approved direct authenticated observed-data export on September 21;
 see [the decision record](ACCOUNT-DATA-POLICY-DECISIONS.md). Lambda owns the
@@ -113,7 +113,7 @@ for all three operations. Page success and ordinary authentication, expiry,
 conflict or size rejection remain separate counters, not system-failure alarms.
 No account, token, cursor, content or exception text belongs in metrics/logs.
 
-## Acceptance still required
+## Rollout and release requirements
 
 The backend package and all shared dependencies must be built and checked for ARM64
 Python 3.14. Source tests do not replace inventory completeness, subject mapping,
@@ -141,8 +141,9 @@ and exact reader-compatibility cases. Null rollback, runtime-only access, JWT ro
 and throttle, missing source prerequisites, bad scopes, stale source pairs and
 quiescence are covered. Independent source review found no blocker; existing
 writer and deletion protections remain intact. These are local mocked tests,
-not deployed behavior. The new selection has not been applied; real Dev runtime
-qualification, frozen source integration and story completion remain pending.
+not deployed behavior. This was the pre-deployment source checkpoint. The subsequent installed Dev
+execution and final source/configuration status are recorded in
+[the acceptance record](SECUR4ALL-236-DEV-ACCEPTANCE.md).
 
 Later UAT execution has linked [SECUR4ALL-331](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-331),
 with detailed pending instructions. It does not absorb unfinished Dev criteria.

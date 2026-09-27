@@ -1,0 +1,22 @@
+{
+  "stack": "url-consumer",
+  "planSha256": "b6d24a1ac7c0358ca4358140ab3e31c116baefabfec56e9ec4f44b0508bc9ca0",
+  "changes": [
+    {
+      "address": "aws_lambda_alias.runtime[\"deletion\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.runtime[\"deletion\"]",
+      "actions": [
+        "update"
+      ],
+      "changedEnvironmentKeys": [
+        "DEV_SUBJECT_ALLOWLIST_JSON"
+      ],
+      "codeUnchanged": true
+    }
+  ]
+}

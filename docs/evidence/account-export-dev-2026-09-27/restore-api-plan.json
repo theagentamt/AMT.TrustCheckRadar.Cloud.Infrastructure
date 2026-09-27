@@ -1,0 +1,54 @@
+{
+  "stack": "api",
+  "planSha256": "998b37edd9d99719ad67e591839f2c7a3475a024f9138bbd266b4b823979efc5",
+  "changes": [
+    {
+      "address": "aws_apigatewayv2_integration.account_export[0]",
+      "actions": [
+        "delete"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.account_export[0]",
+      "actions": [
+        "delete"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_stage.age_attestation",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.account_data[0]",
+      "actions": [
+        "update"
+      ],
+      "changedEnvironmentKeys": [
+        "ACCOUNT_DELETION_HTTP_SUBJECTS_JSON"
+      ],
+      "codeUnchanged": true
+    },
+    {
+      "address": "aws_lambda_function.account_export[0]",
+      "actions": [
+        "update"
+      ],
+      "changedEnvironmentKeys": [
+        "ACCOUNT_EXPORT_ENABLED",
+        "ACCOUNT_EXPORT_HTTP_SUBJECTS_JSON",
+        "ACCOUNT_EXPORT_INVENTORY_STATUS",
+        "ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED",
+        "COGNITO_USERNAME_IS_SUB"
+      ],
+      "codeUnchanged": true
+    },
+    {
+      "address": "aws_lambda_permission.account_export_gateway[0]",
+      "actions": [
+        "delete"
+      ]
+    }
+  ]
+}

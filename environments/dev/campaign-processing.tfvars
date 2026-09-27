@@ -54,10 +54,10 @@ campaign_recovery_preparation = {
 
 # SECUR4ALL-207: qualified completion integration; source and inventory pinned below.
 campaign_completion_artifact = {
-  "object_version" : "dNXWt8e6k3dbv8hbqDE_hgrWLHqH.G2U",
-  "release_id" : "9147d545b719e54c1f967e35042bc502d79bc0f1",
-  "review_reference" : "docs/SECUR4ALL-207-DEV-ACCEPTANCE.md",
-  "source_hash" : "xpT6GPKfYVvC2Ha9f/6LGPjp+ETQQo+qBHxIkJjVZ4w="
+  "object_version" : "8k60mweeJLUt5h.MTB3E._OpqGsTGIhB",
+  "release_id" : "9effc4f0a38d7d3191b687cb07c9dbda561d69f4",
+  "review_reference" : "docs/SECUR4ALL-236-DEV-ACCEPTANCE.md",
+  "source_hash" : "17pm9szRM883etjt85jjIxbqmhYt1MWYjOezvrZ9vi8="
 }
 
 # SECUR4ALL-207: scoped period admission compatibility; general research remains closed.
@@ -108,4 +108,11 @@ campaign_period_work_activation = {
   "intelligence_table_id" : "4fe35db2-8130-4050-8547-3a1d2717fbde",
   "lifecycle_enabled" : true,
   "retirement_enabled" : true
+}
+
+# Reviewed bridge-only resource-binding correction; producer inventories unchanged.
+campaign_cleanup_work_compatibility = {
+  "work_source_sha" : "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "cleanup_source_sha" : "9effc4f0a38d7d3191b687cb07c9dbda561d69f4",
+  "review_reference" : "docs/SECUR4ALL-236-DEV-ACCEPTANCE.md"
 }
