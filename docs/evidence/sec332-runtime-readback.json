@@ -1,0 +1,145 @@
+{
+  "observedAtUtc": "2026-09-27T20:15:21.738621+00:00",
+  "functions": [
+    {
+      "name": "trustcheckradar-dev-play-token-deletion",
+      "version": "13",
+      "codeSha256": "EgY9o17ASfGm9RhY3Zfl7naFlw2fkrz6ZSSSyFQ4mjo=",
+      "checks": {
+        "concurrencyUnchanged": true,
+        "codeHashMatches": true,
+        "environmentUnchanged": true,
+        "roleUnchanged": true,
+        "runtimeUnchanged": true,
+        "handlerUnchanged": true,
+        "architectureUnchanged": true,
+        "timeoutUnchanged": true,
+        "memoryUnchanged": true,
+        "unweightedAlias": true,
+        "aliasVersionMatches": true,
+        "stateActive": true,
+        "lastUpdateSuccessful": true
+      }
+    },
+    {
+      "name": "trustcheckradar-dev-play-lifecycle-ingress",
+      "version": "2",
+      "codeSha256": "BocXkxw6VeJSHp4Ggtmc5wlz4lxetWhXpTbz+mYtrRo=",
+      "checks": {
+        "concurrencyUnchanged": true,
+        "codeHashMatches": true,
+        "environmentUnchanged": true,
+        "roleUnchanged": true,
+        "runtimeUnchanged": true,
+        "handlerUnchanged": true,
+        "architectureUnchanged": true,
+        "timeoutUnchanged": true,
+        "memoryUnchanged": true,
+        "unweightedAlias": true,
+        "aliasVersionMatches": true,
+        "stateActive": true,
+        "lastUpdateSuccessful": true
+      }
+    },
+    {
+      "name": "trustcheckradar-dev-play-lifecycle-worker",
+      "version": "1",
+      "codeSha256": "YdZv9rHFPAYScnVhJLFh9/NZ598R3SgaeEzi7A2Xgcs=",
+      "checks": {
+        "concurrencyUnchanged": true,
+        "codeHashMatches": true,
+        "environmentUnchanged": true,
+        "roleUnchanged": true,
+        "runtimeUnchanged": true,
+        "handlerUnchanged": true,
+        "architectureUnchanged": true,
+        "timeoutUnchanged": true,
+        "memoryUnchanged": true,
+        "unweightedAlias": true,
+        "aliasVersionMatches": true,
+        "stateActive": true,
+        "lastUpdateSuccessful": true
+      }
+    },
+    {
+      "name": "trustcheckradar-dev-url-consumer",
+      "version": "7",
+      "codeSha256": "Y8iJQMYB8aWOXieJBMaJLrOpBop3sLpbg09Gy+PnVbA=",
+      "checks": {
+        "concurrencyUnchanged": true,
+        "codeHashMatches": true,
+        "environmentUnchanged": true,
+        "roleUnchanged": true,
+        "runtimeUnchanged": true,
+        "handlerUnchanged": true,
+        "architectureUnchanged": true,
+        "timeoutUnchanged": true,
+        "memoryUnchanged": true,
+        "unweightedAlias": true,
+        "aliasVersionMatches": true,
+        "stateActive": true,
+        "lastUpdateSuccessful": true
+      }
+    },
+    {
+      "name": "trustcheckradar-dev-v1-authority-deletion",
+      "version": "18",
+      "codeSha256": "RR6Qd3aM1ap/hSs6mihSKxjDSjivTKK7tcnfoSOMi5w=",
+      "checks": {
+        "concurrencyUnchanged": true,
+        "codeHashMatches": true,
+        "environmentUnchanged": true,
+        "roleUnchanged": true,
+        "runtimeUnchanged": true,
+        "handlerUnchanged": true,
+        "architectureUnchanged": true,
+        "timeoutUnchanged": true,
+        "memoryUnchanged": true,
+        "unweightedAlias": true,
+        "aliasVersionMatches": true,
+        "stateActive": true,
+        "lastUpdateSuccessful": true
+      }
+    },
+    {
+      "name": "trustcheckradar-dev-v1-entitlements",
+      "version": "7",
+      "codeSha256": "xFuy0ylGhHpfHsJBEFZsYcxhpdish1Qx4a5UcF0ZOhM=",
+      "checks": {
+        "concurrencyUnchanged": true,
+        "codeHashMatches": true,
+        "environmentUnchanged": true,
+        "roleUnchanged": true,
+        "runtimeUnchanged": true,
+        "handlerUnchanged": true,
+        "architectureUnchanged": true,
+        "timeoutUnchanged": true,
+        "memoryUnchanged": true,
+        "unweightedAlias": true,
+        "aliasVersionMatches": true,
+        "stateActive": true,
+        "lastUpdateSuccessful": true
+      }
+    },
+    {
+      "name": "trustcheckradar-dev-url-lease-recovery",
+      "version": "7",
+      "codeSha256": "a5uouU5vy1ZJMuWpjQY4GUQ236d4jpRS23yTmaP5K+Y=",
+      "checks": {
+        "concurrencyUnchanged": true,
+        "codeHashMatches": true,
+        "environmentUnchanged": true,
+        "roleUnchanged": true,
+        "runtimeUnchanged": true,
+        "handlerUnchanged": true,
+        "architectureUnchanged": true,
+        "timeoutUnchanged": true,
+        "memoryUnchanged": true,
+        "unweightedAlias": true,
+        "aliasVersionMatches": true,
+        "stateActive": true,
+        "lastUpdateSuccessful": true
+      }
+    }
+  ]
+}
