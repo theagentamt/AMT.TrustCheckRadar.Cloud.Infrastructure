@@ -32,7 +32,7 @@ variable "campaign_deletion_activation" {
   }
 }
 locals {
-  campaign_deletion_active = var.campaign_deletion_activation != null
+  campaign_deletion_active = var.campaign_deletion_activation != null && !var.campaign_period_work_quiescence
   campaign_deletion_activation_env = local.campaign_deletion_active ? {
     CAMPAIGN_DELETION_STREAM_ENABLED       = "true"
     CAMPAIGN_COMPLETION_ENABLED            = "true"
@@ -51,7 +51,7 @@ output "campaign_deletion_activation_contract" {
   value = {
     configured                    = local.campaign_deletion_active
     research_producers_paused     = !local.active
-    lifecycle_paused              = !local.active
+    lifecycle_paused              = !local.active && !local.period_lifecycle_active
     runtime_attested_by_terraform = false
     generation                    = try(var.campaign_deletion_activation.generation, null)
     source_sha                    = try(var.campaign_deletion_activation.source_sha, null)

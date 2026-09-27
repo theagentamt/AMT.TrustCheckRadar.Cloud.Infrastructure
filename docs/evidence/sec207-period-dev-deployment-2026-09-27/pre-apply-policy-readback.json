@@ -1,0 +1,18 @@
+{
+  "accountReconciliationDisabled": true,
+  "allEightRoleHashesUnchanged": true,
+  "allWritersStillClosed": true,
+  "observedAtEpoch": 1790485498,
+  "recordsRead": false,
+  "rolesSha256": {
+    "account_data_api": "a51736b29ab18ddf70e14e16e0d8bc8748fb0d17b4bbdd2990568917b5fcbc0b",
+    "account_export_api": "12b2b5c76b8c405229e40b2847a11e338b1d67c82670a1e026bf8ab01946a403",
+    "campaign_cluster_aggregator": "aee228c76969e6e57c7eff71b08d543049d4a7bf36ab2187d7089701b05187bd",
+    "campaign_deletion_bridge": "5355bb56c41b737090546ea3e37bca0c804cfde53d9489bad5a0d88873400a4d",
+    "campaign_lifecycle": "bc94271a7f372c49d3e5784e2406601d3cfa1632b80d4a0992dc54996b45c0a5",
+    "campaign_observation_publisher": "a7f469f4c17c1de95f5d70bcee1e146d80632d357e87bb0e461dceea975755a2",
+    "campaign_review": "ee0b4c0946073a4728d243ab1e9c3fb87fa1740cc3b9c27d4c6f83e913648c08",
+    "conversation_analysis": "273e83f1eabfab92a707c9a42ef38b053a5d23e45c1a231ee0272a9f72a2422e"
+  },
+  "schemaVersion": 1
+}

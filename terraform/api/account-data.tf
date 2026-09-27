@@ -369,7 +369,7 @@ resource "aws_lambda_function" "account_data" {
   handler                        = "app.lambda_handler"
   memory_size                    = 256
   timeout                        = 30
-  reserved_concurrent_executions = 1
+  reserved_concurrent_executions = var.campaign_period_work_quiescence ? 0 : 1
   s3_bucket                      = local.foundation.artifact_bucket_name
   s3_key                         = "releases/${var.account_data_deployment.release_id}/account_data_api.zip"
   s3_object_version              = var.account_data_deployment.object_version
@@ -416,7 +416,7 @@ resource "aws_lambda_function" "account_data" {
       ACCOUNT_DELETION_REQUIRED_COMPONENTS_JSON       = "[]"
       ACCOUNT_DELETION_MAX_REAUTH_AGE_SECONDS         = "300"
       ACCOUNT_DELETION_SLA_HOURS                      = "24"
-    }, local.campaign_recovery_producer_env, local.account_deletion_activation_env)
+    }, local.campaign_recovery_producer_env, local.account_deletion_activation_env, local.period_work_closed_env, local.period_work_activation_env)
   }
   lifecycle {
     precondition {

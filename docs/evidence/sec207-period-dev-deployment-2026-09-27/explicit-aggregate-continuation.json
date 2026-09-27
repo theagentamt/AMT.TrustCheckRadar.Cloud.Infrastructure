@@ -1,0 +1,134 @@
+{
+  "calls": [
+    {
+      "after": {
+        "lastFullPassAtEpoch": 0,
+        "passIncomplete": false,
+        "revision": 10,
+        "shard": 10
+      },
+      "before": {
+        "lastFullPassAtEpoch": 0,
+        "passIncomplete": false,
+        "revision": 8,
+        "shard": 8
+      },
+      "finishedAtEpoch": 1790486946,
+      "metrics": {
+        "AggregateFailures": 0,
+        "AggregateFullPassAgeSeconds": 1790486946,
+        "AggregateHeartbeat": 1,
+        "AggregateOverdueObserved": 0,
+        "AggregateWorkDeleted": 0,
+        "AggregateWorkUnverified": 0
+      },
+      "number": 1,
+      "startedAtEpoch": 1790486946,
+      "status": "ACKNOWLEDGED"
+    },
+    {
+      "after": {
+        "lastFullPassAtEpoch": 0,
+        "passIncomplete": false,
+        "revision": 12,
+        "shard": 12
+      },
+      "before": {
+        "lastFullPassAtEpoch": 0,
+        "passIncomplete": false,
+        "revision": 10,
+        "shard": 10
+      },
+      "finishedAtEpoch": 1790486948,
+      "metrics": {
+        "AggregateFailures": 0,
+        "AggregateFullPassAgeSeconds": 1790486948,
+        "AggregateHeartbeat": 1,
+        "AggregateOverdueObserved": 0,
+        "AggregateWorkDeleted": 0,
+        "AggregateWorkUnverified": 0
+      },
+      "number": 2,
+      "startedAtEpoch": 1790486948,
+      "status": "ACKNOWLEDGED"
+    },
+    {
+      "after": {
+        "lastFullPassAtEpoch": 0,
+        "passIncomplete": false,
+        "revision": 14,
+        "shard": 14
+      },
+      "before": {
+        "lastFullPassAtEpoch": 0,
+        "passIncomplete": false,
+        "revision": 12,
+        "shard": 12
+      },
+      "finishedAtEpoch": 1790486949,
+      "metrics": {
+        "AggregateFailures": 0,
+        "AggregateFullPassAgeSeconds": 1790486949,
+        "AggregateHeartbeat": 1,
+        "AggregateOverdueObserved": 0,
+        "AggregateWorkDeleted": 0,
+        "AggregateWorkUnverified": 0
+      },
+      "number": 3,
+      "startedAtEpoch": 1790486949,
+      "status": "ACKNOWLEDGED"
+    },
+    {
+      "after": {
+        "lastFullPassAtEpoch": 1790486950,
+        "passIncomplete": false,
+        "revision": 16,
+        "shard": 0
+      },
+      "before": {
+        "lastFullPassAtEpoch": 0,
+        "passIncomplete": false,
+        "revision": 14,
+        "shard": 14
+      },
+      "finishedAtEpoch": 1790486951,
+      "metrics": {
+        "AggregateFailures": 0,
+        "AggregateFullPassAgeSeconds": 0,
+        "AggregateHeartbeat": 1,
+        "AggregateOverdueObserved": 0,
+        "AggregateWorkDeleted": 0,
+        "AggregateWorkUnverified": 0
+      },
+      "number": 4,
+      "startedAtEpoch": 1790486950,
+      "status": "ACKNOWLEDGED"
+    }
+  ],
+  "codeSha256": "vGWg97T/vr5NpkwZVn+o2iXugAd1tJIhaVmnTUExO2I=",
+  "event": {
+    "environment": "dev",
+    "operation": "reconcile_aggregates",
+    "schemaVersion": 1
+  },
+  "finalCursor": {
+    "lastFullPassAtEpoch": 1790486950,
+    "passIncomplete": false,
+    "revision": 16,
+    "shard": 0
+  },
+  "finishedAtEpoch": 1790486951,
+  "functionName": "trustcheckradar-dev-campaign-lifecycle",
+  "initialCursor": {
+    "lastFullPassAtEpoch": 0,
+    "passIncomplete": false,
+    "revision": 8,
+    "shard": 8
+  },
+  "revisionId": "dfbe8a63-6fdf-4d6b-a7c7-a5d7f07d385b",
+  "scheduledTickClaimed": false,
+  "schemaVersion": 1,
+  "scope": "Mixed composition: bounded explicit aggregate continuation after genuine scheduled ticks; next genuine schedule and natural alarm recovery observed separately.",
+  "startedAtEpoch": 1790486945,
+  "status": "FULL_PASS_OBSERVED"
+}

@@ -1,0 +1,1350 @@
+{
+  "accountId": "107827791950",
+  "cases": [
+    "publisher:describe_two_fixture_tables",
+    "publisher:inventory_read_allowed",
+    "publisher:work_control_lookup_period_prefix_reads_and_checks",
+    "publisher:new_namespace_all_old_denied",
+    "publisher:pair_creation_and_injected_lost_ack_same_token_replay",
+    "publisher:pair_delete_and_control_cas_atomic",
+    "publisher:inventory_race_atomic_no_returned_item",
+    "publisher:period_race_atomic_no_returned_item",
+    "publisher:prefix_race_atomic_no_returned_item",
+    "publisher:control_race_atomic_no_returned_item",
+    "publisher:lookup_race_atomic_no_returned_item",
+    "publisher:new_namespace_standalone_mutations_denied",
+    "publisher:control_bootstrap_delete_inventory_writes_registry_put_delete_denied",
+    "publisher:foreign_partition_writes_and_checks_denied",
+    "publisher:two_table_scan_denied",
+    "publisher:existing_broad_pipeline_read_preserved",
+    "publisher:existing_target_transaction_put_preserved",
+    "cluster:describe_two_fixture_tables",
+    "cluster:inventory_read_allowed",
+    "cluster:work_control_lookup_period_prefix_reads_and_checks",
+    "cluster:new_namespace_all_old_denied",
+    "cluster:pair_creation_and_injected_lost_ack_same_token_replay",
+    "cluster:pair_delete_and_control_cas_atomic",
+    "cluster:inventory_race_atomic_no_returned_item",
+    "cluster:period_race_atomic_no_returned_item",
+    "cluster:prefix_race_atomic_no_returned_item",
+    "cluster:control_race_atomic_no_returned_item",
+    "cluster:lookup_race_atomic_no_returned_item",
+    "cluster:new_namespace_standalone_mutations_denied",
+    "cluster:control_bootstrap_delete_inventory_writes_registry_put_delete_denied",
+    "cluster:foreign_partition_writes_and_checks_denied",
+    "cluster:two_table_scan_denied",
+    "cluster:existing_broad_pipeline_read_preserved",
+    "cluster:existing_target_transaction_put_preserved",
+    "deletion:describe_two_fixture_tables",
+    "deletion:inventory_read_allowed",
+    "deletion:work_control_lookup_period_prefix_reads_and_checks",
+    "deletion:new_namespace_all_old_denied",
+    "deletion:pair_creation_and_injected_lost_ack_same_token_replay",
+    "deletion:pair_delete_and_control_cas_atomic",
+    "deletion:inventory_race_atomic_no_returned_item",
+    "deletion:period_race_atomic_no_returned_item",
+    "deletion:prefix_race_atomic_no_returned_item",
+    "deletion:control_race_atomic_no_returned_item",
+    "deletion:lookup_race_atomic_no_returned_item",
+    "deletion:new_namespace_standalone_mutations_denied",
+    "deletion:control_bootstrap_delete_inventory_writes_registry_put_delete_denied",
+    "deletion:foreign_partition_writes_and_checks_denied",
+    "deletion:two_table_scan_denied",
+    "deletion:existing_broad_pipeline_read_preserved",
+    "deletion:existing_target_transaction_put_preserved",
+    "lifecycle:describe_two_fixture_tables",
+    "lifecycle:inventory_read_allowed",
+    "lifecycle:work_control_lookup_period_prefix_reads_and_checks",
+    "lifecycle:new_namespace_all_old_denied",
+    "lifecycle:pair_creation_and_injected_lost_ack_same_token_replay",
+    "lifecycle:pair_delete_and_control_cas_atomic",
+    "lifecycle:inventory_race_atomic_no_returned_item",
+    "lifecycle:period_race_atomic_no_returned_item",
+    "lifecycle:prefix_race_atomic_no_returned_item",
+    "lifecycle:control_race_atomic_no_returned_item",
+    "lifecycle:lookup_race_atomic_no_returned_item",
+    "lifecycle:new_namespace_standalone_mutations_denied",
+    "lifecycle:control_bootstrap_delete_inventory_writes_registry_put_delete_denied",
+    "lifecycle:foreign_partition_writes_and_checks_denied",
+    "lifecycle:two_table_scan_denied",
+    "lifecycle:existing_broad_pipeline_read_preserved",
+    "lifecycle:existing_target_transaction_put_preserved",
+    "lifecycle:aggregate_cursor_read",
+    "lifecycle:aggregate_cursor_transaction_put_preserves_deadline",
+    "lifecycle:aggregate_cursor_standalone_mutations_denied",
+    "lifecycle:aggregate_cursor_extra_actions_foreign_and_all_old_denied",
+    "lifecycle:aggregate_cursor_cas_race_atomic_no_returned_item",
+    "lifecycle:existing_standalone_target_write_preserved",
+    "lifecycle:lifecycle_cursor_prefix_progress_no_delete",
+    "lifecycle:lifecycle_outbox_transaction_delete_only",
+    "analysis:describe_two_fixture_tables",
+    "analysis:inventory_read_allowed",
+    "analysis:work_control_lookup_period_prefix_reads_and_checks",
+    "analysis:new_namespace_all_old_denied",
+    "analysis:retired_analysis_explicit_write_deny_preserved",
+    "analysis:new_namespace_standalone_mutations_denied",
+    "analysis:control_bootstrap_delete_inventory_writes_registry_put_delete_denied",
+    "analysis:foreign_partition_writes_and_checks_denied",
+    "analysis:two_table_scan_denied",
+    "account_data:describe_two_fixture_tables",
+    "account_data:inventory_read_allowed",
+    "account_data:work_control_lookup_period_prefix_reads_and_checks",
+    "account_data:new_namespace_all_old_denied",
+    "account_data:pair_creation_and_injected_lost_ack_same_token_replay",
+    "account_data:pair_delete_and_control_cas_atomic",
+    "account_data:inventory_race_atomic_no_returned_item",
+    "account_data:period_race_atomic_no_returned_item",
+    "account_data:prefix_race_atomic_no_returned_item",
+    "account_data:control_race_atomic_no_returned_item",
+    "account_data:lookup_race_atomic_no_returned_item",
+    "account_data:new_namespace_standalone_mutations_denied",
+    "account_data:control_bootstrap_delete_inventory_writes_registry_put_delete_denied",
+    "account_data:foreign_partition_writes_and_checks_denied",
+    "account_data:two_table_scan_denied",
+    "account_data:existing_account_outbox_standalone_delete_preserved",
+    "export:describe_two_fixture_tables",
+    "export:inventory_read_allowed",
+    "export:export_no_work_read_or_check_authority",
+    "export:new_namespace_standalone_mutations_denied",
+    "export:control_bootstrap_delete_inventory_writes_registry_put_delete_denied",
+    "export:foreign_partition_writes_and_checks_denied",
+    "export:two_table_scan_denied",
+    "export:export_existing_owned_reads_and_mutation_refusal"
+  ],
+  "cleanupComplete": true,
+  "cleanupOutstanding": [],
+  "cloudExecuted": true,
+  "credentialPropagation": {
+    "account_data": {
+      "assumedIdentityVerified": true,
+      "attempts": 1,
+      "retryCodes": {}
+    },
+    "analysis": {
+      "assumedIdentityVerified": true,
+      "attempts": 1,
+      "retryCodes": {}
+    },
+    "cluster": {
+      "assumedIdentityVerified": true,
+      "attempts": 1,
+      "retryCodes": {}
+    },
+    "deletion": {
+      "assumedIdentityVerified": true,
+      "attempts": 1,
+      "retryCodes": {}
+    },
+    "export": {
+      "assumedIdentityVerified": true,
+      "attempts": 1,
+      "retryCodes": {}
+    },
+    "lifecycle": {
+      "assumedIdentityVerified": true,
+      "attempts": 1,
+      "retryCodes": {}
+    },
+    "publisher": {
+      "assumedIdentityVerified": true,
+      "attempts": 1,
+      "retryCodes": {}
+    }
+  },
+  "executorSha256": "6f99fed40816eca79f034ddd39091f11d3ff4eae2926a47fb82aa365ff2e6238",
+  "finishedAtUtc": "2026-09-27T04:31:10.132068+00:00",
+  "fixturePolicySha256": {
+    "account_data": "9fc2153c09c36535f7437883039e8f298da65c53602a289b8f47279e398f1b24",
+    "analysis": "a6c8181b4b693db132b3d684550da131588e5da328781e4eb2fbadeceac272b7",
+    "cluster": "e31cd7fd112bcabcc7601a1c1366bdfd27354ffddc4b882465993af0bef65361",
+    "deletion": "dc4c02a7e40b37b621ea6e0073bba4aa0b548c6f0a29b966ee5af27eb8a2a1fb",
+    "export": "2173b5d94735797febae53c5ffaae16f1c857ce1dea30ea3a538a64240716bf7",
+    "lifecycle": "5ef1589c07f94969d15902414dbb92c0cd77c9066d543a80c08ead4ccac540fe",
+    "publisher": "fffa9c69998a8c0bd05b7ecae12fe00025b921558dae601b50771317920bcbeb"
+  },
+  "inputSha256": {
+    "apiPlan": "26da357b0fd465a63203146aba32a1b10fcf07756c27a9e93cf47e60adf0ffc1",
+    "processingPlan": "da62a65164e594036d1dd3da79072b1caacc060ae99b4ab5160ffddf72d3a29d",
+    "roleAudit": "4f18b722f2c5e61b8509c8cdb2dc296e21448e1f99e8865dec2da75736960aa0"
+  },
+  "journalPath": "/private/tmp/amt-sec207-period-iam-journal-aggregate.json",
+  "limitations": [
+    "Offline validation only; no AWS authorization or runtime behavior claim.",
+    "This is not a deployment/activation validator: runtime gates, artifact contents, schedules and approval inventories require separate review.",
+    "Only DynamoDB two base-table intersections retained. Other tables/indexes/streams/services, SCPs and resource policies are excluded.",
+    "Optional aggregate policy is bound completely; only its pipeline cursor enters this fixture. Intelligence table/ExpirationIndex authorization and runtime require separate qualification.",
+    "Global analysis write Deny is preserved on both fixture tables; new Allows do not reactivate it.",
+    "New managed ARN is inferred from exact name and Terraform attachment references while unknown; final applied binding still requires readback.",
+    "The supplied AWS audit is a point-in-time evidence input, not a signature or protection against changes after observation.",
+    "Existing broad reads/writes are retained; application control existence/retention/coverage invariants are not enforced by IAM.",
+    "Two synthetic base tables and seven temporary assumed roles; not live role/SCP/resource-policy acceptance.",
+    "Fixed synthetic transaction fields are a partial IAM contract test, not production handlers, period erasure or retention approval.",
+    "Lost acknowledgment is injected after a successful SDK return; same-token replay is not an uncontrolled network failure.",
+    "No KMS, SQS, streams, native restores, application data or marker changes."
+  ],
+  "observedAtUtc": "2026-09-27T04:28:43.033429+00:00",
+  "omittedStatements": {
+    "account_data": [
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "FindAccountCampaignRecoverySidecars",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "4bd9e8396e91fbda11a6cc0639070f6543acdf87c7c55c5fd972a8e4a82f193d"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "UpdateCampaignRecoveryControlTransaction",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "0ac53011c4c604d50cc7214ee8cb58ba458fd7d2adc1a4a4ef1bf662c3f6e81e"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "TransactionallyFenceAuthoritativeProfile",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "b4b31cfdb4a025ea19cb1382f762629b10afa6cc3527c935293a777f5630c14c"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "ReadAccountInventoryProof",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "bf786c2050cd961d3b7f324751f16805eff47072c95115111ebe3ea0ea839f4b"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "CheckDeletionProofTransaction",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "495391918a09d21e76d0653447f16c2fa301b221acb794e686bf099325c14629"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        ],
+        "sid": "ReadOwnedPurchaseCleanupTargets",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "b1d8ffa2d9a7db77c7c19a574dac618fe89f4ea6fb5597bf8b4f9de5388e5cc1"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        ],
+        "sid": "FindOwnedPurchaseCleanupTargets",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "8daa3ac1d40839d603c7b8759ca99195154c86a316a10b834e931fb50199effa"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        ],
+        "sid": "EraseOwnedPurchaseTransaction",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "da1b6cadd2cf6afed9496a70d311cedd65f996258cf44a860ddb4ed2d15c293a"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        ],
+        "sid": "CheckPurchaseCleanupInventory",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "1a487387e4d7a290a2a650275903c93908d02a0e195a8f37a1f46aa6afc244f7"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "ReadCommandAndWriteRevocationReceipt",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "95122807b98b5018c8ba01f172638771909891cba22dbe5f9dfc398f510f376d"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-bindings"
+        ],
+        "sid": "EraseFencedUserDeviceBindings",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "fdbf966919787f8098014b5624b43e6fe468da4a04f69699d02b543d933490f5"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "ReconcileMissedRevocations",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "cd4190e1bd0e83a7a01f5a5836d80258f7c40fc59dc097aba38ac438507a7514"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "EraseFencedUserProfileState",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "fc863a91cdd259bf74ed135a0823dd21509c26038ed61d9a4cc1a2bd9f49c401"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-recovery-control"
+        ],
+        "sid": "MinimizeFencedUserRecoveryEvidence",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "2306e2dda5361bf8edd57c38865977a94f0051cc09fa017184c0fa8a423ece9d"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control"
+        ],
+        "sid": "EnumerateAndEraseFencedAnalysisState",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "46ffab594d2649a7ead44470e3815f280353ae7a426ba54632db4326520aaf25"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control"
+        ],
+        "sid": "MinimizeAnalysisRequestContent",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "304ab922a2c05f1b8d812a8102016c6cf4f065be0e401c93ba22600c4088c1b3"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "PersistOwnReconciliationCheckpoint",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "f493734d968c68dfdf8876bd7678fe1abcb65b531946d33ec073666eefcd5fbe"
+      },
+      {
+        "actions": [
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_table_actions",
+        "sid": "DecryptAccountOutboxThroughDynamoDB",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "614c477952d9a9d0d8f08b1ef6f452bf983aedf911a3a70479de7eff6496fb7a"
+      },
+      {
+        "actions": [
+          "cognito-idp:AdminUserGlobalSignOut"
+        ],
+        "reason": "non_table_actions",
+        "sid": "RevokeSessionsInOwnPool",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "cbc8d57f572eba57ee328935847c5a1e32766c1f6c22a25f8ad0f0e7f7060960"
+      },
+      {
+        "actions": [
+          "cognito-idp:AdminGetUser",
+          "cognito-idp:AdminDeleteUser"
+        ],
+        "reason": "non_table_actions",
+        "sid": "FinalizeIdentityInOwnPool",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "c0c9584d4a37950937fb5236102efc68a694a426ddc03876f0869ca4c8f6afa8"
+      },
+      {
+        "actions": [
+          "dynamodb:GetShardIterator",
+          "dynamodb:GetRecords",
+          "dynamodb:DescribeStream"
+        ],
+        "reason": "non_table_actions",
+        "sid": "ReadOwnDeletionStream",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "7db763ecf6d7cd89a149e3e50a5f981d33c1fab97db5406edb122683cd88b582"
+      },
+      {
+        "actions": [
+          "dynamodb:ListStreams"
+        ],
+        "reason": "non_table_actions",
+        "sid": "DiscoverDeletionStreamsInRegion",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "58cfc3ecb604dd0a0abd39bf976e8903df69da724388d91d39591c50535140ee"
+      },
+      {
+        "actions": [
+          "logs:PutLogEvents",
+          "logs:CreateLogStream"
+        ],
+        "reason": "non_table_actions",
+        "sid": "WriteOwnLogs",
+        "source": "inline:account-data-runtime",
+        "sourceStatementSha256": "78618823ebebddde14ed649fd9810bbf08af95ee59f7fa2227d6a057ee4f86a0"
+      },
+      {
+        "actions": [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_table_actions",
+        "sid": "UsePeriodWorkEncryptionThroughDynamoDB",
+        "source": "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-account-data-period-work",
+        "sourceStatementSha256": "c3c42e336190732e63d058cec414d9e62b0fea374cdc9182bf13b0b9f031fb43"
+      }
+    ],
+    "analysis": [
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "ReadAuthoritativeDeletionFence",
+        "source": "inline:history-analysis-runtime",
+        "sourceStatementSha256": "d6b446be7872cd9b90991b32b75181b8d241804992e1150ecb9a8a3bc23143c1"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "ReadAuthoritativeProfile",
+        "source": "inline:history-analysis-runtime",
+        "sourceStatementSha256": "8050c842cdcd3619bdd79c9d1eef3bd09fdd22fcaedbd877865b98b793e0396c"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "CheckDeletionFenceAtomically",
+        "source": "inline:history-analysis-runtime",
+        "sourceStatementSha256": "c99836f7000ed22c664031a5f4277207f65e2a71b033f06335b6110206957380"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "CheckAuthoritativeProfileAtomically",
+        "source": "inline:history-analysis-runtime",
+        "sourceStatementSha256": "bc8996845632f44e9f676bc5530c1475fa48fd515eed36cd635de6b17e34576b"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-history-control",
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-history-content"
+        ],
+        "sid": "ReadHistoryReplayAndState",
+        "source": "inline:history-analysis-runtime",
+        "sourceStatementSha256": "f3dad2684433389320c50980f70fe420fcc4b310ffe1503e13580b2700ef14a2"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-history-control",
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-history-content"
+        ],
+        "sid": "AtomicHistoryCompletion",
+        "source": "inline:history-analysis-runtime",
+        "sourceStatementSha256": "d94dcecbc94ec641fbfec513a7fdcfaf3b74849b9cbf8f11deb2e43241d0b349"
+      },
+      {
+        "actions": [
+          "ssm:GetParametersByPath",
+          "ssm:GetParameters",
+          "ssm:GetParameter",
+          "secretsmanager:GetSecretValue",
+          "lambda:InvokeFunction"
+        ],
+        "reason": "non_table_actions",
+        "sid": "DenyProviderCredentialsAndDispatch",
+        "source": "inline:trustcheckradar-dev-research-migration-analysis",
+        "sourceStatementSha256": "020ca8b163988349bc3510c33bb2a19e0d12f07a413c6e9b0db6ab910190417c"
+      },
+      {
+        "reason": "global_deny_projected_to_two_tables_other_resources_excluded",
+        "sid": "DenyLegacySettlementAndWrites",
+        "source": "inline:trustcheckradar-dev-research-migration-analysis",
+        "sourceStatementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "ReadReplayAccountDeletionFence",
+        "source": "inline:trustcheckradar-dev-research-migration-analysis",
+        "sourceStatementSha256": "fabd505f0577b05a7ab02877a326fcc4eae80a067e9c056171df174142d9f2f3"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "UsersTableReadWrite",
+        "source": "arn:aws:iam::107827791950:policy/trustcheckradar-dev-conversation-analysis-runtime",
+        "sourceStatementSha256": "560b51fe09297b2475b1ba8020902e4ef45bc5258c630a64cfc52ecdf61f0ba4"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control"
+        ],
+        "sid": "AbuseControlTableReadWrite",
+        "source": "arn:aws:iam::107827791950:policy/trustcheckradar-dev-conversation-analysis-runtime",
+        "sourceStatementSha256": "0adfe5d3f2c5e90e9e89468f3beaf4ef74af8747fcf23d7c42857e0a82ac6034"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements/index/*",
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        ],
+        "sid": "EntitlementsTableReadWrite",
+        "source": "arn:aws:iam::107827791950:policy/trustcheckradar-dev-conversation-analysis-runtime",
+        "sourceStatementSha256": "f77de3674d8d58f887356781be30dd502fa2c42d4b0d03fcb20edef7c867eed7"
+      },
+      {
+        "actions": [
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:Encrypt",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_table_actions",
+        "sid": "UseCampaignOutboxEncryptionThroughDynamoDB",
+        "source": "arn:aws:iam::107827791950:policy/trustcheckradar-dev-conversation-analysis-runtime",
+        "sourceStatementSha256": "0d851022fcfe10899e3ea356b88d4772de3da5c16a435d837507fd2befec03d6"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-bindings/index/*",
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-bindings"
+        ],
+        "sid": "DeviceBindingsReadOnly",
+        "source": "arn:aws:iam::107827791950:policy/trustcheckradar-dev-conversation-analysis-runtime",
+        "sourceStatementSha256": "3f533068d9dd31e7f8730c4d9b259e8fa16597c554ccac4693802209b4766955"
+      },
+      {
+        "actions": [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ],
+        "reason": "non_table_actions",
+        "sid": "ReadOpenAISecret",
+        "source": "arn:aws:iam::107827791950:policy/trustcheckradar-dev-conversation-analysis-runtime",
+        "sourceStatementSha256": "546e454f3af3b1f8605c47659e350ecd2307d65a1ec0ed6a363eceddbee2a8da"
+      },
+      {
+        "actions": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        "reason": "non_table_actions",
+        "sid": null,
+        "source": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+        "sourceStatementSha256": "d8912e67796d34e5023de30e7ca1826bdf626d3f9d3bbc03da25db53a4ee722d"
+      },
+      {
+        "actions": [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_table_actions",
+        "sid": "UsePeriodWorkEncryptionThroughDynamoDB",
+        "source": "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-analysis-period-work",
+        "sourceStatementSha256": "c3c42e336190732e63d058cec414d9e62b0fea374cdc9182bf13b0b9f031fb43"
+      }
+    ],
+    "cluster": [
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "ReadResearchEligibilityLedger",
+        "source": "inline:cluster-runtime",
+        "sourceStatementSha256": "14199c561a73b1fd4047712ff9484582b8a575a6aaa46d49536a6ca96ac38fb0"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "ReadResearchEligibilityUsers",
+        "source": "inline:cluster-runtime",
+        "sourceStatementSha256": "dfc0f5df89939a87f8553a882faae1554f5ab1b71355c2c0c00bd356a8ae272e"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "CheckResearchEligibilityLedger",
+        "source": "inline:cluster-runtime",
+        "sourceStatementSha256": "2c956f4d4bd149679091628a47ee175b3a0361fe416175f279e7ebcd5b6a8e8d"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "CheckResearchEligibilityUsers",
+        "source": "inline:cluster-runtime",
+        "sourceStatementSha256": "03e9d3a76e13e7d5318bffa0b499fc3dacb18083737a945c3f112d9e49974fa2"
+      },
+      {
+        "actions": [
+          "sqs:ReceiveMessage",
+          "sqs:GetQueueAttributes",
+          "sqs:DeleteMessage",
+          "sqs:ChangeMessageVisibility"
+        ],
+        "reason": "non_table_actions",
+        "sid": "ConsumeClusterQueue",
+        "source": "inline:cluster-runtime",
+        "sourceStatementSha256": "b14bcdb0f9a01c5c62c8eacc02a9cf5321dc7b47a23d657a6315e17c5a7f1f40"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline/index/CandidateBucketIndex"
+        ],
+        "sid": "ReadTransientCandidates",
+        "source": "inline:cluster-runtime",
+        "sourceStatementSha256": "676052eb82db0d04fc9dcdd9a83c5fded3921f877cec91aa8f8c819a31e2a7b4"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence/index/PublicationIndex",
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence"
+        ],
+        "sid": "UpdatePersistentAggregates",
+        "source": "inline:cluster-runtime",
+        "sourceStatementSha256": "d5cbad1f3bdda704ac0ae7ec675cf751f532fba573c62133c63e4fc6e1faf59e"
+      },
+      {
+        "actions": [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_table_actions",
+        "sid": "UseCampaignEncryption",
+        "source": "inline:cluster-runtime",
+        "sourceStatementSha256": "8ad7393e32a07e29ab707188e62394bfd213c9b8117427c033741868233a816d"
+      },
+      {
+        "actions": [
+          "logs:PutLogEvents",
+          "logs:CreateLogStream"
+        ],
+        "reason": "non_table_actions",
+        "sid": "WriteOwnContentFreeLogs",
+        "source": "inline:content-free-logging",
+        "sourceStatementSha256": "b79672e42db2e9b50143774331a097a9f1ce52069c9ea5a2ab3dadfb1e765dfb"
+      },
+      {
+        "actions": [
+          "cloudwatch:PutMetricData"
+        ],
+        "reason": "non_table_actions",
+        "sid": "PublishContentFreeMetrics",
+        "source": "inline:content-free-logging",
+        "sourceStatementSha256": "a4ae523654d915cee1f2a97a596da8d6be6441ff2d1ee7eff45401088c4753aa"
+      }
+    ],
+    "deletion": [
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence"
+        ],
+        "sid": "ReadDeletionPublicationAggregate",
+        "source": "inline:campaign-account-cleanup",
+        "sourceStatementSha256": "7bb40c147b2b10654ac9c426bfea029864eeaaae7687d16861e7d464bb0878dd"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence"
+        ],
+        "sid": "CheckDeletionPublicationAggregate",
+        "source": "inline:campaign-account-cleanup",
+        "sourceStatementSha256": "35b6a46503793903cc961728b63adde246ee98eb44847b3892a19cdf7a0bfcc5"
+      },
+      {
+        "actions": [
+          "kms:Decrypt"
+        ],
+        "reason": "non_table_actions",
+        "sid": "DecryptCampaignTablesThroughDynamoDB",
+        "source": "inline:campaign-account-cleanup-decryption",
+        "sourceStatementSha256": "8471e6b1e48b21562432c496d5aa3746891d69c410f2b0facdf8b7b2666672f1"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "QueryOwnedRecoveryJobs",
+        "source": "inline:campaign-completion-candidate",
+        "sourceStatementSha256": "0637910270c969c8e42cf94a902d1523e5cc4e2ae21b2ea613bfecb270e4644b"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "CompleteOwnedCampaignLedger",
+        "source": "inline:campaign-completion-candidate",
+        "sourceStatementSha256": "1c26d8c1b98375a7fcaf69d5c4168f9aaf68b06a7f4965c713ffb4a79f928b14"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "CompleteOwnedParticipation",
+        "source": "inline:campaign-completion-candidate",
+        "sourceStatementSha256": "625e1ffa09f29951edacaba8859a548233a4b6cf049b14b72efbd41bd03217f2"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "CheckOwnedCompletionProfile",
+        "source": "inline:campaign-completion-candidate",
+        "sourceStatementSha256": "0675f5e02fb2f5404503d513b3eed1168de416cc90d2f17f034127aae25c593a"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/index/CampaignRecoveryDueIndex"
+        ],
+        "sid": "DiscoverDueCampaignRecoveryKeys",
+        "source": "inline:campaign-recovery-candidate",
+        "sourceStatementSha256": "83fe3859afb3b33dba0baaa7cdb5689fe857e1b029bf934a0edf1bb7bdd0fa3e"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "ReadCampaignRecoveryInventory",
+        "source": "inline:campaign-recovery-candidate",
+        "sourceStatementSha256": "2367d2f6dcf8b5d7c35a4eb0a49b849af221871e2c9118888bfb6299838a1bd2"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "CheckCampaignRecoveryInventory",
+        "source": "inline:campaign-recovery-candidate",
+        "sourceStatementSha256": "afa9a25b1e7ce460f9b8576ed347116d554f2d0d5a5409ecbc4a8bf201898c09"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "AdvanceOwnedRecoveryRetryTransaction",
+        "source": "inline:campaign-recovery-candidate",
+        "sourceStatementSha256": "cf5fe3f504b3d29ae95f963ed6d641674b675f5386384bc9ee1dc3d5230dac40"
+      },
+      {
+        "actions": [
+          "logs:PutLogEvents",
+          "logs:CreateLogStream"
+        ],
+        "reason": "non_table_actions",
+        "sid": "WriteOwnContentFreeLogs",
+        "source": "inline:content-free-logging",
+        "sourceStatementSha256": "fc4df1e03d7826b19b4baab5582b9cffe687cccf1bebc02a166da4aff03c1399"
+      },
+      {
+        "actions": [
+          "cloudwatch:PutMetricData"
+        ],
+        "reason": "non_table_actions",
+        "sid": "PublishContentFreeMetrics",
+        "source": "inline:content-free-logging",
+        "sourceStatementSha256": "a4ae523654d915cee1f2a97a596da8d6be6441ff2d1ee7eff45401088c4753aa"
+      },
+      {
+        "actions": [
+          "dynamodb:GetShardIterator",
+          "dynamodb:GetRecords",
+          "dynamodb:DescribeStream"
+        ],
+        "reason": "non_table_actions",
+        "sid": "ReadDeletionLedgerStream",
+        "source": "inline:deletion-runtime",
+        "sourceStatementSha256": "14f9ebb6e67220d291979fbb7b2072ec4ea4e93a9d989687c86ac2cc5001b901"
+      },
+      {
+        "actions": [
+          "dynamodb:ListStreams"
+        ],
+        "reason": "non_table_actions",
+        "sid": "DiscoverDeletionLedgerStreams",
+        "source": "inline:deletion-runtime",
+        "sourceStatementSha256": "97ab495047c7c3b372828e3bb5b528e3e16b92cb513857ef3b8d7a326ff7cd2a"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline/index/ContributorPeriodIndex"
+        ],
+        "sid": "DeleteActiveContributions",
+        "source": "inline:deletion-runtime",
+        "sourceStatementSha256": "81234a8cd89bf54c31d0391d78a850749a0043bf5245f72c6b325026327b4a8c"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "CompleteParticipationWithdrawal",
+        "source": "inline:deletion-runtime",
+        "sourceStatementSha256": "8ce2aee20d1ed38c32e31d8214a2366e286a0b0e9b1f1c402a6680d7bda7caec"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "CompleteDeletionLedgerCommand",
+        "source": "inline:deletion-runtime",
+        "sourceStatementSha256": "0ac9679875e8beb6704c0aab49234152d2cf97cb0259fb7cb8e2b496479164a4"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "GuardedDeletionCommand",
+        "source": "inline:deletion-runtime",
+        "sourceStatementSha256": "68630724b78d3ff03945221c180db4e9f083572f51281555cf2fac005ec1d9ac"
+      },
+      {
+        "actions": [
+          "kms:GenerateMac"
+        ],
+        "reason": "non_table_actions",
+        "sid": "DeriveActivePeriodTokens",
+        "source": "inline:deletion-runtime",
+        "sourceStatementSha256": "2816aaa27894f9bfce26db115f11a852414e4c9478480c3ad0ca115a2611d90d"
+      }
+    ],
+    "export": [
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control"
+        ],
+        "sid": "ReadOwnedAnalysis",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "bf19914c3731550b00d2dff5b1e32c70387fb2b59a49984f7b17de3bd13ce5ff"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "ReadOwnedDeletion",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "44e91fd509c1051300709c815bf71bf1c6955ef020a4a220998bc86bf289db57"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-bindings"
+        ],
+        "sid": "ReadOwnedDevices",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "6b784a2b1c396efef39638396305fd3a2df59b75f7c17761daf553f6413aaccd"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        ],
+        "sid": "ReadOwnedEntitlements",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "2c66cd3312929f7259bacc5d908806e9499077a2e8c82ac40eefc03f94856083"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-history-content"
+        ],
+        "sid": "ReadOwnedHistoryContent",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "e8eaf53d2dfc42bbf9a9c682234a516cee6975becafe9491c7826a2f22860005"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-history-control"
+        ],
+        "sid": "ReadOwnedHistoryControl",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "caf981ca8e2298374607e6eb81560a8995ea8c4b6551622e9e248c591ab8ba3c"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens"
+        ],
+        "sid": "ReadOwnedPlayTokens",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "90142b0b9c268265f1572ddd6f4825dbe63e18a0c06ea792d7d1c4c706e9d506"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "ReadOwnedProfile",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "0e35b2d091e7914b3895c160086b6cd0e2ec75710657dfcda3fda220342a27f6"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-recovery-control"
+        ],
+        "sid": "ReadOwnedRecovery",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "296fbaa26547f38fffded7d8e6e7de25bcb9711f3f8ac04445c360c5a537599a"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline/index/ContributorPeriodIndex"
+        ],
+        "sid": "FindOwnCampaignContributions",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "43e9c669893e52eb234fefae76badec36e88ccf2c1cb979c55b889023e23564a"
+      },
+      {
+        "actions": [
+          "kms:GenerateMac"
+        ],
+        "reason": "non_table_actions",
+        "sid": "DeriveOwnedCampaignPeriodTokens",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "08494bb9416a9775ff63aad1ce542c05ff08e449ec5002b4d10a7c6c8c411d67"
+      },
+      {
+        "actions": [
+          "kms:Decrypt"
+        ],
+        "reason": "non_table_actions",
+        "sid": "DecryptCampaignStorageThroughDynamoDB",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "538453483934cef056dc2c0335b4ee96e935e477db5f71967cee864a90c0d09f"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        ],
+        "sid": "ReadPurchaseCoverageMarker",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "a041e3aefdcb3ecc0ec12d4c3f8e132b68ba6d09323cecd9000b9fae4431f2a3"
+      },
+      {
+        "actions": [
+          "cognito-idp:AdminGetUser"
+        ],
+        "reason": "non_table_actions",
+        "sid": "ReadCurrentOwnedIdentity",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "686201b336e0e32156726c6443fb6a8e6d9670e8d2d491903a1234c4b4e9cee9"
+      },
+      {
+        "actions": [
+          "secretsmanager:GetSecretValue"
+        ],
+        "reason": "non_table_actions",
+        "sid": "ReadTwoExactKeyrings",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "bf7fc836cd9d02d67473c4f08ee432a1af7ef4e3a47869d4ae8f891e989e79b0"
+      },
+      {
+        "actions": [
+          "logs:PutLogEvents",
+          "logs:CreateLogStream"
+        ],
+        "reason": "non_table_actions",
+        "sid": "WriteOwnLogs",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "ec820f7eb5718c2b8ac13b21192aa69e4b99ad33354bbb73448a9dc144334593"
+      },
+      {
+        "actions": [
+          "sts:AssumeRole",
+          "ssm:*",
+          "s3:*"
+        ],
+        "reason": "non_table_actions",
+        "sid": "NoPayloadStorageOrRoleChaining",
+        "source": "inline:authenticated-read-only-account-export",
+        "sourceStatementSha256": "58d5842e6bdb846ef234dda3b93a27e8461676eea595b643c01652f273a3deac"
+      }
+    ],
+    "lifecycle": [
+      {
+        "actions": [
+          "logs:PutLogEvents",
+          "logs:CreateLogStream"
+        ],
+        "reason": "non_table_actions",
+        "sid": "WriteOwnContentFreeLogs",
+        "source": "inline:content-free-logging",
+        "sourceStatementSha256": "3ddddb4e4cf4d838a8f8a81670e8d3bc9067a51d0f1589556574dbc61c853782"
+      },
+      {
+        "actions": [
+          "cloudwatch:PutMetricData"
+        ],
+        "reason": "non_table_actions",
+        "sid": "PublishContentFreeMetrics",
+        "source": "inline:content-free-logging",
+        "sourceStatementSha256": "a4ae523654d915cee1f2a97a596da8d6be6441ff2d1ee7eff45401088c4753aa"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline/index/ExpirationIndex",
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline/index/CandidateBucketIndex",
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence"
+        ],
+        "sid": "LifecycleTableAccess",
+        "source": "inline:lifecycle-runtime",
+        "sourceStatementSha256": "7098be6125fe8cef94df91a08cdcdd26eee48073d19eaa526020de58f467892f"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence"
+        ],
+        "sid": "WriteLifecycleAggregates",
+        "source": "inline:lifecycle-runtime",
+        "sourceStatementSha256": "c958daeca049548d09fb6ede676c105a020f570eac336443c093d119076e63bb"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence"
+        ],
+        "sid": "CheckLifecycleAggregate",
+        "source": "inline:lifecycle-runtime",
+        "sourceStatementSha256": "297c02c337682c7e25c79d19c1673c884a5405385256f8ac3cc3303492d889e8"
+      },
+      {
+        "actions": [
+          "kms:ListResourceTags",
+          "kms:DisableKey",
+          "kms:DescribeKey"
+        ],
+        "reason": "non_table_actions",
+        "sid": "ManageTaggedPeriodHmacKeys",
+        "source": "inline:lifecycle-runtime",
+        "sourceStatementSha256": "8c1bec78c117ed3f2b33f05ce24564ff01ed6c09d8d6de8ab39cc29713e7e0a3"
+      },
+      {
+        "actions": [
+          "kms:ScheduleKeyDeletion"
+        ],
+        "reason": "non_table_actions",
+        "sid": "ScheduleTaggedPeriodKeyDeletion",
+        "source": "inline:lifecycle-runtime",
+        "sourceStatementSha256": "1089ef5f641ebf48f34d5ba1d17cb23fc63ac458748aeed03c1e5b54c8760709"
+      },
+      {
+        "actions": [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_table_actions",
+        "sid": "UseCampaignEncryption",
+        "source": "inline:lifecycle-runtime",
+        "sourceStatementSha256": "8ad7393e32a07e29ab707188e62394bfd213c9b8117427c033741868233a816d"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence"
+        ],
+        "sid": "VerifyAggregateTableIdentity",
+        "source": "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-campaign-aggregate-expiry",
+        "sourceStatementSha256": "ddac986a60b07effcaeb55f00927a6515212860521a86466fd7d5c761bb083af"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence/index/ExpirationIndex"
+        ],
+        "sid": "DiscoverExpiredAnonymousAggregates",
+        "source": "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-campaign-aggregate-expiry",
+        "sourceStatementSha256": "951e122cdaf6c7cf42e43bc315fa068acdc239e30a401bb6b5ac01be71af3b85"
+      }
+    ],
+    "publisher": [
+      {
+        "actions": [
+          "logs:PutLogEvents",
+          "logs:CreateLogStream"
+        ],
+        "reason": "non_table_actions",
+        "sid": "WriteOwnContentFreeLogs",
+        "source": "inline:content-free-logging",
+        "sourceStatementSha256": "9d44321afa761fbae3d71e4d9953cc9f242ec6b9a966b0c33d0b638034dd8af3"
+      },
+      {
+        "actions": [
+          "cloudwatch:PutMetricData"
+        ],
+        "reason": "non_table_actions",
+        "sid": "PublishContentFreeMetrics",
+        "source": "inline:content-free-logging",
+        "sourceStatementSha256": "a4ae523654d915cee1f2a97a596da8d6be6441ff2d1ee7eff45401088c4753aa"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "ReadFixedAccountDeletionFence",
+        "source": "inline:publisher-runtime",
+        "sourceStatementSha256": "0bb08daeabffa088e18a4e474b29dc84ba712e5ca52736102b7227b63550d1d6"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        ],
+        "sid": "CheckFixedAccountDeletionFenceTransactionally",
+        "source": "inline:publisher-runtime",
+        "sourceStatementSha256": "9aa1601596ba13d43b82999aed1966a4133e4f5f84502ba00d55297e91a355ef"
+      },
+      {
+        "actions": [
+          "dynamodb:ListStreams",
+          "dynamodb:GetShardIterator",
+          "dynamodb:GetRecords",
+          "dynamodb:DescribeStream"
+        ],
+        "reason": "non_table_actions",
+        "sid": "ReadCampaignOutboxStream",
+        "source": "inline:publisher-runtime",
+        "sourceStatementSha256": "7805a743fbb873fbef31dc68d4775a780c99d71a6095c8106dd0ab525a91a3fb"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "ReadParticipationState",
+        "source": "inline:publisher-runtime",
+        "sourceStatementSha256": "aa96d9312a4227a34eafbd1b1686d2ad848bb61fff44097a1ca07d47b99a0090"
+      },
+      {
+        "reason": "other_tables_indexes_or_streams_out_of_scope",
+        "resources": [
+          "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
+        ],
+        "sid": "CheckParticipationStateInTransaction",
+        "source": "inline:publisher-runtime",
+        "sourceStatementSha256": "303582ea1d8eb0551b7fa328a548bf4eb0bb66eeed123008a0b3ae892dbd283e"
+      },
+      {
+        "actions": [
+          "sqs:SendMessage"
+        ],
+        "reason": "non_table_actions",
+        "sid": "SendOpaqueClusterWork",
+        "source": "inline:publisher-runtime",
+        "sourceStatementSha256": "04f1bbde572825a571042a42127c614c5732155798516d44049b5d734f6d7ffe"
+      },
+      {
+        "actions": [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_table_actions",
+        "sid": "UseTransientEncryption",
+        "source": "inline:publisher-runtime",
+        "sourceStatementSha256": "c64ed26781ed1b5f859f583b85df467c3482fc37d3be5e100dab2026d033f69b"
+      },
+      {
+        "actions": [
+          "kms:GenerateMac"
+        ],
+        "reason": "non_table_actions",
+        "sid": "GenerateCurrentPeriodToken",
+        "source": "inline:publisher-runtime",
+        "sourceStatementSha256": "ab83856d3d22df151e8b4c002e2d573d38312a91bfc2bdc9dd0b72abec78889c"
+      }
+    ]
+  },
+  "passed": true,
+  "region": "us-east-1",
+  "roleEvidence": {
+    "account_data": {
+      "aggregatePolicyCharacters": null,
+      "aggregatePolicySha256": null,
+      "attachmentCountAfter": 1,
+      "newManagedPolicyCharacters": 2618,
+      "newManagedPolicySha256": "b9cfd8d297c6fde9d44970c395465749cfc9dc01879a8120bb07de6a6957692d",
+      "plannedSourceHashes": {
+        "inline:account-data-runtime": "d6ad844796179529e8cf5985a6ba0908d58a4b16c9cdd467489dea86424eb07e",
+        "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-account-data-period-work": "b9cfd8d297c6fde9d44970c395465749cfc9dc01879a8120bb07de6a6957692d"
+      },
+      "projectedUnionSha256": "9ce458bfbb04908f445c6811bb7627e3b19e1eef216f99572873af3bc2c23c75",
+      "role": "trustcheckradar-dev-account-data-api-role",
+      "syntheticUnionSha256": "9fc2153c09c36535f7437883039e8f298da65c53602a289b8f47279e398f1b24",
+      "writerStatus": "PREPARATION_ONLY"
+    },
+    "analysis": {
+      "aggregatePolicyCharacters": null,
+      "aggregatePolicySha256": null,
+      "attachmentCountAfter": 3,
+      "newManagedPolicyCharacters": 2618,
+      "newManagedPolicySha256": "b9cfd8d297c6fde9d44970c395465749cfc9dc01879a8120bb07de6a6957692d",
+      "plannedSourceHashes": {
+        "arn:aws:iam::107827791950:policy/trustcheckradar-dev-conversation-analysis-runtime": "9ab7bf2824a4cfcfad892cf1d5ced0a70d1f29619a0b7136996e97ce39c9efbc",
+        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole": "e24301ebd6e19a2851130fd220902c2657ab9f0057ff8c06f9076bd49feaefdf",
+        "inline:history-analysis-runtime": "377b1c697d1839ef2707130996481766a00197c45a4118c28c3c70c56161aad5",
+        "inline:trustcheckradar-dev-research-migration-analysis": "dc71ab7fc90742c7ea441e3892d0a1357c71c12d76dee97856f17cfa3da600c5",
+        "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-analysis-period-work": "b9cfd8d297c6fde9d44970c395465749cfc9dc01879a8120bb07de6a6957692d"
+      },
+      "projectedUnionSha256": "c4004ab7377dfb7bb39852769b8b3d8b84409321a1739b93da08943daec179c8",
+      "role": "trustcheckradar-dev-conversation-analysis-role",
+      "syntheticUnionSha256": "a6c8181b4b693db132b3d684550da131588e5da328781e4eb2fbadeceac272b7",
+      "writerStatus": "RETIRED_DISABLED"
+    },
+    "cluster": {
+      "aggregatePolicyCharacters": null,
+      "aggregatePolicySha256": null,
+      "attachmentCountAfter": 1,
+      "newManagedPolicyCharacters": 2258,
+      "newManagedPolicySha256": "3607fd091d48ecfd133b1a9b2a32d9e53a8c7015d9373b5cf36bb661c7e6e593",
+      "plannedSourceHashes": {
+        "inline:campaign-period-admission": "5027176ed01667421dccd114e04dd8fac62a9261f5a41519eaae154d775c43fb",
+        "inline:cluster-runtime": "fb3dd61f727f6830c9ce05f3b5357ddea864911d4f571041153c4fcf920e6135",
+        "inline:content-free-logging": "443df6fa38acbeabd9b569cdaa71f61fa957444453c8ee59e5b82abd2bd5c212",
+        "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-campaign-cluster-period-work": "3607fd091d48ecfd133b1a9b2a32d9e53a8c7015d9373b5cf36bb661c7e6e593"
+      },
+      "projectedUnionSha256": "95ef558ff24b2c4156745c1a9f1401812cdc3abeb06d14d8d165ca9b623b2241",
+      "role": "trustcheckradar-dev-campaign-cluster-aggregator-role",
+      "syntheticUnionSha256": "e31cd7fd112bcabcc7601a1c1366bdfd27354ffddc4b882465993af0bef65361",
+      "writerStatus": "PREPARATION_ONLY"
+    },
+    "deletion": {
+      "aggregatePolicyCharacters": null,
+      "aggregatePolicySha256": null,
+      "attachmentCountAfter": 1,
+      "newManagedPolicyCharacters": 2258,
+      "newManagedPolicySha256": "3607fd091d48ecfd133b1a9b2a32d9e53a8c7015d9373b5cf36bb661c7e6e593",
+      "plannedSourceHashes": {
+        "inline:campaign-account-cleanup": "43d8904a152d5f609b342e5fed3127095353f9df1381ff40d2fb0e70152db1d3",
+        "inline:campaign-account-cleanup-decryption": "ceabd2d5863af3034cc99ab4de6234038191dfb35fdafa19f864cf903fdf3467",
+        "inline:campaign-completion-candidate": "76600e3d3826110dbdb24a1b876f774ed9f152b1658e15e1456089f425fbf029",
+        "inline:campaign-recovery-candidate": "a810f14f80109111d903d44eac8e8371f77780dd4b17f62b4b129d511505a6a9",
+        "inline:content-free-logging": "5a542a41cdceda4e5065f78470c2a6ee31cbb4a9d00a1e98bd81d7841f59ad1f",
+        "inline:deletion-runtime": "853024fd61ffb27a563147bfaa90269fd3fcad68b48d22ce83ce6f3a57137f60",
+        "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-campaign-deletion-period-work": "3607fd091d48ecfd133b1a9b2a32d9e53a8c7015d9373b5cf36bb661c7e6e593"
+      },
+      "projectedUnionSha256": "edd94953ed46e8a0992001ad0cc8105044424e6a715970bdc6bd4d784a73a753",
+      "role": "trustcheckradar-dev-campaign-deletion-bridge-role",
+      "syntheticUnionSha256": "dc4c02a7e40b37b621ea6e0073bba4aa0b548c6f0a29b966ee5af27eb8a2a1fb",
+      "writerStatus": "PREPARATION_ONLY"
+    },
+    "export": {
+      "aggregatePolicyCharacters": null,
+      "aggregatePolicySha256": null,
+      "attachmentCountAfter": 1,
+      "newManagedPolicyCharacters": 585,
+      "newManagedPolicySha256": "fe5608846da9633223aba4326678b23a9f356b23ea275ea72a15033b05731f1a",
+      "plannedSourceHashes": {
+        "inline:authenticated-read-only-account-export": "9ab7c717426b31af6f8ba067309964037a036a2c1d128777d08f89d6e9d5b4b8",
+        "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-account-export-period-work": "fe5608846da9633223aba4326678b23a9f356b23ea275ea72a15033b05731f1a"
+      },
+      "projectedUnionSha256": "b4a571d37752e6c5d24407accfb62776b78d50d40d354e1a850c07cfb231b5b2",
+      "role": "trustcheckradar-dev-account-export-api-role",
+      "syntheticUnionSha256": "2173b5d94735797febae53c5ffaae16f1c857ce1dea30ea3a538a64240716bf7",
+      "writerStatus": "READ_ONLY_READER"
+    },
+    "lifecycle": {
+      "aggregatePolicyCharacters": 1448,
+      "aggregatePolicySha256": "fc2f5eeea495b3a3c50a7fc2742f0a87e626855338cefd5e9ced6dda85069774",
+      "attachmentCountAfter": 2,
+      "newManagedPolicyCharacters": 3431,
+      "newManagedPolicySha256": "f1d072b3294c07a839b1f33a716f209b6c7839548d6a6493ea6a8c62cb7e40dc",
+      "plannedSourceHashes": {
+        "inline:campaign-account-cleanup": "70283a1ab18023d668df8b2197a202ace1564e2c615a2dbe965977d628ee2e6e",
+        "inline:campaign-period-admission": "2db4e1b3c492b1650c3226d042b836e161fba3e4b35515c91cfb417effb58701",
+        "inline:content-free-logging": "a8062c6003f23c7736c5a09963ae9f7d71b745535b5c008e06d3ae581fc9a4cc",
+        "inline:lifecycle-runtime": "920542d9a242b8ec48e896743aa71ef062892009dac6b563246ec379fcea017e",
+        "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-campaign-aggregate-expiry": "fc2f5eeea495b3a3c50a7fc2742f0a87e626855338cefd5e9ced6dda85069774",
+        "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-campaign-lifecycle-period-work": "f1d072b3294c07a839b1f33a716f209b6c7839548d6a6493ea6a8c62cb7e40dc"
+      },
+      "projectedUnionSha256": "e11a0a41f63694deadb60e577f0d9255d4f61c5927d61917119308a91be120dd",
+      "role": "trustcheckradar-dev-campaign-lifecycle-role",
+      "syntheticUnionSha256": "5ef1589c07f94969d15902414dbb92c0cd77c9066d543a80c08ead4ccac540fe",
+      "writerStatus": "PREPARATION_ONLY"
+    },
+    "publisher": {
+      "aggregatePolicyCharacters": null,
+      "aggregatePolicySha256": null,
+      "attachmentCountAfter": 1,
+      "newManagedPolicyCharacters": 2258,
+      "newManagedPolicySha256": "3607fd091d48ecfd133b1a9b2a32d9e53a8c7015d9373b5cf36bb661c7e6e593",
+      "plannedSourceHashes": {
+        "inline:campaign-period-admission": "5027176ed01667421dccd114e04dd8fac62a9261f5a41519eaae154d775c43fb",
+        "inline:content-free-logging": "0018f103b99bc233b6121d0a9ae11fb566867b1ad52040d1e7cdf4088af455f9",
+        "inline:publisher-runtime": "c0509d31f4ab545413b929bd64f9bf8c5eaa1acc4e3bd0393fa363c3d39a4321",
+        "new:arn:aws:iam::107827791950:policy/trustcheckradar-dev-campaign-publisher-period-work": "3607fd091d48ecfd133b1a9b2a32d9e53a8c7015d9373b5cf36bb661c7e6e593"
+      },
+      "projectedUnionSha256": "94b7ce06b53707ac3abc87cd448028ec6f3f951c7beb05d829b616bf10e58a8c",
+      "role": "trustcheckradar-dev-campaign-observation-publisher-role",
+      "syntheticUnionSha256": "fffa9c69998a8c0bd05b7ecae12fe00025b921558dae601b50771317920bcbeb",
+      "writerStatus": "PREPARATION_ONLY"
+    }
+  },
+  "runId": "7d053e9b32624781a6be59770587d3fa",
+  "schemaVersion": 1,
+  "validatorSha256": "27e288977d6a62c7e847efb06a007e7bbf8b343fcbeadb1456fcb505fc0af3d3",
+  "writerHelperSha256": "f49bf801a9874ecd896cd9e91539ec90a55db065921a6a179a4ccf66b6511431"
+}

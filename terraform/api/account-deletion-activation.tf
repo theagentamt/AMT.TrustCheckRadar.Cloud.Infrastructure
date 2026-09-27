@@ -38,7 +38,7 @@ variable "account_deletion_activation" {
 }
 
 locals {
-  account_deletion_workers_enabled = var.account_deletion_activation != null
+  account_deletion_workers_enabled = var.account_deletion_activation != null && !var.campaign_period_work_quiescence
   account_deletion_routes_enabled  = try(var.account_deletion_activation.phase == "api", false)
   account_deletion_components = [
     "SESSION_REVOCATION", "DEVICE_BINDINGS", "DEVICE_RECOVERY", "ANALYSIS_ABUSE",

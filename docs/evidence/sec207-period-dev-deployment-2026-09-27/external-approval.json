@@ -1,0 +1,8 @@
+{
+  "approvalExpiresAtEpoch": 1790487298,
+  "manifestSha256": "530cffa187ba552450229308407a188adcd955e4701bdb273f3780bb7e27c2ac",
+  "planSha256": "846c202da97253b2fa8577206dd4c872715df8251783af307c33b24c31d1dbfd",
+  "reviewReference": "docs/evidence/sec207-period-dev-deployment-2026-09-27/external-operator-review.json",
+  "schemaVersion": 1,
+  "serializedWriterBoundary": true
+}

@@ -111,22 +111,22 @@ web_risk_communication_lambda_reserved_concurrency = 5
 play_verification_route_throttle_enabled = true
 play_preparation_route_throttle_enabled  = true
 
-# Closed privacy candidates; inventory/finalization and public routing remain gated.
+# Reviewed account deletion keeps its existing scope; account export stays disabled.
 account_export_deployment = {
-  release_id                = "e1651f86e30fc1478f69ba16a4049be8baf0e5f3"
-  object_version            = "YNLn3_R23z7m.OIi_0AfJCu5abU2btay"
-  source_hash               = "ynYTDY4o8nhqZOq+uIuyFTckEamaec1TWt9TKmRdsSk="
-  approval_reference        = "docs/PLAY-ACCOUNT-PRIVACY-DEV-DEPLOYMENT.md"
-  promotion_approved        = false
-  authority_hmac_secret_arn = "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/v1-authority-hmac-C7v1hG"
+  "approval_reference" : "docs/SECUR4ALL-207-DEV-ACCEPTANCE.md",
+  "authority_hmac_secret_arn" : "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/v1-authority-hmac-C7v1hG",
+  "object_version" : "UsHu10uG0ixavGJA9n0fXYlRsGmKsV4o",
+  "promotion_approved" : false,
+  "release_id" : "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "source_hash" : "jj/+DRKkVdn4TqQb5nGPMGwwdZj4TbvU/OE3zX6kkec="
 }
 account_export_play_token_table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens"
 account_data_deployment = {
-  release_id         = "eba5d938c1da5cf36540cf654e674f46bba3fa71"
-  object_version     = "Hmz9pOvMLuHr4x45wL3B05i.EaVe4CZg"
-  source_hash        = "7gXjecACio4Di2m383J+pwUkFz1yzLCcGqbNJ3359kY="
-  approval_reference = "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md"
-  promotion_approved = false
+  "approval_reference" : "docs/SECUR4ALL-207-DEV-ACCEPTANCE.md",
+  "object_version" : "EmM1M09.oOG6E2Omk4WewgQ8polMTMFW",
+  "promotion_approved" : false,
+  "release_id" : "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "source_hash" : "wUFODgRz1RaJPvbcCHq1WdFDFr/VGHFeMlly0xVKLtg="
 }
 account_export_monitoring = {
   alarm_topic_arn = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
@@ -146,16 +146,16 @@ profile_fence_deployment = {
   promotion_approved = false
 }
 
-# SECUR4ALL-207: permission/scheduling preparation only; all recovery gates stay false.
+# SECUR4ALL-207: recovery permissions retained; activation is explicitly pinned below.
 campaign_recovery_preparation = {
   review_reference = "docs/CAMPAIGN-RECOVERY-PERMISSION-READINESS.md"
 }
 
 # Exact reviewed closed-runtime compatibility after the initial migration.
 research_campaign_release_compatibility = {
-  api_release_sha      = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
-  consumer_release_sha = "f92285b50561397355a5fe2e466d297041336755"
-  review_reference     = "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md#closed-api-consumer-compatibility"
+  "api_release_sha" : "d98ffd65b42d54953ad83e980e58846b6fc02c5d",
+  "consumer_release_sha" : "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "review_reference" : "docs/SECUR4ALL-207-DEV-ACCEPTANCE.md"
 }
 
 # Reviewed cleanup-only Dev qualification; all unrelated admission stays closed.
@@ -167,12 +167,37 @@ account_data_finalization_candidate = {
 
 # Reviewed cleanup-only Dev qualification; all unrelated admission stays closed.
 account_deletion_activation = {
-  "phase" : "api",
-  "source_sha" : "eba5d938c1da5cf36540cf654e674f46bba3fa71",
-  "policy_reference" : "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md",
-  "inventory_reference" : "docs/evidence/live-account-deletion-2026-09-26/external-approval.json",
-  "identity_reference" : "docs/evidence/live-account-deletion-2026-09-26/cognito-normal-runtime.json; docs/evidence/live-account-deletion-2026-09-26/cognito-lost-ack-runtime.json",
   "component_reference" : "docs/evidence/live-account-deletion-2026-09-26/all-component-runtime.json",
-  "worker_acceptance_reference" : "docs/evidence/live-account-deletion-2026-09-26/cleanup-worker-corrected-runtime.json",
-  "http_subjects" : ["c4685448-1021-7014-8ef4-b326afee90ae"]
+  "http_subjects" : [
+    "c4685448-1021-7014-8ef4-b326afee90ae"
+  ],
+  "identity_reference" : "docs/evidence/live-account-deletion-2026-09-26/cognito-normal-runtime.json; docs/evidence/live-account-deletion-2026-09-26/cognito-lost-ack-runtime.json",
+  "inventory_reference" : "docs/evidence/live-account-deletion-2026-09-26/external-approval.json",
+  "phase" : "api",
+  "policy_reference" : "docs/LIVE-ACCOUNT-DELETION-ROLLOUT.md",
+  "source_sha" : "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "worker_acceptance_reference" : "docs/evidence/live-account-deletion-2026-09-26/cleanup-worker-corrected-runtime.json"
+}
+
+# SECUR4ALL-207: reviewed Dev indexed lifecycle configuration.
+campaign_period_work_preparation = {
+  "review_reference" : "docs/SECUR4ALL-207-DEV-ACCEPTANCE.md"
+}
+
+# SECUR4ALL-207: reviewed Dev indexed lifecycle configuration.
+campaign_period_work_quiescence = false
+
+# SECUR4ALL-207: reviewed Dev indexed lifecycle configuration.
+campaign_period_work_activation = {
+  "source_sha" : "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "generation" : "9f7311a2-34c9-4fe8-8fbf-56974ab32897",
+  "manifest_sha256" : "31695c1ad9ac9d0b9382cbfd9a50dc535dcb1b03f2dbe7ad64fc612484790ef0",
+  "inventory_revision" : 1,
+  "locator_manifest_sha256" : "bde6307ac73e1a6f60533216270566b2db0c822aa1b777cbf1e1013a168eb73f",
+  "locator_inventory_revision" : 1,
+  "pipeline_table_id" : "6a8d5278-235e-45ac-9ccc-87d0ef6c368d",
+  "outbox_table_id" : "37dda667-d982-4568-8bcf-ce5297362eda",
+  "inventory_reference" : "docs/evidence/sec207-period-dev-deployment-2026-09-27/external-operator-review.json",
+  "runtime_reference" : "docs/evidence/sec207-period-lifecycle-2026-09-27/retire-then-complete-result.json",
+  "iam_reference" : "docs/evidence/sec207-period-iam-2026-09-27/qualification.json"
 }

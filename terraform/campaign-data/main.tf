@@ -302,6 +302,28 @@ resource "aws_dynamodb_table" "intelligence" {
     type = "S"
   }
 
+  attribute {
+    name = "expiryPartition"
+    type = "S"
+  }
+
+  attribute {
+    name = "expiresAt"
+    type = "N"
+  }
+
+  # Sparse, anonymous aggregate expiry; explicit cleanup does not depend on TTL.
+  global_secondary_index {
+    name            = "ExpirationIndex"
+    hash_key        = "expiryPartition"
+    range_key       = "expiresAt"
+    projection_type = "KEYS_ONLY"
+    on_demand_throughput {
+      max_read_request_units  = var.intelligence_max_read_request_units
+      max_write_request_units = var.intelligence_max_write_request_units
+    }
+  }
+
   global_secondary_index {
     name            = "PublicationIndex"
     hash_key        = "GSI1PK"

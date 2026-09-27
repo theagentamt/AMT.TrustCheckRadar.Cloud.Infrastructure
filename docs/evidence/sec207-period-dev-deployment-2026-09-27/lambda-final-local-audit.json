@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "head": "8d4bbbd3dae0411e3ccfcbf94573180af9c45091",
+  "branch": "codex/campaign-period-drain",
+  "base": "3d1a2a225422556631b18636eee10a3eba47d645",
+  "origin": "git@github.com:theagentamt/AMT.TrustCheckRadar.Lambdas.git",
+  "clean": true,
+  "productionSource": "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "productionSourceUnchanged": true,
+  "fixtureSource": "81ae81a152eef30a903e23eff4d12da75b780c08",
+  "changedFileCount": 78,
+  "commitCount": 6,
+  "artifacts": {
+    "account_data_api": {
+      "sha256": "c1414e0e0473d516893ef6dc087ab559d14316bfd518715e325972d3154a2ed8",
+      "sizeBytes": 86132
+    },
+    "account_export_api": {
+      "sha256": "8e3ffe0d12a455d9f84ea41be6718f306c307598f84dbbd4fce137cd7ea491e7",
+      "sizeBytes": 5123010
+    },
+    "campaign_cluster_aggregator": {
+      "sha256": "e2d7eb0b3bc228eab15e684b01f970854e991b2940816a812d7eb95aeb84e0b9",
+      "sizeBytes": 46982
+    },
+    "campaign_deletion_bridge": {
+      "sha256": "c694fa18f29f615bc2d876bd7ffe8b18f8e9f844d0428faa047c489098d5678c",
+      "sizeBytes": 73021
+    },
+    "campaign_lifecycle": {
+      "sha256": "bc65a0f7b4ffbebe4da64c19567fa8da25ee800775b492216959a74d41313b62",
+      "sizeBytes": 52934
+    },
+    "campaign_observation_publisher": {
+      "sha256": "56c7d2f35924986f09e5f2fb10dbdee44a7dfb0a1e2f6f25917b0c3655ded092",
+      "sizeBytes": 47782
+    },
+    "campaign_review": {
+      "sha256": "59af5b4d18691f81f246daf0a7e7b22dbfa5ba63ac5e914a1203a7465e440647",
+      "sizeBytes": 3583
+    },
+    "conversation_analysis": {
+      "sha256": "18ab9bd800dd339f6a7171707f77b425da5ae3105f8f94e18bd5d40a48f72bc1",
+      "sizeBytes": 78544
+    }
+  },
+  "evidenceJsonCount": 23,
+  "evidenceSha256": {
+    "composed-retirement-cleanup.json": "4f41c7660dbff4b122e5c33a55325c0bda26a14c773eae1e6c18cb306e1f01f4",
+    "composed-retirement-independent-cleanup.json": "b575a8a105a83cfe8e9cf7ddb32fce59eae14a234559e748b9ffb619f8f8db1f",
+    "composed-retirement.json": "9e8c72be52edab8a9ecfb7557000185894bf787fc68ff987162e4a2f9d94c832",
+    "independent-verification.json": "86bbe0adc27739bc9dfec30a5caa1a967cea7d2869a7105a0e782c8eab59d104",
+    "lifecycle-complete-cleanup.json": "f443515be44b3e2017418667b55aa015beb911128cac959d0a5edd211fd5efa4",
+    "lifecycle-complete.json": "d55322f76191abd51e48c63f6128515da008e959c176858710e00e44a2259b08",
+    "lifecycle-independent-cleanup-readback.json": "25c146129199caeb1eda87f4e6f3e6c50b747970360a1375f685ab4b7c56f574",
+    "lifecycle-lost-ack-cleanup.json": "f68dd565a295909e159a8ae133fdde2aa7088b0683fce9026f76155f731025d7",
+    "lifecycle-lost-ack.json": "ed578475cd3a8b663346ce2b76c76d9c479d9dcdd05a8529e1b5840b2bf9a249",
+    "lifecycle-poison-cleanup.json": "35e5a548667beb9e92dc92af0abc6174bb3c3d3db8603fbb960948ea0ce00a1c",
+    "lifecycle-poison.json": "236a81c230d30143b9dc944c74347dc8e766e643ffb4f7119c584aaa8ab324a6",
+    "local-handler-checks.json": "6b005d5bbbf2c0328d9084b1675c3f102d9f7e658031bc77420fb41c10399a34",
+    "local-verification.json": "e89c6b015ae71821456c5de0b30c9148dbd861ca56752cbf1e00366571f90653",
+    "manifest.json": "908e7ad4ba01094ed703e39fc55607d96926715501b3d3e5aad5e18cab99cf0d",
+    "retirement-guards-cleanup.json": "2fc8ad7a18e176576f67de46ac793fa2cf0a281de048e996e244bc7394132b52",
+    "retirement-guards.json": "60ec2ba783a24e218f00e64863c51e5af1c9ea65ce30bc1c3877a79f30189e77",
+    "retirement-independent-cleanup-readback.json": "a0df48f4783a545039d8ec077df99f85fa62a2c31f53c31c11558732be624796",
+    "retirement-lost-ack-cleanup.json": "6f0ac73f67681de188bebe308b681a931f176116f748789c4d942291225ba8d6",
+    "retirement-lost-ack.json": "c2ed801a748281639652c0ec3f179705a7b55615902b3a53573c2256800a3723",
+    "withdrawal-cleanup.json": "7e74546ab5cacc22c589be88cb0f41f23150f911f913cb1328edfdb6b49c0bba",
+    "withdrawal-complete_replay.json": "3a9e5a4342d018b77ea32853dd6520efe8949374b74dd7afcba94779aa5b392d",
+    "withdrawal-delayed_replay.json": "530e5091a65c7c5f6bf7909682d899a4c86948842a883aee77955a8eaa174a8e",
+    "withdrawal-lost_ack.json": "019cedc5967b34871fd749a42c657e455983094ed3d4596fb67994f3901efb39"
+  },
+  "testsRerun": false,
+  "cloudCalls": false,
+  "pushAttempted": false
+}

@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "observedAtEpoch": 1790486633,
+  "applicationSourceCommit": "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "functions": {
+    "account_data_api": {
+      "functionName": "trustcheckradar-dev-account-data-api",
+      "codeSha256": "wUFODgRz1RaJPvbcCHq1WdFDFr/VGHFeMlly0xVKLtg=",
+      "revisionId": "09345439-4fb6-4dcf-9010-bceebdcf2d47",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-account-data-api-role",
+      "environmentSha256": "6e873d71e986f06486ec57d8ed89e3d27293d49e84ff2a575345f1b6514796a6",
+      "exactReviewedEnvironmentMatched": true,
+      "reservedConcurrency": 1,
+      "selectedGates": {
+        "ACCOUNT_DELETION_ENABLED": "true",
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "true"
+      }
+    },
+    "account_export_api": {
+      "functionName": "trustcheckradar-dev-account-export-api",
+      "codeSha256": "jj/+DRKkVdn4TqQb5nGPMGwwdZj4TbvU/OE3zX6kkec=",
+      "revisionId": "4c2090fb-0ef6-4acc-9858-bcb444766a9d",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-account-export-api-role",
+      "environmentSha256": "b524134ddfbc14cf0021e7365272794a64bda5339ca4784c585bd17216a56031",
+      "exactReviewedEnvironmentMatched": true,
+      "reservedConcurrency": 1,
+      "selectedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "true",
+        "ACCOUNT_EXPORT_ENABLED": "false"
+      }
+    },
+    "campaign_observation_publisher": {
+      "functionName": "trustcheckradar-dev-campaign-observation-publisher",
+      "codeSha256": "VsfS81kkmG8J5fL7ENve5Ep9+woeL28lkXsMNlXe0JI=",
+      "revisionId": "2234c6fa-3d4e-4618-841b-bca272faaf66",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-observation-publisher-role",
+      "environmentSha256": "38cb7f014d4478e68843b9f1b94ccf00a5afcb203f7142f982de140a368ed57d",
+      "exactReviewedEnvironmentMatched": true,
+      "reservedConcurrency": 2,
+      "selectedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "true"
+      }
+    },
+    "campaign_cluster_aggregator": {
+      "functionName": "trustcheckradar-dev-campaign-cluster-aggregator",
+      "codeSha256": "4tfrCzvCKOqxXmhLAflwhU6ZGylAgWqBLX65WuuE4Lk=",
+      "revisionId": "66e18cee-df46-46e1-80d3-d1562e991f94",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-cluster-aggregator-role",
+      "environmentSha256": "38cb7f014d4478e68843b9f1b94ccf00a5afcb203f7142f982de140a368ed57d",
+      "exactReviewedEnvironmentMatched": true,
+      "reservedConcurrency": 2,
+      "selectedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "true"
+      }
+    },
+    "campaign_deletion_bridge": {
+      "functionName": "trustcheckradar-dev-campaign-deletion-bridge",
+      "codeSha256": "xpT6GPKfYVvC2Ha9f/6LGPjp+ETQQo+qBHxIkJjVZ4w=",
+      "revisionId": "dd5ee474-0a48-408d-9112-51799e9bf911",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-deletion-bridge-role",
+      "environmentSha256": "b8eaebd992b2fac46e84db2b183521b213cd3e75ae83d0bcceced6b13441118a",
+      "exactReviewedEnvironmentMatched": true,
+      "reservedConcurrency": 2,
+      "selectedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "true"
+      }
+    },
+    "campaign_lifecycle": {
+      "functionName": "trustcheckradar-dev-campaign-lifecycle",
+      "codeSha256": "vGWg97T/vr5NpkwZVn+o2iXugAd1tJIhaVmnTUExO2I=",
+      "revisionId": "dfbe8a63-6fdf-4d6b-a7c7-a5d7f07d385b",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-lifecycle-role",
+      "environmentSha256": "c5f28f0ddd97e0143c3677d71edc6a18f88ee575d371d7c25367c5d73bf8c8a3",
+      "exactReviewedEnvironmentMatched": true,
+      "reservedConcurrency": 2,
+      "selectedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "true",
+        "CAMPAIGN_PERIOD_LIFECYCLE_ENABLED": "true",
+        "CAMPAIGN_PERIOD_RETIREMENT_ENABLED": "true"
+      }
+    },
+    "campaign_review": {
+      "functionName": "trustcheckradar-dev-campaign-review",
+      "codeSha256": "Wa9bTRhpH4HyRtrwp+eyLb+lumOsXpFKEgOnRl5EBkc=",
+      "revisionId": "a58ff287-0f5e-45aa-95b4-3d404cfcb46b",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-review-role",
+      "environmentSha256": "50c2686e4f06918c9bef73c7a041fbd62dc53eaafad2a35bbd872e4b7594acb8",
+      "exactReviewedEnvironmentMatched": true,
+      "reservedConcurrency": 1,
+      "selectedGates": {}
+    },
+    "conversation_analysis": {
+      "functionName": "trustcheckradar-dev-conversation-analysis",
+      "codeSha256": "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=",
+      "revisionId": "1aac748a-fa8c-4f56-bf18-d8cc67cddb51",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-conversation-analysis-role",
+      "environmentSha256": "169d2eb3fe7d3d8cf93d684a6348ef783d31a86dbffffe48ef9a258a62d6d511",
+      "exactReviewedEnvironmentMatched": true,
+      "reservedConcurrency": 5,
+      "selectedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "false"
+      }
+    }
+  },
+  "directInvocations": 0,
+  "scope": "Exact post-retirement configuration readback, not a repeated handler smoke"
+}

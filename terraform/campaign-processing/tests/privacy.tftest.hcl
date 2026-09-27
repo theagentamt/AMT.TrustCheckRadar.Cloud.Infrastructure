@@ -9,6 +9,46 @@ mock_provider "aws" {
   }
 }
 
+run "privacy_key_retirement_cannot_create_reenable_or_retag_keys" {
+  command = plan
+  assert {
+    condition = (
+      one([for s in data.aws_iam_policy_document.lifecycle_runtime[0].statement : s if s.sid == "ManageTaggedPeriodHmacKeys"]).actions == toset(["kms:DescribeKey", "kms:ListResourceTags", "kms:DisableKey"]) &&
+      alltrue([for s in data.aws_iam_policy_document.lifecycle_runtime[0].statement :
+        length(setintersection(s.actions, toset(["kms:CreateKey", "kms:EnableKey", "kms:TagResource", "kms:UntagResource", "kms:CancelKeyDeletion", "kms:GetKeyPolicy", "kms:PutKeyPolicy"]))) == 0
+      ]) &&
+      one([for s in data.aws_iam_policy_document.lifecycle_runtime[0].statement : s if s.sid == "ScheduleTaggedPeriodKeyDeletion"]).actions == toset(["kms:ScheduleKeyDeletion"]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.lifecycle_runtime[0].statement : s if s.sid == "ScheduleTaggedPeriodKeyDeletion"]).condition :
+        c.test == "NumericEquals" && c.variable == "kms:ScheduleKeyDeletionPendingWindowInDays" && toset(c.values) == toset(["7"])
+      ]) &&
+      alltrue([for sid in ["ManageTaggedPeriodHmacKeys", "ScheduleTaggedPeriodKeyDeletion"] :
+        one([for s in data.aws_iam_policy_document.lifecycle_runtime[0].statement : s if s.sid == sid]).resources == toset(["arn:aws:kms:us-east-1:107827791950:key/*"]) &&
+        alltrue([for pair in [{ key = "Project", value = "trustcheckradar" }, { key = "Environment", value = "dev" }, { key = "Purpose", value = "campaign-contributor-token" }] :
+          anytrue([for c in one([for s in data.aws_iam_policy_document.lifecycle_runtime[0].statement : s if s.sid == sid]).condition :
+            c.test == "StringEquals" && c.variable == "aws:ResourceTag/${pair.key}" && toset(c.values) == toset([pair.value])
+          ])
+        ])
+      ])
+    )
+    error_message = "Privacy lifecycle may inspect, disable and schedule deletion of tagged local period keys; it cannot create, re-enable, retag or cancel retirement."
+  }
+}
+
+run "legacy_key_permissions_are_not_silently_changed" {
+  command = plan
+  variables {
+    account_privacy_artifacts = null
+  }
+  assert {
+    condition = (
+      one([for s in data.aws_iam_policy_document.lifecycle_runtime[0].statement : s if s.sid == "CreatePeriodHmacKeys"]).actions == toset(["kms:CreateKey"]) &&
+      one([for s in data.aws_iam_policy_document.lifecycle_runtime[0].statement : s if s.sid == "TagNewPeriodHmacKeys"]).actions == toset(["kms:TagResource"]) &&
+      contains(one([for s in data.aws_iam_policy_document.lifecycle_runtime[0].statement : s if s.sid == "ManageTaggedPeriodHmacKeys"]).actions, "kms:EnableKey")
+    )
+    error_message = "The retired runtime compatibility branch is unchanged; only the explicit privacy bundle receives the narrowed policy."
+  }
+}
+
 variables {
   aws_region                  = "us-east-1"
   project_name                = "trustcheckradar"

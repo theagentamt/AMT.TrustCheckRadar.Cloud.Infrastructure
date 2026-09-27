@@ -1,0 +1,100 @@
+{
+  "accountId": "107827791950",
+  "cleanupComplete": true,
+  "cleanupObservedAtUtc": "2026-09-27T04:31:10.130412+00:00",
+  "cleanupOutstanding": [],
+  "createdAtUtc": "2026-09-27T04:28:42.934591+00:00",
+  "executorSha256": "6f99fed40816eca79f034ddd39091f11d3ff4eae2926a47fb82aa365ff2e6238",
+  "fixturePolicySha256": {
+    "account_data": "9fc2153c09c36535f7437883039e8f298da65c53602a289b8f47279e398f1b24",
+    "analysis": "a6c8181b4b693db132b3d684550da131588e5da328781e4eb2fbadeceac272b7",
+    "cluster": "e31cd7fd112bcabcc7601a1c1366bdfd27354ffddc4b882465993af0bef65361",
+    "deletion": "dc4c02a7e40b37b621ea6e0073bba4aa0b548c6f0a29b966ee5af27eb8a2a1fb",
+    "export": "2173b5d94735797febae53c5ffaae16f1c857ce1dea30ea3a538a64240716bf7",
+    "lifecycle": "5ef1589c07f94969d15902414dbb92c0cd77c9066d543a80c08ead4ccac540fe",
+    "publisher": "fffa9c69998a8c0bd05b7ecae12fe00025b921558dae601b50771317920bcbeb"
+  },
+  "inputSha256": {
+    "apiPlan": "26da357b0fd465a63203146aba32a1b10fcf07756c27a9e93cf47e60adf0ffc1",
+    "processingPlan": "da62a65164e594036d1dd3da79072b1caacc060ae99b4ab5160ffddf72d3a29d",
+    "roleAudit": "4f18b722f2c5e61b8509c8cdb2dc296e21448e1f99e8865dec2da75736960aa0"
+  },
+  "purpose": "period-work-iam-qualification",
+  "region": "us-east-1",
+  "resources": {
+    "role": {
+      "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-acct": {
+        "absenceConfirmed": true,
+        "createAcknowledged": true,
+        "createAttempted": true,
+        "createRejected": false
+      },
+      "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-ana": {
+        "absenceConfirmed": true,
+        "createAcknowledged": true,
+        "createAttempted": true,
+        "createRejected": false
+      },
+      "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-clu": {
+        "absenceConfirmed": true,
+        "createAcknowledged": true,
+        "createAttempted": true,
+        "createRejected": false
+      },
+      "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-del": {
+        "absenceConfirmed": true,
+        "createAcknowledged": true,
+        "createAttempted": true,
+        "createRejected": false
+      },
+      "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-exp": {
+        "absenceConfirmed": true,
+        "createAcknowledged": true,
+        "createAttempted": true,
+        "createRejected": false
+      },
+      "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-life": {
+        "absenceConfirmed": true,
+        "createAcknowledged": true,
+        "createAttempted": true,
+        "createRejected": false
+      },
+      "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-pub": {
+        "absenceConfirmed": true,
+        "createAcknowledged": true,
+        "createAttempted": true,
+        "createRejected": false
+      }
+    },
+    "table": {
+      "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-outbox": {
+        "absenceConfirmed": true,
+        "createAcknowledged": true,
+        "createAttempted": true,
+        "createRejected": false
+      },
+      "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-pipeline": {
+        "absenceConfirmed": true,
+        "createAcknowledged": true,
+        "createAttempted": true,
+        "createRejected": false
+      }
+    }
+  },
+  "roleNames": {
+    "account_data": "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-acct",
+    "analysis": "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-ana",
+    "cluster": "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-clu",
+    "deletion": "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-del",
+    "export": "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-exp",
+    "lifecycle": "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-life",
+    "publisher": "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-pub"
+  },
+  "runId": "7d053e9b32624781a6be59770587d3fa",
+  "schemaVersion": 1,
+  "tableNames": {
+    "outbox": "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-outbox",
+    "pipeline": "amt-period-work-qual-7d053e9b32624781a6be59770587d3fa-pipeline"
+  },
+  "validatorSha256": "27e288977d6a62c7e847efb06a007e7bbf8b343fcbeadb1456fcb505fc0af3d3"
+}
