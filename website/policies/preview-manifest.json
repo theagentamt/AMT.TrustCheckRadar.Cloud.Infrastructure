@@ -1,0 +1,12 @@
+{
+  "status": "DRAFT_NOT_FOR_DEPLOYMENT",
+  "reviewDate": "2026-09-27",
+  "files": {
+    "privacy-policy/index.html": "2a3d2938566bb965228961c8abf3c957ad2855fa58c5159bbd53f913bd1c0feb",
+    "terms-of-use/index.html": "f1fe34b15036dd4cd66dbb205114b4f0aa09bae58e2ee7e9b04aaa444e4fc81e",
+    "data-deletion/index.html": "044f130dc04cd5bd3d209633483948f558575c0dbff64b0c5840b823f93d839f",
+    "es/privacy-policy/index.html": "3026c07c75588a4c6aa34886ae7790f56d848a943cb73f3c24fe280f40180c7b",
+    "es/terms-of-use/index.html": "ac13b47bdd7674eb1a25b312220552ff33fd40d2e3f13e268f38a6e6a4a4a73c",
+    "es/data-deletion/index.html": "110b73bbec85ab2e33b2441228016d0727104b5a2109c8d39d00437b7c47dee0"
+  }
+}
