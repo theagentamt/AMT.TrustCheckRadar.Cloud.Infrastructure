@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "polls": 1,
+  "commandObserved": true,
+  "originalOperationMatches": true,
+  "validComponentReceipts": 12,
+  "status": "COMPLETE",
+  "observedAtEpoch": 1790524855,
+  "profileAbsent": true,
+  "devicePartitionEmpty": true,
+  "cognitoAbsent": true,
+  "runtimeUnchanged": true,
+  "sourceCommit": "a25e81f3ef919e65d2ec2fb702637b287e9c79d8"
+}

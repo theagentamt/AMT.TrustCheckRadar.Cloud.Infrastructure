@@ -1,0 +1,11 @@
+{
+  "helperSha256": "ed939c44b553e5a419d26b0de9a8672f8c60214ff8cfcb2925d2130037df8732",
+  "independentReviewPassed": true,
+  "selectedEmulatorOnly": true,
+  "privateOwnerBoundOriginalOperation": true,
+  "exclusiveOwnerReadableDestination": true,
+  "fileAndDirectorySynced": true,
+  "runMode": "ordinary Python without optimization",
+  "copiesMade": 1,
+  "expectedAccountVerified": true
+}

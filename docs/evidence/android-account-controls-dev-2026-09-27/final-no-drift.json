@@ -1,0 +1,22 @@
+{
+  "plans": [
+    {
+      "stack": "api",
+      "detailedExitCode": 0,
+      "noChanges": true,
+      "logSha256": "ebe5c6189966b590642d0481bbac8b3830543712a43d3908162d297cf9f313c2"
+    },
+    {
+      "stack": "url-consumer",
+      "detailedExitCode": 0,
+      "noChanges": true,
+      "logSha256": "b1bffccbe094c032ba44ac34d3bbaf5f89cc9fadb0ab4747d0cae25a7ad351dc"
+    },
+    {
+      "stack": "play-lifecycle",
+      "detailedExitCode": 0,
+      "noChanges": true,
+      "logSha256": "817efcd9423106e436c2b062714ccded22fc759c3481873712173de0470c5fb1"
+    }
+  ]
+}

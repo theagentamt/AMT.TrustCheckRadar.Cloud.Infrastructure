@@ -1,0 +1,23 @@
+{
+  "recordType": "development-scope-review",
+  "historyLiveQualificationRemains": [
+    "ATCR-106",
+    "ATCR-107",
+    "ATCR-102",
+    "ATCR-104"
+  ],
+  "manualQaOwner": "QA team",
+  "manualQaStory": "ATCR-62",
+  "physicalTestingDeferredTo": "ATCR-148",
+  "backendReleaseFollowups": [
+    "SECUR4ALL-329",
+    "SECUR4ALL-331"
+  ],
+  "retainedEngineeringDefectsFixed": [
+    "Shared registered device fingerprint for History operations",
+    "Google Play subscription management handoff"
+  ],
+  "newConnectedEvidence": "Actual native typed account-deletion acceptance, local cleanup and sign-out",
+  "broadHistoryActivationPerformed": false,
+  "independentReviewPassed": true
+}

@@ -1,0 +1,10 @@
+{
+  "pullRequest": "https://github.com/theagentamt/AMT.Android.TrustCheckRadar/pull/44",
+  "sourceCommit": "ee7a29af6f02b2a612c0ac4563f1b4fbc3c058a0",
+  "releaseCommit": "f2a39196e5630a9879142e8dfc625d25d32eb727",
+  "mainCommit": "2846e45811826852ed491b90e51d275294d0f1af",
+  "sourceAncestorOfRemoteRelease": true,
+  "mainUnchanged": true,
+  "worktreeClean": true,
+  "independentExactHeadReviewPassed": true
+}

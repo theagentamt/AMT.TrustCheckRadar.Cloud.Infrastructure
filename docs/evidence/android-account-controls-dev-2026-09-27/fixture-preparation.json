@@ -1,0 +1,13 @@
+{
+  "setupHelperSha256": "25c08d83564462729dc0221eda9f1aa4ff4c66876aea757ccba2aabc9841c77d",
+  "sourceCommit": "a25e81f3ef919e65d2ec2fb702637b287e9c79d8",
+  "newDisposableIdentity": true,
+  "profilePrepared": true,
+  "nativeSignupTriggerQualified": false,
+  "ageAttestationHttpStatus": 200,
+  "deviceRegistered": false,
+  "paidAccessGranted": false,
+  "credentialsTransferred": false,
+  "helperReusedWithoutChanges": true,
+  "independentReviewPassed": true
+}

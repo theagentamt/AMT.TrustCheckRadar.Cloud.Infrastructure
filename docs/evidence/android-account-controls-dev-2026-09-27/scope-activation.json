@@ -1,0 +1,27 @@
+{
+  "observedAtEpoch": 1790522835,
+  "functions": [
+    {
+      "function": "trustcheckradar-dev-account-data-api",
+      "reviewedEnvironmentMatches": true,
+      "codeSha256": "wUFODgRz1RaJPvbcCHq1WdFDFr/VGHFeMlly0xVKLtg=",
+      "roleUnchanged": true
+    },
+    {
+      "function": "trustcheckradar-dev-v1-authority-deletion",
+      "reviewedEnvironmentMatches": true,
+      "codeSha256": "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc=",
+      "roleUnchanged": true
+    },
+    {
+      "function": "trustcheckradar-dev-play-token-deletion",
+      "reviewedEnvironmentMatches": true,
+      "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+      "roleUnchanged": true
+    }
+  ],
+  "deletionGetPostJwtVerified": true,
+  "exportEnabled": false,
+  "exportRouteAbsent": true,
+  "generalAccessEnabled": false
+}

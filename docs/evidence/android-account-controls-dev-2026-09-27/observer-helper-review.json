@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "helperSha256": "b2cb4a82dd5fadf870a14fa7172b7078057aad066d5338bd0b4ba39bb647f2c3",
+  "testCountNormal": 18,
+  "testCountOptimized": 18,
+  "independentReviewApproved": true,
+  "scope": "read-only native original-operation completion observation",
+  "productionSourceChanged": false,
+  "awsExecutedByAuthor": false,
+  "concreteRuntimePlanReviewRequired": true,
+  "nativeHandoffHashAndChronologyReviewRequired": true,
+  "optimizedTestWarning": "pytest assertion warning; helper safety checks remain explicit"
+}
