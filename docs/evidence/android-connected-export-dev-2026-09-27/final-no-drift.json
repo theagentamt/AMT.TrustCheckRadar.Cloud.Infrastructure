@@ -1,0 +1,17 @@
+{
+  "stacks": {
+    "api": {
+      "noChanges": true,
+      "planLogSha256": "b84e953a2a25f39f78c8dfa45be0db9de97eff066937d6178a08e5892ea4b514"
+    },
+    "url-consumer": {
+      "noChanges": true,
+      "planLogSha256": "0cb87a21c2e53ed65e68dd240c248ea082590cf6b00889b78362541c059f1ca4"
+    },
+    "play-lifecycle": {
+      "noChanges": true,
+      "planLogSha256": "cee3822885b80e91ab1b80e9930fd9e044490b5a041832a86210aa3268c93a26"
+    }
+  },
+  "configuration": "committed Dev environment; temporary overlays removed"
+}

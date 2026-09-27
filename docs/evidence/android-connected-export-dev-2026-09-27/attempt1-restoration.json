@@ -1,0 +1,39 @@
+{
+  "observedAtEpoch": 1790519664,
+  "temporaryScopesRestored": true,
+  "exportRouteAbsent": true,
+  "exportGatewayInvokePermissionAbsent": true,
+  "functions": [
+    {
+      "functionName": "trustcheckradar-dev-account-data-api",
+      "codeSha256": "wUFODgRz1RaJPvbcCHq1WdFDFr/VGHFeMlly0xVKLtg=",
+      "configurationMatchesReviewedRestoration": true,
+      "version": "$LATEST",
+      "deletionSubjectCount": 1
+    },
+    {
+      "functionName": "trustcheckradar-dev-account-export-api",
+      "codeSha256": "vEGM3mwVdOoUOSBo/lNMLYJsiS80OLvmM5kPmEXfxC8=",
+      "configurationMatchesReviewedRestoration": true,
+      "version": "$LATEST",
+      "exportEnabled": false,
+      "exportSubjects": 0
+    },
+    {
+      "functionName": "trustcheckradar-dev-v1-authority-deletion",
+      "codeSha256": "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc=",
+      "configurationMatchesReviewedRestoration": true,
+      "version": "13",
+      "deletionSubjectCount": 1
+    },
+    {
+      "functionName": "trustcheckradar-dev-play-token-deletion",
+      "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+      "configurationMatchesReviewedRestoration": true,
+      "version": "8",
+      "deletionSubjectCount": 1
+    }
+  ],
+  "credentialsOrSubjectsRetained": false,
+  "existingKeyringVersionMetadataUnchanged": true
+}

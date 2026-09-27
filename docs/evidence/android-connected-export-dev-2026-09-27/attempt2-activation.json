@@ -1,0 +1,34 @@
+{
+  "functions": [
+    {
+      "function": "trustcheckradar-dev-account-data-api",
+      "reviewedConfigurationMatches": true,
+      "artifactUnchanged": true
+    },
+    {
+      "function": "trustcheckradar-dev-account-export-api",
+      "reviewedConfigurationMatches": true,
+      "artifactUnchanged": true
+    },
+    {
+      "function": "trustcheckradar-dev-v1-authority-deletion",
+      "reviewedConfigurationMatches": true,
+      "artifactUnchanged": true
+    },
+    {
+      "function": "trustcheckradar-dev-play-token-deletion",
+      "reviewedConfigurationMatches": true,
+      "artifactUnchanged": true
+    }
+  ],
+  "route": {
+    "routeVerified": true,
+    "jwtIssuerAudienceScopeVerified": true,
+    "invokePermissionExact": true,
+    "rate": 2,
+    "burst": 4,
+    "dataTracing": false
+  },
+  "scopePlanMatches": true,
+  "credentialsRetained": false
+}

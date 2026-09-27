@@ -1,0 +1,5 @@
+{
+  "sessionStatus": "unauthenticated",
+  "identityPresent": false,
+  "shellCleanupProbe": true
+}

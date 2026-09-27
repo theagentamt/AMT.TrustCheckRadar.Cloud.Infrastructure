@@ -1,0 +1,13 @@
+{
+  "reviewedConfigurationMatches": true,
+  "artifactUnchanged": true,
+  "singleFreshSubject": true,
+  "route": {
+    "routeVerified": true,
+    "jwtIssuerAudienceScopeVerified": true,
+    "invokePermissionExact": true,
+    "rate": 2,
+    "burst": 4,
+    "dataTracing": false
+  }
+}

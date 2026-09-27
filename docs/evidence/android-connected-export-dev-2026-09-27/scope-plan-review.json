@@ -1,0 +1,25 @@
+{
+  "exportPlanSha256": "3819d5f7bd45ccc02dbde1974a80ed9f00a1362a653af41c5caa7aef6bf34087",
+  "exportChanges": {
+    "create": 3,
+    "update": 2,
+    "destroy": 0
+  },
+  "cleanupPlans": {
+    "api": "af1b9c4dc9d5d0e2535367118a8510d7d6d5bbd36134574c1239b2206374eeab",
+    "urlConsumer": "f54eba88063db336dcc439d3f88484f1022bc688e462b5100b1df6b63e0516dc",
+    "playLifecycle": "7726152b2e9cfd386aeab1840cf29e0d21adbdc6780a98c0b1e04fb65923d79c"
+  },
+  "independentReviewPassed": true,
+  "existingScopesPreserved": true,
+  "lambdaArtifactsUnchanged": true,
+  "attempt1ConnectedOutcome": "failed_not_passed",
+  "physicalDeviceTesting": false,
+  "cleanupSubmissionPlanSha256": "34429641b992a238d68ab4493ef31734e62a010e34302dbd0f5e892f11cc9c6a",
+  "cleanupSubmission": "accepted_original_operation_http202",
+  "restorationPlanSha256": {
+    "api": "48546476aa026ee94ef6b224b8a1c990a9c0584e5447a89ddae36028d2979db1",
+    "urlConsumer": "fac33c9fb2472270a78419dd2b7731a586bb4edc8625ede0db59e2272d3a599a",
+    "playLifecycle": "8d5849887dc9ae85956fd7a5365ee21dbae934d65948926b531e96a65c49fc2e"
+  }
+}

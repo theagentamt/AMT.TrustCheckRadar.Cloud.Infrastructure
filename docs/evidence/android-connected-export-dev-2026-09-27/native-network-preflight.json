@@ -1,0 +1,10 @@
+{
+  "sessionStatus": "unauthenticated",
+  "identityPresent": false,
+  "shellCleanupProbe": true,
+  "deviceBindingPresent": false,
+  "expectedApplication": true,
+  "cognitoTls": true,
+  "apiTls": true,
+  "installedTestApkSha256": "edf01860a59da0bd969f05350f3aa77ad5a67ae464d9f670b465b1b84745a22a"
+}
