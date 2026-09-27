@@ -62,6 +62,59 @@ or new key-retirement protection is claimed by this readback.
 The snapshot changed no resources, read no table records and invoked no function.
 Separate deletion-recovery schedules were outside this observation and unchanged.
 
+## Qualified bounded orphan cleanup
+
+Lambda source `68198f448f378508783925526a59cc3454137c6a` adds the operator-only
+`recover_expired_orphan` lifecycle operation and coordinated version-2 repair
+checkpoint handling. It reads the full bounded candidate partition before
+deletion, requires exact supported expired records and owned locators, and
+checks CLOSING period/generation, inventory, absent summary and checkpoint state
+in every transaction. It removes at most ten pairs per call and requires a
+later strong-read call before removing the final checkpoint. It never returns
+whole-period completion or retirement eligibility. Legacy orphan checkpoints,
+unknown/mixed/live records and partitions beyond four pages/100 rows remain
+unmodified and unresolved.
+
+Local validation passed 342 bridge tests plus nine subtests and 63 lifecycle
+tests, including 27 orphan cases independently rerun by the reviewer. Final
+fixture-routing validation passed six affected cases. These counts overlap;
+they are not additive unique coverage claims.
+
+The [package verification](evidence/sec207-orphan-recovery-2026-09-26/package-verification.json)
+matched all 99 Python members to the frozen Git source. The
+[manifest](evidence/sec207-orphan-recovery-2026-09-26/package-manifest.json) records
+four coherent production archives and the separate 224114-byte test archive,
+SHA256 `15b13d8a53d2a989dfb72ce4784d8fca991d63415237052a77f7503c7728346d`.
+
+Actual isolated AWS Python 3.14 ARM64 results all passed:
+
+| Case | Result and evidence |
+| --- | --- |
+| Twelve expired pairs and final checkpoint | [Bounded drain passed](evidence/sec207-orphan-recovery-2026-09-26/orphan_handler_drain.json) |
+| Legacy checkpoint without trustworthy period identity | [Refused without deletion](evidence/sec207-orphan-recovery-2026-09-26/orphan_handler_legacy_refusal.json) |
+| Partition containing a live contribution | [Refused without deletion](evidence/sec207-orphan-recovery-2026-09-26/orphan_handler_live_refusal.json) |
+| Committed deletion with lost acknowledgment | [Fresh-state recovery passed](evidence/sec207-orphan-recovery-2026-09-26/orphan_handler_lost_ack.json) |
+
+These cases invoke the packaged actual handler and real DynamoDB transactions.
+They use synthetic inventory/clock/period metadata, dedicated fixture tables
+and a fixture role. They do not qualify deployed lifecycle permissions, native
+backups, real discovery/scheduling, authenticated withdrawal or key retirement.
+No production archive was deployed or application gate changed.
+
+[Independent cleanup](evidence/sec207-orphan-recovery-2026-09-26/cleanup-readback.json)
+confirmed all three tables, the function and role absent. The disposable HMAC
+key is PendingDeletion for October 4 UTC (October 3 local); it is not destroyed.
+The [reviewed invocation wrapper](evidence/sec207-orphan-recovery-2026-09-26/invoke-fixture.py)
+is retained as execution evidence, not a ready-to-run general operator tool.
+
+Lambda source publication is pending explicit public-repository authorization
+required by automatic approval review. Local implementation, package review and
+isolated runtime qualification are complete for this increment; remote release
+integration is not yet claimed. SECUR4ALL-207 remains In Progress for the other
+Dev requirements above. Existing contribution expiry can extend later than the
+period key's nominal retirement time; the complete retirement protocol must
+resolve this under the approved policy before any key retirement is enabled.
+
 ## Ownership and completion
 
 Lambda owns cleanup, publication, sealing/retirement protocols, recovery and
