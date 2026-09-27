@@ -81,3 +81,47 @@ required scheduled Dev verification cannot be replaced by a manual follow-up.
 At this document's initial source review the archives are published and the plans
 are prepared; apply and runtime recovery have not yet occurred. Append actual
 execution evidence below rather than treating plan success as runtime success.
+
+
+## Applied and verified — September 27, 2026
+
+Infrastructure PR108 integrated source
+`a8e765d271f7e358df927d96409ebfbdbac17d56` at release merge
+`468d0ff3db9a1f49d04a2453d2c3f6cac317221b`. Both independently reviewed saved
+plans applied successfully: zero additions, two updates and zero destructions
+per stack. Full follow-up plans both returned detailed exit code zero/no drift.
+See [apply evidence](evidence/sec332-apply-and-no-drift.json).
+
+[Installed configuration readback](evidence/sec332-runtime-readback.json) confirms
+Play token deletion live version **13** and V1 authority deletion version **18**,
+with the reviewed package hashes. All seven functions in the two roots matched
+their intended hashes; the five sibling packages remained unchanged. Environment,
+role, runtime, handler, architecture, timeout, memory and reserved concurrency
+matched the before-plan values. Aliases have no weighted routing.
+
+The [natural scheduled observation](evidence/sec332-scheduled-recovery.json)
+starts at 20:15:21 UTC and records both partial and complete passes on each new
+version, with integer counters, zero reported failed items and no error log events.
+Partial ages include 55 seconds for Play and 63 seconds for V1; complete passes
+return zero. No invocation was injected and no account operation was replayed.
+The Lambda Errors metrics report zero in the first complete-minute window after
+the readback. Both native Errors alarms are **OK**, with normal zero-error
+threshold evaluations, not missing-data/manual state overrides. This finite
+window demonstrates the corrected path, not a guarantee of no future failures.
+
+[Operational metric readback](evidence/sec332-operational-metrics.json) separately
+confirms both heartbeat and full-pass-age metric streams continue, including
+positive ages and zero completion ages. SNS and alarm configuration are preserved;
+this does not claim that the owner has read a recovery email.
+
+No UAT/Production deployment, main promotion, retention adjustment, subject-scope
+change, paid provider request or physical test occurred. Before later release,
+reuse [SECUR4ALL-329](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-329): record
+exact promoted artifacts/configuration and include at least one scheduled partial
+checkpoint followed by a completed pass on both workers. Confirm numeric ages,
+zero invocation/failed-item errors, continuing heartbeats and normal alarm states.
+Use that existing synthetic-account release plan; do not mutate checkpoints or
+introduce production accounts solely to fabricate this case. Engineering must
+supply a bounded fixture if the target environment has no partial traversal.
+This adds a release regression to existing qualification; Dev scheduled acceptance
+above is already complete and is not deferred to that follow-up.

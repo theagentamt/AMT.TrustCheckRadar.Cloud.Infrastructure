@@ -1,0 +1,101 @@
+{
+  "metricWindowStartUtc": "2026-09-27T20:16:00+00:00",
+  "observedAtUtc": "2026-09-27T20:17:51.889778+00:00",
+  "windowStartUtc": "2026-09-27T20:15:21.738621+00:00",
+  "injectedInvocations": 0,
+  "functions": [
+    {
+      "name": "trustcheckradar-dev-play-token-deletion",
+      "version": "13",
+      "startsObserved": 2,
+      "numericSummaries": true,
+      "errorLogEvents": 0,
+      "summaries": [
+        {
+          "timestampUtc": "2026-09-27T20:16:13.063000+00:00",
+          "heartbeat": 1,
+          "examined": 4,
+          "completed": 0,
+          "pending": 0,
+          "failed": 0,
+          "deleted": 0,
+          "overdue": 0,
+          "skipped": 4,
+          "fullPassAgeSeconds": 55
+        },
+        {
+          "timestampUtc": "2026-09-27T20:17:13.146000+00:00",
+          "heartbeat": 1,
+          "examined": 3,
+          "completed": 1,
+          "pending": 0,
+          "failed": 0,
+          "deleted": 0,
+          "overdue": 0,
+          "skipped": 2,
+          "fullPassAgeSeconds": 0
+        }
+      ],
+      "partialPassObserved": true,
+      "fullPassObserved": true,
+      "errorMetricDatapoints": 1,
+      "errorMetricSum": 0.0,
+      "alarms": [
+        {
+          "name": "trustcheckradar-dev-play-token-deletion-errors",
+          "state": "OK",
+          "updated": "2026-09-27T15:16:13.643000-05:00",
+          "reason": "Threshold Crossed: 1 datapoint [0.0 (27/09/26 20:15:00)] was not greater than or equal to the threshold (1.0)."
+        }
+      ]
+    },
+    {
+      "name": "trustcheckradar-dev-v1-authority-deletion",
+      "version": "18",
+      "startsObserved": 2,
+      "numericSummaries": true,
+      "errorLogEvents": 0,
+      "summaries": [
+        {
+          "timestampUtc": "2026-09-27T20:15:52.877000+00:00",
+          "examined": 4,
+          "completed": 0,
+          "pending": 0,
+          "failed": 0,
+          "deleted": 0,
+          "overdue": 0,
+          "skipped": 4,
+          "pages": 2,
+          "fullPassCompleted": 0,
+          "fullPassAgeSeconds": 63
+        },
+        {
+          "timestampUtc": "2026-09-27T20:16:49.477000+00:00",
+          "examined": 3,
+          "completed": 1,
+          "pending": 0,
+          "failed": 0,
+          "deleted": 0,
+          "overdue": 0,
+          "skipped": 2,
+          "pages": 2,
+          "fullPassCompleted": 1,
+          "fullPassAgeSeconds": 0
+        }
+      ],
+      "partialPassObserved": true,
+      "fullPassObserved": true,
+      "errorMetricDatapoints": 1,
+      "errorMetricSum": 0.0,
+      "alarms": [
+        {
+          "name": "trustcheckradar-dev-v1-authority-deletion-errors",
+          "state": "OK",
+          "updated": "2026-09-27T15:15:27.576000-05:00",
+          "reason": "Threshold Crossed: 1 datapoint [0.0 (27/09/26 20:14:00)] was not greater than the threshold (0.0)."
+        }
+      ]
+    }
+  ],
+  "acceptancePassed": true
+}
