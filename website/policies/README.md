@@ -12,8 +12,10 @@ An email is a request, not proof of ownership or authority to erase an account.
 ## Owner decisions approved September 27, 2026
 
 - Real V1 customer submissions must not be opted into provider model-training
-  sharing. Actual OpenAI organization/project settings remain unverified; this
-  decision does not claim Zero Data Retention or change provider settings.
+  sharing. September 28 read-only inspection confirmed all three sharing controls
+  disabled, with Standard Retention and Global residency. The owner confirmed
+  the AWS credential belongs to that project; this is owner attestation, not an
+  independent key comparison. No settings were changed or secrets retrieved.
 - The shared inbox uses Proton Mail Plus. Correspondence and the minimal
   verification record share the same case and must be removed on or before
   30 calendar days after resolution. The owner handles verification/submission
@@ -76,7 +78,8 @@ DRAFT with no effective date and noindex. The renderer has no publish mode.
 - [Web Risk lists](https://docs.cloud.google.com/web-risk/docs/lists) and
   [Google service terms, section 46](https://cloud.google.com/terms/service-terms):
   Lookup sends the actual URL. Do not apply the separate Evaluate/Submission reuse
-  clause to Lookup by assumption. Exact Lookup request retention remains unverified.
+  clause to Lookup by assumption. The current clause also names Brand Phishing
+  Protection. Exact Lookup request retention remains unverified.
 - [FTC privacy guidance](https://www.ftc.gov/business-guidance/privacy-security/consumer-privacy):
   public representations must match actual practices. No blanket compliance
   certification or state-law applicability determination is made here.
@@ -106,7 +109,10 @@ DRAFT with no effective date and noindex. The renderer has no publish mode.
 2. Establish support-mail retention and provider account/contract practices. Do not
    infer zero retention, no training opt-in, a specific processing country or
    erasure of processor records from `store:false` or our TTL. Record the actual
-   OpenAI controls and Google agreement, and reconcile provider erasure requests.
+   release-specific OpenAI model/endpoint and Google agreement, and reconcile
+   provider erasure requests. The inspected OpenAI sharing/retention/residency
+   settings and owner-confirmed project binding are recorded below; they are no
+   longer pending login or owner confirmation.
 3. Reconcile the exact release's gates/SDKs and iOS differences before implying
    both platforms ship the Android behavior. Conditional source capability is not
    a claim that general export, research or online checks are currently enabled.
@@ -219,3 +225,14 @@ journal proves that this run created it and its current hash matches that run's
 upload. If another writer has changed a key or configuration, stop and reconcile
 rather than overwrite it. Invalidate only the approved affected paths. The final
 text/effective-date approval and artifact manifest must precede any upload.
+
+
+## Provider evidence refresh, September 28
+
+[Provider review](PROVIDER-REVIEW.md) records the inspected OpenAI controls,
+owner-confirmed credential/project connection, candidate-runtime limits and
+Google Lookup disclosure boundary. It supersedes earlier settings-unverified
+notes for this inspected scope. Both privacy drafts carry matching EN/ES updates.
+Android PR47 is integrated into release-V01 at
+`fc4a42a4e32ad0497c1479a1ea6c4e50c54f68f5`; its mapping changes no runtime or
+store answers. Public publication and actual store submission remain pending.
