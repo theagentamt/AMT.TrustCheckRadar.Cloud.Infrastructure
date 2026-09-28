@@ -2,9 +2,11 @@
 
 The owner selected in-app deletion as the primary path and verified requests to
 `privacy@andmorethings.com` as the V1 fallback. The inbox/operator identity remains
-AndMoreThings Labs LLC. This change prepares a disabled backend candidate; it does
-not establish a functioning email service, prove ownership, or enable deletion.
-SECUR4ALL-92's policy cannot claim fulfilled requests until this story passes.
+AndMoreThings Labs LLC. The backend and separate-role tooling have been implemented. The sections below
+record their incremental preparation; current Dev qualification is recorded in
+[the Dev evidence](SECUR4ALL-333-DEV-EVIDENCE.md). Synthetic confirmation does not
+prove mailbox ownership or establish general email-service availability.
+SECUR4ALL-92 must match the qualified operational and release scope.
 
 ## Supervised shared-inbox V1 — owner decisions, September 27
 
@@ -256,3 +258,61 @@ Source integration alone does not select that policy, enable admission or author
 deleting an account. No activation configuration has been applied by this increment.
 The contract's enabled/data-permission fields describe selected runtime settings;
 email_deletion_available remains false until the full operational workflow qualifies.
+
+
+## Response and case-resolution procedure
+
+The owner committed to acknowledging requests and beginning verification **within
+five business days**. This target is not a promise that deletion completes within
+five business days. Report acceptance and verified completion separately. Use the
+[operator runbook](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/blob/c46a19176150addfcec80c4015d9cbc8243ec49d/docs/support-deletion-operator.md)
+for the original-operation submit/status commands and uncertain-response handling.
+
+For the shared Proton Mail Plus inbox, the owner is responsible for case-selective
+cleanup; no mailbox-wide deletion rule is authorized. Keep only the approved
+minimal audit metadata (case/operation reference, verifier, confirmation time and
+outcome) alongside the existing case correspondence. At resolution, record the
+resolution date and cleanup deadline 30 calendar days later in that same case
+workspace. Include the received request, challenge, explicit reply, sent
+responses, and operator-owned challenge/proof/intent working files in that case's
+cleanup scope. Avoid copied bodies, identity documents, additional archives or
+credentials. Preserve an unresolved operation for read-only reconciliation; do
+not mark a case resolved solely to remove an uncertain-attempt marker.
+
+Review resolved cases and their due dates each business day. Complete cleanup
+on or before the 30-calendar-day deadline; for an unstaffed weekend or holiday,
+use the last staffed day before that deadline. Remove only that case's
+correspondence and working artifacts, including relevant
+archive/trash copies under the owner's control. Verify selective cleanup without
+deleting unrelated shared-inbox mail. Do not keep a separate permanent completion
+log containing the removed case identifiers. Mailbox provider backups and existing
+backend receipt retention are distinct; a mailbox deletion does not prove their
+immediate erasure. If the provider or local storage prevents this procedure, keep
+the operational gap open and correct the public claim before general availability.
+
+This is the specified operating procedure, not evidence that a reminder, selective
+mail cleanup, or provider erasure has run. Actual mailbox execution, including the
+30-day boundary and sent/trash copies, remains pending in
+[SECUR4ALL-329](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-329). No email
+was sent by the automated Dev test.
+
+
+For lost email access, a missing profile, or a changed subject/email binding, give
+a generic acknowledgment without disclosing whether an account exists. Stop
+signing and admission and use the recovery work tracked in
+[SECUR4ALL-327](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-327); it is not
+permission to bypass verification. Send confirmation only to the independently
+selected current verified account address. Never reset credentials, rewrite
+`email_verified` or a profile, or transfer an old proof to a recreated subject.
+If a submission intent exists, reconcile its original operation before considering
+any separately authorized fresh attempt.
+
+For processor-held data, the owner checks the approved data inventory and that
+processor's documented privacy procedure. Use only the minimum necessary approved
+reference for an authorized request and track the outcome in the same case.
+Distinguish confirmed erasure, documented retention, and unresolved exceptions.
+An absent locator or unknown provider capability is unresolved, not erased. Do
+not send message bodies, credentials or new identity documents to compensate.
+Report incomplete provider handling honestly and reconcile public scope under
+SECUR4ALL-92/93/94; backend completion receipts alone do not establish processor
+or backup erasure. This runbook sends no provider request or email.
