@@ -194,3 +194,30 @@ route, account mutation or activation changes. Back up state, verify the key, re
 its exact policy, verify reads, and recover the same state address before replanning.
 The recovery plan must contain no key replacement or destruction. Source preparation
 does not establish live recovery or successful role qualification.
+
+## Protected transport qualification
+
+An optional `support_account_deletion_gateway` configuration exposes only
+`POST /support/account-deletion` on the reviewed Dev API/stage. It requires the
+existing immutable disabled candidate and binds the supplied API ID to the actual
+managed API. The route requires AWS_IAM and forwards HTTP API payload 2.0 to the
+unqualified function, matching the runtime's invoked-function binding. The Lambda
+resource permission admits only API Gateway from account107827791950 and the exact
+stage, POST method and path. There is no function URL or additional human invoke
+grant. The existing operator policy is the only human-role permission for this
+route; administrative identities remain trusted and are not constrained by it.
+
+The route has burst1/rate1 throttling and15-second integration timeout. Existing
+access logs contain request metadata, not message bodies, signatures or email.
+This increment preserves the disabled Lambda environment and logs-only execution
+policy; an authorized operator request must return503 SUPPORT_ADMISSION_DISABLED.
+An unsigned request and the verifier role must fail at the IAM boundary. Direct
+Lambda calls must remain denied to both restricted roles. A404 or throttling error
+is not evidence of authorization enforcement. Gateway tests use only `{}` and the
+existing non-JSON signature probe; they cannot establish mailbox verification,
+valid admission, receipt completion or functioning email deletion.
+
+Later activation requires its own reviewed account-data/Verify grants and runtime
+pins plus a designated disposable target and explicit deletion authorization.
+The candidate contract reports the configured route but keeps enabled and email
+deletion availability false.

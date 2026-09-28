@@ -103,7 +103,7 @@ output "support_account_deletion_candidate_contract" {
     schema_version           = 1
     deployed                 = var.support_account_deletion_deployment != null
     enabled                  = false
-    routes                   = []
+    routes                   = [for route in aws_apigatewayv2_route.support_account_deletion : route.route_key]
     verification_writer      = false
     verification_storage     = false
     operator_grants          = false
