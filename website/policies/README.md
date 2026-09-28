@@ -192,3 +192,30 @@ update or invalidation occurred.
 - Remaining provider/account, release and publication evidence is itemized in
   [the publication checklist](PUBLICATION-CHECKLIST.md). It is required acceptance,
   not automatically deferred manual testing.
+
+
+## Publication preflight, September 28 at 03:43 UTC
+
+The read-only [hosting preflight](hosting-preflight.json) confirms the three English
+origin objects still match the prior public-page hashes. All three proposed Spanish
+objects are absent (`NoSuchKey`), and the existing LIVE viewer-request function
+still resolves nested paths to `index.html`. No routing update is indicated by
+this readback. Viewer requests redirect to HTTPS; existing HTML cache control is
+`public,max-age=300`. This is origin/configuration evidence, not a new public
+CDN-cache, mobile, or mailbox test.
+
+**The origin bucket does not have versioning enabled.** Do not assume a previous
+S3 version can be restored. Existing bytes and object metadata were captured in
+a private local preflight bundle; its location is in the operator's private work
+record, not a public credential/evidence archive. Before any later authorized
+upload, re-read origin/configuration and create a fresh durable rollback bundle
+with independently verified hashes and metadata. An ephemeral `/tmp` capture is
+not the only rollback copy for a real publication. Do not enable bucket-wide
+versioning as part of a policy-page upload without reviewing that separate change.
+
+Rollback must restore the exact prior English bytes and metadata. Spanish keys
+were absent at this observation; remove a newly created key only if the publication
+journal proves that this run created it and its current hash matches that run's
+upload. If another writer has changed a key or configuration, stop and reconcile
+rather than overwrite it. Invalidate only the approved affected paths. The final
+text/effective-date approval and artifact manifest must precede any upload.
