@@ -221,3 +221,38 @@ Later activation requires its own reviewed account-data/Verify grants and runtim
 pins plus a designated disposable target and explicit deletion authorization.
 The candidate contract reports the configured route but keeps enabled and email
 deletion availability false.
+
+## Scoped admission activation source
+
+`support_account_deletion_activation` defaults to null. Selecting it requires the
+protected Dev route and immutable candidate, active existing cleanup workers, the
+matching candidate source SHA, an approval reference and canonical JSON matching
+the runtime's closed configuration schema. Exact pool/table identities, inventory
+manifest/revision, operator role/immutable ID, signing key, generation, verification
+policy/readiness hashes and one to ten UUID subjects are required. The verification
+age must be an integer from1 through300 seconds. Duplicate JSON keys, empty or
+wildcard subjects, missing readiness and unsupported resource bindings fail the
+plan. Output preconditions also reject activation when no candidate exists.
+
+The selected configuration grants only exact-key KMS Verify, exact-pool AdminGetUser,
+two-table description and scoped reads, plus transactional profile Update and
+account-partition Put/Update for the existing command/recovery workflow. Inventory
+access is read/ConditionCheck only. The handler gets no Sign, identity deletion,
+DeleteItem or standalone write grant. IAM partition restrictions do not constrain
+sort keys; the reviewed runtime protects PROFILE, command, recovery and receipt
+semantics. Existing workers retain responsibility for all twelve completion receipts.
+
+Readiness hashes record reviewed evidence; they do not continuously inspect worker
+permissions or availability. Before an enabled Dev apply, review current worker
+artifacts, aliases, mappings and schedules; include the selected synthetic subject
+in V1/Play cleanup scopes while preserving existing entries. Do not expand the
+public JWT deletion allowlist for this private support test. Review the canonical
+policy and actual account snapshot separately; any injected human confirmation in
+automated testing must never be described as delivered-mail ownership proof.
+
+The operational proposal uses24-hour challenge/reply ceilings and a300-second
+capability/verification window, with the already-approved same-case30-day retention.
+Source integration alone does not select that policy, enable admission or authorize
+deleting an account. No activation configuration has been applied by this increment.
+The contract's enabled/data-permission fields describe selected runtime settings;
+email_deletion_available remains false until the full operational workflow qualifies.

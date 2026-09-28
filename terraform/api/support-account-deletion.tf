@@ -1,5 +1,4 @@
-# SECUR4ALL-333 preparation only. No variable can enable support admission here.
-# An enabled signed-record verifier needs a separately reviewed activation change.
+# SECUR4ALL-333 candidate; explicit scoped activation is defined separately.
 variable "support_account_deletion_deployment" {
   description = "Optional immutable disabled support-deletion candidate; no route, verifier key, operator grant or account-data permission."
   type = object({
@@ -42,7 +41,8 @@ resource "aws_iam_role" "support_account_deletion" {
 }
 
 data "aws_iam_policy_document" "support_account_deletion" {
-  count = var.support_account_deletion_deployment == null ? 0 : 1
+  count                   = var.support_account_deletion_deployment == null ? 0 : 1
+  source_policy_documents = local.support_admission_enabled ? [jsonencode({ Version = "2012-10-17", Statement = local.support_admission_statements })] : []
   statement {
     sid       = "WriteOwnLogsOnly"
     actions   = ["logs:CreateLogStream", "logs:PutLogEvents"]
@@ -73,10 +73,10 @@ resource "aws_lambda_function" "support_account_deletion" {
   source_code_hash               = var.support_account_deletion_deployment.source_hash
   publish                        = true
   environment {
-    variables = {
+    variables = merge({
       APP_ENVIRONMENT                  = var.environment
-      SUPPORT_ACCOUNT_DELETION_ENABLED = "false"
-    }
+      SUPPORT_ACCOUNT_DELETION_ENABLED = tostring(local.support_admission_enabled)
+    }, local.support_admission_enabled ? { SUPPORT_ACCOUNT_DELETION_CONFIG_JSON = var.support_account_deletion_activation.config_json } : {})
   }
   depends_on = [aws_iam_role_policy.support_account_deletion]
   tags       = local.common_tags
@@ -98,16 +98,20 @@ resource "aws_lambda_function_event_invoke_config" "support_account_deletion" {
 }
 
 output "support_account_deletion_candidate_contract" {
+  precondition {
+    condition     = var.support_account_deletion_activation == null || local.support_account_deletion_activation_valid
+    error_message = "Support admission requires reviewed Dev source, protected route, active cleanup workers, exact config/resource/operator/inventory pins and 1-10 explicit subjects."
+  }
   description = "Candidate capability only. A deployed disabled archive does not fulfill a privacy email request."
   value = {
     schema_version           = 1
     deployed                 = var.support_account_deletion_deployment != null
-    enabled                  = false
+    enabled                  = local.support_admission_enabled
     routes                   = [for route in aws_apigatewayv2_route.support_account_deletion : route.route_key]
     verification_writer      = false
     verification_storage     = false
     operator_grants          = false
-    account_data_permissions = false
+    account_data_permissions = local.support_admission_enabled
     email_deletion_available = false
     activation_story         = "SECUR4ALL-333"
     artifact_release         = try(var.support_account_deletion_deployment.release_id, null)
