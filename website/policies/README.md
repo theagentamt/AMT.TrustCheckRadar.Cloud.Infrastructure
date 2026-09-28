@@ -14,15 +14,20 @@ An email is a request, not proof of ownership or authority to erase an account.
 - Real V1 customer submissions must not be opted into provider model-training
   sharing. Actual OpenAI organization/project settings remain unverified; this
   decision does not claim Zero Data Retention or change provider settings.
-- Support correspondence is to be deleted 30 days after resolution. The owner
-  reports no current rule. Identify the mail provider and closure mechanism,
-  configure the rule, and check trash/archive/backup exceptions before publishing
-  an enforced deadline. Any separate verification audit needs its own policy.
+- The shared inbox uses Proton Mail Plus. Correspondence and the minimal
+  verification record share the same case and must be removed on or before
+  30 calendar days after resolution. The owner handles verification/submission
+  through separate roles and case-selective cleanup; no blanket mailbox rule is
+  authorized. The runbook includes resolution/deadline tracking, sent/received and
+  local working copies, early cleanup for unattended deadlines, and provider-copy
+  exceptions. Actual mailbox execution remains pending in SECUR4ALL-329.
 - Send independent deletion confirmation to the verified email already on the
   account; do not rely on the incoming sender or a requester-supplied replacement.
   Only after verified explicit intent may an authorized operator proceed. Lost
-  mailbox access requires a separately reviewed recovery path. SECUR4ALL-333 must
-  qualify this actual workflow; no new public web portal was authorized.
+  mailbox access requires a separately reviewed recovery path. SECUR4ALL-333
+  has completed the scoped automated backend qualification. General admission is
+  restored disabled; real mailbox confirmation/release qualification is pending.
+  No new public web portal was authorized.
 
 These approvals supersede the earlier unanswered policy questions, but do not
 resolve operational verification. Draft paragraphs explicitly distinguish the
@@ -91,10 +96,13 @@ DRAFT with no effective date and noindex. The renderer has no publish mode.
 
 ## Required before effective publication
 
-1. Confirm the actual supported email verification/execution/response procedure,
-   including requests from people unable to use the app. Do not promise a working
-   route merely because a mailbox exists. No credential collection or synthetic
-   user token is acceptable. Any missing operator adapter remains implementation.
+1. The supported verifier/operator tooling, response procedure and scoped Dev
+   qualification are complete in SECUR4ALL-333. The owner selected acknowledgment
+   and beginning verification within five business days, not completed erasure.
+   Before effective publication, qualify actual mailbox operations and the intended
+   release's admission scope through SECUR4ALL-329. Disabled admission cannot be
+   presented as an operational public fallback. Do not rerun synthetic confirmation
+   as a substitute for real mailbox ownership or expand subjects by hand.
 2. Establish support-mail retention and provider account/contract practices. Do not
    infer zero retention, no training opt-in, a specific processing country or
    erasure of processor records from `store:false` or our TTL. Record the actual
@@ -165,3 +173,22 @@ existing nested-index rule; no routing mutation is currently indicated. The
 original distribution config ETag was `E1VC38T7YXB528`. Re-read before publication
 rather than assuming these resources stayed unchanged. No S3 write, CloudFront
 update or invalidation occurred.
+
+
+## September 28 UTC continuation after SEC333 Dev completion
+
+- [SEC333 final evidence](../../docs/SECUR4ALL-333-DEV-EVIDENCE.md) and
+  [case procedure](../../docs/SECUR4ALL-333-SUPPORT-DELETION.md) are integrated from
+  release-V01. The one owner-approved synthetic account completed12receipts;
+  admission/scopes were restored and four modules showed no drift. This closes
+  backend Dev work, not mailbox/release qualification.
+- EN/ES deletion drafts now include the approved five-business-day initial target
+  and truthful progress states. EN/ES privacy drafts now include same-case minimal
+  verification evidence and selective30-calendar-day retention. Draft/review
+  markers remain; no effective date or public upload is selected.
+- ATCR-62 now has formal related-story links to SECUR4ALL-333 and SECUR4ALL-329.
+  SEC92 formally precedes ATCR-95, which precedes ATCR-62/148. The added links are
+  relationships, not new mobile blockers for backend work.
+- Remaining provider/account, release and publication evidence is itemized in
+  [the publication checklist](PUBLICATION-CHECKLIST.md). It is required acceptance,
+  not automatically deferred manual testing.
