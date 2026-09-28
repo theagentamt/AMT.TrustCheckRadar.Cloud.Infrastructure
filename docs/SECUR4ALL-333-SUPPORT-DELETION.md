@@ -39,11 +39,11 @@ plane. Its `deployment` defaults to null and creates nothing. An explicit review
 Dev configuration requires full source SHA, approval reference, exact existing
 source/admin role ARNs, Cognito pool, users/ledger tables, one to ten exact subjects
 and one exact support POST API ARN. Plan/apply must run as the exact configured key-administrator role, with AWS key-policy lockout safety enabled. The module is not selected by a deployment
-workflow or environment configuration; it has not been applied.
+workflow or environment configuration. The first approved Dev apply created its key but stopped during the provider read; see the recovery record below.
 
 The RSA3072 SIGN_VERIFY key delegates Sign only to the verifier and Verify only to
-the existing admission role, using RAW/RSASSA_PSS_SHA_256. Key administration has no
-cryptographic/grant permission; trusted administrators can still change key policy.
+the existing admission role, using RAW/RSASSA_PSS_SHA_256. Key administration can read the public key and rotation status but has no
+Sign/Verify/grant permission; trusted administrators can still change key policy.
 Each human role has an identical scoped identity policy and permissions boundary.
 The verifier may DescribeKey/Sign, read the named Cognito pool and exact approved
 DynamoDB partitions, and describe the two tables. The operator may invoke only the
@@ -179,3 +179,18 @@ A mailto link opening is not message delivery, identity verification or erasure.
 Cleanup only separately authorized disposable fixtures and preserve evidence
 without email bodies, credentials, proof signatures or personal identifiers.
 Pending release tests cannot hide incomplete Dev implementation or activation.
+
+## Dev key read recovery
+
+The approved disabled API plan created six resources successfully. The separate
+verifier plan created its RSA key, then failed because AWS provider 6.65.0 reads
+GetKeyRotationStatus for AWS-origin keys, including signing keys. Terraform recorded
+the created key as tainted; do not reapply the original plan or replace that key.
+
+The correction adds only GetKeyRotationStatus (provider refresh) and GetPublicKey
+(independent verification of a non-admission test signature) to the existing key
+administrator statement. No verifier/operator scope, boundary, signing condition,
+route, account mutation or activation changes. Back up state, verify the key, repair
+its exact policy, verify reads, and recover the same state address before replanning.
+The recovery plan must contain no key replacement or destruction. Source preparation
+does not establish live recovery or successful role qualification.
