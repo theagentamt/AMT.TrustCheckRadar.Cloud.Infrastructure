@@ -18,7 +18,7 @@ do not close SEC92 while its own public claims or publication checks are missing
 | Android | Release ad9b37a36d95a9899989a457bb04b3fa80464204 unchanged on refresh; local OCR/QR, canonical policy links, ordinary gates closed | ATCR95 source/disclosure mapping and SEC94 store alignment remain open; Android agent |
 | iOS | Android evidence does not establish iOS behavior | Verify exact supported release/SDKs and distinguish platform availability before platform-wide claims; iOS owner |
 | Public copy | Six EN/ES DRAFT previews, no effective date; support changes incorporated | Final factual/meaning review of exact text and release scope; owner/policy reviewer |
-| Hosting | Existing S3/CloudFront assets/routing identified read-only | Re-read metadata/routing, preserve prior bytes, approve exact final pages/date, publish only scoped assets and verify public bytes/navigation; infrastructure |
+| Hosting | September28 readback: original English hashes unchanged, Spanish keys absent, nested-index routing present, bucket versioning not enabled | Fresh durable bytes/metadata rollback bundle required; re-read configuration, approve exact final pages/date, publish only scoped assets and verify public bytes/navigation; infrastructure |
 | Store forms | SEC94 remains separate unfinished work | Map actual release's SDK/data categories and enabled features; do not equate draft text with submitted Play/App Store disclosures |
 
 ## Evidence boundaries
