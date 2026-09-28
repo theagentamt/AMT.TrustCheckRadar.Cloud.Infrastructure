@@ -127,3 +127,75 @@ run "reject_noncommit_source" {
   }
   expect_failures = [var.support_account_deletion_deployment]
 }
+
+run "iam_transport_preserves_disabled_admission" {
+  command = plan
+  variables {
+    support_account_deletion_gateway = {
+      api_id             = "abcdefghij"
+      stage              = "$default"
+      approval_reference = "synthetic-only"
+    }
+  }
+  override_resource {
+    target          = aws_apigatewayv2_api.age_attestation
+    override_during = plan
+    values          = { id = "abcdefghij", execution_arn = "arn:aws:execute-api:us-east-1:107827791950:abcdefghij" }
+  }
+  override_resource {
+    target          = aws_lambda_function.support_account_deletion[0]
+    override_during = plan
+    values          = { arn = "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-support-account-deletion" }
+  }
+  assert {
+    condition = (
+      aws_apigatewayv2_route.support_account_deletion[0].authorization_type == "AWS_IAM" &&
+      aws_apigatewayv2_route.support_account_deletion[0].route_key == "POST /support/account-deletion" &&
+      aws_apigatewayv2_integration.support_account_deletion[0].integration_uri == "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-support-account-deletion" &&
+      aws_apigatewayv2_integration.support_account_deletion[0].payload_format_version == "2.0" &&
+      aws_apigatewayv2_integration.support_account_deletion[0].timeout_milliseconds == 15000 &&
+      aws_lambda_permission.support_account_deletion_gateway[0].source_account == "107827791950" &&
+      aws_lambda_permission.support_account_deletion_gateway[0].source_arn == "arn:aws:execute-api:us-east-1:107827791950:abcdefghij/$default/POST/support/account-deletion" &&
+      aws_lambda_permission.support_account_deletion_gateway[0].principal == "apigateway.amazonaws.com"
+    )
+    error_message = "Only the exact IAM POST/stage may reach the unqualified disabled handler."
+  }
+  assert {
+    condition = (
+      aws_lambda_function.support_account_deletion[0].environment[0].variables == tomap({ APP_ENVIRONMENT = "dev", SUPPORT_ACCOUNT_DELETION_ENABLED = "false" }) &&
+      length(data.aws_iam_policy_document.support_account_deletion[0].statement) == 1 &&
+      !output.support_account_deletion_candidate_contract.enabled &&
+      !output.support_account_deletion_candidate_contract.account_data_permissions &&
+      !output.support_account_deletion_candidate_contract.email_deletion_available &&
+      anytrue([for setting in aws_apigatewayv2_stage.age_attestation.route_settings : setting.route_key == "POST /support/account-deletion" && setting.throttling_burst_limit == 1 && setting.throttling_rate_limit == 1])
+    )
+    error_message = "Transport must remain throttled and cannot enable or grant account admission."
+  }
+}
+run "reject_gateway_without_candidate" {
+  command = plan
+  variables {
+    support_account_deletion_deployment = null
+    support_account_deletion_gateway    = { api_id = "abcdefghij", stage = "$default", approval_reference = "synthetic" }
+  }
+  expect_failures = [var.support_account_deletion_gateway]
+}
+run "reject_gateway_wrong_stage" {
+  command = plan
+  variables {
+    support_account_deletion_gateway = { api_id = "abcdefghij", stage = "dev", approval_reference = "synthetic" }
+  }
+  expect_failures = [var.support_account_deletion_gateway]
+}
+run "reject_gateway_wrong_api" {
+  command = plan
+  variables {
+    support_account_deletion_gateway = { api_id = "abcdefghij", stage = "$default", approval_reference = "synthetic" }
+  }
+  override_resource {
+    target          = aws_apigatewayv2_api.age_attestation
+    override_during = plan
+    values          = { id = "wrongapi12", execution_arn = "arn:aws:execute-api:us-east-1:107827791950:wrongapi12" }
+  }
+  expect_failures = [aws_apigatewayv2_integration.support_account_deletion]
+}
