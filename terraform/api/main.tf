@@ -1508,6 +1508,16 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
     }
   }
 
+  dynamic "route_settings" {
+    for_each = local.support_account_deletion_gateway_selected ? [local.support_account_deletion_route_key] : []
+    content {
+      route_key                = route_settings.value
+      detailed_metrics_enabled = true
+      throttling_burst_limit   = 1
+      throttling_rate_limit    = 1
+    }
+  }
+
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.age_attestation_api.arn
     format = jsonencode({
@@ -1522,7 +1532,7 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
     })
   }
 
-  depends_on = [aws_apigatewayv2_route.account_export]
+  depends_on = [aws_apigatewayv2_route.account_export, aws_apigatewayv2_route.support_account_deletion]
   tags       = local.common_tags
 }
 
