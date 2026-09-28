@@ -55,7 +55,7 @@ resource "aws_kms_key" "approval" {
   # policy and boundary must also allow it; no session-principal wildcard grant.
   policy = jsonencode({ Version = "2012-10-17", Statement = [
     { Sid = "KeyAdministration", Effect = "Allow", Principal = { AWS = each.value.key_admin_role_arn },
-    Action = ["kms:DescribeKey", "kms:GetKeyPolicy", "kms:PutKeyPolicy", "kms:EnableKey", "kms:DisableKey", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:TagResource", "kms:UntagResource", "kms:ListResourceTags"], Resource = "*" },
+    Action = ["kms:DescribeKey", "kms:GetPublicKey", "kms:GetKeyRotationStatus", "kms:GetKeyPolicy", "kms:PutKeyPolicy", "kms:EnableKey", "kms:DisableKey", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion", "kms:TagResource", "kms:UntagResource", "kms:ListResourceTags"], Resource = "*" },
     { Sid = "DelegateExactVerifierDescribe", Effect = "Allow", Principal = { AWS = local.account_root }, Action = ["kms:DescribeKey"], Resource = "*", Condition = { ArnEquals = { "aws:PrincipalArn" = local.verifier_arn } } },
     { Sid = "DelegateExactVerifierSign", Effect = "Allow", Principal = { AWS = local.account_root }, Action = ["kms:Sign"], Resource = "*",
     Condition = merge(local.crypto_conditions, { ArnEquals = { "aws:PrincipalArn" = local.verifier_arn } }) },
