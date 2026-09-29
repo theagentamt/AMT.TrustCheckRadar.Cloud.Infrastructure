@@ -113,12 +113,12 @@ play_preparation_route_throttle_enabled  = true
 
 # Reviewed account deletion keeps its existing scope; account export stays disabled.
 account_export_deployment = {
-  "approval_reference" : "docs/SECUR4ALL-236-DEV-ACCEPTANCE.md",
+  "approval_reference" : "docs/SECUR4ALL-233-URL-FRESHNESS-ROLLOUT.md",
   "authority_hmac_secret_arn" : "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/v1-authority-hmac-C7v1hG",
-  "object_version" : "bVkiU.RaM2mRDEyERSA1G4xG416Npxtm",
+  "object_version" : "kNsH.VDnrYwv13dik0kM32ZosrM1AJ80",
   "promotion_approved" : false,
-  "release_id" : "a25e81f3ef919e65d2ec2fb702637b287e9c79d8",
-  "source_hash" : "vEGM3mwVdOoUOSBo/lNMLYJsiS80OLvmM5kPmEXfxC8="
+  "release_id" : "27ba230f6a96fe5bf1c96719903c3c7016765bbb",
+  "source_hash" : "l/+b7HSw0SBY+k4qFdMW8iPiwdawaYqRhN+uaxvXejE="
 }
 account_export_play_token_table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens"
 account_data_deployment = {
@@ -205,6 +205,20 @@ campaign_period_work_activation = {
 # Read-only exporter upgrade preserves the qualified period-work writer source.
 account_export_work_compatibility = {
   "work_source_sha" : "9147d545b719e54c1f967e35042bc502d79bc0f1",
-  "export_source_sha" : "a25e81f3ef919e65d2ec2fb702637b287e9c79d8",
-  "review_reference" : "docs/SECUR4ALL-236-DEV-ACCEPTANCE.md"
+  "export_source_sha" : "27ba230f6a96fe5bf1c96719903c3c7016765bbb",
+  "review_reference" : "docs/SECUR4ALL-233-URL-FRESHNESS-ROLLOUT.md"
 }
+
+# Preserve the deployed SEC333 disabled support route when planning this stack.
+support_account_deletion_deployment = {
+  "approval_reference" : "SECUR4ALL-333 source reviewed and integrated; disabled Dev candidate only",
+  "object_version" : "p.wEH4bDlnLR4Zuircd39RisgRlWVfgn",
+  "release_id" : "476d9ecb54f8ddd9b7299d214df37c025f4c3e0b",
+  "source_hash" : "8C0SHgsUI3IT+KOZEUEZNQvIl20HQCkcw5O13O1fTko="
+}
+support_account_deletion_gateway = {
+  "api_id" : "icuak34th9",
+  "approval_reference" : "SEC333 owner go-ahead protected endpoint and automated Dev validation; disabled only",
+  "stage" : "$default"
+}
+support_account_deletion_activation = null

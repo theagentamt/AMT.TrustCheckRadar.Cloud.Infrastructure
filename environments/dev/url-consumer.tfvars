@@ -86,3 +86,33 @@ deletion_artifact_override = {
     "source_hash" : "RR6Qd3aM1ap/hSs6mihSKxjDSjivTKK7tcnfoSOMi5w="
   }
 }
+
+# SEC233: reviewed freshness reader/consumer package; activation unchanged.
+consumer_artifact_override = {
+  "source_sha" : "27ba230f6a96fe5bf1c96719903c3c7016765bbb",
+  "baseline_source_sha" : "39cce61623794a123e61d25f5248b0c081eccf4a",
+  "baseline_source_hash" : "Y8iJQMYB8aWOXieJBMaJLrOpBop3sLpbg09Gy+PnVbA=",
+  "baseline_object_version" : "QMq0XD1xRogqUM51iPjD71XQD7liaiPw",
+  "provenance_reference" : "docs/evidence/sec233-freshness-artifact-publication.json",
+  "artifact" : {
+    "bucket" : "trustcheckradar-dev-107827791950-artifacts",
+    "key" : "releases/27ba230f6a96fe5bf1c96719903c3c7016765bbb/url_consumer.zip",
+    "object_version" : "YhNIkte5Ipm.mUkHYSKb76Hd.yp.XO81",
+    "source_hash" : "UZGXzwy/TqyybWVl6js5NJ8YH8syJciQeYpmebBY3Is="
+  }
+}
+
+# SEC233: reviewed freshness reader/consumer package; activation unchanged.
+entitlements_artifact_override = {
+  "source_sha" : "27ba230f6a96fe5bf1c96719903c3c7016765bbb",
+  "baseline_source_sha" : "39cce61623794a123e61d25f5248b0c081eccf4a",
+  "baseline_source_hash" : "xFuy0ylGhHpfHsJBEFZsYcxhpdish1Qx4a5UcF0ZOhM=",
+  "baseline_object_version" : "4v213SSYD50qrijRyBRDNW54IcRTww92",
+  "provenance_reference" : "docs/evidence/sec233-freshness-artifact-publication.json",
+  "artifact" : {
+    "bucket" : "trustcheckradar-dev-107827791950-artifacts",
+    "key" : "releases/27ba230f6a96fe5bf1c96719903c3c7016765bbb/v1_entitlements.zip",
+    "object_version" : "U.fHrmz1X9R7_nIChPBathu3qLrhKeUA",
+    "source_hash" : "pkYk7X7Pj1b9atbCqSusGMfObvmIM2bCKpqneUeQiw0="
+  }
+}
