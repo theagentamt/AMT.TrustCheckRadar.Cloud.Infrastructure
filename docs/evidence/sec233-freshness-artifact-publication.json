@@ -1,0 +1,166 @@
+{
+  "source": "27ba230f6a96fe5bf1c96719903c3c7016765bbb",
+  "manifestSHA256": "7c0847a3dadbb124f583c9ce0fca95d3eeaf4e408b61459178167779f12608da",
+  "artifacts": [
+    {
+      "function": "url_assessment",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/27ba230f6a96fe5bf1c96719903c3c7016765bbb/url_assessment.zip",
+      "object_version": "To2TAUBYug9ZbA76hilSW39qQXhirMy8",
+      "source_hash": "ZR2IfD7e51zdXQPhdA1rCp0KzD4gdYLK7VlHRTUQaVA=",
+      "sha256": "651d887c3edee75cdd5d03e1740d6b0a9d0acc3e207582caed59474535106950",
+      "provenance": "reviewed-frozen-source-build",
+      "baseline": {
+        "sourceCommit": "84733306d62dd57df883b4425fa5305db6c4a62d",
+        "archiveSHA256": "48bdf4f0560c4834a2a3ffba3a68b440225512b0c5c2d27a51964b3678aa3dec",
+        "s3Version": "Nd1.vttFgSjGwEpbTZepyb.sKI.VszRf",
+        "changedMembers": [
+          "assessment_service.py",
+          "lookup_provider.py"
+        ],
+        "addedMembers": [
+          "shared_lookup_freshness/__init__.py"
+        ],
+        "removedMembers": [],
+        "unchangedMembers": 159
+      },
+      "verified": true
+    },
+    {
+      "function": "url_consumer",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/27ba230f6a96fe5bf1c96719903c3c7016765bbb/url_consumer.zip",
+      "object_version": "YhNIkte5Ipm.mUkHYSKb76Hd.yp.XO81",
+      "source_hash": "UZGXzwy/TqyybWVl6js5NJ8YH8syJciQeYpmebBY3Is=",
+      "sha256": "519197cf0cbf4eacb26d6565ea3b39349f181fcb3225c890798a6679b058dc8b",
+      "provenance": "reviewed-frozen-source-build",
+      "baseline": {
+        "sourceCommit": "39cce61623794a123e61d25f5248b0c081eccf4a",
+        "archiveSHA256": "63c88940c601f1a58e5e278904c6892eb3a9068a77b0ba5b834f46cbe3e755b0",
+        "s3Version": "QMq0XD1xRogqUM51iPjD71XQD7liaiPw",
+        "changedMembers": [
+          "service.py",
+          "shared_check_authority/core.py",
+          "shared_check_authority/purchase_usage.py",
+          "shared_check_authority/runtime.py",
+          "shared_check_authority/summary.py"
+        ],
+        "addedMembers": [
+          "public_contract_v2/README.md",
+          "public_contract_v2/SHA256SUMS",
+          "public_contract_v2/access.schema.json",
+          "public_contract_v2/accounting.schema.json",
+          "public_contract_v2/error.schema.json",
+          "public_contract_v2/fixtures.json",
+          "public_contract_v2/messages.json",
+          "public_contract_v2/private-resolver-request.schema.json",
+          "public_contract_v2/private-resolver-response.schema.json",
+          "public_contract_v2/reconciliation-request.schema.json",
+          "public_contract_v2/reference_mapping.py",
+          "public_contract_v2/request.schema.json",
+          "public_contract_v2/result.schema.json",
+          "public_contract_v2/retry.schema.json",
+          "shared_lookup_freshness/__init__.py",
+          "transport_contract_v2/README.md",
+          "transport_contract_v2/SHA256SUMS",
+          "transport_contract_v2/fixtures.json",
+          "transport_contract_v2/prepare.schema.json",
+          "transport_contract_v2/reconcile.schema.json",
+          "transport_contract_v2/response.schema.json",
+          "transport_contract_v2/submit.schema.json"
+        ],
+        "removedMembers": [],
+        "unchangedMembers": 248
+      },
+      "verified": true
+    },
+    {
+      "function": "v1_entitlements",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/27ba230f6a96fe5bf1c96719903c3c7016765bbb/v1_entitlements.zip",
+      "object_version": "U.fHrmz1X9R7_nIChPBathu3qLrhKeUA",
+      "source_hash": "pkYk7X7Pj1b9atbCqSusGMfObvmIM2bCKpqneUeQiw0=",
+      "sha256": "a64624ed7ecf8f56fd6ad6c2a92bac18c7ce6ef9883366c22a9aa77947908b0d",
+      "provenance": "baseline-preserving-one-member-patch",
+      "baseline": {
+        "sourceCommit": "39cce61623794a123e61d25f5248b0c081eccf4a",
+        "archiveSHA256": "c45bb2d32946847a5f1ec24110566c61cc61a5d8ac875431e1ae54705d193a13",
+        "s3Version": "4v213SSYD50qrijRyBRDNW54IcRTww92",
+        "changedMembers": [
+          "shared_check_authority/purchase_usage.py"
+        ],
+        "addedMembers": [],
+        "removedMembers": [],
+        "unchangedMembers": 24
+      },
+      "verified": true
+    },
+    {
+      "function": "account_export_api",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/27ba230f6a96fe5bf1c96719903c3c7016765bbb/account_export_api.zip",
+      "object_version": "kNsH.VDnrYwv13dik0kM32ZosrM1AJ80",
+      "source_hash": "l/+b7HSw0SBY+k4qFdMW8iPiwdawaYqRhN+uaxvXejE=",
+      "sha256": "97ff9bec74b0d12058fa4e2a15d316f223e2c1d6b0698a9184dfae6b1bd77a31",
+      "provenance": "reviewed-frozen-source-build",
+      "baseline": {
+        "sourceCommit": "a25e81f3ef919e65d2ec2fb702637b287e9c79d8",
+        "archiveSHA256": "bc418cde6c1574ea14392068fe534c2d826c892f3438bbe633990f9845dfc42f",
+        "s3Version": "bVkiU.RaM2mRDEyERSA1G4xG416Npxtm",
+        "changedMembers": [
+          "account_export_api/projection.py",
+          "account_export_api/service.py",
+          "projection.py",
+          "service.py",
+          "shared_check_authority/core.py",
+          "shared_check_authority/purchase_usage.py",
+          "shared_check_authority/runtime.py",
+          "shared_check_authority/summary.py",
+          "shared_message_contract/runtime.py"
+        ],
+        "addedMembers": [
+          "shared_lookup_freshness/__init__.py",
+          "shared_message_contract/legacy_freshness.py",
+          "shared_message_contract/validation_v3.py"
+        ],
+        "removedMembers": [],
+        "unchangedMembers": 241
+      },
+      "verified": true
+    },
+    {
+      "function": "message_evaluator",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/27ba230f6a96fe5bf1c96719903c3c7016765bbb/message_evaluator.zip",
+      "object_version": "7Sbf3hdoxKbEnT3JQm02YdNdEyzS4kDU",
+      "source_hash": "2xeTKiv7rGYzZkYQaSmb+rEqB4tZbesakIOyTuS5KMI=",
+      "sha256": "db17932a2bfbac663366461069299bfab12a078b596deb1a9083b24ee4b928c2",
+      "provenance": "reviewed-frozen-source-build",
+      "baseline": null,
+      "verified": true
+    },
+    {
+      "function": "message_consumer",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/27ba230f6a96fe5bf1c96719903c3c7016765bbb/message_consumer.zip",
+      "object_version": "mO2tXAGLC2na0dVl9DhaZA4r7Qn7OnlP",
+      "source_hash": "6oRHDZosy8SBIccP0AioYqOWuBJwUnQxn9AlxSdPhwA=",
+      "sha256": "ea84470d9a2ccbc48121c70fd008a862a396b812705274319fd025c5274f8700",
+      "provenance": "reviewed-frozen-source-build",
+      "baseline": null,
+      "verified": true
+    },
+    {
+      "function": "result_feedback",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/27ba230f6a96fe5bf1c96719903c3c7016765bbb/result_feedback.zip",
+      "object_version": "mDg.ZVu0b.Ui8IIEIBnOVINCPk2S5kB6",
+      "source_hash": "S5fP1KPLaXpSq/WyKIxYKetAx43RttgYu5y/bhH8x4Q=",
+      "sha256": "4b97cfd4a3cb697a52abf5b2288c5829eb40c78dd1b6d818bb9cbf6e11fcc784",
+      "provenance": "reviewed-frozen-source-build",
+      "baseline": null,
+      "verified": true
+    }
+  ],
+  "runtimeChanged": false
+}

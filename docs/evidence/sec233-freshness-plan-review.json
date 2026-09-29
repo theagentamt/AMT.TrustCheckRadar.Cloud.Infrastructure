@@ -1,0 +1,114 @@
+[
+  {
+    "stack": "url-consumer",
+    "planSHA256": "b5beaca8760e24d8b7d94571c21ef65769187ea350bf9a9f7a9888ffd53d6b99",
+    "changes": [
+      {
+        "address": "aws_lambda_alias.runtime[\"consumer\"]",
+        "actions": [
+          "update"
+        ],
+        "changedFields": [
+          "function_version"
+        ],
+        "environmentUnchanged": true
+      },
+      {
+        "address": "aws_lambda_alias.runtime[\"entitlements\"]",
+        "actions": [
+          "update"
+        ],
+        "changedFields": [
+          "function_version"
+        ],
+        "environmentUnchanged": true
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"consumer\"]",
+        "actions": [
+          "update"
+        ],
+        "changedFields": [
+          "last_modified",
+          "qualified_arn",
+          "qualified_invoke_arn",
+          "s3_key",
+          "s3_object_version",
+          "source_code_hash",
+          "version"
+        ],
+        "environmentUnchanged": true
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"entitlements\"]",
+        "actions": [
+          "update"
+        ],
+        "changedFields": [
+          "last_modified",
+          "qualified_arn",
+          "qualified_invoke_arn",
+          "s3_key",
+          "s3_object_version",
+          "source_code_hash",
+          "version"
+        ],
+        "environmentUnchanged": true
+      }
+    ],
+    "applied": false
+  },
+  {
+    "stack": "url-assessment",
+    "planSHA256": "55c61dddd87366fb07d3fe42bea990bca5e0badcf8acca4dbde9cb02e2bfbd28",
+    "changes": [
+      {
+        "address": "aws_lambda_alias.assessment[0]",
+        "actions": [
+          "update"
+        ],
+        "changedFields": [
+          "function_version"
+        ],
+        "environmentUnchanged": true
+      },
+      {
+        "address": "aws_lambda_function.assessment[0]",
+        "actions": [
+          "update"
+        ],
+        "changedFields": [
+          "last_modified",
+          "qualified_arn",
+          "qualified_invoke_arn",
+          "s3_key",
+          "s3_object_version",
+          "source_code_hash",
+          "version"
+        ],
+        "environmentUnchanged": true
+      }
+    ],
+    "applied": false
+  },
+  {
+    "stack": "api",
+    "planSHA256": "5e0c76b3b84b14673d631db53a588dacf2b671617b8867610b6a4dcf3bb5da47",
+    "changes": [
+      {
+        "address": "aws_lambda_function.account_export[0]",
+        "actions": [
+          "update"
+        ],
+        "changedFields": [
+          "last_modified",
+          "s3_key",
+          "s3_object_version",
+          "source_code_hash"
+        ],
+        "environmentUnchanged": true
+      }
+    ],
+    "applied": false
+  }
+]

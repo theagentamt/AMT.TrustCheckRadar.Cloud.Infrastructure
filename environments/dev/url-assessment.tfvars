@@ -8,10 +8,10 @@ resolver_alias_arn     = "arn:aws:lambda:us-east-1:107827791950:function:trustch
 alert_topic_arn        = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
 dev_test_principal_arn = "arn:aws:iam::107827791950:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_6659317f1273c022"
 artifact = {
-  bucket         = "trustcheckradar-dev-107827791950-artifacts"
-  key            = "releases/84733306d62dd57df883b4425fa5305db6c4a62d/url_assessment.zip"
-  object_version = "Nd1.vttFgSjGwEpbTZepyb.sKI.VszRf"
-  source_hash    = "SL308FYMSDSio/+6Omi0QCJVErDFwtJ6UZZLNniqPew="
+  "bucket" : "trustcheckradar-dev-107827791950-artifacts",
+  "key" : "releases/27ba230f6a96fe5bf1c96719903c3c7016765bbb/url_assessment.zip",
+  "object_version" : "To2TAUBYug9ZbA76hilSW39qQXhirMy8",
+  "source_hash" : "ZR2IfD7e51zdXQPhdA1rCp0KzD4gdYLK7VlHRTUQaVA="
 }
 tags = {
   Application = "TrustCheckRadar"
