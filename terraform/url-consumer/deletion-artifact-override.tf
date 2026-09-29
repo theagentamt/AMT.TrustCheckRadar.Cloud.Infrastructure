@@ -33,5 +33,6 @@ variable "deletion_artifact_override" {
 locals {
   runtime_artifacts = var.deployment == null ? {} : merge(var.deployment.artifacts,
     var.deletion_artifact_override == null ? {} : { deletion = var.deletion_artifact_override.artifact },
-  var.consumer_artifact_override == null ? {} : { consumer = var.consumer_artifact_override.artifact })
+    var.consumer_artifact_override == null ? {} : { consumer = var.consumer_artifact_override.artifact },
+  var.entitlements_artifact_override == null ? {} : { entitlements = var.entitlements_artifact_override.artifact })
 }
