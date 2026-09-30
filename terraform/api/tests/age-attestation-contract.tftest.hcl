@@ -206,7 +206,7 @@ run "backend_output_is_the_versioned_cross_component_contract" {
     condition = jsonencode(output.age_attestation_backend_settings.errorCodes) == jsonencode({
       "400" = ["INVALID_REQUEST"]
       "401" = ["AUTHENTICATION_REQUIRED"]
-      "403" = ["PHONE_NOT_VERIFIED", "PHONE_REGION_NOT_ALLOWED", "PHONE_NUMBER_UNSUPPORTED"]
+      "403" = ["PHONE_REGION_NOT_ALLOWED", "PHONE_NUMBER_UNSUPPORTED"]
       "404" = ["PROFILE_NOT_FOUND"]
       "409" = ["ACCOUNT_STATE_CONFLICT", "IDEMPOTENCY_CONFLICT"]
       "429" = ["RATE_LIMITED"]

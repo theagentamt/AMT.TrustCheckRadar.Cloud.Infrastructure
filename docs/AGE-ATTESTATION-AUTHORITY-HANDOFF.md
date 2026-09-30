@@ -19,19 +19,20 @@ The Lambda response records the same operation ID, schema and policy version,
 `attestationStatus: "ACKNOWLEDGED"`, `eligibleForSignup: true`, an empty
 `denialReasons` list, `attestedAt`, and whether the response was replayed. Stable
 errors are `INVALID_REQUEST` (400), `AUTHENTICATION_REQUIRED` (401),
-`PHONE_NOT_VERIFIED`, `PHONE_REGION_NOT_ALLOWED` and
-`PHONE_NUMBER_UNSUPPORTED` (403), `PROFILE_NOT_FOUND` (404),
+`PHONE_REGION_NOT_ALLOWED` and `PHONE_NUMBER_UNSUPPORTED` (403),
+`PROFILE_NOT_FOUND` (404),
 `ACCOUNT_STATE_CONFLICT` and `IDEMPOTENCY_CONFLICT` (409), `RATE_LIMITED`
 (429), and `SERVICE_UNAVAILABLE` (503). The exact envelope is
 `contracts/age-attestation/1.0.0-candidate.1/error-response.schema.json`.
 
-The Lambda is the authority for adult acknowledgement and phone eligibility.
+The Lambda is the authority for adult acknowledgement and phone-region eligibility.
 Android removes `custom:over_18` from Cognito signup and never derives eligibility
-from a client-written Cognito attribute. Lambda uses `AdminGetUser` against the
-exact user pool, requires the verified Cognito phone profile expected by its
-candidate implementation, parses the E.164 number server-side and accepts only a
-resolved region in `US,PR,VI,GU,AS,MP`. A `+1` prefix alone is insufficient because
-the North American Numbering Plan includes other countries and territories.
+from a client-written adult attribute. Lambda uses `AdminGetUser` against the exact
+user pool, reads the self-provided Cognito `phone_number`, parses it server-side and
+accepts only a resolved region in `US,PR,VI,GU,AS,MP`. A `+1` prefix alone is
+insufficient because the North American Numbering Plan includes other countries
+and territories. This is region eligibility over a self-provided value. It is not
+proof of phone control, identity, seat ownership or account-recovery authority.
 Infrastructure supplies the exact pool ID and region allowlist; it does not replace
 the Lambda's parser or eligibility checks.
 
@@ -86,14 +87,18 @@ receipt key/TTL contract, log groups and alarm names.
 
 ## Safe Dev plan and apply order
 
-Published candidate `age_attestation.zip` and `post_confirmation.zip` object
-versions and base64 SHA-256 values are still required. The same
+The revised Lambda source candidate is commit
+`f8f091cbc579500d81bf55cd64752e982be184e1`; its locally reported package SHA-256
+is `188c4b499d9e8054eb3ebff31fd14b30f7429281b3796ee8dd44d0dfb7d8f2c5`.
+This is source/package provenance, not an infrastructure selection. Published
+candidate `age_attestation.zip` and `post_confirmation.zip` object versions and
+base64 SHA-256 values are still required. The same
 `age_attestation_contract` object must name both exact release/object/hash pins in
 the identity-workflows, API and foundation stacks. The contract-specific pins
 override the older `profile_fence_deployment` packages; a selected contract can
 never silently serve those older handlers. Checked-in Dev configuration keeps the
 contract null until both packages are published and reviewed. Confirm the Lambda
-candidate tests the exact contract above, including verified-phone parsing,
+candidate tests the exact contract above, including self-provided phone parsing,
 non-US NANP denial, UUID and idempotency conflicts, deletion fencing, duplicate
 PostConfirmation, concurrent replay and redacted logging.
 
@@ -178,19 +183,13 @@ deferred under the standing repository rule. Record source commits, app build,
 artifact object version/hash, infrastructure revision, output contract and sanitized
 timestamps. Required cases are:
 
-The current Android candidate deliberately reports that phone verification is not
-available in the app. Because the server correctly requires
-`phone_number_verified=true`, ordinary new accounts will fail closed until a
-reviewed verification journey or bounded verified-phone fixture exists. Do not
-describe signup as end-to-end ready before that dependency is resolved.
-
 | Case | Required observation |
 | --- | --- |
-| Verified allowed-region phone and fresh adult acknowledgement | Signup completes through the restricted app client; access-token POST returns the exact candidate response; profile becomes eligible once; PostConfirmation remains healthy. |
+| Self-provided allowed-region phone and fresh adult acknowledgement | Signup completes through the restricted app client; access-token POST returns the exact candidate response; profile becomes eligible once; PostConfirmation remains healthy. Record that this does not prove phone control, identity, seat ownership or recovery authority. |
 | Retry the same operation ID and body, including after a client timeout | Exact stored response returns with `replayed: true`; no duplicate state transition or extended receipt lifetime. |
 | Reuse an operation ID with a changed body | `IDEMPOTENCY_CONFLICT`; existing receipt/profile remain unchanged. |
 | Missing/ID token, wrong pool/client/scope, expired token or foreign subject | Route/Lambda rejects the request without eligibility disclosure or mutation. |
-| Missing, unverified, malformed, non-US NANP or disallowed-region phone | Stable ineligible/profile error; no active profile or acknowledgement receipt that can authorize signup. Include at least one real non-US `+1` fixture. |
+| Missing, malformed, non-US NANP or disallowed-region self-provided phone | Stable ineligible/profile error; no active profile or acknowledgement receipt that can authorize signup. Include at least one real non-US `+1` fixture. |
 | False/missing acknowledgement, noncanonical UUID, wrong schema/policy or extra field | `INVALID_REQUEST`; no receipt or profile mutation. |
 | Concurrent identical and conflicting requests | One authoritative result; exact replays converge and conflicts never overwrite it. |
 | Existing deletion tombstone or stale/pending/active profile variants | Deletion and state fences produce the documented result without resurrection or cross-account access. |

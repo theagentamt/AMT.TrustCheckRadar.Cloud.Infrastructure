@@ -234,7 +234,7 @@ variable "age_attestation_contract" {
 }
 
 variable "age_attestation_allowed_region_codes" {
-  description = "ISO region codes accepted by the authoritative phone-eligibility check. +1 alone is not sufficient because NANP includes non-US regions."
+  description = "ISO regions accepted from the self-provided Cognito phone_number. This validates region only; it does not prove phone control, identity, seat ownership or recovery authority."
   type        = set(string)
   default     = ["US", "PR", "VI", "GU", "AS", "MP"]
 
