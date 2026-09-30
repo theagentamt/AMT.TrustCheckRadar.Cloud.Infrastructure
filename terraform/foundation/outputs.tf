@@ -18,6 +18,7 @@ output "age_attestation_authority_contract" {
   value = {
     enabled                        = var.age_attestation_contract != null
     contract_version               = "1.0.0-candidate.1"
+    artifact_pins                  = try(var.age_attestation_contract.artifacts, null)
     custom_over_18_client_readable = true
     custom_over_18_client_writable = var.age_attestation_contract == null
     required_signup_write_attributes = var.age_attestation_contract == null ? null : [
@@ -131,6 +132,7 @@ output "downstream_contract" {
     age_attestation_authority = {
       enabled                        = var.age_attestation_contract != null
       contract_version               = "1.0.0-candidate.1"
+      artifact_pins                  = try(var.age_attestation_contract.artifacts, null)
       custom_over_18_client_writable = var.age_attestation_contract == null
     }
     users_table_arn                   = aws_dynamodb_table.users.arn

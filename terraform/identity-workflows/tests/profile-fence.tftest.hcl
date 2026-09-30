@@ -93,6 +93,56 @@ run "candidate_pins_writer_and_transactional_fence" {
   }
 }
 
+run "age_contract_selects_duplicate_safe_post_confirmation" {
+  command = plan
+  variables {
+    post_confirmation_lambda_runtime = "python3.14"
+    post_confirmation_log_policy     = { retention_days = 14, approval_reference = "synthetic-test" }
+    profile_fence_deployment = {
+      release_id         = "old-profile-fence", object_version = "old-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC="
+      approval_reference = "synthetic-test", promotion_approved = false
+    }
+    age_attestation_contract = {
+      approval_reference = "synthetic-test-not-user-approval"
+      promotion_approved = false
+      artifacts = {
+        age_attestation = {
+          release_id     = "age-candidate"
+          object_version = "age-version"
+          source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        }
+        post_confirmation = {
+          release_id     = "post-candidate"
+          object_version = "post-version"
+          source_hash    = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB="
+        }
+      }
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.post_confirmation.s3_key == "releases/post-candidate/post_confirmation.zip" &&
+      aws_lambda_function.post_confirmation.s3_object_version == "post-version" &&
+      aws_lambda_function.post_confirmation.source_code_hash == "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" &&
+      terraform_data.configure_user_pool_post_confirmation.triggers_replace.source_version == "post-version" &&
+      output.age_attestation_post_confirmation_candidate.enabled &&
+      output.age_attestation_post_confirmation_candidate.artifact_pins == var.age_attestation_contract.artifacts &&
+      output.age_attestation_post_confirmation_candidate.installed_post_confirmation == var.age_attestation_contract.artifacts.post_confirmation
+    )
+    error_message = "The age contract must override the old profile-fence artifact with the exact duplicate-safe PostConfirmation package."
+  }
+  assert {
+    condition = (
+      one([for statement in data.aws_iam_policy_document.post_confirmation_dynamodb.statement : statement if statement.sid == "UsersTableWrite"]).actions == toset(["dynamodb:PutItem"]) &&
+      one([for statement in data.aws_iam_policy_document.post_confirmation_dynamodb.statement : statement if statement.sid == "CheckExistingProfileForDuplicateTrigger"]).actions == toset(["dynamodb:ConditionCheckItem"]) &&
+      one([for statement in data.aws_iam_policy_document.post_confirmation_dynamodb.statement : statement if statement.sid == "CheckExistingProfileForDuplicateTrigger"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"]) &&
+      alltrue([for condition in one([for statement in data.aws_iam_policy_document.post_confirmation_dynamodb.statement : statement if statement.sid == "CheckExistingProfileForDuplicateTrigger"]).condition : condition.variable != "dynamodb:EnclosingOperation"]) &&
+      anytrue([for condition in one([for statement in data.aws_iam_policy_document.post_confirmation_dynamodb.statement : statement if statement.sid == "CheckExistingProfileForDuplicateTrigger"]).condition : condition.variable == "dynamodb:LeadingKeys" && condition.values == tolist(["USER#*"])])
+    )
+    error_message = "Duplicate-safe PostConfirmation needs only transaction ConditionCheckItem on USER#* in addition to the existing PutItem and deletion fence."
+  }
+}
+
 run "candidate_cannot_use_other_environment_tables" {
   command = plan
   variables {

@@ -26,13 +26,6 @@ cors_allow_origins            = ["*"]
 # Canonical client route. The execute-api surface remains enabled during the
 # coordinated Android/Lambda migration and retains the same JWT protection.
 age_attestation_canonical_base_url = "https://api-dev.andmorethings.net"
-age_attestation_contract = {
-  approval_reference = "ATCR-74 / SECUR4ALL-177 / SECUR4ALL-193 reviewed candidate contract"
-  promotion_approved = false
-}
-age_attestation_monitoring = {
-  alarm_topic_arn = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
-}
 
 api_throttle_burst_limit = 20
 api_throttle_rate_limit  = 10

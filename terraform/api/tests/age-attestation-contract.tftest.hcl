@@ -19,14 +19,26 @@ variables {
   age_attestation_contract = {
     approval_reference = "synthetic-test-not-user-approval"
     promotion_approved = false
+    artifacts = {
+      age_attestation = {
+        release_id     = "age-candidate"
+        object_version = "age-version"
+        source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      }
+      post_confirmation = {
+        release_id     = "post-candidate"
+        object_version = "post-version"
+        source_hash    = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB="
+      }
+    }
   }
   age_attestation_monitoring = {
     alarm_topic_arn = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
   }
   profile_fence_deployment = {
-    release_id         = "age-candidate"
-    object_version     = "synthetic-version"
-    source_hash        = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    release_id         = "old-profile-fence"
+    object_version     = "old-version"
+    source_hash        = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC="
     approval_reference = "synthetic-test-not-user-approval"
     promotion_approved = false
   }
@@ -39,7 +51,7 @@ override_data {
     artifact_bucket_name              = "synthetic-artifacts"
     cognito_user_pool_id              = "us-east-1_example"
     cognito_app_client_id             = "synthetic-client"
-    age_attestation_authority         = { enabled = true, contract_version = "1.0.0-candidate.1", custom_over_18_client_writable = false }
+    age_attestation_authority         = { enabled = false, contract_version = "1.0.0-candidate.1", artifact_pins = null, custom_over_18_client_writable = true }
     users_table_name                  = "trustcheckradar-dev-users"
     users_table_arn                   = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
     deletion_ledger_table_name        = "trustcheckradar-dev-deletion-ledger"
@@ -53,6 +65,31 @@ override_data {
     device_bindings_table_arn         = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-bindings"
     web_risk_cache_table_name         = "trustcheckradar-dev-web-risk-cache"
     web_risk_cache_table_arn          = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-web-risk-cache"
+  } } }
+}
+
+override_data {
+  target = data.terraform_remote_state.age_attestation_identity[0]
+  values = { outputs = { age_attestation_post_confirmation_candidate = {
+    enabled          = true
+    contract_version = "1.0.0-candidate.1"
+    artifact_pins = {
+      age_attestation = {
+        release_id     = "age-candidate"
+        object_version = "age-version"
+        source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      }
+      post_confirmation = {
+        release_id     = "post-candidate"
+        object_version = "post-version"
+        source_hash    = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB="
+      }
+    }
+    installed_post_confirmation = {
+      release_id     = "post-candidate"
+      object_version = "post-version"
+      source_hash    = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB="
+    }
   } } }
 }
 
@@ -99,7 +136,7 @@ run "lambda_contract_is_pinned_scoped_and_observable" {
       aws_lambda_function.age_attestation.runtime == "python3.14" &&
       aws_lambda_function.age_attestation.architectures == tolist(["arm64"]) &&
       aws_lambda_function.age_attestation.s3_key == "releases/age-candidate/age_attestation.zip" &&
-      aws_lambda_function.age_attestation.s3_object_version == "synthetic-version" &&
+      aws_lambda_function.age_attestation.s3_object_version == "age-version" &&
       aws_lambda_function.age_attestation.source_code_hash == "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" &&
       aws_lambda_function.age_attestation.reserved_concurrent_executions == 5 &&
       aws_lambda_function.age_attestation.environment[0].variables.AGE_ATTESTATION_USER_POOL_ID == "us-east-1_example" &&
@@ -158,15 +195,67 @@ run "backend_output_is_the_versioned_cross_component_contract" {
       output.age_attestation_backend_settings.method == "POST" &&
       output.age_attestation_backend_settings.tokenType == "access" &&
       output.age_attestation_backend_settings.contractPath == "contracts/age-attestation/1.0.0-candidate.1" &&
+      output.age_attestation_backend_settings.errorSchemaPath == "contracts/age-attestation/1.0.0-candidate.1/error-response.schema.json" &&
       output.age_attestation_backend_settings.schemaVersion == 1 &&
-      output.age_attestation_backend_settings.agePolicyVersion == "v1.0" &&
+      output.age_attestation_backend_settings.agePolicyVersion == "v1.0"
+    )
+    error_message = "The output must expose the exact endpoint, access-token and versioned schema contract."
+  }
+
+  assert {
+    condition = jsonencode(output.age_attestation_backend_settings.errorCodes) == jsonencode({
+      "400" = ["INVALID_REQUEST"]
+      "401" = ["AUTHENTICATION_REQUIRED"]
+      "403" = ["PHONE_NOT_VERIFIED", "PHONE_REGION_NOT_ALLOWED", "PHONE_NUMBER_UNSUPPORTED"]
+      "404" = ["PROFILE_NOT_FOUND"]
+      "409" = ["ACCOUNT_STATE_CONFLICT", "IDEMPOTENCY_CONFLICT"]
+      "429" = ["RATE_LIMITED"]
+      "503" = ["SERVICE_UNAVAILABLE"]
+    })
+    error_message = "The output must expose the exact candidate error schema without the retired ACCOUNT_NOT_ELIGIBLE code."
+  }
+
+  assert {
+    condition = (
+      output.age_attestation_backend_settings.artifactPins.age_attestation == var.age_attestation_contract.artifacts.age_attestation &&
+      output.age_attestation_backend_settings.artifactPins.post_confirmation == var.age_attestation_contract.artifacts.post_confirmation &&
+      !output.age_attestation_backend_settings.clientWriteBoundaryFinalized &&
       output.age_attestation_backend_settings.allowedRegionCodes == tolist(["AS", "GU", "MP", "PR", "US", "VI"]) &&
       output.age_attestation_backend_settings.idempotency.receiptTtlSeconds == 604800 &&
       output.age_attestation_backend_settings.idempotency.ttlAttribute == "expiresAt" &&
       output.age_attestation_backend_settings.idempotency.sortKey == "AGE_ATTESTATION#<operationId>"
     )
-    error_message = "The output must hand Android, Lambda and operations one exact access-token, eligibility and idempotency contract."
+    error_message = "The output must hand Android, Lambda and operations the exact paired artifacts, eligibility and idempotency contract."
   }
+}
+
+run "api_rejects_a_different_post_confirmation_candidate" {
+  command = plan
+  override_data {
+    target = data.terraform_remote_state.age_attestation_identity[0]
+    values = { outputs = { age_attestation_post_confirmation_candidate = {
+      enabled          = true
+      contract_version = "1.0.0-candidate.1"
+      artifact_pins = {
+        age_attestation = {
+          release_id     = "age-candidate"
+          object_version = "age-version"
+          source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        }
+        post_confirmation = {
+          release_id     = "post-candidate"
+          object_version = "post-version"
+          source_hash    = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB="
+        }
+      }
+      installed_post_confirmation = {
+        release_id     = "different-post-candidate"
+        object_version = "different-version"
+        source_hash    = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD="
+      }
+    } } }
+  }
+  expect_failures = [check.age_attestation_authority_contract]
 }
 
 run "production_requires_separate_promotion_approval" {

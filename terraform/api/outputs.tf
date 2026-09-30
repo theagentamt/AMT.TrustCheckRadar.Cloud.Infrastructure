@@ -115,9 +115,26 @@ output "age_attestation_backend_settings" {
     routeKey                  = aws_apigatewayv2_route.age_attestation.route_key
     contractPath              = local.age_attestation_contract_path
     contractVersion           = local.age_attestation_contract_version
-    schemaVersion             = local.age_attestation_schema_version
-    agePolicyVersion          = local.age_attestation_policy_version
-    allowedRegionCodes        = sort(tolist(var.age_attestation_allowed_region_codes))
+    errorSchemaPath           = "${local.age_attestation_contract_path}/error-response.schema.json"
+    errorCodes = {
+      "400" = ["INVALID_REQUEST"]
+      "401" = ["AUTHENTICATION_REQUIRED"]
+      "403" = ["PHONE_NOT_VERIFIED", "PHONE_REGION_NOT_ALLOWED", "PHONE_NUMBER_UNSUPPORTED"]
+      "404" = ["PROFILE_NOT_FOUND"]
+      "409" = ["ACCOUNT_STATE_CONFLICT", "IDEMPOTENCY_CONFLICT"]
+      "429" = ["RATE_LIMITED"]
+      "503" = ["SERVICE_UNAVAILABLE"]
+    }
+    artifactPins = try(var.age_attestation_contract.artifacts, null)
+    clientWriteBoundaryFinalized = try(
+      local.foundation_age_attestation_authority.enabled &&
+      !local.foundation_age_attestation_authority.custom_over_18_client_writable &&
+      local.foundation_age_attestation_authority.artifact_pins == var.age_attestation_contract.artifacts,
+      false,
+    )
+    schemaVersion      = local.age_attestation_schema_version
+    agePolicyVersion   = local.age_attestation_policy_version
+    allowedRegionCodes = sort(tolist(var.age_attestation_allowed_region_codes))
     request = {
       operationId             = "UUIDv4"
       over18AcknowledgedConst = true

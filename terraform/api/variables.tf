@@ -200,19 +200,36 @@ variable "age_attestation_log_retention_days" {
 }
 
 variable "age_attestation_contract" {
-  description = "Reviewed authoritative age-attestation contract. Null keeps the legacy Lambda/token behavior."
+  description = "Reviewed authoritative age-attestation release pair. Null keeps the legacy Lambda/token behavior."
   type = object({
     approval_reference = string
     promotion_approved = bool
+    artifacts = object({
+      age_attestation = object({
+        release_id     = string
+        object_version = string
+        source_hash    = string
+      })
+      post_confirmation = object({
+        release_id     = string
+        object_version = string
+        source_hash    = string
+      })
+    })
   })
   default = null
 
   validation {
-    condition = var.age_attestation_contract == null ? true : (
+    condition = var.age_attestation_contract == null ? true : try(
       length(trimspace(var.age_attestation_contract.approval_reference)) > 0 &&
-      (var.environment == "dev" || var.age_attestation_contract.promotion_approved)
+      (var.environment == "dev" || var.age_attestation_contract.promotion_approved) &&
+      alltrue([for artifact in values(var.age_attestation_contract.artifacts) :
+        can(regex("^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$", artifact.release_id)) &&
+        length(trimspace(artifact.object_version)) > 0 && artifact.object_version != "null" &&
+        can(regex("^[A-Za-z0-9+/]{43}=$", artifact.source_hash))
+      ]), false
     )
-    error_message = "Authoritative age attestation requires a review reference and separate UAT/Prod promotion approval."
+    error_message = "Authoritative age attestation requires immutable age/post-confirmation release, object-version and hash pins, a review reference and separate UAT/Prod promotion approval."
   }
 }
 

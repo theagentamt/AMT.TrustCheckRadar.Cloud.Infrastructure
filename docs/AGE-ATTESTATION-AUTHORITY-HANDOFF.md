@@ -18,9 +18,12 @@ issuer and the audience/client identity is the mobile app client.
 The Lambda response records the same operation ID, schema and policy version,
 `attestationStatus: "ACKNOWLEDGED"`, `eligibleForSignup: true`, an empty
 `denialReasons` list, `attestedAt`, and whether the response was replayed. Stable
-errors are `INVALID_REQUEST`, `AUTHENTICATION_REQUIRED`, `PROFILE_NOT_FOUND`,
-`ACCOUNT_NOT_ELIGIBLE`, `ACCOUNT_STATE_CONFLICT`, `IDEMPOTENCY_CONFLICT`,
-`RATE_LIMITED` and `SERVICE_UNAVAILABLE`.
+errors are `INVALID_REQUEST` (400), `AUTHENTICATION_REQUIRED` (401),
+`PHONE_NOT_VERIFIED`, `PHONE_REGION_NOT_ALLOWED` and
+`PHONE_NUMBER_UNSUPPORTED` (403), `PROFILE_NOT_FOUND` (404),
+`ACCOUNT_STATE_CONFLICT` and `IDEMPOTENCY_CONFLICT` (409), `RATE_LIMITED`
+(429), and `SERVICE_UNAVAILABLE` (503). The exact envelope is
+`contracts/age-attestation/1.0.0-candidate.1/error-response.schema.json`.
 
 The Lambda is the authority for adult acknowledgement and phone eligibility.
 Android removes `custom:over_18` from Cognito signup and never derives eligibility
@@ -40,8 +43,9 @@ setting.
 
 ## Infrastructure boundary
 
-The foundation change updates the existing Dev mobile app client in place. Its
-write allowlist is `email`, `family_name`, `given_name` and `phone_number`.
+When the final contract stage is selected, the foundation change updates the
+existing Dev mobile app client in place. Its write allowlist becomes `email`,
+`family_name`, `given_name` and `phone_number`.
 `custom:over_18` remains readable for legacy observation but is no longer writable
 by the app client. This matches Android after its coordinated signup change. The
 user pool and optional mutable schema attribute remain intact, and the existing
@@ -60,10 +64,12 @@ disabling it requires separate consumer evidence and a reviewed edge change.
 The Lambda role adds only `cognito-idp:AdminGetUser` on the exact pool. Users-table
 reads are `GetItem` on `USER#*`; receipt/profile `PutItem` and `UpdateItem` require
 `TransactWriteItems`; transaction `ConditionCheckItem` is limited to `USER#*`.
-The existing deletion-ledger `ConditionCheckItem` fence remains. The environment
-uses `AGE_ATTESTATION_USER_POOL_ID`, `AGE_ATTESTATION_ALLOWED_REGION_CODES` and
-`USERS_TABLE_NAME`; no `TABLE_NAME` compatibility alias or receipt-TTL override is
-introduced.
+The existing deletion-ledger `ConditionCheckItem` fence remains. Duplicate-safe
+PostConfirmation additionally receives users-table `ConditionCheckItem` on
+`USER#*`; its original profile `PutItem` remains transaction-only and its deletion
+fence remains ledger-only. The environment uses `AGE_ATTESTATION_USER_POOL_ID`,
+`AGE_ATTESTATION_ALLOWED_REGION_CODES` and `USERS_TABLE_NAME`; no `TABLE_NAME`
+compatibility alias or receipt-TTL override is introduced.
 
 CloudWatch alarms cover Lambda `Errors`, Lambda `Throttles` and route-specific API
 Gateway `5xx`. They use five-minute sums, alarm on any occurrence, treat missing
@@ -80,38 +86,55 @@ receipt key/TTL contract, log groups and alarm names.
 
 ## Safe Dev plan and apply order
 
-A published candidate `age_attestation.zip` object version and base64 SHA-256 are
-still required. Pin them through the existing `profile_fence_deployment` object;
-do not install a mutable release key. Confirm the Lambda candidate tests the exact
-contract above, including verified-phone parsing, non-US NANP denial, UUID and
-idempotency conflicts, deletion fencing, concurrent replay and redacted logging.
+Published candidate `age_attestation.zip` and `post_confirmation.zip` object
+versions and base64 SHA-256 values are still required. The same
+`age_attestation_contract` object must name both exact release/object/hash pins in
+the identity-workflows, API and foundation stacks. The contract-specific pins
+override the older `profile_fence_deployment` packages; a selected contract can
+never silently serve those older handlers. Checked-in Dev configuration keeps the
+contract null until both packages are published and reviewed. Confirm the Lambda
+candidate tests the exact contract above, including verified-phone parsing,
+non-US NANP denial, UUID and idempotency conflicts, deletion fencing, duplicate
+PostConfirmation, concurrent replay and redacted logging.
 
 Android must first publish a compatible candidate that omits `custom:over_18` from
 Cognito signup and calls this contract. Do not apply the app-client restriction to
 a Dev build that still sends the removed write attribute, because Cognito would
 reject its signup request.
 
-Use two separately reviewed plans because API consumes foundation remote state:
+Use three separately reviewed stages. API reads the identity-workflows candidate
+output, so the duplicate-safe trigger must be installed before the route can be
+activated:
 
-1. Initialize and plan `foundation` with the Dev tfvars. Require an in-place update
-   of only the app client's read/write attributes and contract output. Reject any
-   user-pool replacement, schema mutation, app-client replacement, PostConfirmation
-   trigger change or unrelated drift.
-2. After an explicitly authorized foundation apply and direct readback, initialize
-   and plan `api` with the Dev tfvars and the exact published artifact selection.
+1. Select the exact release pair in `identity-workflows`, review and apply its saved
+   plan, then read back the PostConfirmation object version/hash, Python 3.14 ARM64
+   runtime, successful update, unchanged trigger ARN, and IAM. The plan must replace
+   the older package with the selected duplicate-safe candidate and add only the
+   scoped users-table duplicate check beside existing writer/fence permissions.
+2. After identity readback, select the same release pair in `api`, then review and
+   apply its saved plan. API remote state rejects a missing or different installed
+   PostConfirmation candidate. The plan must select the age candidate even while
+   the older profile-fence pin remains configured.
    Require only the reviewed route/scope, exact permission, IAM/env, function
    artifact, route throttle, alarms and outputs. Reject edge removal, a wildcard
    invoke grant, a second table, TTL setting changes, unrelated functions or any
    UAT/Production action.
-3. Apply only the saved plans that were reviewed against the immediately preceding
-   state. Do not reuse a pre-foundation API plan. Preserve the existing profile
-   writer fence and wait for successful Lambda update status before connected tests.
+3. After both Lambdas and the route pass direct readback, select the same release
+   pair in `foundation`. Require an in-place app-client read/write update and exact
+   contract output. Reject user-pool replacement, schema mutation, app-client
+   replacement, PostConfirmation trigger change or unrelated drift. Apply this
+   final client boundary only when the compatible Android build is ready.
+
+Apply only saved plans reviewed against the immediately preceding state. Never
+reuse a pre-identity API plan or a pre-API foundation plan. Preserve the profile
+writer fence and wait for successful Lambda update status at each stage.
 
 The repository helper provides the exact state keys and tfvars:
 
 ```sh
-TF_STATE_BUCKET=<dev-state-bucket> scripts/terraform.sh plan dev foundation
+TF_STATE_BUCKET=<dev-state-bucket> scripts/terraform.sh plan dev identity-workflows <candidate-release>
 TF_STATE_BUCKET=<dev-state-bucket> scripts/terraform.sh plan dev api <candidate-release>
+TF_STATE_BUCKET=<dev-state-bucket> scripts/terraform.sh plan dev foundation
 ```
 
 Planning and applying require current authorized Dev credentials. This source task
@@ -125,11 +148,13 @@ Retain sanitized JSON evidence and independently compare it with the reviewed pl
   attributes, retain the intended read attributes and preserve auth flows/token
   validity. `aws cognito-idp describe-user-pool` must show the unchanged
   PostConfirmation ARN and existing `custom:over_18` schema definition.
-- `aws lambda get-function` / `get-function-configuration` must match the selected
-  S3 object version/hash, Python 3.14 ARM64 runtime, handler, bounded concurrency,
-  exact environment variables and successful update status.
+- `aws lambda get-function` / `get-function-configuration` for both functions must
+  match their selected S3 object version/hash, Python 3.14 ARM64 runtime, handler,
+  exact environment variables and successful update status. Age attestation also
+  retains bounded concurrency.
 - `aws iam get-policy-version` and `list-attached-role-policies` must match the
-  exact DynamoDB and Cognito boundaries above. Run policy simulations for allowed
+  exact DynamoDB and Cognito boundaries above. Include the new PostConfirmation
+  duplicate `ConditionCheckItem` on users `USER#*`. Run simulations for allowed
   exact-pool `AdminGetUser`, denied other-pool/list/update actions, transaction-only
   user mutations, denied standalone writes, denied other partitions and deletion
   ledger immutability. Mocked policy shape is not installed-role evidence.
@@ -140,8 +165,11 @@ Retain sanitized JSON evidence and independently compare it with the reviewed pl
   for this statement. CloudWatch readback must match all three alarms, dimensions,
   actions and both 14-day log groups. Confirm the SNS subscription without sending
   a user payload.
-- `terraform output -json age_attestation_backend_settings` must exactly match the
-  client/Lambda handoff, followed by fresh no-drift foundation and API plans.
+- `terraform output -json age_attestation_post_confirmation_candidate` and
+  `terraform output -json age_attestation_backend_settings` must expose the same
+  release pair. After the final client step, foundation must expose that exact pair
+  and `clientWriteBoundaryFinalized` must become true. Finish with fresh no-drift
+  identity-workflows, API and foundation plans.
 
 ## Later Dev and release qualification
 
@@ -149,6 +177,12 @@ Use disposable synthetic accounts and Android emulation; physical-device cases s
 deferred under the standing repository rule. Record source commits, app build,
 artifact object version/hash, infrastructure revision, output contract and sanitized
 timestamps. Required cases are:
+
+The current Android candidate deliberately reports that phone verification is not
+available in the app. Because the server correctly requires
+`phone_number_verified=true`, ordinary new accounts will fail closed until a
+reviewed verification journey or bounded verified-phone fixture exists. Do not
+describe signup as end-to-end ready before that dependency is resolved.
 
 | Case | Required observation |
 | --- | --- |

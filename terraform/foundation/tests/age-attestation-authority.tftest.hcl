@@ -16,6 +16,18 @@ variables {
   age_attestation_contract = {
     approval_reference = "synthetic-test-not-user-approval"
     promotion_approved = false
+    artifacts = {
+      age_attestation = {
+        release_id     = "age-candidate"
+        object_version = "age-version"
+        source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      }
+      post_confirmation = {
+        release_id     = "post-candidate"
+        object_version = "post-version"
+        source_hash    = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB="
+      }
+    }
   }
 }
 
@@ -28,6 +40,7 @@ run "mobile_client_cannot_assert_adult_authority" {
       contains(aws_cognito_user_pool_client.mobile.read_attributes, "custom:over_18") &&
       !contains(aws_cognito_user_pool_client.mobile.write_attributes, "custom:over_18") &&
       output.age_attestation_authority_contract.enabled &&
+      output.age_attestation_authority_contract.artifact_pins == var.age_attestation_contract.artifacts &&
       !output.age_attestation_authority_contract.custom_over_18_client_writable &&
       output.downstream_contract.age_attestation_authority.contract_version == "1.0.0-candidate.1"
     )

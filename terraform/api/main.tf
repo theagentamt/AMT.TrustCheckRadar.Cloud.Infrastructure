@@ -74,6 +74,8 @@ locals {
   age_attestation_receipt_ttl_seconds         = 604800
   age_attestation_authority_enabled           = var.age_attestation_contract != null
   foundation_age_attestation_authority        = try(local.foundation.age_attestation_authority, null)
+  identity_age_attestation_candidate          = try(data.terraform_remote_state.age_attestation_identity[0].outputs.age_attestation_post_confirmation_candidate, null)
+  age_attestation_artifact                    = try(var.age_attestation_contract.artifacts.age_attestation, null)
   age_attestation_canonical_endpoint_url      = var.age_attestation_canonical_base_url == null ? null : "${var.age_attestation_canonical_base_url}/v1/users/age-attestation"
   age_attestation_artifact_key                = coalesce(var.age_attestation_lambda_s3_key, "${local.artifact_prefix}/age_attestation.zip")
   analysis_artifact_key                       = var.history_deployment != null ? "releases/${var.history_deployment.release_id}/conversation_analysis.zip" : coalesce(var.analysis_lambda_s3_key, "${local.artifact_prefix}/conversation_analysis.zip")
@@ -115,13 +117,23 @@ check "age_attestation_authority_contract" {
   assert {
     condition = !local.age_attestation_authority_enabled || try(
       local.profile_fence_configured &&
-      local.foundation_age_attestation_authority.enabled &&
-      local.foundation_age_attestation_authority.contract_version == local.age_attestation_contract_version &&
-      !local.foundation_age_attestation_authority.custom_over_18_client_writable &&
+      (
+        local.foundation_age_attestation_authority == null ||
+        !local.foundation_age_attestation_authority.enabled ||
+        (
+          local.foundation_age_attestation_authority.contract_version == local.age_attestation_contract_version &&
+          local.foundation_age_attestation_authority.artifact_pins == var.age_attestation_contract.artifacts &&
+          !local.foundation_age_attestation_authority.custom_over_18_client_writable
+        )
+      ) &&
+      local.identity_age_attestation_candidate.enabled &&
+      local.identity_age_attestation_candidate.contract_version == local.age_attestation_contract_version &&
+      local.identity_age_attestation_candidate.artifact_pins == var.age_attestation_contract.artifacts &&
+      local.identity_age_attestation_candidate.installed_post_confirmation == var.age_attestation_contract.artifacts.post_confirmation &&
       var.age_attestation_canonical_base_url != null,
       false,
     )
-    error_message = "Authoritative age attestation requires the fenced writer, canonical edge URL and matching foundation app-client restriction. Apply and read back foundation before planning this API contract."
+    error_message = "Authoritative age attestation requires the fenced writer, canonical edge URL, matching immutable PostConfirmation candidate, and any finalized foundation client boundary to use the exact same release pair."
   }
 }
 
@@ -1020,10 +1032,16 @@ resource "aws_lambda_function" "age_attestation" {
   architectures                  = var.age_attestation_lambda_architectures
   reserved_concurrent_executions = var.age_attestation_lambda_reserved_concurrency
 
-  s3_bucket         = local.artifact_bucket_name
-  s3_key            = var.profile_fence_deployment == null ? local.age_attestation_artifact_key : "releases/${var.profile_fence_deployment.release_id}/age_attestation.zip"
-  s3_object_version = var.profile_fence_deployment == null ? var.age_attestation_lambda_s3_object_version : var.profile_fence_deployment.object_version
-  source_code_hash  = var.profile_fence_deployment == null ? null : var.profile_fence_deployment.source_hash
+  s3_bucket = local.artifact_bucket_name
+  s3_key = local.age_attestation_authority_enabled ? "releases/${local.age_attestation_artifact.release_id}/age_attestation.zip" : (
+    var.profile_fence_deployment == null ? local.age_attestation_artifact_key : "releases/${var.profile_fence_deployment.release_id}/age_attestation.zip"
+  )
+  s3_object_version = local.age_attestation_authority_enabled ? local.age_attestation_artifact.object_version : (
+    var.profile_fence_deployment == null ? var.age_attestation_lambda_s3_object_version : var.profile_fence_deployment.object_version
+  )
+  source_code_hash = local.age_attestation_authority_enabled ? local.age_attestation_artifact.source_hash : (
+    var.profile_fence_deployment == null ? null : var.profile_fence_deployment.source_hash
+  )
 
   environment {
     variables = merge(var.age_attestation_lambda_env, !local.profile_fence_configured ? {} : {
