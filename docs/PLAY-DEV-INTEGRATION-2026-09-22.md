@@ -74,11 +74,12 @@ positive/negative verifier IAM simulation cases. These are closed-runtime tests;
 no real purchase, account grant, acknowledgment or provider dependency execution
 was performed. Alarm delivery/transition has not been exercised by this increment.
 
-SECUR4ALL-244/195 and ATCR-91/111 remain In Progress: authenticated test-subject and
-canonical-device qualification, coordinated cleanup/inventory readiness, and the
-actual license-test purchase/restore/retry matrix are still pending. Background
-renewal/refund/grace/revocation remains SECUR4ALL-125. Its newly approved source
-work is separate and not included in deployed artifact source `28b4da19`.
+This section records the 2026-09-22 deployment state. The later implementation
+closeout, current no-drift readback and owner-approved testing split are recorded
+in [ATCR-91-111-DEV-CLOSEOUT.md](ATCR-91-111-DEV-CLOSEOUT.md). Actual Google Play
+license-test purchase/restore/retry qualification remains open in ATCR-112, and
+physical-device cases remain open in ATCR-148. Background renewal, refund, grace
+and revocation stay in ATCR-92 and the existing lifecycle backend work.
 
 All four post-deployment Terraform plans returned detailed exit code 0 (no drift).
 [Drift evidence](evidence/play-dev-no-drift-2026-09-22.json). Live versions are
