@@ -10,4 +10,3 @@ data "terraform_remote_state" "age_attestation_identity" {
     use_lockfile = true
   }
 }
-
