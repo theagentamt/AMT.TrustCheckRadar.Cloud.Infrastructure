@@ -1,0 +1,189 @@
+{
+  "capturedAtUtc": "2026-09-30T10:06:35Z",
+  "environment": "dev",
+  "awsAccountId": "107827791950",
+  "region": "us-east-1",
+  "stories": [
+    "ATCR-74",
+    "SECUR4ALL-177",
+    "SECUR4ALL-193"
+  ],
+  "source": {
+    "lambdaCommit": "f8f091cbc579500d81bf55cd64752e982be184e1",
+    "androidCommit": "cd6e29ba35c69b677a39c6d08654f53b5a36febf",
+    "infrastructurePreDeploymentCommit": "c586537ea6f051b057134e9231394243b78eb154"
+  },
+  "artifacts": {
+    "releaseId": "atcr74-age-authority-f8f091c",
+    "ageAttestation": {
+      "key": "releases/atcr74-age-authority-f8f091c/age_attestation.zip",
+      "versionId": "xw2._HvBtaROylLJnMTI_.s2TOa7b1O1",
+      "contentLength": 2500049,
+      "serverSideEncryption": "AES256",
+      "sha256Hex": "188c4b499d9e8054eb3ebff31fd14b30f7429281b3796ee8dd44d0dfb7d8f2c5",
+      "lambdaCodeSha256Base64": "GIxLSZ2egFTrPr/zH9FLMPdCkoGzeW7o3UTQ37fY8sU="
+    },
+    "postConfirmation": {
+      "key": "releases/atcr74-age-authority-f8f091c/post_confirmation.zip",
+      "versionId": "lgl3gBUczrha6AzRrpUYhB8bF6955rB.",
+      "contentLength": 1811,
+      "serverSideEncryption": "AES256",
+      "sha256Hex": "85e7f948e99c85e026e0df7faa3e5296ae04f203e61afb9d33473026080e5528",
+      "lambdaCodeSha256Base64": "hef5SOmcheAm4N9/qj5Slq4E8gPmGvudM0cwJggOVSg="
+    }
+  },
+  "savedPlans": {
+    "identityWorkflows": {
+      "sha256": "b4b62a60318823cc5271bf7f06f3c7be03aae78eb51ef913cc12562fce3d9422",
+      "result": "1 added, 2 changed, 1 destroyed; the destroy/add pair replaced Terraform trigger-registration bookkeeping"
+    },
+    "api": {
+      "sha256": "9cfadf19cf7ee0d1e3273309827a2fe5a8833c2e2ff7039d08a768cabc9191a0",
+      "result": "6 added, 4 changed, 1 destroyed; the destroy/add pair narrowed the Lambda invoke permission"
+    },
+    "foundation": {
+      "sha256": "5f711b775660ee4dffd07bcc76dc5b6cc97f028dd85ef96518d16923a5b921ca",
+      "result": "0 added, 1 changed, 0 destroyed"
+    },
+    "apiOutputReconciliation": {
+      "sha256": "7094df3ac924e8df8dced93bb59f869005a25fe85de54651c212f3ebdc216ed7",
+      "result": "0 added, 0 changed, 0 destroyed; clientWriteBoundaryFinalized changed from false to true in state output"
+    }
+  },
+  "lambdaReadback": {
+    "ageAttestation": {
+      "functionName": "trustcheckradar-dev-age-attestation",
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "state": "Active",
+      "lastUpdateStatus": "Successful",
+      "reservedConcurrentExecutions": 5,
+      "environment": {
+        "AGE_ATTESTATION_ALLOWED_REGION_CODES": "AS,GU,MP,PR,US,VI",
+        "AGE_ATTESTATION_USER_POOL_ID": "us-east-1_wzN0wUSdQ",
+        "USERS_TABLE_NAME": "trustcheckradar-dev-users",
+        "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger"
+      }
+    },
+    "postConfirmation": {
+      "functionName": "trustcheckradar-dev-post-confirmation",
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "state": "Active",
+      "lastUpdateStatus": "Successful",
+      "triggerArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-post-confirmation"
+    }
+  },
+  "cognitoClientBoundary": {
+    "userPoolId": "us-east-1_wzN0wUSdQ",
+    "clientId": "5kvl9a8jo4fr1qqnci27tdabk4",
+    "readAttributes": [
+      "custom:over_18",
+      "email",
+      "email_verified",
+      "family_name",
+      "given_name",
+      "phone_number",
+      "phone_number_verified"
+    ],
+    "writeAttributes": [
+      "email",
+      "family_name",
+      "given_name",
+      "phone_number"
+    ],
+    "customOver18SchemaStillPresent": true,
+    "customOver18ClientWritable": false
+  },
+  "httpBoundary": {
+    "routeKey": "POST /v1/users/age-attestation",
+    "authorizationType": "JWT",
+    "requiredScope": "aws.cognito.signin.user.admin",
+    "issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzN0wUSdQ",
+    "audience": "5kvl9a8jo4fr1qqnci27tdabk4",
+    "canonicalEndpoint": "https://api-dev.andmorethings.net/v1/users/age-attestation",
+    "executeApiEndpoint": "https://icuak34th9.execute-api.us-east-1.amazonaws.com/v1/users/age-attestation",
+    "executeApiEndpointEnabled": true,
+    "invokeSourceAccount": "107827791950",
+    "invokeSourceArn": "arn:aws:execute-api:us-east-1:107827791950:icuak34th9/*/POST/v1/users/age-attestation",
+    "routeThrottle": {
+      "burst": 4,
+      "rate": 2
+    },
+    "negativeChecks": [
+      {
+        "surface": "canonical POST without token",
+        "status": 401,
+        "body": "Unauthorized"
+      },
+      {
+        "surface": "execute-api POST without token",
+        "status": 401,
+        "body": "Unauthorized"
+      },
+      {
+        "surface": "canonical GET",
+        "status": 404,
+        "body": "Not Found"
+      }
+    ]
+  },
+  "iamSimulation": {
+    "allowed": [
+      "cognito-idp:AdminGetUser on exact Dev pool",
+      "dynamodb:GetItem on users USER# partition",
+      "dynamodb:PutItem and UpdateItem on users USER# partition inside TransactWriteItems",
+      "PostConfirmation dynamodb:PutItem on users USER# partition inside TransactWriteItems"
+    ],
+    "implicitDeny": [
+      "AdminGetUser on another pool",
+      "ListUsers and AdminUpdateUserAttributes on the exact pool",
+      "users-table access for ACCOUNT# partition",
+      "standalone users-table PutItem and UpdateItem",
+      "deletion-ledger PutItem, UpdateItem and DeleteItem",
+      "standalone PostConfirmation users-table PutItem"
+    ]
+  },
+  "monitoring": {
+    "alarms": [
+      "trustcheckradar-dev-age-attestation-errors",
+      "trustcheckradar-dev-age-attestation-throttles",
+      "trustcheckradar-dev-age-attestation-api-5xx"
+    ],
+    "alarmStateAtReadback": "OK",
+    "periodSeconds": 300,
+    "threshold": 0,
+    "treatMissingData": "notBreaching",
+    "topicArn": "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts",
+    "confirmedEmailSubscription": "support@andmorethings.com",
+    "logRetentionDays": 14
+  },
+  "terraformOutputs": {
+    "contractVersion": "1.0.0-candidate.1",
+    "agePolicyVersion": "v1.0",
+    "schemaVersion": 1,
+    "allowedRegionCodes": [
+      "AS",
+      "GU",
+      "MP",
+      "PR",
+      "US",
+      "VI"
+    ],
+    "clientWriteBoundaryFinalized": true,
+    "customOver18ClientWritable": false
+  },
+  "finalDriftChecks": {
+    "identityWorkflows": "no changes",
+    "api": "no changes",
+    "foundation": "no changes"
+  },
+  "deferredAcceptance": {
+    "assembledDevAndReleaseCases": "ATCR-62",
+    "physicalAndroidCases": "ATCR-148",
+    "uatOrProductionPromotionPerformed": false,
+    "executeApiRetirementPerformed": false
+  }
+}

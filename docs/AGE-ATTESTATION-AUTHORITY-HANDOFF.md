@@ -1,8 +1,31 @@
 # Adult self-attestation authority and release handoff
 
-Status: **prepared in source; not deployed or activated**. This record covers
-ATCR-74, SECUR4ALL-177 and SECUR4ALL-193. It does not authorize an AWS mutation,
-UAT/Production promotion, tracker transition or release acceptance.
+Status: **deployed and reconciled in Dev**. This record covers ATCR-74,
+SECUR4ALL-177 and SECUR4ALL-193. UAT/Production promotion, execute-api retirement,
+assembled release acceptance and physical-device acceptance remain separate.
+
+## Dev deployment outcome
+
+The owner-approved Dev rollout completed on 2026-09-30 in AWS account
+`107827791950`, Region `us-east-1`. Identity workflows, API and foundation were
+applied in that order from separately saved plans. A final API output-only
+reconciliation recorded `clientWriteBoundaryFinalized: true`. Fresh plans for all
+three stacks then reported no changes.
+
+The immutable release is `atcr74-age-authority-f8f091c`. The age-attestation
+artifact is S3 version `xw2._HvBtaROylLJnMTI_.s2TOa7b1O1` with Lambda SHA-256
+`GIxLSZ2egFTrPr/zH9FLMPdCkoGzeW7o3UTQ37fY8sU=`. PostConfirmation is S3 version
+`lgl3gBUczrha6AzRrpUYhB8bF6955rB.` with Lambda SHA-256
+`hef5SOmcheAm4N9/qj5Slq4E8gPmGvudM0cwJggOVSg=`. Both functions are active on
+Python 3.14 ARM64 and reported a successful last update.
+
+Direct AWS readback confirmed the exact access-token route and scope, exact-pool
+`AdminGetUser`, exact POST invoke permission, 4/2 route throttle, three healthy
+alarms, 14-day logs, the confirmed `support@andmorethings.com` SNS subscription,
+the unchanged PostConfirmation trigger, and the four-attribute client write list.
+Both HTTP surfaces returned 401 without a token, and GET on the canonical age path
+returned 404. The complete sanitized evidence is in
+`docs/evidence/atcr74-age-authority-2026-09-30/deployment-readback.json`.
 
 ## Candidate contract
 
@@ -87,18 +110,16 @@ receipt key/TTL contract, log groups and alarm names.
 
 ## Safe Dev plan and apply order
 
-The revised Lambda source candidate is commit
+The deployed Lambda source candidate is commit
 `f8f091cbc579500d81bf55cd64752e982be184e1`; its locally reported package SHA-256
 is `188c4b499d9e8054eb3ebff31fd14b30f7429281b3796ee8dd44d0dfb7d8f2c5`.
-This is source/package provenance, not an infrastructure selection. Published
-candidate `age_attestation.zip` and `post_confirmation.zip` object versions and
-base64 SHA-256 values are still required. The same
+The published candidate object versions and hashes are recorded above. The same
 `age_attestation_contract` object must name both exact release/object/hash pins in
 the identity-workflows, API and foundation stacks. The contract-specific pins
 override the older `profile_fence_deployment` packages; a selected contract can
-never silently serve those older handlers. Checked-in Dev configuration keeps the
-contract null until both packages are published and reviewed. Confirm the Lambda
-candidate tests the exact contract above, including self-provided phone parsing,
+never silently serve those older handlers. Checked-in Dev configuration now pins
+the reviewed pair in all three stacks. The Lambda candidate tests the exact
+contract above, including self-provided phone parsing,
 non-US NANP denial, UUID and idempotency conflicts, deletion fencing, duplicate
 PostConfirmation, concurrent replay and redacted logging.
 
@@ -142,8 +163,8 @@ TF_STATE_BUCKET=<dev-state-bucket> scripts/terraform.sh plan dev api <candidate-
 TF_STATE_BUCKET=<dev-state-bucket> scripts/terraform.sh plan dev foundation
 ```
 
-Planning and applying require current authorized Dev credentials. This source task
-had no AWS credentials, so no plan, apply or live readback was represented as done.
+Planning and applying require current authorized Dev credentials. The 2026-09-30
+rollout used saved plans and the direct readbacks listed in the evidence record.
 
 ## Required direct readback
 
