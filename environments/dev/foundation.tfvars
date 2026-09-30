@@ -28,5 +28,22 @@ device_recovery_policy = {
   pitr_days              = 7
 }
 
+age_attestation_contract = {
+  approval_reference = "ATCR-74 owner-approved Dev adult self-attestation rollout; reviewed Lambda f8f091c, Android cd6e29b, infrastructure c586537"
+  promotion_approved = false
+  artifacts = {
+    age_attestation = {
+      release_id     = "atcr74-age-authority-f8f091c"
+      object_version = "xw2._HvBtaROylLJnMTI_.s2TOa7b1O1"
+      source_hash    = "GIxLSZ2egFTrPr/zH9FLMPdCkoGzeW7o3UTQ37fY8sU="
+    }
+    post_confirmation = {
+      release_id     = "atcr74-age-authority-f8f091c"
+      object_version = "lgl3gBUczrha6AzRrpUYhB8bF6955rB."
+      source_hash    = "hef5SOmcheAm4N9/qj5Slq4E8gPmGvudM0cwJggOVSg="
+    }
+  }
+}
+
 # SECUR4ALL-207: sparse index preparation only; producers and recovery remain disabled.
 campaign_recovery_index_enabled = true

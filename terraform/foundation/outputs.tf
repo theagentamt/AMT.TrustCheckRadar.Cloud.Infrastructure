@@ -13,6 +13,23 @@ output "cognito_app_client_id" {
   value       = aws_cognito_user_pool_client.mobile.id
 }
 
+output "age_attestation_authority_contract" {
+  description = "Cognito client boundary for server-authoritative adult self-attestation"
+  value = {
+    enabled                        = var.age_attestation_contract != null
+    contract_version               = "1.0.0-candidate.1"
+    artifact_pins                  = try(var.age_attestation_contract.artifacts, null)
+    custom_over_18_client_readable = true
+    custom_over_18_client_writable = var.age_attestation_contract == null
+    required_signup_write_attributes = var.age_attestation_contract == null ? null : [
+      "email",
+      "family_name",
+      "given_name",
+      "phone_number",
+    ]
+  }
+}
+
 output "cognito_hosted_ui_domain" {
   description = "Cognito hosted UI domain (if enabled)"
   value       = var.hosted_ui_enabled ? aws_cognito_user_pool_domain.hosted_ui[0].domain : null
@@ -106,12 +123,18 @@ output "web_risk_cache_table_arn" {
 output "downstream_contract" {
   description = "Versioned values consumed by downstream Terraform stacks"
   value = {
-    schema_version                    = 1
-    device_recovery_control           = local.device_recovery_control_contract
-    campaign_recovery                 = local.campaign_recovery_contract
-    artifact_bucket_name              = aws_s3_bucket.artifacts.id
-    cognito_user_pool_id              = aws_cognito_user_pool.main.id
-    cognito_app_client_id             = aws_cognito_user_pool_client.mobile.id
+    schema_version          = 1
+    device_recovery_control = local.device_recovery_control_contract
+    campaign_recovery       = local.campaign_recovery_contract
+    artifact_bucket_name    = aws_s3_bucket.artifacts.id
+    cognito_user_pool_id    = aws_cognito_user_pool.main.id
+    cognito_app_client_id   = aws_cognito_user_pool_client.mobile.id
+    age_attestation_authority = {
+      enabled                        = var.age_attestation_contract != null
+      contract_version               = "1.0.0-candidate.1"
+      artifact_pins                  = try(var.age_attestation_contract.artifacts, null)
+      custom_over_18_client_writable = var.age_attestation_contract == null
+    }
     users_table_arn                   = aws_dynamodb_table.users.arn
     users_table_name                  = aws_dynamodb_table.users.name
     deletion_ledger_stream_arn        = var.campaign_intelligence_enabled ? aws_dynamodb_table.deletion_ledger.stream_arn : null

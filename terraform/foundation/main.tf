@@ -130,6 +130,26 @@ resource "aws_cognito_user_pool_client" "mobile" {
     "ALLOW_USER_PASSWORD_AUTH"
   ]
 
+  # custom:over_18 remains readable for legacy clients, but the authoritative
+  # contract removes client write access. Adult acknowledgement is accepted only
+  # through the JWT-protected age-attestation API. The four writable attributes
+  # cover every current Android signup attribute after that migration.
+  read_attributes = var.age_attestation_contract == null ? null : [
+    "custom:over_18",
+    "email",
+    "email_verified",
+    "family_name",
+    "given_name",
+    "phone_number",
+    "phone_number_verified",
+  ]
+  write_attributes = var.age_attestation_contract == null ? null : [
+    "email",
+    "family_name",
+    "given_name",
+    "phone_number",
+  ]
+
   access_token_validity  = var.cognito_access_token_validity_minutes
   id_token_validity      = var.cognito_id_token_validity_minutes
   refresh_token_validity = var.cognito_refresh_token_validity_days

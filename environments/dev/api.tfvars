@@ -23,6 +23,10 @@ enable_device_recovery        = true
 enable_web_risk_communication = true
 cors_allow_origins            = ["*"]
 
+# Canonical client route. The execute-api surface remains enabled during the
+# coordinated Android/Lambda migration and retains the same JWT protection.
+age_attestation_canonical_base_url = "https://api-dev.andmorethings.net"
+
 api_throttle_burst_limit = 20
 api_throttle_rate_limit  = 10
 
@@ -144,6 +148,27 @@ profile_fence_deployment = {
   source_hash        = "4fcLN8YHPOZNgY3iTt4gzlicbXMHdv1ToF//NWUzeBg="
   approval_reference = "SECUR4ALL-244 owner-authorized Dev profile-writer safeguards; reviewed staged rollout"
   promotion_approved = false
+}
+
+age_attestation_contract = {
+  approval_reference = "ATCR-74 owner-approved Dev adult self-attestation rollout; reviewed Lambda f8f091c, Android cd6e29b, infrastructure c586537"
+  promotion_approved = false
+  artifacts = {
+    age_attestation = {
+      release_id     = "atcr74-age-authority-f8f091c"
+      object_version = "xw2._HvBtaROylLJnMTI_.s2TOa7b1O1"
+      source_hash    = "GIxLSZ2egFTrPr/zH9FLMPdCkoGzeW7o3UTQ37fY8sU="
+    }
+    post_confirmation = {
+      release_id     = "atcr74-age-authority-f8f091c"
+      object_version = "lgl3gBUczrha6AzRrpUYhB8bF6955rB."
+      source_hash    = "hef5SOmcheAm4N9/qj5Slq4E8gPmGvudM0cwJggOVSg="
+    }
+  }
+}
+
+age_attestation_monitoring = {
+  alarm_topic_arn = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
 }
 
 # SECUR4ALL-207: recovery permissions retained; activation is explicitly pinned below.
