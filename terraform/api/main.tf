@@ -67,6 +67,14 @@ locals {
   web_risk_cache_table_arn                    = local.foundation.web_risk_cache_table_arn
   web_risk_cache_table_name                   = local.foundation.web_risk_cache_table_name
   jwt_issuer                                  = "https://cognito-idp.${var.aws_region}.amazonaws.com/${local.cognito_user_pool_id}"
+  age_attestation_contract_version            = "1.0.0-candidate.1"
+  age_attestation_contract_path               = "contracts/age-attestation/${local.age_attestation_contract_version}"
+  age_attestation_schema_version              = 1
+  age_attestation_policy_version              = "v1.0"
+  age_attestation_receipt_ttl_seconds         = 604800
+  age_attestation_authority_enabled           = var.age_attestation_contract != null
+  foundation_age_attestation_authority        = try(local.foundation.age_attestation_authority, null)
+  age_attestation_canonical_endpoint_url      = var.age_attestation_canonical_base_url == null ? null : "${var.age_attestation_canonical_base_url}/v1/users/age-attestation"
   age_attestation_artifact_key                = coalesce(var.age_attestation_lambda_s3_key, "${local.artifact_prefix}/age_attestation.zip")
   analysis_artifact_key                       = var.history_deployment != null ? "releases/${var.history_deployment.release_id}/conversation_analysis.zip" : coalesce(var.analysis_lambda_s3_key, "${local.artifact_prefix}/conversation_analysis.zip")
   device_registration_artifact_key            = coalesce(var.device_registration_lambda_s3_key, "${local.artifact_prefix}/device_registration.zip")
@@ -100,6 +108,20 @@ check "foundation_contract_version" {
   assert {
     condition     = local.foundation.schema_version == 1
     error_message = "The foundation state contract is incompatible with this API stack."
+  }
+}
+
+check "age_attestation_authority_contract" {
+  assert {
+    condition = !local.age_attestation_authority_enabled || try(
+      local.profile_fence_configured &&
+      local.foundation_age_attestation_authority.enabled &&
+      local.foundation_age_attestation_authority.contract_version == local.age_attestation_contract_version &&
+      !local.foundation_age_attestation_authority.custom_over_18_client_writable &&
+      var.age_attestation_canonical_base_url != null,
+      false,
+    )
+    error_message = "Authoritative age attestation requires the fenced writer, canonical edge URL and matching foundation app-client restriction. Apply and read back foundation before planning this API contract."
   }
 }
 
@@ -166,29 +188,89 @@ resource "aws_iam_role_policy_attachment" "age_attestation_basic_execution" {
 }
 
 data "aws_iam_policy_document" "age_attestation_dynamodb" {
-  statement {
-    sid    = "UsersTableReadUpdate"
-    effect = "Allow"
-    actions = local.profile_fence_permissions_enforced ? ["dynamodb:UpdateItem"] : [
-      "dynamodb:GetItem",
-      "dynamodb:UpdateItem"
-    ]
+  dynamic "statement" {
+    for_each = local.age_attestation_authority_enabled ? [] : [1]
+    content {
+      sid    = "UsersTableReadUpdate"
+      effect = "Allow"
+      actions = local.profile_fence_permissions_enforced ? ["dynamodb:UpdateItem"] : [
+        "dynamodb:GetItem",
+        "dynamodb:UpdateItem"
+      ]
 
-    resources = [local.users_table_arn]
-    dynamic "condition" {
-      for_each = local.profile_fence_permissions_enforced ? [1] : []
-      content {
+      resources = [local.users_table_arn]
+      dynamic "condition" {
+        for_each = local.profile_fence_permissions_enforced ? [1] : []
+        content {
+          test     = "ForAnyValue:StringEquals"
+          variable = "dynamodb:EnclosingOperation"
+          values   = ["TransactWriteItems"]
+        }
+      }
+      dynamic "condition" {
+        for_each = local.profile_fence_permissions_enforced ? [1] : []
+        content {
+          test     = "ForAllValues:StringLike"
+          variable = "dynamodb:LeadingKeys"
+          values   = ["USER#*"]
+        }
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = local.age_attestation_authority_enabled ? [1] : []
+    content {
+      sid       = "ReadAgeProfileAndReceipt"
+      effect    = "Allow"
+      actions   = ["dynamodb:GetItem"]
+      resources = [local.users_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = local.age_attestation_authority_enabled ? [1] : []
+    content {
+      sid       = "WriteAgeProfileAndReceiptTransaction"
+      effect    = "Allow"
+      actions   = ["dynamodb:PutItem", "dynamodb:UpdateItem"]
+      resources = [local.users_table_arn]
+      condition {
         test     = "ForAnyValue:StringEquals"
         variable = "dynamodb:EnclosingOperation"
         values   = ["TransactWriteItems"]
       }
-    }
-    dynamic "condition" {
-      for_each = local.profile_fence_permissions_enforced ? [1] : []
-      content {
+      condition {
         test     = "ForAllValues:StringLike"
         variable = "dynamodb:LeadingKeys"
         values   = ["USER#*"]
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = local.age_attestation_authority_enabled ? [1] : []
+    content {
+      sid       = "CheckAgeProfileAndReceiptTransaction"
+      effect    = "Allow"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.users_table_arn]
+      # ConditionCheckItem is transaction-only and does not support the
+      # dynamodb:EnclosingOperation condition key.
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+      condition {
+        test     = "StringEqualsIfExists"
+        variable = "dynamodb:ReturnValues"
+        values   = ["NONE"]
       }
     }
   }
@@ -224,6 +306,29 @@ resource "aws_iam_policy" "age_attestation_dynamodb" {
 resource "aws_iam_role_policy_attachment" "age_attestation_dynamodb" {
   role       = aws_iam_role.age_attestation.name
   policy_arn = aws_iam_policy.age_attestation_dynamodb.arn
+}
+
+data "aws_iam_policy_document" "age_attestation_cognito" {
+  count = local.age_attestation_authority_enabled ? 1 : 0
+  statement {
+    sid       = "ReadAuthenticatedUserEligibility"
+    effect    = "Allow"
+    actions   = ["cognito-idp:AdminGetUser"]
+    resources = ["arn:aws:cognito-idp:${var.aws_region}:${split(":", local.users_table_arn)[4]}:userpool/${local.cognito_user_pool_id}"]
+  }
+}
+
+resource "aws_iam_policy" "age_attestation_cognito" {
+  count  = local.age_attestation_authority_enabled ? 1 : 0
+  name   = "${local.lambda_name}-cognito"
+  policy = data.aws_iam_policy_document.age_attestation_cognito[0].json
+  tags   = local.common_tags
+}
+
+resource "aws_iam_role_policy_attachment" "age_attestation_cognito" {
+  count      = local.age_attestation_authority_enabled ? 1 : 0
+  role       = aws_iam_role.age_attestation.name
+  policy_arn = aws_iam_policy.age_attestation_cognito[0].arn
 }
 
 resource "aws_iam_role" "analysis" {
@@ -923,6 +1028,9 @@ resource "aws_lambda_function" "age_attestation" {
   environment {
     variables = merge(var.age_attestation_lambda_env, !local.profile_fence_configured ? {} : {
       DELETION_LEDGER_TABLE_NAME = local.deletion_ledger_table_name
+      }, !local.age_attestation_authority_enabled ? {} : {
+      AGE_ATTESTATION_ALLOWED_REGION_CODES = join(",", sort(tolist(var.age_attestation_allowed_region_codes)))
+      AGE_ATTESTATION_USER_POOL_ID         = local.cognito_user_pool_id
       }, {
       USERS_TABLE_ARN  = local.users_table_arn
       USERS_TABLE_NAME = local.users_table_name
@@ -940,7 +1048,11 @@ resource "aws_lambda_function" "age_attestation" {
       error_message = "Profile fencing requires the same account, Region and environment deletion ledger."
     }
   }
-  depends_on = [aws_cloudwatch_log_group.age_attestation_lambda, aws_iam_role_policy_attachment.age_attestation_dynamodb]
+  depends_on = [
+    aws_cloudwatch_log_group.age_attestation_lambda,
+    aws_iam_role_policy_attachment.age_attestation_cognito,
+    aws_iam_role_policy_attachment.age_attestation_dynamodb,
+  ]
 
   tags = local.common_tags
 }
@@ -1307,11 +1419,12 @@ resource "aws_apigatewayv2_integration" "age_attestation_lambda" {
 }
 
 resource "aws_apigatewayv2_route" "age_attestation" {
-  api_id             = aws_apigatewayv2_api.age_attestation.id
-  route_key          = "POST /v1/users/age-attestation"
-  target             = "integrations/${aws_apigatewayv2_integration.age_attestation_lambda.id}"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.cognito_jwt.id
+  api_id               = aws_apigatewayv2_api.age_attestation.id
+  route_key            = "POST /v1/users/age-attestation"
+  target               = "integrations/${aws_apigatewayv2_integration.age_attestation_lambda.id}"
+  authorization_type   = "JWT"
+  authorizer_id        = aws_apigatewayv2_authorizer.cognito_jwt.id
+  authorization_scopes = local.age_attestation_authority_enabled ? ["aws.cognito.signin.user.admin"] : []
 }
 
 resource "aws_apigatewayv2_integration" "analysis_lambda" {
@@ -1465,6 +1578,16 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
   }
 
   dynamic "route_settings" {
+    for_each = local.age_attestation_authority_enabled ? [aws_apigatewayv2_route.age_attestation.route_key] : []
+    content {
+      route_key                = route_settings.value
+      detailed_metrics_enabled = true
+      throttling_burst_limit   = 4
+      throttling_rate_limit    = 2
+    }
+  }
+
+  dynamic "route_settings" {
     for_each = var.campaign_intelligence_enabled ? {
       trends = "GET /v1/scam-trends"
       review = "POST /v1/internal/campaigns/{campaignId}/transitions"
@@ -1537,11 +1660,12 @@ resource "aws_apigatewayv2_stage" "age_attestation" {
 }
 
 resource "aws_lambda_permission" "allow_api_gateway_invoke_age_attestation" {
-  statement_id  = "AllowExecutionFromApiGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.age_attestation.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.age_attestation.execution_arn}/*/*"
+  statement_id   = "AllowExecutionFromApiGateway"
+  action         = "lambda:InvokeFunction"
+  function_name  = aws_lambda_function.age_attestation.function_name
+  principal      = "apigateway.amazonaws.com"
+  source_account = split(":", local.users_table_arn)[4]
+  source_arn     = "${aws_apigatewayv2_api.age_attestation.execution_arn}/*/POST/v1/users/age-attestation"
 }
 
 resource "aws_lambda_permission" "allow_api_gateway_invoke_analysis" {

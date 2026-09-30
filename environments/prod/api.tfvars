@@ -2,6 +2,8 @@ aws_region   = "us-east-1"
 project_name = "trustcheckradar"
 environment  = "prod"
 
+age_attestation_canonical_base_url = "https://api.andmorethings.net"
+
 campaign_intelligence_enabled = false
 
 campaign_participation_notice_version          = "2026-09-07"

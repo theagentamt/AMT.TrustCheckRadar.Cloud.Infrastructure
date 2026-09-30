@@ -12,6 +12,11 @@ artifact_bucket_force_destroy = true
 hosted_ui_enabled             = false
 users_status_gsi_enabled      = true
 
+age_attestation_contract = {
+  approval_reference = "ATCR-74 / SECUR4ALL-177 / SECUR4ALL-193 reviewed candidate contract"
+  promotion_approved = false
+}
+
 backend_assume_role_principals  = ["lambda.amazonaws.com"]
 deletion_assume_role_principals = ["lambda.amazonaws.com"]
 campaign_intelligence_enabled   = true

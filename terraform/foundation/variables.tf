@@ -112,6 +112,23 @@ variable "cognito_id_token_validity_minutes" {
   default     = 60
 }
 
+variable "age_attestation_contract" {
+  description = "Reviewed authoritative age-attestation client boundary. Null preserves the existing app-client attribute permissions."
+  type = object({
+    approval_reference = string
+    promotion_approved = bool
+  })
+  default = null
+
+  validation {
+    condition = var.age_attestation_contract == null ? true : (
+      length(trimspace(var.age_attestation_contract.approval_reference)) > 0 &&
+      (var.environment == "dev" || var.age_attestation_contract.promotion_approved)
+    )
+    error_message = "Authoritative age attestation requires a review reference and separate UAT/Prod promotion approval."
+  }
+}
+
 variable "hosted_ui_enabled" {
   description = "Create Cognito hosted UI domain and configure callback/signout URLs"
   type        = bool

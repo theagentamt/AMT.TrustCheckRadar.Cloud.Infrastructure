@@ -97,6 +97,47 @@ output "age_attestation_endpoint_url" {
   value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}/v1/users/age-attestation"
 }
 
+output "age_attestation_backend_settings" {
+  description = "Versioned Android/Lambda/operations contract for authoritative adult self-attestation"
+  value = {
+    enabled                   = local.age_attestation_authority_enabled
+    endpointPath              = "/v1/users/age-attestation"
+    canonicalEndpointUrl      = local.age_attestation_canonical_endpoint_url
+    executeApiEndpointUrl     = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}/v1/users/age-attestation"
+    executeApiEndpointEnabled = !var.disable_execute_api_endpoint
+    method                    = "POST"
+    authorizationType         = "CognitoJWT"
+    authorizationHeader       = "Authorization: Bearer <access-token>"
+    tokenType                 = local.age_attestation_authority_enabled ? "access" : "legacy-unspecified"
+    requiredScope             = local.age_attestation_authority_enabled ? "aws.cognito.signin.user.admin" : null
+    audience                  = local.cognito_app_client_id
+    issuer                    = local.jwt_issuer
+    routeKey                  = aws_apigatewayv2_route.age_attestation.route_key
+    contractPath              = local.age_attestation_contract_path
+    contractVersion           = local.age_attestation_contract_version
+    schemaVersion             = local.age_attestation_schema_version
+    agePolicyVersion          = local.age_attestation_policy_version
+    allowedRegionCodes        = sort(tolist(var.age_attestation_allowed_region_codes))
+    request = {
+      operationId             = "UUIDv4"
+      over18AcknowledgedConst = true
+      additionalProperties    = false
+    }
+    idempotency = {
+      receiptTtlSeconds = local.age_attestation_receipt_ttl_seconds
+      ttlAttribute      = "expiresAt"
+      partitionKey      = "USER#<sub>"
+      sortKey           = "AGE_ATTESTATION#<operationId>"
+    }
+    lambdaLogGroup    = aws_cloudwatch_log_group.age_attestation_lambda.name
+    apiAccessLogGroup = aws_cloudwatch_log_group.age_attestation_api.name
+    alarmNames = local.age_attestation_monitoring_enabled ? concat(
+      sort([for alarm in aws_cloudwatch_metric_alarm.age_attestation_lambda : alarm.alarm_name]),
+      [aws_cloudwatch_metric_alarm.age_attestation_api_5xx[0].alarm_name],
+    ) : []
+  }
+}
+
 output "analysis_lambda_name" {
   description = "Conversation analysis Lambda function name"
   value       = aws_lambda_function.analysis.function_name
