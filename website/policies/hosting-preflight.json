@@ -1,0 +1,59 @@
+{
+  "bucketVersioning": "NotEnabled",
+  "defaultViewerProtocolPolicy": "redirect-to-https",
+  "distributionConfigETag": "E1VC38T7YXB528",
+  "functions": [
+    {
+      "etag": "ETVPDKIKX0DER",
+      "eventType": "viewer-request",
+      "name": "to_index_function",
+      "sha256": "f34501c860bb7c5b55bc4865a3f9382ae0b661c0980fca2a421c4bfc156df31c"
+    }
+  ],
+  "objects": {
+    "data-deletion/index.html": {
+      "bytes": 5769,
+      "cacheControl": "public,max-age=300",
+      "contentType": "text/html",
+      "etag": "\"88d0a0c8f22fba581cf0dd8ccb7d082d\"",
+      "exists": true,
+      "rollbackBytesCaptured": true,
+      "sha256": "69779cefbff4d1c5893654692453d9d9cbc6ab0502f27ad62e8142ca28cce1d9",
+      "versionId": null
+    },
+    "es/data-deletion/index.html": {
+      "absenceConfirmedBy": "NoSuchKey",
+      "exists": false
+    },
+    "es/privacy-policy/index.html": {
+      "absenceConfirmedBy": "NoSuchKey",
+      "exists": false
+    },
+    "es/terms-of-use/index.html": {
+      "absenceConfirmedBy": "NoSuchKey",
+      "exists": false
+    },
+    "privacy-policy/index.html": {
+      "bytes": 15423,
+      "cacheControl": "public,max-age=300",
+      "contentType": "text/html",
+      "etag": "\"4c5698766779ed976cb2279a3ea617c4\"",
+      "exists": true,
+      "rollbackBytesCaptured": true,
+      "sha256": "f1dc54d3aaf73714106c58c4eb8bdefacaf81977491f5a795824ca8bb8cf3898",
+      "versionId": null
+    },
+    "terms-of-use/index.html": {
+      "bytes": 10177,
+      "cacheControl": "public,max-age=300",
+      "contentType": "text/html",
+      "etag": "\"3faa4e5d7b27d0c240ce14d7ed8f2ac1\"",
+      "exists": true,
+      "rollbackBytesCaptured": true,
+      "sha256": "2ecf219ca1774fb932808e2f15016d3c4321429ee3150f711c8eacd24eff8391",
+      "versionId": null
+    }
+  },
+  "observedAtUtc": "20260928T034321Z",
+  "scope": "Read-only publication/rollback preflight; no upload, invalidation or configuration change"
+}

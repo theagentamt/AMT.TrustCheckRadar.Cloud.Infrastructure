@@ -1,0 +1,263 @@
+# SECUR4ALL-92: bilingual policy source and release package
+
+This directory contains the reviewed source, guarded local previews, and the six
+English/Spanish release artifacts dated September 30, 2026. Building an artifact
+does not publish it, submit a store form, activate an app feature or certify legal
+compliance. Publication evidence is recorded separately after the exact generated
+bytes are installed and read back from the public site.
+
+Owner confirmed on September 27 that **AndMoreThings Labs LLC** and the monitored
+**privacy@andmorethings.com** contact remain correct. Owner selected in-app deletion
+as primary and a verified email fallback for V1; no automated web flow is authorized.
+An email is a request, not proof of ownership or authority to erase an account.
+
+## Owner decisions approved September 27, 2026
+
+- Real V1 customer submissions must not be opted into provider model-training
+  sharing. September 28 read-only inspection confirmed all three sharing controls
+  disabled, with Standard Retention and Global residency. The owner confirmed
+  the AWS credential belongs to that project; this is owner attestation, not an
+  independent key comparison. No settings were changed or secrets retrieved.
+- The shared inbox uses Proton Mail Plus. Correspondence and the minimal
+  verification record share the same case and must be removed on or before
+  30 calendar days after resolution. The owner handles verification/submission
+  through separate roles and case-selective cleanup; no blanket mailbox rule is
+  authorized. The runbook includes resolution/deadline tracking, sent/received and
+  local working copies, early cleanup for unattended deadlines, and provider-copy
+  exceptions. Actual mailbox execution remains pending in SECUR4ALL-329.
+- Send independent deletion confirmation to the verified email already on the
+  account; do not rely on the incoming sender or a requester-supplied replacement.
+  Only after verified explicit intent may an authorized operator proceed. Lost
+  mailbox access requires a separately reviewed recovery path. SECUR4ALL-333
+  has completed the scoped automated backend qualification. General admission is
+  restored disabled; real mailbox confirmation/release qualification is pending.
+  No new public web portal was authorized.
+
+These approvals supersede the earlier unanswered policy questions. The public
+source describes bounded current behavior and expressly qualified future or gated
+behavior. Internal qualification notes remain in this README and the checklist;
+they are excluded from the public fragments and release output.
+
+## Preview and source
+
+Edit `content/en/*.html` and matching `content/es/*.html`, then build a guarded
+preview:
+
+```sh
+python3 website/policies/render.py
+python3 -m http.server 8092 --bind 127.0.0.1 --directory website/policies/preview
+```
+
+Open `http://127.0.0.1:8092/privacy-policy/`. Build the reviewed release artifacts
+only with an explicit ISO effective date:
+
+```sh
+python3 website/policies/render.py --mode release --effective-date 2026-09-30
+python3 website/policies/validate_release.py
+python3 -m unittest website/policies/test_render.py
+```
+
+All six pages have reciprocal language
+links and localized navigation. Existing canonical English paths remain unchanged.
+Android EN/ES currently open the same canonical URLs; readers can select Spanish
+on the site without a mobile allowlist change. Direct Spanish mobile URLs would
+require a separate reviewed allowlist change. No scripts, forms, external fonts,
+tracking or deployment credentials are added. Preview output is deliberately marked
+DRAFT and `noindex`. Release mode requires an effective date, removes those markers,
+adds canonical and `hreflang` metadata, and writes a hash manifest. Neither mode
+uploads anything.
+
+## Evidence and decisions
+
+- Android PR45/source `5260a8865c2682959069997e4012a21eee64fa7d`: actual signup
+  includes name, email, phone, password and adult Boolean; local OCR/QR, exact URL
+  allowlist, protected account storage and ordinary feature gates. No automatic
+  SMS/contact/call-log/notification collection found. A +1 validation is not proof
+  of US residence; the policy states the intended US offering, not enforcement.
+- Lambda PR77/source `19cb7a7096f1f9b231ff9eb603a5a2e45343649c`:
+  [backend attestation](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/blob/19cb7a7096f1f9b231ff9eb603a5a2e45343649c/docs/backend-retention-attestation-2026-09-27.md).
+  The subsequent SEC332 numeric-counter correction changes no retention policy.
+- [Infrastructure reconciliation](../../docs/ATCR-95-RETENTION-RECONCILIATION.md):
+  current Dev TTL/PITR/log configuration, public drift and limits of that evidence.
+- [Approved account-data decisions](../../docs/ACCOUNT-DATA-POLICY-DECISIONS.md):
+  recovery/audit intervals, direct export, deletion acceptance/local cleanup,
+  restoration and suppression boundaries. Existing owner-approved plan: $4.99,
+  200 completed checks/period, explicitly activated 7-day/10-check trial.
+- [Google Play account deletion guidance](https://support.google.com/googleplay/android-developer/answer/13327111?hl=en):
+  outside-app request path required; an email path can qualify. In-app-only
+  redirection cannot serve users who uninstalled the app. This is a policy-source
+  review, not evidence of approval by Google or fulfillment of an email request.
+- Android closeout commit `a77fc9be75c19e8d95f77c4bc4b30b094b6ba9fa`
+  adds the strict verified-email fallback and replaces the legacy form proposal
+  with a complete conservative Android V1 Data Safety answer set. It answers
+  collection and sharing Yes, blanket encryption No because bounded redirect
+  resolution can contact an HTTP destination, deletion/account creation Yes, and
+  independent security review No. Console submission and assembled-release
+  validation remain separate release work; no iOS label is inferred.
+- [OpenAI API data controls](https://developers.openai.com/api/docs/guides/your-data):
+  documented defaults distinguish application state from abuse monitoring; defaults
+  do not attest this account's data-sharing, retention or regional controls.
+- [Web Risk lists](https://docs.cloud.google.com/web-risk/docs/lists) and
+  [Google service terms, section 46](https://cloud.google.com/terms/service-terms):
+  Lookup sends the actual URL. Do not apply the separate Evaluate/Submission reuse
+  clause to Lookup by assumption. The current clause also names Brand Phishing
+  Protection. Exact Lookup request retention remains unverified.
+- [FTC privacy guidance](https://www.ftc.gov/business-guidance/privacy-security/consumer-privacy):
+  public representations must match actual practices. No blanket compliance
+  certification or state-law applicability determination is made here.
+
+## Change map
+
+| Existing public claim | Replacement |
+| --- | --- |
+| SecurityForAll; account optional | TrustCheck Radar; account required; operator preserved |
+| Screenshots/images uploaded | Current analysis images processed locally; reviewed text/URLs leave device |
+| Broad research permission through use/terms | Independent optional research; separate demographic/commercial choices; unavailable features clearly conditional |
+| Sanitized/de-identified means anonymous | Residual identifying context and purpose-bound pseudonymous records disclosed |
+| Generic indefinite retention | Distinct receipts, History, security, purchase, consent, research, deletion and backup limits |
+| Data deletion equals immediate total erasure | Acceptance, local cleanup, server completion, retained suppression and independent copies distinguished |
+| Credits and unspecified premium features | Approved individual allowance/trial, completed-only deductions, no automatic overage |
+| One English page | Six linked EN/ES pages with consistent material meaning |
+
+## Release boundaries and remaining qualification
+
+1. The supported verifier/operator tooling, response procedure and scoped Dev
+   qualification are complete in SECUR4ALL-333. The owner selected acknowledgment
+   and beginning verification within five business days, not completed erasure.
+   The page describes an email request followed by human verification and a
+   supervised per-case operator process; it does not describe an automatic web
+   deletion service or immediate acceptance. SECUR4ALL-329 retains the real mailbox
+   and assembled release journey.
+2. Establish support-mail retention and provider account/contract practices. Do not
+   infer zero retention, no training opt-in, a specific processing country or
+   erasure of processor records from `store:false` or our TTL. Record the actual
+   release-specific OpenAI model/endpoint and Google agreement, and reconcile
+   provider erasure requests. The inspected OpenAI sharing/retention/residency
+   settings and owner-confirmed project binding are recorded below; they are no
+   longer pending login or owner confirmation.
+3. Reconcile the exact release's gates/SDKs before submitting store forms. The
+   public pages name Android where behavior is platform-specific and do not claim
+   that an iOS release ships the same implementation. Conditional source capability
+   is not a claim that general export, research or online checks are enabled.
+4. The owner approved the product decisions and publication direction. No qualified
+   legal opinion or blanket jurisdictional certification is asserted. Terms changes
+   are limited to product alignment; no new venue, arbitration, sale permission or
+   waiver is introduced.
+5. The release renderer excludes editorial review paragraphs, requires the approved
+   September 30, 2026 effective date and validates all six exact artifacts. Preserve
+   the rollback bundle and stop if the live origin changes before upload.
+6. After publication, verify public bytes, language navigation and current in-app
+   links. SECUR4ALL-94 separately records the exact Android form-answer mapping and
+   later console submission; iOS/App Store evidence stays with its platform owner.
+
+No change to data collection, retention or runtime gates is implied by this package.
+
+## Publication and rollback preparation
+
+Current serving assets identified read-only: CloudFront `E1ESXUYOU4XS2A`, alias
+`andmorethings.com`, S3 origin `temp-web-root` (empty OriginPath), existing keys
+`privacy-policy/index.html`, `terms-of-use/index.html`, `data-deletion/index.html`.
+No authoring repository/CMS was established; this directory versions the candidate
+replacements without claiming ownership of the remainder of the website.
+
+Before upload, read the distribution's current routing/cache settings and exact
+object metadata and preserve old bytes/version IDs/hashes for all touched keys.
+The version-controlled `rollback/2026-09-30/` bundle contains the exact three prior
+English objects, metadata and independently checked SHA-256 values; the three
+Spanish keys were absent. Re-read the six origin keys immediately before writing
+and stop on any mismatch. Publish
+only the six approved page objects (and any separately reviewed routing change),
+with explicit content-type/cache metadata and private origin access preserved.
+Invalidate only affected canonical and object paths; verify public status, bytes,
+links, EN/ES selection, layout and no accidental draft markings. Rollback restores
+the preserved bytes/metadata or deletes only newly introduced Spanish keys, then
+invalidates the same paths. Do not replace unrelated root/style/script assets.
+Record evidence and exact Git/source/object revisions before closing the story.
+
+## Later release QA handoff
+
+Reuse ATCR-62's existing policy/link checks and ATCR-148 for physical-only work.
+For the actual released APK, record build/configuration and open privacy/terms
+from Settings in EN and ES, follow the site language selector, check deletion is
+prominent without login, and compare the pages to the approved manifest. Check
+large text, keyboard/screen reader semantics and no clipping. A mailto link opening
+is not delivery, verification or erasure evidence. Execute an email deletion
+journey only against a separately authorized disposable account using the approved
+procedure, then independently verify completion and unrelated-data preservation.
+Record unexecuted cases as pending. No UAT, Production, physical or destructive
+test is authorized by this handoff; required publication validation remains here.
+
+## Validation recorded on September 27
+
+Independent review found material EN/ES parity and supported retention/consent
+boundaries. Its two findings were corrected in both languages: in-app deletion
+now precedes the email fallback, and local cleanup requires Android to receive
+and validate matching acceptance. Six generated hashes, embedded fragments,
+HTML language/headings, draft/noindex markers and local destinations were checked.
+English and Spanish privacy pages were visually inspected in the local in-app
+browser; this is not a physical-device or screen-reader test.
+
+Read-only live CloudFront routing inspection found viewer-request function
+`to_index_function` (ETag `ETVPDKIKX0DER`) appends `index.html` to slash paths and
+`/index.html` to extensionless paths. Thus the proposed `/es/<page>/` URLs use the
+existing nested-index rule; no routing mutation is currently indicated. The
+original distribution config ETag was `E1VC38T7YXB528`. Re-read before publication
+rather than assuming these resources stayed unchanged. No S3 write, CloudFront
+update or invalidation occurred.
+
+
+## September 28 UTC continuation after SEC333 Dev completion
+
+- [SEC333 final evidence](../../docs/SECUR4ALL-333-DEV-EVIDENCE.md) and
+  [case procedure](../../docs/SECUR4ALL-333-SUPPORT-DELETION.md) are integrated from
+  release-V01. The one owner-approved synthetic account completed12receipts;
+  admission/scopes were restored and four modules showed no drift. This closes
+  backend Dev work, not mailbox/release qualification.
+- EN/ES deletion drafts now include the approved five-business-day initial target
+  and truthful progress states. EN/ES privacy drafts now include same-case minimal
+  verification evidence and selective30-calendar-day retention. Draft/review
+  markers remain; no effective date or public upload is selected.
+- ATCR-62 now has formal related-story links to SECUR4ALL-333 and SECUR4ALL-329.
+  SEC92 formally precedes ATCR-95, which precedes ATCR-62/148. The added links are
+  relationships, not new mobile blockers for backend work.
+- Remaining provider/account, release and publication evidence is itemized in
+  [the publication checklist](PUBLICATION-CHECKLIST.md). It is required acceptance,
+  not automatically deferred manual testing.
+
+
+## Publication preflight, September 28 at 03:43 UTC
+
+The read-only [hosting preflight](hosting-preflight.json) confirms the three English
+origin objects still match the prior public-page hashes. All three proposed Spanish
+objects are absent (`NoSuchKey`), and the existing LIVE viewer-request function
+still resolves nested paths to `index.html`. No routing update is indicated by
+this readback. Viewer requests redirect to HTTPS; existing HTML cache control is
+`public,max-age=300`. This is origin/configuration evidence, not a new public
+CDN-cache, mobile, or mailbox test.
+
+**The origin bucket does not have versioning enabled.** Do not assume a previous
+S3 version can be restored. Existing bytes and object metadata were captured in
+a private local preflight bundle; its location is in the operator's private work
+record, not a public credential/evidence archive. Before any later authorized
+upload, re-read origin/configuration and create a fresh durable rollback bundle
+with independently verified hashes and metadata. An ephemeral `/tmp` capture is
+not the only rollback copy for a real publication. Do not enable bucket-wide
+versioning as part of a policy-page upload without reviewing that separate change.
+
+Rollback must restore the exact prior English bytes and metadata. Spanish keys
+were absent at this observation; remove a newly created key only if the publication
+journal proves that this run created it and its current hash matches that run's
+upload. If another writer has changed a key or configuration, stop and reconcile
+rather than overwrite it. Invalidate only the approved affected paths. The final
+text/effective-date approval and artifact manifest must precede any upload.
+
+
+## Provider evidence refresh, September 28
+
+[Provider review](PROVIDER-REVIEW.md) records the inspected OpenAI controls,
+owner-confirmed credential/project connection, candidate-runtime limits and
+Google Lookup disclosure boundary. It supersedes earlier settings-unverified
+notes for this inspected scope. Both privacy drafts carry matching EN/ES updates.
+Android PR47 is integrated into release-V01 at
+`fc4a42a4e32ad0497c1479a1ea6c4e50c54f68f5`; its mapping changes no runtime or
+store answers. Public publication and actual store submission remain pending.

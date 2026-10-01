@@ -1,0 +1,13 @@
+{
+  "status": "DRAFT_NOT_FOR_DEPLOYMENT",
+  "effectiveDate": null,
+  "publicOrigin": "https://andmorethings.com",
+  "files": {
+    "privacy-policy/index.html": "73367b0198cad0887632fefbe80955898ef6c356f0bc6df4c5a05bf8796d83c6",
+    "terms-of-use/index.html": "d3e19f95e3d93101abfd5e33c2fb279c06a2ce15bfec18fe953b1e8e5e76407b",
+    "data-deletion/index.html": "4da4d41024f53bf0684f94e43b7864f5a664a952ce72bcbffa95040b9ef8165c",
+    "es/privacy-policy/index.html": "4dd9ab49209ef006c5a715f136c0c013869e974bc5968e42e8d33846a00347ba",
+    "es/terms-of-use/index.html": "2fd52216cbef36090cf0a609a2caf20a6c9819d3e4892b7bcf8637777f2571e9",
+    "es/data-deletion/index.html": "4c5a03487ad211b07194cd8302532602703a73e6d87e133ff13f3311a0bb9612"
+  }
+}
