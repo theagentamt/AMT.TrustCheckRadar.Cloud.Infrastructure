@@ -218,31 +218,32 @@ resource "aws_lambda_function" "account_export" {
   source_code_hash               = var.account_export_deployment.source_hash
   environment {
     variables = merge({
-      STAGE                              = var.environment
-      ACCOUNT_EXPORT_ENABLED             = "false"
-      ACCOUNT_EXPORT_HTTP_SUBJECTS_JSON  = "[]"
-      ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED = "false"
-      PLAY_TOKEN_TABLE_NAME              = var.account_export_play_token_table_arn == null ? "" : split("/", var.account_export_play_token_table_arn)[1]
-      ACCOUNT_EXPORT_POLICY_VERSION      = "account-export-observed-v1"
-      ACCOUNT_EXPORT_INVENTORY_STATUS    = "pending"
-      ACCOUNT_EXPORT_CURSOR_SECRET_ARN   = aws_secretsmanager_secret.account_export_cursor[0].arn
-      AUTHORITY_HMAC_SECRET_ARN          = var.account_export_deployment.authority_hmac_secret_arn
-      USERS_TABLE_NAME                   = local.users_table_name
-      DEVICE_BINDINGS_TABLE_NAME         = local.device_bindings_table_name
-      DELETION_LEDGER_TABLE_NAME         = local.deletion_ledger_table_name
-      AUTHORITY_TABLE_NAME               = local.purchase_entitlements_table_name
-      ENTITLEMENTS_TABLE_NAME            = local.purchase_entitlements_table_name
-      DEVICE_RECOVERY_CONTROL_TABLE_NAME = local.recovery_storage_valid ? local.recovery_storage.table_name : ""
-      HISTORY_CONTENT_TABLE_NAME         = var.history_deployment == null ? "" : local.history_data.content_table_name
-      HISTORY_CONTROL_TABLE_NAME         = var.history_deployment == null ? "" : local.history_data.control_table_name
-      ANALYSIS_ABUSE_TABLE_NAME          = local.analysis_abuse_control_table_name
-      CAMPAIGN_OUTBOX_TABLE_NAME         = var.campaign_intelligence_enabled ? local.campaign.outbox_table_name : ""
-      CAMPAIGN_PIPELINE_TABLE_NAME       = var.campaign_intelligence_enabled ? local.campaign.pipeline_table_name : ""
-      COGNITO_ISSUER                     = local.jwt_issuer
-      COGNITO_APP_CLIENT_ID              = local.cognito_app_client_id
-      COGNITO_REQUIRED_SCOPE             = "aws.cognito.signin.user.admin"
-      COGNITO_USER_POOL_ID               = local.cognito_user_pool_id
-      COGNITO_USERNAME_IS_SUB            = "false"
+      STAGE                                        = var.environment
+      ACCOUNT_EXPORT_ENABLED                       = "false"
+      ACCOUNT_EXPORT_HTTP_SUBJECTS_JSON            = "[]"
+      ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED           = "false"
+      PLAY_TOKEN_TABLE_NAME                        = var.account_export_play_token_table_arn == null ? "" : split("/", var.account_export_play_token_table_arn)[1]
+      ACCOUNT_EXPORT_POLICY_VERSION                = "account-export-observed-v1"
+      ACCOUNT_EXPORT_INVENTORY_STATUS              = "pending"
+      DEMOGRAPHIC_RESEARCH_EXPORT_CONTRACT_ENABLED = tostring(local.demographic_research_lifecycle_selected)
+      ACCOUNT_EXPORT_CURSOR_SECRET_ARN             = aws_secretsmanager_secret.account_export_cursor[0].arn
+      AUTHORITY_HMAC_SECRET_ARN                    = var.account_export_deployment.authority_hmac_secret_arn
+      USERS_TABLE_NAME                             = local.users_table_name
+      DEVICE_BINDINGS_TABLE_NAME                   = local.device_bindings_table_name
+      DELETION_LEDGER_TABLE_NAME                   = local.deletion_ledger_table_name
+      AUTHORITY_TABLE_NAME                         = local.purchase_entitlements_table_name
+      ENTITLEMENTS_TABLE_NAME                      = local.purchase_entitlements_table_name
+      DEVICE_RECOVERY_CONTROL_TABLE_NAME           = local.recovery_storage_valid ? local.recovery_storage.table_name : ""
+      HISTORY_CONTENT_TABLE_NAME                   = var.history_deployment == null ? "" : local.history_data.content_table_name
+      HISTORY_CONTROL_TABLE_NAME                   = var.history_deployment == null ? "" : local.history_data.control_table_name
+      ANALYSIS_ABUSE_TABLE_NAME                    = local.analysis_abuse_control_table_name
+      CAMPAIGN_OUTBOX_TABLE_NAME                   = var.campaign_intelligence_enabled ? local.campaign.outbox_table_name : ""
+      CAMPAIGN_PIPELINE_TABLE_NAME                 = var.campaign_intelligence_enabled ? local.campaign.pipeline_table_name : ""
+      COGNITO_ISSUER                               = local.jwt_issuer
+      COGNITO_APP_CLIENT_ID                        = local.cognito_app_client_id
+      COGNITO_REQUIRED_SCOPE                       = "aws.cognito.signin.user.admin"
+      COGNITO_USER_POOL_ID                         = local.cognito_user_pool_id
+      COGNITO_USERNAME_IS_SUB                      = "false"
     }, local.period_work_closed_env, local.period_work_activation_env, local.period_work_prepared ? { APP_ENVIRONMENT = var.environment } : {}, local.account_export_activation_env)
   }
   lifecycle {
@@ -299,7 +300,8 @@ output "account_export_candidate_contract" {
     scoped_http_available         = local.account_export_runtime_enabled && local.account_export_route_selected
     runtime_attested_by_terraform = false
     scoped_subject_count          = try(length(var.account_export_activation.http_subjects), 0)
-    transport_version             = local.account_export_runtime_enabled ? "1.0.0-account-export-candidate.3" : null
+    transport_version             = local.account_export_runtime_enabled ? (local.demographic_research_lifecycle_selected ? "1.0.0-account-export-candidate.5" : "1.0.0-account-export-candidate.3") : null
+    demographic_research_included = local.demographic_research_lifecycle_selected
     full_account_export_available = false
     routes                        = local.account_export_route_selected ? ["POST /v1/users/account-export"] : []
     cursor_secret_arn             = try(aws_secretsmanager_secret.account_export_cursor[0].arn, null)

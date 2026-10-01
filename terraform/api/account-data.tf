@@ -409,6 +409,7 @@ resource "aws_lambda_function" "account_data" {
       ACCOUNT_DELETION_POLICY_STATUS                  = "pending"
       ACCOUNT_DELETION_COMPLETION_STATUS              = "incomplete"
       USER_PROFILE_DELETION_POLICY_STATUS             = "pending"
+      DEMOGRAPHIC_RESEARCH_DELETION_POLICY_STATUS     = local.demographic_research_lifecycle_selected ? "approved" : "pending"
       ACCOUNT_DELETION_RECONCILIATION_SCAN_LIMIT      = "100"
       ACCOUNT_DELETION_RECONCILIATION_MAX_PAGES       = "10"
       ACCOUNT_DELETION_DEVICE_DELETE_PAGE_SIZE        = "100"
@@ -524,6 +525,7 @@ output "account_data_candidate_contract" {
     overall_deletion_completion_available = false
     identity_finalizer_configured         = local.account_deletion_workers_enabled
     runtime_completion_attested           = false
+    demographic_research_included         = local.demographic_research_lifecycle_selected
     function_arn                          = try(aws_lambda_function.account_data[0].arn, null)
   }
 }
