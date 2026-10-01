@@ -12,7 +12,7 @@ locals {
 resource "aws_cloudwatch_metric_alarm" "runtime" {
   for_each            = local.runtime_alarms
   alarm_name          = "${local.prefix}-message-${each.key}"
-  alarm_description   = "Inactive Dev candidate runtime ${each.value.metric}; reconcile the same check after uncertain completion. Native runtime metrics do not count assessment outcomes or deductions."
+  alarm_description   = "Governed Dev message runtime ${each.value.metric}; reconcile the same check after uncertain completion. Native runtime metrics do not count assessment outcomes or deductions."
   namespace           = "AWS/Lambda"
   metric_name         = each.value.metric
   dimensions          = { FunctionName = aws_lambda_function.runtime[each.value.function].function_name }

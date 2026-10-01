@@ -1,9 +1,10 @@
 # Governed V1 message candidate
 
 SECUR4ALL-242 supplies the isolated infrastructure dependency for ATCR-120 and
-SECUR4ALL-190/228/229/230. This root provisions only an inactive Dev candidate.
-It does not replace the existing URL stack, publish an endpoint or activate
-message processing. All checked-in environment files remain disabled.
+SECUR4ALL-190/228/229/230. This root can provision the inactive Dev runtimes and
+the three authenticated message routes without activating message processing.
+Provisioning, rules-only engineering qualification and later qualified AI are
+separate gates. All checked-in environment files remain disabled.
 
 ## Runtime and trust boundaries
 
@@ -24,11 +25,17 @@ message processing. All checked-in environment files remain disabled.
   each and asynchronous retries disabled. Internal call deadlines must fit those
   envelopes. A synchronous timeout may leave downstream work running; the ledger
   must reconcile the original identity rather than invoke again automatically.
-- Consumer, evaluator and authority flags remain false; the provider circuit is
-  explicitly open. Policy/version and approval SHA are pinned to the owner-approved
-  2026-09-20 message rubric. Budget configuration is not invented here: validated
-  account/service attempts, failures, window and deadline limits are activation
-  prerequisites, separate from the 200-completed-check allowance.
+- Consumer, evaluator and authority flags remain false unless the rules-only
+  engineering gate is deliberately enabled for exact synthetic Dev subjects. The
+  provider circuit remains open while inactive. Policy/version and approval SHA
+  are pinned to the owner-approved 2026-09-20 message rubric. Explicit aggregate
+  attempt/failure/window limits are mandatory for engineering activation and stay
+  separate from the 200-completed-check customer allowance.
+- The aggregate provider circuit uses only the shared authority row
+  `PK=V1#CONTROL, SK=MESSAGE_PROVIDER_BUDGET`. Consumer IAM can transactionally
+  update only its record type, revision, window, attempt and failure fields; the
+  permission cannot write another control row or perform a non-transactional
+  update.
 - Fourteen-day operational log retention follows the existing runtime baseline.
   The Lambda code must emit only approved metadata; no request/response payloads,
   replaced values, URLs, proof, credentials or exception payloads. Seven-day
@@ -41,18 +48,24 @@ is restricted to Dev account 107827791950. Inputs are exact environment-scoped
 same-account dependencies. UAT/production provisioning is rejected. CI validates
 this root, and the automatic deployment workflow explicitly excludes it.
 
-Before deployment/activation, pin the reviewed Lambda artifact pair, validate the
-actual Android contract against handler responses, and review a saved manual Dev
-plan. Existing account inventory, retained-key deletion, ACCESS-last fencing,
-explicit expiry and lease recovery must be integrated coherently; a passing mock
-must not stand in for live lifecycle qualification.
+Before provisioning, pin the reviewed Lambda artifact pair, validate the actual
+Android contract against handler responses, supply the exact existing Dev API and
+shared JWT authorizer, and review a saved manual Dev plan. Provisioning creates
+only `POST /v1/message-checks/prepare`, `POST /v1/message-checks`, and
+`POST /v1/message-checks/reconcile`; every route requires the existing Cognito JWT
+scope and invokes the pinned `message-consumer:live` alias. Disabled handlers
+return a fixed 503 response and cannot reach authority or providers.
 
-Authenticated gateway routes, authority/retention horizons, allowlisted synthetic
-Dev qualification, provider budgets, operational alarms using the existing
-confirmed support@andmorethings.com alert path, and controlled rollback are
-separate activation gates. This candidate creates no API Gateway integration,
-Lambda URL, public invocation grant, schedule or event source. It changes neither
-the legacy endpoint nor the URL consumer's IAM permissions. No new commercial,
+Rules-only engineering activation additionally requires one to three exact
+synthetic Cognito subjects, explicit seven-day-bounded authority horizons and an
+aggregate provider budget. It closes the circuit only for candidate.1. Candidate.2
+and candidate.3 remain unavailable because AI flags stay false and evaluator IAM
+continues to deny every Secrets Manager action.
+
+The route resources do not replace `/analysis`, add a Lambda URL, schedule work,
+or change URL-consumer IAM. The legacy endpoint remains retired. Authority and
+provider activation, operational outcome reporting, qualified AI, Android gating
+and controlled rollback remain separate acceptance steps. No new commercial,
 research, retention or eligibility policy is introduced.
 
 The first evaluator increment applies a deliberately bounded, qualified rule set;
