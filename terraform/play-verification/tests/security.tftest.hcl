@@ -186,24 +186,24 @@ run "other_gateway_rejected" {
 run "closed_lifecycle_preparation_is_scoped" {
   command = apply
   variables {
-    enabled = true
+    enabled           = true
     lifecycle_storage = { table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens", kms_key_arn = "arn:aws:kms:us-east-1:107827791950:key/11111111-1111-1111-1111-111111111111" }
-    api_gateway = { api_id = "icuak34th9", execution_arn = "arn:aws:execute-api:us-east-1:107827791950:icuak34th9", stage_name = "$default" }
+    api_gateway       = { api_id = "icuak34th9", execution_arn = "arn:aws:execute-api:us-east-1:107827791950:icuak34th9", stage_name = "$default" }
   }
   assert {
-    condition = aws_lambda_function.runtime[0].environment[0].variables.PLAY_PREPARATION_ENABLED == "false" && aws_lambda_function.runtime[0].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "false" && aws_apigatewayv2_route.prepare[0].authorization_type == "JWT" && aws_apigatewayv2_route.prepare[0].authorization_scopes == toset(["aws.cognito.signin.user.admin"]) && aws_lambda_permission.prepare[0].source_arn == "arn:aws:execute-api:us-east-1:107827791950:icuak34th9/$default/POST/v1/purchases/google-play/prepare" && aws_lambda_permission.prepare[0].qualifier == "live"
+    condition     = aws_lambda_function.runtime[0].environment[0].variables.PLAY_PREPARATION_ENABLED == "false" && aws_lambda_function.runtime[0].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "false" && aws_apigatewayv2_route.prepare[0].authorization_type == "JWT" && aws_apigatewayv2_route.prepare[0].authorization_scopes == toset(["aws.cognito.signin.user.admin"]) && aws_lambda_permission.prepare[0].source_arn == "arn:aws:execute-api:us-east-1:107827791950:icuak34th9/$default/POST/v1/purchases/google-play/prepare" && aws_lambda_permission.prepare[0].qualifier == "live"
     error_message = "Preparation must require the same authenticated active-account route while remaining disabled."
   }
   assert {
-    condition = alltrue([for statement in jsondecode(aws_iam_role_policy.lifecycle[0].policy).Statement : statement.Effect != "Allow" || !contains(statement.Action, "dynamodb:PutItem") || (statement.Resource == var.lifecycle_storage.table_arn && statement.Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"] == ["TransactWriteItems"] && toset(statement.Condition["ForAllValues:StringLike"]["dynamodb:LeadingKeys"]) == toset(["V1#*#*", "PLAY_BINDING#*"]))]) && alltrue([for statement in jsondecode(aws_iam_role_policy.lifecycle[0].policy).Statement : statement.Effect != "Allow" || !contains(statement.Action, "kms:Decrypt")])
+    condition     = alltrue([for statement in jsondecode(aws_iam_role_policy.lifecycle[0].policy).Statement : statement.Effect != "Allow" || !contains(statement.Action, "dynamodb:PutItem") || (statement.Resource == var.lifecycle_storage.table_arn && statement.Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"] == ["TransactWriteItems"] && toset(statement.Condition["ForAllValues:StringLike"]["dynamodb:LeadingKeys"]) == toset(["V1#*#*", "PLAY_BINDING#*"]))]) && alltrue([for statement in jsondecode(aws_iam_role_policy.lifecycle[0].policy).Statement : statement.Effect != "Allow" || !contains(statement.Action, "kms:Decrypt")])
     error_message = "Foreground may atomically prepare its binding/encrypt a verified token but cannot decrypt or write control records."
   }
   assert {
-    condition = alltrue([for statement in jsondecode(aws_iam_role_policy.lifecycle[0].policy).Statement : statement.Effect != "Deny" || !strcontains(jsonencode(statement.Action), "kms:") || statement.Resource == var.lifecycle_storage.kms_key_arn])
+    condition     = alltrue([for statement in jsondecode(aws_iam_role_policy.lifecycle[0].policy).Statement : statement.Effect != "Deny" || !strcontains(jsonencode(statement.Action), "kms:") || statement.Resource == var.lifecycle_storage.kms_key_arn])
     error_message = "The explicit token decrypt denial must leave the required Secrets Manager credential-decryption path available."
   }
   assert {
-    condition = alltrue([for statement in jsondecode(aws_iam_role_policy.lifecycle[0].policy).Statement : statement.Sid != "NewTokenEnvelopeKeyOnly" || (statement.Condition.StringEquals["kms:EncryptionAlgorithm"] == "SYMMETRIC_DEFAULT" && !contains(keys(statement.Condition.StringEquals), "kms:DataKeySpec"))])
+    condition     = alltrue([for statement in jsondecode(aws_iam_role_policy.lifecycle[0].policy).Statement : statement.Sid != "NewTokenEnvelopeKeyOnly" || (statement.Condition.StringEquals["kms:EncryptionAlgorithm"] == "SYMMETRIC_DEFAULT" && !contains(keys(statement.Condition.StringEquals), "kms:DataKeySpec"))])
     error_message = "Foreground data-key generation must use a documented KMS condition."
   }
 
@@ -211,7 +211,7 @@ run "closed_lifecycle_preparation_is_scoped" {
 run "reject_other_lifecycle_table" {
   command = plan
   variables {
-    enabled = true
+    enabled           = true
     lifecycle_storage = { table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/other", kms_key_arn = "arn:aws:kms:us-east-1:107827791950:key/11111111-1111-1111-1111-111111111111" }
   }
   expect_failures = [var.lifecycle_storage]
