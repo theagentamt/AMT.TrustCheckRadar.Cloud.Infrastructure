@@ -133,7 +133,49 @@ fallback. Source validation passed all 147 local gate tasks, 2,443 host tests an
 verified the immutable contract and 33 recorded hashes. No Android Actions ran
 for this work; the application service gate remains disabled.
 
-This completes the snapshot implementation and disabled installation increment.
-The broader SECUR4ALL-230 and ATCR-92 stories remain In Progress for the live
-authority, paid lifecycle and qualification dependencies listed above. Their
-unperformed acceptance cases have not been declared passed or silently deferred.
+This completed the snapshot implementation and disabled installation increment.
+At that point, the broader SECUR4ALL-230 and ATCR-92 stories remained In
+Progress for the live authority, paid lifecycle and qualification dependencies
+listed above. Their unperformed acceptance cases were not declared passed or
+silently deferred.
+
+## ATCR-92 source-completion audit
+
+The 2026-09-30 ATCR-92 audit rechecked all three owning Dev Terraform roots
+against `release-V01`: `url-consumer`, `play-verification` and
+`play-lifecycle`. Each live plan reported **No changes**. The local suites passed
+68, 11 and 32 cases respectively. The first sandboxed test attempt could not
+start the downloaded AWS provider process; the same suites passed when rerun
+individually with the normal host execution boundary. No resource or account
+was changed by this audit.
+
+AWS readback confirmed Python 3.14 for the entitlements, Play handoff, lifecycle
+ingress and lifecycle worker functions. The following controls remain closed:
+
+- `V1_ENTITLEMENTS_ENABLED=false`, `AUTHORITY_ENABLED=false` and an empty
+  entitlements subject allowlist;
+- `PLAY_HANDOFF_ENABLED=false`, `PLAY_PREPARATION_ENABLED=false` and an empty
+  Play handoff subject allowlist;
+- `PLAY_LIFECYCLE_ENABLED=false`, `PLAY_CHECKPOINT_POLICY_APPROVED=false` and
+  an empty lifecycle subject allowlist; and
+- the one-minute lifecycle worker schedule is `DISABLED`.
+
+The Google Play notification surface still consists of the exact authenticated
+`POST /v1/notifications/google-play` JWT route. A reachable authenticated route
+does not imply that lifecycle processing is active while the runtime gates and
+worker schedule remain closed.
+
+This is the intended boundary for Android source completion. ATCR-92 may use
+deterministic Android and Lambda regression evidence for implementation
+acceptance, while authenticated Dev, Google Play sandbox and physical-device
+execution remain in ATCR-114, ATCR-112 and ATCR-148. Those release-test stories
+must cover renewal, active deferral/grace, cancellation through expiry, hold,
+paused/suspension policy, completed pending purchase, refund/revocation,
+out-of-order notification handling, restored purchases, stale/offline snapshots
+and balance refresh after every server-confirmed chargeable action. They must
+record the exact mobile, Lambda and infrastructure release heads and distinguish
+provider evidence from fixtures.
+
+No infrastructure source correction or activation was justified by this audit.
+Activation requires a separately reviewed Dev plan and the outstanding lifecycle
+policy/provider gates; it must not be inferred from ATCR-92 source completion.
