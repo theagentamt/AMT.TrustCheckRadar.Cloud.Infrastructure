@@ -46,30 +46,18 @@ jobs:
       - name: Build exact bounded policies
         run: |
           set -euo pipefail
-          policy_arn="arn:aws:iam::${EXPECTED_ACCOUNT_ID}:policy/${PROJECT_NAME}-${DEPLOY_ENV}-github-deploy"
-          default_version="$(aws iam get-policy --policy-arn "$policy_arn" --query 'Policy.DefaultVersionId' --output text)"
-          aws iam get-policy-version --policy-arn "$policy_arn" --version-id "$default_version" \
-            --query 'PolicyVersion.Document' --output json > "$RUNNER_TEMP/current-policy.json"
           python3 scripts/build_dev_deploy_access.py \
-            --current-managed-policy "$RUNNER_TEMP/current-policy.json" \
-            --managed-policy-output "$RUNNER_TEMP/managed-policy.json" \
+            --observability-policy-output "$RUNNER_TEMP/observability-policy.json" \
             --account-policy-output "$RUNNER_TEMP/account-policy.json" \
             --account-id "$EXPECTED_ACCOUNT_ID" --region "$AWS_REGION"
 
-      - name: Sync managed and inline policy documents
+      - name: Sync exact inline policy documents
         run: |
           set -euo pipefail
-          policy_arn="arn:aws:iam::${EXPECTED_ACCOUNT_ID}:policy/${PROJECT_NAME}-${DEPLOY_ENV}-github-deploy"
           role_name="${PROJECT_NAME}-${DEPLOY_ENV}-github-deploy"
-          # The backticks belong to the AWS CLI JMESPath boolean literal.
-          # shellcheck disable=SC2016
-          mapfile -t old_versions < <(aws iam list-policy-versions --policy-arn "$policy_arn" \
-            --query 'sort_by(Versions[?IsDefaultVersion==`false`],&CreateDate)[].VersionId' --output text | tr '\t' '\n')
-          if (( ${#old_versions[@]} >= 4 )); then
-            aws iam delete-policy-version --policy-arn "$policy_arn" --version-id "${old_versions[0]}"
-          fi
-          aws iam create-policy-version --policy-arn "$policy_arn" \
-            --policy-document "file://$RUNNER_TEMP/managed-policy.json" --set-as-default >/dev/null
+          aws iam put-role-policy --role-name "$role_name" \
+            --policy-name manage-dev-environment-observability \
+            --policy-document "file://$RUNNER_TEMP/observability-policy.json"
           aws iam put-role-policy --role-name "$role_name" \
             --policy-name manage-account-deletion-reconciliation \
             --policy-document "file://$RUNNER_TEMP/account-policy.json"
@@ -93,4 +81,4 @@ jobs:
 
       - name: Remove generated policy files
         if: always()
-        run: rm -f "$RUNNER_TEMP/current-policy.json" "$RUNNER_TEMP/managed-policy.json" "$RUNNER_TEMP/account-policy.json"
+        run: rm -f "$RUNNER_TEMP/observability-policy.json" "$RUNNER_TEMP/account-policy.json"

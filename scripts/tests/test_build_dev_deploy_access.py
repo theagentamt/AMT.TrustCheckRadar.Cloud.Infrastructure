@@ -10,22 +10,12 @@ SPEC.loader.exec_module(POLICIES)
 
 
 class DeployAccessTests(unittest.TestCase):
-    def test_update_is_idempotent_and_preserves_existing_statements(self):
-        current = {
-            "Version": "2012-10-17",
-            "Statement": [
-                {"Sid": "Existing", "Effect": "Allow", "Action": "s3:GetObject", "Resource": "fixture"},
-                {"Sid": POLICIES.OBSERVABILITY_SID, "Effect": "Deny", "Action": "*", "Resource": "*"},
-            ],
-        }
-        statement = POLICIES.environment_observability(
+    def test_observability_is_exactly_dev_scoped(self):
+        policy = POLICIES.environment_observability(
             "107827791950", "us-east-1", "trustcheckradar", "dev"
         )
-        first = POLICIES.updated_managed_policy(current, statement)
-        second = POLICIES.updated_managed_policy(first, statement)
-        self.assertEqual(first, second)
-        self.assertEqual(first["Statement"][0], current["Statement"][0])
-        self.assertEqual(sum(row.get("Sid") == POLICIES.OBSERVABILITY_SID for row in first["Statement"]), 1)
+        statement = policy["Statement"][0]
+        self.assertEqual(statement["Sid"], POLICIES.OBSERVABILITY_SID)
         self.assertNotIn("*", statement["Resource"])
         self.assertTrue(all("trustcheckradar-dev-" in arn for arn in statement["Resource"]))
 
