@@ -24,6 +24,7 @@ output "endpoint_paths" {
     age_attestation        = "/v1/users/age-attestation"
     analysis               = var.analysis_primary_path
     campaign_participation = var.campaign_participation_path
+    demographic_research   = var.demographic_research_deployment == null ? null : local.demographic_research_path
     device_registration    = var.device_registration_path
     device_recovery        = var.enable_device_recovery ? var.device_recovery_path : null
     entitlement_snapshot   = var.entitlement_snapshot_path
