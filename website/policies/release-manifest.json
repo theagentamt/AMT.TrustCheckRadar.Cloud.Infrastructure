@@ -1,0 +1,13 @@
+{
+  "status": "RELEASE_ARTIFACT",
+  "effectiveDate": "2026-09-30",
+  "publicOrigin": "https://andmorethings.com",
+  "files": {
+    "privacy-policy/index.html": "b8b637cda4b34bb63a11bad7a68fd580d259e462ff5036b457dce70bc9dc6a03",
+    "terms-of-use/index.html": "bcc72dbbad3300cf9c4cb6ec584b7096e3e4c7730461c838b38ef0016c0e8a7c",
+    "data-deletion/index.html": "f97af9b716408601534f881e75571eec67777fc27bb1d7823ad71427b68340e8",
+    "es/privacy-policy/index.html": "a294c2284464841f203cd312681520abae4c933260110a4e4b44f3ce5db1d638",
+    "es/terms-of-use/index.html": "ecdaa2db3c93393ac74be73927835122674269d4fa58b46e4d636b846615b3ab",
+    "es/data-deletion/index.html": "47e178655829ef20ab21a97572e82ba6d0ab8904bc0095a9cd1437253070b67a"
+  }
+}

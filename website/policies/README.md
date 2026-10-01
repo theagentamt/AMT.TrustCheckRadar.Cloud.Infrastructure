@@ -1,8 +1,10 @@
-# SECUR4ALL-92: bilingual policy review package
+# SECUR4ALL-92: bilingual policy source and release package
 
-**Draft, not effective or published.** This directory is a reviewable replacement
-for the three current public policy pages, plus Spanish equivalents. It is not
-a website deployment, store submission, activation or legal-compliance claim.
+This directory contains the reviewed source, guarded local previews, and the six
+English/Spanish release artifacts dated September 30, 2026. Building an artifact
+does not publish it, submit a store form, activate an app feature or certify legal
+compliance. Publication evidence is recorded separately after the exact generated
+bytes are installed and read back from the public site.
 
 Owner confirmed on September 27 that **AndMoreThings Labs LLC** and the monitored
 **privacy@andmorethings.com** contact remain correct. Owner selected in-app deletion
@@ -31,26 +33,39 @@ An email is a request, not proof of ownership or authority to erase an account.
   restored disabled; real mailbox confirmation/release qualification is pending.
   No new public web portal was authorized.
 
-These approvals supersede the earlier unanswered policy questions, but do not
-resolve operational verification. Draft paragraphs explicitly distinguish the
-approved target from settings that have not yet been implemented or inspected.
+These approvals supersede the earlier unanswered policy questions. The public
+source describes bounded current behavior and expressly qualified future or gated
+behavior. Internal qualification notes remain in this README and the checklist;
+they are excluded from the public fragments and release output.
 
 ## Preview and source
 
-Edit `content/en/*.html` and matching `content/es/*.html`, then run:
+Edit `content/en/*.html` and matching `content/es/*.html`, then build a guarded
+preview:
 
 ```sh
 python3 website/policies/render.py
 python3 -m http.server 8092 --bind 127.0.0.1 --directory website/policies/preview
 ```
 
-Open `http://127.0.0.1:8092/privacy-policy/`. All six pages have reciprocal language
+Open `http://127.0.0.1:8092/privacy-policy/`. Build the reviewed release artifacts
+only with an explicit ISO effective date:
+
+```sh
+python3 website/policies/render.py --mode release --effective-date 2026-09-30
+python3 website/policies/validate_release.py
+python3 -m unittest website/policies/test_render.py
+```
+
+All six pages have reciprocal language
 links and localized navigation. Existing canonical English paths remain unchanged.
 Android EN/ES currently open the same canonical URLs; readers can select Spanish
 on the site without a mobile allowlist change. Direct Spanish mobile URLs would
 require a separate reviewed allowlist change. No scripts, forms, external fonts,
-tracking or deployment credentials are added. The preview is deliberately marked
-DRAFT with no effective date and noindex. The renderer has no publish mode.
+tracking or deployment credentials are added. Preview output is deliberately marked
+DRAFT and `noindex`. Release mode requires an effective date, removes those markers,
+adds canonical and `hreflang` metadata, and writes a hash manifest. Neither mode
+uploads anything.
 
 ## Evidence and decisions
 
@@ -72,6 +87,13 @@ DRAFT with no effective date and noindex. The renderer has no publish mode.
   outside-app request path required; an email path can qualify. In-app-only
   redirection cannot serve users who uninstalled the app. This is a policy-source
   review, not evidence of approval by Google or fulfillment of an email request.
+- Android closeout commit `a77fc9be75c19e8d95f77c4bc4b30b094b6ba9fa`
+  adds the strict verified-email fallback and replaces the legacy form proposal
+  with a complete conservative Android V1 Data Safety answer set. It answers
+  collection and sharing Yes, blanket encryption No because bounded redirect
+  resolution can contact an HTTP destination, deletion/account creation Yes, and
+  independent security review No. Console submission and assembled-release
+  validation remain separate release work; no iOS label is inferred.
 - [OpenAI API data controls](https://developers.openai.com/api/docs/guides/your-data):
   documented defaults distinguish application state from abuse monitoring; defaults
   do not attest this account's data-sharing, retention or regional controls.
@@ -95,17 +117,17 @@ DRAFT with no effective date and noindex. The renderer has no publish mode.
 | Generic indefinite retention | Distinct receipts, History, security, purchase, consent, research, deletion and backup limits |
 | Data deletion equals immediate total erasure | Acceptance, local cleanup, server completion, retained suppression and independent copies distinguished |
 | Credits and unspecified premium features | Approved individual allowance/trial, completed-only deductions, no automatic overage |
-| One English page | Six linked EN/ES drafts with consistent material meaning |
+| One English page | Six linked EN/ES pages with consistent material meaning |
 
-## Required before effective publication
+## Release boundaries and remaining qualification
 
 1. The supported verifier/operator tooling, response procedure and scoped Dev
    qualification are complete in SECUR4ALL-333. The owner selected acknowledgment
    and beginning verification within five business days, not completed erasure.
-   Before effective publication, qualify actual mailbox operations and the intended
-   release's admission scope through SECUR4ALL-329. Disabled admission cannot be
-   presented as an operational public fallback. Do not rerun synthetic confirmation
-   as a substitute for real mailbox ownership or expand subjects by hand.
+   The page describes an email request followed by human verification and a
+   supervised per-case operator process; it does not describe an automatic web
+   deletion service or immediate acceptance. SECUR4ALL-329 retains the real mailbox
+   and assembled release journey.
 2. Establish support-mail retention and provider account/contract practices. Do not
    infer zero retention, no training opt-in, a specific processing country or
    erasure of processor records from `store:false` or our TTL. Record the actual
@@ -113,21 +135,22 @@ DRAFT with no effective date and noindex. The renderer has no publish mode.
    provider erasure requests. The inspected OpenAI sharing/retention/residency
    settings and owner-confirmed project binding are recorded below; they are no
    longer pending login or owner confirmation.
-3. Reconcile the exact release's gates/SDKs and iOS differences before implying
-   both platforms ship the Android behavior. Conditional source capability is not
-   a claim that general export, research or online checks are currently enabled.
-4. Review final public EN/ES language, existing liability/governing-law clauses,
-   applicable privacy-request rights and any required notices with the owner and
-   qualified policy reviewer. Terms changes here are limited to product alignment;
-   no new venue, arbitration, sale permission or waiver is introduced.
-5. Remove editorial review paragraphs only after resolving their facts, approve an
-   effective date and exact final text, then perform the reviewed publication.
-   The current draft renderer intentionally does not produce publishable output.
-6. Verify public bytes, language navigation and current in-app links; align actual
-   store forms in SECUR4ALL-94. ATCR-95 retains its policy/store dependency.
+3. Reconcile the exact release's gates/SDKs before submitting store forms. The
+   public pages name Android where behavior is platform-specific and do not claim
+   that an iOS release ships the same implementation. Conditional source capability
+   is not a claim that general export, research or online checks are enabled.
+4. The owner approved the product decisions and publication direction. No qualified
+   legal opinion or blanket jurisdictional certification is asserted. Terms changes
+   are limited to product alignment; no new venue, arbitration, sale permission or
+   waiver is introduced.
+5. The release renderer excludes editorial review paragraphs, requires the approved
+   September 30, 2026 effective date and validates all six exact artifacts. Preserve
+   the rollback bundle and stop if the live origin changes before upload.
+6. After publication, verify public bytes, language navigation and current in-app
+   links. SECUR4ALL-94 separately records the exact Android form-answer mapping and
+   later console submission; iOS/App Store evidence stays with its platform owner.
 
-These are concrete unfinished acceptance items, not manual QA that can be silently
-moved out of the story. No change to data collection/retention is implied.
+No change to data collection, retention or runtime gates is implied by this package.
 
 ## Publication and rollback preparation
 
@@ -137,10 +160,12 @@ Current serving assets identified read-only: CloudFront `E1ESXUYOU4XS2A`, alias
 No authoring repository/CMS was established; this directory versions the candidate
 replacements without claiming ownership of the remainder of the website.
 
-Before a later authorized upload, read the distribution's current routing/cache
-settings and exact object metadata and preserve old bytes/version IDs/hashes for
-all touched keys. Verify how `/es/<page>/` resolves; do not assume CloudFront uses
-nested index.html routes. Use reviewed routing/configuration if needed. Publish
+Before upload, read the distribution's current routing/cache settings and exact
+object metadata and preserve old bytes/version IDs/hashes for all touched keys.
+The version-controlled `rollback/2026-09-30/` bundle contains the exact three prior
+English objects, metadata and independently checked SHA-256 values; the three
+Spanish keys were absent. Re-read the six origin keys immediately before writing
+and stop on any mismatch. Publish
 only the six approved page objects (and any separately reviewed routing change),
 with explicit content-type/cache metadata and private origin access preserved.
 Invalidate only affected canonical and object paths; verify public status, bytes,
