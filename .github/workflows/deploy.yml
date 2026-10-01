@@ -1,27 +1,6 @@
 name: Deploy infrastructure
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "terraform/**"
-      - "environments/**"
-      # Resolver has its own reviewed release workflow. Workflow-only changes
-      # require an explicit dispatch rather than applying every legacy stack.
-      - "!terraform/url-resolver/**"
-      - "!terraform/url-assessment/**"
-      - "!terraform/url-consumer/**"
-      - "!terraform/message-consumer/**"
-      - "!terraform/recovery-consumer/**"
-      - "!terraform/result-feedback/**"
-      - "!terraform/play-verification/**"
-      - "!environments/*/url-resolver.tfvars"
-      - "!environments/*/url-assessment.tfvars"
-      - "!environments/*/url-consumer.tfvars"
-      - "!environments/*/message-consumer.tfvars"
-      - "!environments/*/recovery-consumer.tfvars"
-      - "!environments/*/result-feedback.tfvars"
-      - "!environments/*/play-verification.tfvars"
   workflow_dispatch:
     inputs:
       environment:
@@ -86,16 +65,16 @@ jobs:
       name: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
 
     env:
-      DEPLOY_ENV: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
-      DEPLOY_SCOPE: ${{ github.event_name == 'workflow_dispatch' && inputs.deployment_scope || 'all' }}
-      EXECUTION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.execution_mode || 'apply' }}
+      DEPLOY_ENV: ${{ inputs.environment }}
+      DEPLOY_SCOPE: ${{ inputs.deployment_scope }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
       STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
       TF_IN_AUTOMATION: "true"
       TF_INPUT: "false"
       TF_VAR_state_bucket_name: ${{ vars.TF_STATE_BUCKET }}
       TF_VAR_state_bucket_region: ${{ vars.AWS_REGION }}
       TF_VAR_state_key_prefix: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
-      TF_VAR_artifact_release: ${{ github.event_name == 'workflow_dispatch' && inputs.artifact_release || vars.ARTIFACT_RELEASE }}
+      TF_VAR_artifact_release: ${{ inputs.artifact_release || vars.ARTIFACT_RELEASE }}
       TF_VAR_budget_notification_emails: ${{ vars.CAMPAIGN_BUDGET_NOTIFICATION_EMAILS || '[]' }}
 
     steps:

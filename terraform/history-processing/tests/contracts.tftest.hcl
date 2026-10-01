@@ -206,9 +206,9 @@ run "reconciliation_alarms_cover_missing_first_pass_and_stalled_progress" {
     account_deletion_active                 = true
     account_deletion_observability_approved = true
     alarm_topic_arn                         = "arn:aws:sns:us-east-1:107827791950:synthetic"
-    account_deletion_terminal_candidate = true
-    account_deletion_terminal_activation = { source_sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", runtime_reference = "fixture-only", permissions_reference = "fixture-only" }
-    artifact = { release_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", object_version = "fixture", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+    account_deletion_terminal_candidate     = true
+    account_deletion_terminal_activation    = { source_sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", runtime_reference = "fixture-only", permissions_reference = "fixture-only" }
+    artifact                                = { release_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", object_version = "fixture", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
     account_deletion_artifact = {
       release_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", object_version = "bridge-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
     }
@@ -536,11 +536,11 @@ run "terminal_fence_candidate_rejects_active_lifecycle" {
 run "terminal_activation_requires_matching_source_and_evidence" {
   command = plan
   variables {
-    lifecycle_deployment_enabled = true
-    lifecycle_active = true
-    account_deletion_terminal_candidate = true
-    alarm_topic_arn = "arn:aws:sns:us-east-1:107827791950:synthetic"
-    account_deletion_artifact = { release_id = "synthetic-test-only", object_version = "fixture", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+    lifecycle_deployment_enabled         = true
+    lifecycle_active                     = true
+    account_deletion_terminal_candidate  = true
+    alarm_topic_arn                      = "arn:aws:sns:us-east-1:107827791950:synthetic"
+    account_deletion_artifact            = { release_id = "synthetic-test-only", object_version = "fixture", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
     account_deletion_terminal_activation = { source_sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", runtime_reference = "fixture-only", permissions_reference = "fixture-only" }
   }
   expect_failures = [var.account_deletion_terminal_activation]
