@@ -1,0 +1,58 @@
+{
+  "allPassed": false,
+  "architectures": [
+    "arm64"
+  ],
+  "cases": [
+    {
+      "case": "identity_complete",
+      "code": "QUALIFICATION_FAILED",
+      "failureCategory": "FIXTURE_UNVERIFIED",
+      "failureStage": "configuration",
+      "passed": false
+    }
+  ],
+  "cleanup": {
+    "amt-campaign-completion-qual-c6644358282f-abuse": "absent",
+    "amt-campaign-completion-qual-c6644358282f-authority": "absent",
+    "amt-campaign-completion-qual-c6644358282f-devices": "absent",
+    "amt-campaign-completion-qual-c6644358282f-entitlements": "absent",
+    "amt-campaign-completion-qual-c6644358282f-history-content": "absent",
+    "amt-campaign-completion-qual-c6644358282f-history-control": "absent",
+    "amt-campaign-completion-qual-c6644358282f-ledger": "absent",
+    "amt-campaign-completion-qual-c6644358282f-outbox": "absent",
+    "amt-campaign-completion-qual-c6644358282f-pipeline": "absent",
+    "amt-campaign-completion-qual-c6644358282f-recovery": "absent",
+    "amt-campaign-completion-qual-c6644358282f-tokens": "absent",
+    "amt-campaign-completion-qual-c6644358282f-users": "absent",
+    "cognito": {
+      "poolAbsent": true,
+      "requested": true,
+      "subjectAbsentWithPool": true
+    },
+    "functionDeleted": true,
+    "keyDeletionDate": "2026-10-03T09:21:16.086000-05:00",
+    "keyDestroyed": false,
+    "keyState": "PendingDeletion",
+    "roleDeleted": true
+  },
+  "diagnosis": "Fixture required UUIDv4; actual Cognito returned canonical UUIDv7. Rejection occurred at configuration before data seeding or handler cleanup.",
+  "historicalCoverageApproved": false,
+  "limits": [
+    "Real deletion of one independently created disposable Cognito identity only; no current app account is touched.",
+    "Synthetic inventory, paid accounting and cipher fixtures; no verified store purchase or native restore.",
+    "Real receipt producers and finalizer run with fixture IAM, not deployed application role or authenticated API admission.",
+    "The lost-ack case injects response loss after an actual successful Cognito deletion.",
+    "No client session is issued; actual GlobalSignOut does not prove rejection of a previously minted token."
+  ],
+  "observedAtUtc": "2026-09-26T14:20:23.411474+00:00",
+  "productionActivation": false,
+  "realCognitoQualified": false,
+  "runId": "c6644358282f",
+  "runtime": "python3.14",
+  "runtimeVersionArn": "arn:aws:lambda:us-east-1::runtime:ab559f26fdef82cfdfbb2942d07b46f84b45b52d0d760d3d623001ab0218052e",
+  "schemaVersion": 1,
+  "sourceSha": "b964c5f7d3f5183975eb9cd4a2c5c51f3648eefb",
+  "syntheticOnly": true,
+  "zipSha256": "4ed3a633fceef1de17c626a97cde7555122faf96d64706f5f09b6fbf5b270e1d"
+}

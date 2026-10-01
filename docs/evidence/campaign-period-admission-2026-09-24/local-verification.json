@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "sourceSha": "cab9a2a3976e52b64b75057a8432b1506a365b02",
+  "runtime": "Python3.14 local macOS",
+  "sourceBytesVerifiedByCleanBuilder": true,
+  "awsArm64RuntimeQualified": false,
+  "providerOrAccountCalls": false,
+  "results": [
+    {
+      "function": "campaign_cluster_aggregator",
+      "sha256": "0139056dd4329f9b830f89c461be80eecd1c78e408616cc9888b9c4cf4823f09",
+      "sizeBytes": 17356,
+      "pythonMembers": 13,
+      "disabledResult": "LocatorUnavailable:Campaign locator coverage is unavailable",
+      "passed": true
+    },
+    {
+      "function": "campaign_deletion_bridge",
+      "sha256": "172f204dc61dfd96082e1ffb86ed559ddd3531aecc2b461b50d2a4f18eeaf463",
+      "sizeBytes": 39837,
+      "pythonMembers": 22,
+      "disabledResult": "RuntimeError:CAMPAIGN_DELETION_STREAM_DISABLED",
+      "passed": true
+    },
+    {
+      "function": "campaign_lifecycle",
+      "sha256": "fec9088830f32dd75c894dd5e7925ee0d955343613dce0ab9c2993ea49da051b",
+      "sizeBytes": 17442,
+      "pythonMembers": 10,
+      "disabledResult": "RuntimeError:Campaign lifecycle candidate is disabled",
+      "passed": true
+    },
+    {
+      "function": "campaign_observation_publisher",
+      "sha256": "4402050b71c28307c220e64affead5582d0bc874e9ef1a73e3694b02e39ce7ac",
+      "sizeBytes": 18189,
+      "pythonMembers": 13,
+      "disabledResult": "LocatorUnavailable:Campaign locator coverage is unavailable",
+      "passed": true
+    }
+  ]
+}

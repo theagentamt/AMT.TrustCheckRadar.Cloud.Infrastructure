@@ -32,6 +32,38 @@ this backend remain in scope. The Lambda owner must propose a minimal,
 bounded ownership/anti-replay contract and identify any remaining decision;
 no financial retention period is inferred here.
 
+## Normal Registration Switching Decision 2026-09-17
+
+The iOS task relayed the owner's explicit ITCR-59 decision: keep automatic
+switching during normal device registration. Preserve the existing behavior of
+`POST /device-registration`: registering a different installation may atomically
+activate it and inactivate the previous binding. Do not add a requirement for
+fresh sign-in and explicit confirmation for every normal registration switch.
+
+This resolves the registration-versus-recovery switching-policy question only.
+The separate consumer recovery route's fresh-authentication and rate controls
+must not be described as a global device-switch policy. Prior-device rejection
+applies while its binding remains inactive; a later normal registration may
+switch it back. This is not permanent revocation of that installation.
+
+Registration remains a mutation, not a status read. This decision does not
+authorize background status probes, automatic retry loops after ambiguous
+network outcomes, or new mobile invocation behavior. It does not create a
+read-only device-status endpoint.
+
+Consumer recovery remains unavailable pending a published versioned contract
+and fixtures, approved receipt expiry/reuse semantics, safe authoritative
+revalidation, and security/release acceptance. Existing seven-day receipt
+retention does not itself resolve logical expiry or operation-ID reuse.
+
+Provenance: owner decision relayed by the iOS task
+`01a0608b-a8f2-7f61-909c-19c520f5a47e` for ITCR-59. Its reported mobile status is
+In Progress, with ITCR-90 Open for manual Dev verification; these statuses were
+not independently verified or changed by infrastructure.
+
+Recording this decision authorizes no backend behavior change, tracker update,
+commit/push, deployment, recovery activation, or UAT/Prod promotion.
+
 ## Implementation Boundaries
 
 - Dev foundation inputs record the approved recovery policy, with storage
@@ -46,3 +78,83 @@ no financial retention period is inferred here.
   legacy purchase locators, backup coverage and deployed acceptance remain
   engineering blockers. Policy approval does not mark deletion complete.
 - No mobile changes or YouTrack updates are included in this work.
+
+## Owner Decisions 2026-09-21 — ATCR-94
+
+The owner authorized Android-first implementation with Lambda and infrastructure
+dependencies and approved these two concrete decisions in the task:
+
+- **Direct authenticated account export:** current user-visible account data plus
+  a scope manifest, without another server-side payload copy. Values are observed
+  during download, not a frozen cross-store snapshot. Continuation access expires
+  15 minutes after export starts and is not extended by retry. Account deletion
+  stops export access. Cancel discards the local download; it does not independently
+  revoke an issued continuation token before expiry. Access remains authenticated,
+  account/device-bound and subject to current deletion/session checks.
+- **Restoration after deletion:** a newly created account may restore an existing
+  store subscription only after fresh store verification and ownership checks
+  preventing two active accounts from claiming the purchase. Remove the old local
+  purchase binding instead of retaining it indefinitely. This does not authorize
+  reassignment from another active account, token-only cached verification or
+  matching accounts by email. Linked purchase lineage and deletion races remain
+  engineering acceptance requirements.
+
+No new export payload store, financial retention interval or durable export status
+service was approved. Existing recovery/consent/deletion receipt periods, the
+export-before-deletion rule and backup/restore suppression requirements remain.
+The Lambda contract must enumerate actual fields and exclusions, not expose raw
+rows. Android must label incomplete downloads and handle cancellation honestly.
+
+These decisions authorize implementation, tests, source publication and tracker
+coordination for the current story. They are not evidence of deployed cleanup,
+end-to-end acceptance or permission to promote to production. The earlier scope
+statements about no mobile/tracker work described the September 14 inventory
+task; they do not override the owner's new ATCR-94 implementation instruction.
+
+### Onboarding and export access — September 21 follow-up
+
+The owner explicitly chose **keep export blocked until onboarding is completed**
+after reviewing the case where a PENDING_AGE_GATE account has no active binding.
+There is no device-less export exception. Export retains completed-onboarding,
+fresh-authentication and active-device checks, without a paid-plan or allowance
+requirement. Clients must not describe this restriction as a network outage.
+
+This answer concerned export. It does not require an owner to attest to being an
+adult merely to delete an already-created account: the deletion contract retains
+fresh authentication and exact account ownership for incomplete-onboarding profiles.
+
+## Owner Decisions 2026-09-24 — accepted deletion and Android local cleanup
+
+The owner explicitly approved both decisions presented for ATCR-94:
+
+- After the server confirms acceptance of deletion, clear only that account's
+  local app data and sign out. Explain that server cleanup may still be processing;
+  acceptance and local cleanup do not establish completed server erasure.
+- When acceptance is unknown, retain one encrypted account-linked operation UUID
+  across logout and restart, without an automatic expiry. Retire it after confirmed
+  acceptance and successful approved local cleanup, or through app-data removal.
+  It must not contain submitted messages, URLs or credentials. Its account namespace
+  is pseudonymous, not anonymous.
+
+Under immutable contract `account-deletion/1.0.0-candidate.1`, a validated POST 202
+`REQUESTED`, or reconciliation GET 200 `REQUESTED`, must match the authenticated
+account and exact retained UUID to establish acceptance. A different UUID,
+`NOT_REQUESTED`, authentication failure, timeout or malformed response does not
+prove acceptance, rejection, cancellation or completion. `completionEligible`
+does not prove global completion. Retry of an unresolved server request remains
+explicit and uses the original UUID after fresh sign-in.
+
+Implementation must fence new writes and asynchronous work for the deleting
+account before cleanup, preserve necessary suppression barriers until cleanup
+succeeds, and recover interrupted or partial local cleanup truthfully. Late
+responses must never wipe or sign out a different account/session. Restart must
+not expose retained account data while accepted cleanup is pending. Exported files
+outside app control and store subscription cancellation are outside this local
+cleanup's effect.
+
+These decisions authorize implementation, automated/emulator validation, reviewed
+source integration into `release-V01` and tracker updates. They do not authorize
+feature activation, claim backend erasure acceptance, change server receipt
+retention, or approve the separate proposed five-minute Play lifecycle cleanup
+checkpoint retention. The outstanding backend work is recorded in
+[the current readiness assessment](ACCOUNT-DELETION-READINESS-2026-09-24.md).

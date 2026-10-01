@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "syntheticOnly": true,
+  "deletePostAttempted": true,
+  "deleteAccepted": true,
+  "fenceQualified": true,
+  "erasureVerified": false,
+  "credentialsPersisted": false,
+  "cursorPersisted": false,
+  "unrelatedAccountsSampled": false,
+  "wrongDeviceHttp": 403,
+  "invalidCursorHttp": 400,
+  "startHttp": 200,
+  "continueBeforeDeletionHttp": 200,
+  "deleteHttp": 202,
+  "continueAfterDeletionHttp": 403,
+  "continueAfterDeletionCode": "ACCOUNT_UNAVAILABLE",
+  "tokenAndCursorUnexpired": true,
+  "commandStatus": "REQUESTED",
+  "validComponentReceipts": 8
+}

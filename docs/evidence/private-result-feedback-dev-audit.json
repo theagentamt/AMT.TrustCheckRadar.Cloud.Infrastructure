@@ -1,0 +1,181 @@
+{
+  "pitr": {
+    "ok": true,
+    "data": {
+      "ContinuousBackupsDescription": {
+        "ContinuousBackupsStatus": "ENABLED",
+        "PointInTimeRecoveryDescription": {
+          "PointInTimeRecoveryStatus": "ENABLED",
+          "RecoveryPeriodInDays": 35,
+          "EarliestRestorableDateTime": "2026-09-03T21:19:50-05:00",
+          "LatestRestorableDateTime": "2026-09-21T14:21:53.389000-05:00"
+        }
+      }
+    },
+    "error": null
+  },
+  "ttl": {
+    "ok": true,
+    "data": {
+      "TimeToLiveDescription": {
+        "TimeToLiveStatus": "ENABLED",
+        "AttributeName": "expiresAt"
+      }
+    },
+    "error": null
+  },
+  "table": {
+    "ok": true,
+    "data": {
+      "Status": "ACTIVE",
+      "Replicas": null,
+      "Streams": null,
+      "Indexes": [
+        {
+          "Name": "GSI1",
+          "Status": "ACTIVE"
+        }
+      ]
+    },
+    "error": null
+  },
+  "dynamodb_backups": {
+    "ok": true,
+    "data": {
+      "BackupSummaries": []
+    },
+    "error": null
+  },
+  "dynamodb_exports": {
+    "ok": true,
+    "data": {
+      "ExportSummaries": []
+    },
+    "error": null
+  },
+  "aws_backup": {
+    "ok": true,
+    "data": {
+      "RecoveryPoints": []
+    },
+    "error": null
+  },
+  "url-lease-recovery_alias": {
+    "ok": true,
+    "data": {
+      "AliasArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-lease-recovery:live",
+      "Name": "live",
+      "FunctionVersion": "4",
+      "Description": "",
+      "RevisionId": "abf441ac-6242-49c8-9997-6cfa3dd3fdb6"
+    },
+    "error": null
+  },
+  "url-lease-recovery_config": {
+    "ok": true,
+    "data": {
+      "FunctionName": "trustcheckradar-dev-url-lease-recovery",
+      "Runtime": "python3.14",
+      "Handler": "app.lambda_handler",
+      "Version": "4",
+      "CodeSha256": "Gu82oYXs8ptlxhp9W2QWNWMdgkwEovBjcuwzqH5aVco=",
+      "State": "Active",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-url-lease-recovery-execution",
+      "LeaseSweepEnabled": "false",
+      "DeletionEnabled": null
+    },
+    "error": null
+  },
+  "url-lease-recovery_schedule": {
+    "ok": true,
+    "data": {
+      "Name": "trustcheckradar-dev-url-lease-recovery",
+      "Arn": "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-url-lease-recovery",
+      "ScheduleExpression": "rate(1 minute)",
+      "State": "DISABLED",
+      "EventBusName": "default",
+      "CreatedBy": "107827791950"
+    },
+    "error": null
+  },
+  "url-lease-recovery_targets": {
+    "ok": true,
+    "data": [
+      {
+        "Id": "terraform-Oz3frVquUe0dgfCqnHzIptGSnG",
+        "Arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-lease-recovery:live",
+        "RetryPolicy": {
+          "MaximumRetryAttempts": 0,
+          "MaximumEventAgeInSeconds": 60
+        }
+      }
+    ],
+    "error": null
+  },
+  "v1-authority-deletion_alias": {
+    "ok": true,
+    "data": {
+      "AliasArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-authority-deletion:live",
+      "Name": "live",
+      "FunctionVersion": "3",
+      "Description": "",
+      "RevisionId": "8c7804ae-bb98-4635-8a19-b3114528dfe0"
+    },
+    "error": null
+  },
+  "v1-authority-deletion_config": {
+    "ok": true,
+    "data": {
+      "FunctionName": "trustcheckradar-dev-v1-authority-deletion",
+      "Runtime": "python3.14",
+      "Handler": "v1_authority_deletion.app.lambda_handler",
+      "Version": "3",
+      "CodeSha256": "vCKb8pyg4Lgp54fFVV/ackQXIhXzqMYIEwa4tEXoCzo=",
+      "State": "Active",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-v1-authority-deletion-execution",
+      "LeaseSweepEnabled": null,
+      "DeletionEnabled": "false"
+    },
+    "error": null
+  },
+  "v1-authority-deletion_schedule": {
+    "ok": true,
+    "data": {
+      "Name": "trustcheckradar-dev-v1-authority-deletion",
+      "Arn": "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-v1-authority-deletion",
+      "ScheduleExpression": "rate(1 minute)",
+      "State": "DISABLED",
+      "EventBusName": "default",
+      "CreatedBy": "107827791950"
+    },
+    "error": null
+  },
+  "v1-authority-deletion_targets": {
+    "ok": true,
+    "data": [
+      {
+        "Id": "terraform-4FVSdzuH3ATE0CZSMnEwzcXfjl",
+        "Arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-authority-deletion:live",
+        "RetryPolicy": {
+          "MaximumRetryAttempts": 0,
+          "MaximumEventAgeInSeconds": 60
+        }
+      }
+    ],
+    "error": null
+  },
+  "deletion_event_source": {
+    "ok": true,
+    "data": [
+      {
+        "UUID": "c16b1e9c-80d1-4fb2-8603-02147463c25f",
+        "State": "Disabled",
+        "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-authority-deletion:live",
+        "EventSourceArn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+        "LastProcessingResult": "OK"
+      }
+    ],
+    "error": null
+  },
+  "observedAt": "2026-09-21T19:26:54.875186+00:00"
+}

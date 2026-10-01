@@ -1,0 +1,47 @@
+{
+  "backups": {
+    "continuousBackupsStatus": "ENABLED",
+    "pointInTimeRecoveryStatus": "ENABLED",
+    "recoveryPeriodInDays": 35
+  },
+  "ttl": {
+    "TimeToLiveStatus": "ENABLED",
+    "AttributeName": "expiresAt"
+  },
+  "table": {
+    "status": "ACTIVE",
+    "globalSecondaryIndexes": [
+      {
+        "name": "GSI1",
+        "status": "ACTIVE",
+        "projection": {
+          "ProjectionType": "ALL"
+        },
+        "keys": [
+          {
+            "AttributeName": "GSI1PK",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "GSI1SK",
+            "KeyType": "RANGE"
+          }
+        ]
+      }
+    ]
+  },
+  "additionalBackupInventory": {
+    "dynamodbBackups": 0,
+    "awsBackupRecoveryPoints": 0,
+    "paginationComplete": true
+  },
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-09-22T04:15:46.878417+00:00",
+  "scope": "read-only metadata; no account rows or secret values",
+  "tableArn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+  "limitations": [
+    "metadata does not establish physical expiry enforcement",
+    "cleanup activation and original-deadline behavior still require deployed acceptance",
+    "backup inventories reflect this observation only"
+  ]
+}

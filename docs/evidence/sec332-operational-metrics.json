@@ -1,0 +1,61 @@
+{
+  "start": "2026-09-27T20:16:00+00:00",
+  "end": "2026-09-27T20:18:32.312871+00:00",
+  "metrics": {
+    "MetricDataResults": [
+      {
+        "Id": "playheartbeat",
+        "Label": "TrustCheckRadar/dev/PlayLifecycle deletion-heartbeat",
+        "Timestamps": [
+          "2026-09-27T15:17:00-05:00",
+          "2026-09-27T15:16:00-05:00"
+        ],
+        "Values": [
+          1.0,
+          1.0
+        ],
+        "StatusCode": "Complete"
+      },
+      {
+        "Id": "playage",
+        "Label": "TrustCheckRadar/dev/PlayLifecycle deletion-fullPassAgeSeconds",
+        "Timestamps": [
+          "2026-09-27T15:17:00-05:00",
+          "2026-09-27T15:16:00-05:00"
+        ],
+        "Values": [
+          0.0,
+          55.0
+        ],
+        "StatusCode": "Complete"
+      },
+      {
+        "Id": "v1heartbeat",
+        "Label": "AMT/TrustCheckRadar/V1/dev v1-authority-deletion-heartbeat",
+        "Timestamps": [
+          "2026-09-27T15:17:00-05:00",
+          "2026-09-27T15:16:00-05:00"
+        ],
+        "Values": [
+          1.0,
+          1.0
+        ],
+        "StatusCode": "Complete"
+      },
+      {
+        "Id": "v1age",
+        "Label": "AMT/TrustCheckRadar/V1/dev v1-authority-deletion-full-pass-age",
+        "Timestamps": [
+          "2026-09-27T15:17:00-05:00",
+          "2026-09-27T15:16:00-05:00"
+        ],
+        "Values": [
+          60.0,
+          0.0
+        ],
+        "StatusCode": "Complete"
+      }
+    ],
+    "Messages": []
+  }
+}

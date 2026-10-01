@@ -1,0 +1,176 @@
+{
+  "account": "107827791950",
+  "auditScriptSha256": "66814131160313d08366bc2a874142c6c9d43a3f3cd000b54967033587278b43",
+  "completedAtUtc": "2026-09-26T14:31:11.631675+00:00",
+  "configFiles": {
+    "play-lifecycle": {
+      "explicitDeletionActivationSelected": false,
+      "referencesSelectedSource": true,
+      "sha256": "f7a57d9f40c098a5c6b40d3a65956dcab7a67dda0aa6a2646fbecf0fc071dea7"
+    },
+    "url-consumer": {
+      "explicitDeletionActivationSelected": false,
+      "referencesSelectedSource": true,
+      "sha256": "fa4ca971c65b9f5ccaf93c0507363a2071b5d5471f5a2fd9a956f1f300108b9f"
+    }
+  },
+  "deployedWorkers": {
+    "trustcheckradar-dev-play-token-deletion": {
+      "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+      "exactSecretAuthorityLedgerBindings": true,
+      "gates": {
+        "AUTHORITY_ENABLED": "false",
+        "PLAY_CHECKPOINT_POLICY_APPROVED": "false",
+        "PLAY_LIFECYCLE_ENABLED": "false",
+        "PLAY_PREPARATION_ENABLED": "false",
+        "PLAY_TOKEN_CLEANUP_ENABLED": "false"
+      },
+      "lastModified": "2026-09-23T05:01:21.829+0000",
+      "liveAliasVersion": "1",
+      "matchesMergedSourcePackage": true,
+      "receiptRetention120Days": true,
+      "runtime": "python3.14",
+      "subjectAllowlistCount": 0,
+      "weightedAliasTargetCount": 0
+    },
+    "trustcheckradar-dev-v1-authority-deletion": {
+      "codeSha256": "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc=",
+      "exactSecretAuthorityLedgerBindings": true,
+      "gates": {
+        "V1_AUTHORITY_DELETION_ENABLED": "false"
+      },
+      "lastModified": "2026-09-23T05:02:22.000+0000",
+      "liveAliasVersion": "6",
+      "matchesMergedSourcePackage": true,
+      "receiptRetention120Days": true,
+      "runtime": "python3.14",
+      "subjectAllowlistCount": 0,
+      "weightedAliasTargetCount": 0
+    }
+  },
+  "infrastructureSource": "9616849478cbc03912e70e4d4d0d036282d3e4c0",
+  "inventory": {
+    "coverageVerifiedComplete": true,
+    "issuedKeyCount": 1,
+    "issuedKeyIds": [
+      "k1"
+    ],
+    "issuedKeyIdsWellFormed": true,
+    "keyMaterialFingerprintComparisonPassed": true,
+    "present": true,
+    "productionValidatorPassed": true,
+    "revisionPositiveInteger": true,
+    "sameKeyIdSetAsCurrent": true,
+    "schemaVersionOne": true
+  },
+  "lambdaSelectedSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
+  "limitations": [
+    "Available Secrets Manager versions are not proof of every version ever issued or previously removed key material.",
+    "Projected scans are complete bounded observations when marked complete; they are not transactional snapshots, row semantic validation or per-account deletion proof.",
+    "No marker approval, key rotation, data mutation, secret persistence, provider call or test invocation.",
+    "Only counts and cryptographic key IDs (not account identifiers) are retained from rows; key-material fingerprints are compared in memory and omitted."
+  ],
+  "observedAtUtc": "2026-09-26T14:31:09.083417+00:00",
+  "readOnly": true,
+  "region": "us-east-1",
+  "schemaVersion": 1,
+  "secret": {
+    "arn": "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/v1-authority-hmac-C7v1hG",
+    "createdAtUtc": "2026-09-20T16:51:56.288000-05:00",
+    "currentParserValid": true,
+    "currentStructure": {
+      "activeKeyId": "k1",
+      "allDecodedKeysAtLeast32Bytes": true,
+      "keyCount": 1,
+      "keyIds": [
+        "k1"
+      ]
+    },
+    "currentVersionId": "d35cbb89-568a-4612-a2c6-c2a442f052c7",
+    "currentVersionStageStableDuringAudit": true,
+    "historicalIdsMissingFromCurrent": [],
+    "historicalObservedKeyIds": [
+      "k1"
+    ],
+    "invalidAvailableVersionCount": 0,
+    "keyIdsWithMaterialChangeAcrossAvailableVersions": [],
+    "lastChangedDateUtc": "2026-09-20T17:33:21.102000-05:00",
+    "metadataOnlyStructureSha256": "9b30a344542c0c07a64b46a38aba43c69b6da495b6e5c0d39fd6655b08fb42e3",
+    "name": "trustcheckradar/dev/v1-authority-hmac",
+    "replicaCount": 0,
+    "retainedVersionObservations": [
+      {
+        "activeKeyId": "k1",
+        "allKeysRetainedInCurrent": true,
+        "createdAtUtc": "2026-09-20T17:33:21.098000-05:00",
+        "keyIds": [
+          "k1"
+        ],
+        "lastAccessedDateUtc": "2026-09-22T19:00:00-05:00",
+        "parserValid": true,
+        "sharedKeyMaterialUnchanged": true,
+        "stages": [
+          "AWSCURRENT"
+        ],
+        "versionId": "d35cbb89-568a-4612-a2c6-c2a442f052c7"
+      }
+    ],
+    "rotationEnabled": false,
+    "scheduledForDeletion": false,
+    "unavailableVersionCount": 0,
+    "versionCount": 1,
+    "versionListComplete": true
+  },
+  "sourceFiles": {
+    "play_token_deletion/app.py": "a46d01fc79651bc8a1b06129ac336eeb4bfca5b442eb74b05a4455861724290e",
+    "shared_check_authority/core.py": "b6eeb885cbd4fb70958512e3f22736953f2f519cda2c2d3a01fa59164d4e8330",
+    "shared_check_authority/deletion.py": "3fa17b5c55383a6db97c8e3c4ebb1ffb36ea67e9c5cc4cde46afe05c549b3d4d",
+    "shared_check_authority/inventory.py": "ae99bb5ea6ec8f8ea165ef557df0eb5d1bbf1faea1c285e27cdcafe2879e7f2d",
+    "shared_play_lifecycle/checkpoint.py": "6f25aecbd26791d7a75f95897fbad2cc9e13b3aaecfbad3beda92d9c3582c9c8",
+    "shared_play_lifecycle/deletion.py": "98ce58d9c5f41f9b2685ce0ba2d0aa15f52cdfc64b24aaff536b127e571323ce",
+    "v1_authority_deletion/app.py": "151f89e318ab299d233ba9185a6b728622aae59edc3efaf015a5942aabd983f7"
+  },
+  "summary": {
+    "activationPerformed": false,
+    "allScansComplete": true,
+    "approvalGranted": false,
+    "availableHistoricalVersionsCovered": true,
+    "keyParserAndCurrentInventoryMatch": true,
+    "observedLiveKeyIdsCovered": true
+  },
+  "tables": {
+    "authority": {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+      "createdAtUtc": "2026-09-03T21:19:26.999000-05:00",
+      "familyCounts": {
+        "hmac_inventory_control": 1,
+        "legacy_user": 2,
+        "purchase_control": 1,
+        "unknown_partition_family": 2
+      },
+      "keyIdRowCounts": {},
+      "observedKeyIdsMissingFromCurrent": [],
+      "pages": 1,
+      "projectedStrongBaseScanComplete": true,
+      "projectionExcludesAccountAttributesTokenCiphertextAndSecretMaterial": true,
+      "rowCount": 6,
+      "scannedCount": 6,
+      "status": "ACTIVE",
+      "tableIdSha256": "cba1d43ffda2927a4d802476caf494f3989e5f30c568711581ac55bc22837068"
+    },
+    "tokens": {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens",
+      "createdAtUtc": "2026-09-22T23:32:13.276000-05:00",
+      "familyCounts": {},
+      "keyIdRowCounts": {},
+      "observedKeyIdsMissingFromCurrent": [],
+      "pages": 1,
+      "projectedStrongBaseScanComplete": true,
+      "projectionExcludesAccountAttributesTokenCiphertextAndSecretMaterial": true,
+      "rowCount": 0,
+      "scannedCount": 0,
+      "status": "ACTIVE",
+      "tableIdSha256": "db5b6ea7ebbc3419d72fd89d21715daade9567c109565741e465bf66396801b3"
+    }
+  }
+}

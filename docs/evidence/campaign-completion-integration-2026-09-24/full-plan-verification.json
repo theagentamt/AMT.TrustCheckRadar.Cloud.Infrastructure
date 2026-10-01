@@ -1,0 +1,35 @@
+{
+  "planSha256": "ef3f48b9b90696a29f5d3a1d9eca98ac4ebe8a0993f919b39ab84cc9b9c2f9bf",
+  "verified": true,
+  "mode": "full",
+  "changes": [
+    {
+      "address": "aws_iam_role_policy.completion_runtime[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.recovery_scheduler_invoke[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.scheduler_invoke[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"deletion\"]",
+      "actions": [
+        "update"
+      ]
+    }
+  ],
+  "publicationSource": "dffa7eaae79632db58bc366cc48434125a9c10dc",
+  "completionPolicySha256": "17c0ba3a26fd3b4610dc0deb995a3ce2b07b467e37240922524c814d38e060d0",
+  "allGatesDisabled": true,
+  "note": "Full plan contains deferred scheduler policy rendering; apply only separately verified target plan, then require full zero-change verification."
+}

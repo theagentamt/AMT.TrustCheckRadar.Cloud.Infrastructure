@@ -1,0 +1,186 @@
+{
+  "candidate": true,
+  "scope": "Actual installed role identity-policy simulation only; no secret read, key use or runtime action; SCP/resource-policy effects not fully qualified",
+  "results": [
+    {
+      "role": "v1-play-handoff",
+      "action": "secretsmanager:GetSecretValue",
+      "resourcePurpose": "hmac-secret",
+      "decision": "allowed"
+    },
+    {
+      "role": "v1-play-handoff",
+      "action": "secretsmanager:GetSecretValue",
+      "resourcePurpose": "google-credential",
+      "decision": "allowed"
+    },
+    {
+      "role": "v1-play-handoff",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "decision": "allowed"
+    },
+    {
+      "role": "v1-play-handoff",
+      "action": "kms:Decrypt",
+      "resourcePurpose": "token-application-key",
+      "decision": "explicitDeny"
+    },
+    {
+      "role": "v1-play-handoff",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "wrong-purpose",
+      "decision": "implicitDeny"
+    },
+    {
+      "role": "v1-play-handoff",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "wrong-environment",
+      "decision": "implicitDeny"
+    },
+    {
+      "role": "v1-play-handoff",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "extra-context",
+      "decision": "implicitDeny"
+    },
+    {
+      "role": "play-lifecycle-ingress",
+      "action": "secretsmanager:GetSecretValue",
+      "resourcePurpose": "hmac-secret",
+      "decision": "allowed"
+    },
+    {
+      "role": "play-lifecycle-ingress",
+      "action": "secretsmanager:GetSecretValue",
+      "resourcePurpose": "google-credential",
+      "decision": "allowed"
+    },
+    {
+      "role": "play-lifecycle-ingress",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "decision": "allowed"
+    },
+    {
+      "role": "play-lifecycle-ingress",
+      "action": "kms:Decrypt",
+      "resourcePurpose": "token-application-key",
+      "decision": "allowed"
+    },
+    {
+      "role": "play-lifecycle-ingress",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "wrong-purpose",
+      "decision": "implicitDeny"
+    },
+    {
+      "role": "play-lifecycle-ingress",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "wrong-environment",
+      "decision": "implicitDeny"
+    },
+    {
+      "role": "play-lifecycle-ingress",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "extra-context",
+      "decision": "implicitDeny"
+    },
+    {
+      "role": "play-lifecycle-worker",
+      "action": "secretsmanager:GetSecretValue",
+      "resourcePurpose": "hmac-secret",
+      "decision": "allowed"
+    },
+    {
+      "role": "play-lifecycle-worker",
+      "action": "secretsmanager:GetSecretValue",
+      "resourcePurpose": "google-credential",
+      "decision": "allowed"
+    },
+    {
+      "role": "play-lifecycle-worker",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "decision": "allowed"
+    },
+    {
+      "role": "play-lifecycle-worker",
+      "action": "kms:Decrypt",
+      "resourcePurpose": "token-application-key",
+      "decision": "allowed"
+    },
+    {
+      "role": "play-lifecycle-worker",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "wrong-purpose",
+      "decision": "implicitDeny"
+    },
+    {
+      "role": "play-lifecycle-worker",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "wrong-environment",
+      "decision": "implicitDeny"
+    },
+    {
+      "role": "play-lifecycle-worker",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "extra-context",
+      "decision": "implicitDeny"
+    },
+    {
+      "role": "play-token-deletion",
+      "action": "secretsmanager:GetSecretValue",
+      "resourcePurpose": "hmac-secret",
+      "decision": "allowed"
+    },
+    {
+      "role": "play-token-deletion",
+      "action": "secretsmanager:GetSecretValue",
+      "resourcePurpose": "google-credential",
+      "decision": "implicitDeny"
+    },
+    {
+      "role": "play-token-deletion",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "decision": "explicitDeny"
+    },
+    {
+      "role": "play-token-deletion",
+      "action": "kms:Decrypt",
+      "resourcePurpose": "token-application-key",
+      "decision": "explicitDeny"
+    },
+    {
+      "role": "play-token-deletion",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "wrong-purpose",
+      "decision": "explicitDeny"
+    },
+    {
+      "role": "play-token-deletion",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "wrong-environment",
+      "decision": "explicitDeny"
+    },
+    {
+      "role": "play-token-deletion",
+      "action": "kms:GenerateDataKey",
+      "resourcePurpose": "token-application-key",
+      "case": "extra-context",
+      "decision": "explicitDeny"
+    }
+  ]
+}

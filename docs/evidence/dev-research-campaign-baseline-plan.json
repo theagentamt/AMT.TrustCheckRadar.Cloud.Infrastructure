@@ -1,0 +1,9 @@
+{
+  "revision": "0ff0af91e05e24e471f2b489ed098ed0fc80b8c7",
+  "environment": "dev",
+  "stack": "campaign-processing",
+  "candidateSelected": false,
+  "planSha256": "e1342f172fb717f0e0c332d53b40ecd36c5aa7a40be27914fd35f1b766a9cadf",
+  "changes": [],
+  "applyAuthorizedByThisReport": false
+}

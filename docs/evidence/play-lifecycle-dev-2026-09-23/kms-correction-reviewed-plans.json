@@ -1,0 +1,32 @@
+[
+  {
+    "stack": "play-lifecycle",
+    "planJsonSha256": "5a0118d86ad22b7e3b1253d9320119f1f4849e69adaf5fa7379ac4e723ae0404",
+    "changes": [
+      {
+        "address": "aws_iam_role_policy.runtime[\"ingress\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_iam_role_policy.runtime[\"worker\"]",
+        "actions": [
+          "update"
+        ]
+      }
+    ]
+  },
+  {
+    "stack": "play-verification",
+    "planJsonSha256": "15e796b0da643ef4a4b980d898bd109860bf288254c7aaeb9ec0fe751feb9e1f",
+    "changes": [
+      {
+        "address": "aws_iam_role_policy.lifecycle[0]",
+        "actions": [
+          "update"
+        ]
+      }
+    ]
+  }
+]

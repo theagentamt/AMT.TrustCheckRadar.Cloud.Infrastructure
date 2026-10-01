@@ -1,7 +1,6 @@
 name: Terraform CI
 
 on:
-  pull_request:
   push:
     branches: [main]
 
@@ -15,7 +14,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.1
 
       - name: Install Python
         uses: actions/setup-python@v7.0.0
@@ -115,6 +114,34 @@ jobs:
 
       - name: Validate V1 URL consumer candidate
         working-directory: terraform/url-consumer
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
+      - name: Validate V1 message consumer candidate
+        working-directory: terraform/message-consumer
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
+      - name: Validate V1 recovery consumer candidate
+        working-directory: terraform/recovery-consumer
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
+      - name: Validate V1 result feedback candidate
+        working-directory: terraform/result-feedback
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
+      - name: Validate inactive Google Play verifier
+        working-directory: terraform/play-verification
         run: |
           terraform init -backend=false -input=false
           terraform validate

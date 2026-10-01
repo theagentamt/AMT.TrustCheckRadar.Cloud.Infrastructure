@@ -42,7 +42,7 @@ jobs:
       EXPECTED_REVISION: ${{ inputs.expected_revision }}
       REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.14"
@@ -60,7 +60,7 @@ jobs:
         with:
           terraform_version: 1.12.1
           terraform_wrapper: false
-      - uses: aws-actions/configure-aws-credentials@v6.2.3
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: us-east-1

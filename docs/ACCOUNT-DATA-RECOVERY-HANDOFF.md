@@ -1,6 +1,9 @@
 # Account data and device recovery integration
 
 Status: infrastructure preparation and Lambda implementation in progress.
+The current Android-first work is tracked in
+[ACCOUNT-PRIVACY-V1-IMPLEMENTATION.md](ACCOUNT-PRIVACY-V1-IMPLEMENTATION.md),
+including the provider/runtime upgrade and two additional reconciliation alarms.
 No changes in this document are evidence of a live deployment or activation.
 
 Prepared infrastructure was committed as `297b654` on
@@ -45,7 +48,7 @@ versions or live acceptance. No new package was uploaded to AWS.
 
 Infrastructure now prepares optional account-data monitoring for runtime/stream
 failures, reconciliation heartbeat/full-pass progress and policy-blocked cleanup.
-The eleven alarms use the handler's exact low-cardinality metrics. Missing
+The original eleven alarms use the handler's exact low-cardinality metrics. Missing
 scheduled heartbeat actions stay disabled with the candidate schedule; no
 monitoring destination is selected. See [HISTORY-OPERATIONS.md](HISTORY-OPERATIONS.md).
 Source changes and mocked tests do not satisfy live notification delivery or
@@ -63,8 +66,11 @@ Three additional nullable release inputs prepare the late-writer corrections:
 - API `purchase_handoff_fence_deployment`: the same immutable fields for
   `purchase_handoff.zip`. It adds a scoped ledger GetItem, transaction-only
   users/ledger ConditionCheckItem, and the authoritative deletion-ledger env
-  value. Pinned entitlement access is limited to GetItem and transaction-only
-  PutItem on `USER#*`/`TOKEN#*`; standalone mutations and index access are removed.
+  value. The ownership follow-on adds read and transaction-only condition checks
+  for the exact `PURCHASE#CONTROL` inventory partition, Python 3.14 and an
+  authoritative `PURCHASE_OWNERSHIP_CANDIDATE_ENABLED=false` setting. Pinned
+  entitlement access otherwise remains GetItem and transaction-only PutItem on
+  `USER#*`/`TOKEN#*`; standalone mutations and index access are removed.
   The Lambda commits
   its entitlement and token ownership writes in the same fenced transaction.
   This does not approve entitlement deletion or any anti-replay retention policy.

@@ -1,0 +1,107 @@
+{
+  "stage": "prepare",
+  "functions": [
+    {
+      "FunctionName": "trustcheckradar-dev-post-confirmation",
+      "RevisionId": "21c716d1-d8d7-49d5-8b51-ce81330088f5",
+      "CodeSha256": "eL0wHg5yzSbBnxV+TW8gpBTMvwKbYRJdvqFnSBLpoR4=",
+      "Runtime": "python3.13",
+      "Architectures": [
+        "arm64"
+      ],
+      "Handler": "app.lambda_handler",
+      "Timeout": 10,
+      "LastUpdateStatus": "Successful",
+      "environment": {
+        "USERS_TABLE_ARN": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
+        "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger"
+      },
+      "policy": {
+        "Statement": [
+          {
+            "Action": [
+              "dynamodb:UpdateItem",
+              "dynamodb:PutItem",
+              "dynamodb:GetItem"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
+            "Sid": "UsersTableWrite"
+          },
+          {
+            "Action": "dynamodb:ConditionCheckItem",
+            "Condition": {
+              "ForAllValues:StringLike": {
+                "dynamodb:LeadingKeys": "ACCOUNT#*"
+              },
+              "StringEqualsIfExists": {
+                "dynamodb:ReturnValues": "NONE"
+              }
+            },
+            "Effect": "Allow",
+            "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+            "Sid": "PreventDeletedProfileRecreation"
+          }
+        ],
+        "Version": "2012-10-17"
+      }
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-age-attestation",
+      "RevisionId": "146c1bbd-4ebb-4647-bf75-ad5d640b0580",
+      "CodeSha256": "UYlHvpFC0zidrBQwojspVpX6MBLwnpZY9mBCjnbdcpY=",
+      "Runtime": "python3.13",
+      "Architectures": [
+        "arm64"
+      ],
+      "Handler": "app.lambda_handler",
+      "Timeout": 10,
+      "LastUpdateStatus": "Successful",
+      "environment": {
+        "USERS_TABLE_ARN": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
+        "USERS_TABLE_NAME": "trustcheckradar-dev-users",
+        "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger"
+      },
+      "policy": {
+        "Statement": [
+          {
+            "Action": [
+              "dynamodb:UpdateItem",
+              "dynamodb:GetItem"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
+            "Sid": "UsersTableReadUpdate"
+          },
+          {
+            "Action": "dynamodb:ConditionCheckItem",
+            "Condition": {
+              "ForAllValues:StringLike": {
+                "dynamodb:LeadingKeys": "ACCOUNT#*"
+              },
+              "StringEqualsIfExists": {
+                "dynamodb:ReturnValues": "NONE"
+              }
+            },
+            "Effect": "Allow",
+            "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+            "Sid": "PreventDeletedProfileReactivation"
+          }
+        ],
+        "Version": "2012-10-17"
+      }
+    }
+  ],
+  "noFunctionInvocation": true,
+  "cognitoTriggerMapUnchanged": true,
+  "closedGates": {
+    "account-export-api": {
+      "ACCOUNT_EXPORT_ENABLED": "false",
+      "ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED": "false"
+    },
+    "account-data-api": {
+      "ACCOUNT_DELETION_ENABLED": "false",
+      "ACCOUNT_IDENTITY_FINALIZER_ENABLED": "false"
+    }
+  }
+}

@@ -73,6 +73,13 @@ run "enabled_dev_contract" {
   }
 
   assert {
+    condition = anytrue([for index in aws_dynamodb_table.intelligence[0].global_secondary_index :
+      index.name == "ExpirationIndex" && index.hash_key == "expiryPartition" && index.range_key == "expiresAt" && index.projection_type == "KEYS_ONLY"
+    ]) && aws_dynamodb_table.intelligence[0].ttl[0].attribute_name == "expiresAt"
+    error_message = "Aggregate cleanup needs a keys-only sharded deadline index; TTL remains secondary protection on the original deadline."
+  }
+
+  assert {
     condition = (
       aws_sqs_queue.cluster[0].message_retention_seconds == 345600 &&
       aws_sqs_queue.cluster_dlq[0].message_retention_seconds == 1209600 &&

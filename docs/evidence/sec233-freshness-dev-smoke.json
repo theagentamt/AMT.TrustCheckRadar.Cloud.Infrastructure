@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "27ba230f6a96fe5bf1c96719903c3c7016765bbb",
+  "allPassed": true,
+  "attempted": [
+    "url_assessment",
+    "url_consumer",
+    "v1_entitlements",
+    "account_export_api"
+  ],
+  "passed": [
+    "url_assessment",
+    "url_consumer",
+    "v1_entitlements",
+    "account_export_api"
+  ],
+  "stage": "COMPLETE",
+  "reportSHA256": "3302586fa4784812ca2d0b43336e8f1c7013f187d3297ed77d1db7ab88d4e986",
+  "runnerSHA256": "ffd5da6ea8fe9fec4510b5f0ef2198bba3140210735ee26c7110fba6d404ac92",
+  "requestBody": {},
+  "invocationsPerFunction": 1,
+  "providerCalls": 0,
+  "customerDataAccess": false,
+  "secretReads": false,
+  "activationChanged": false,
+  "scope": "Actual installed runtime imports and invalid/disabled refusal paths only; not enabled provider, billing, cache or end-to-end qualification."
+}

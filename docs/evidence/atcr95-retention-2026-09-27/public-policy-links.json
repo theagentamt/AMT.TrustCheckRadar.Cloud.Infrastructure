@@ -1,0 +1,29 @@
+{
+  "observedAt": "2026-09-27T16:32:09.044197+00:00",
+  "pages": [
+    {
+      "requestedUrl": "https://andmorethings.com/privacy-policy/",
+      "finalUrl": "https://andmorethings.com/privacy-policy/",
+      "status": 200,
+      "bytesRead": 15423,
+      "sha256": "f1dc54d3aaf73714106c58c4eb8bdefacaf81977491f5a795824ca8bb8cf3898",
+      "truncated": false
+    },
+    {
+      "requestedUrl": "https://andmorethings.com/terms-of-use/",
+      "finalUrl": "https://andmorethings.com/terms-of-use/",
+      "status": 200,
+      "bytesRead": 10177,
+      "sha256": "2ecf219ca1774fb932808e2f15016d3c4321429ee3150f711c8eacd24eff8391",
+      "truncated": false
+    },
+    {
+      "requestedUrl": "https://andmorethings.com/data-deletion/",
+      "finalUrl": "https://andmorethings.com/data-deletion/",
+      "status": 200,
+      "bytesRead": 5769,
+      "sha256": "69779cefbff4d1c5893654692453d9d9cbc6ab0502f27ad62e8142ca28cce1d9",
+      "truncated": false
+    }
+  ]
+}

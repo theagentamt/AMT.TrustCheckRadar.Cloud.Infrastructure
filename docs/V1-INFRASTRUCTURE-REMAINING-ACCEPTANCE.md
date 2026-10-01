@@ -1,5 +1,11 @@
 # V1 infrastructure remaining acceptance
 
+Historical 2026-09-20 audit: the early missing-handler and legacy-endpoint
+statements below are preserved as evidence of that review, not current runtime
+status. For the 2026-09-21 deployment and remaining access work, use
+[the completed runtime migration](DEV-RESEARCH-RUNTIME-MIGRATION.md) and
+[current authoritative access integration](V1-ACCESS-INTEGRATION.md).
+
 Tracking: [SECUR4ALL-242](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-242). Source review on 2026-09-20; Lambda agent independently audited backend readiness. This record separates delivered Dev evidence from dependencies. It does not authorize enabling UAT/Prod or invent new storage contracts.
 
 | Acceptance area | Evidence / current state | Next dependency |

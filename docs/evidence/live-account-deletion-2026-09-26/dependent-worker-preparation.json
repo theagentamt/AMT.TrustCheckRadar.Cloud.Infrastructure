@@ -1,0 +1,27 @@
+{
+  "historyPlan": {
+    "updatedResources": [
+      "aws_iam_role_policy.account_deletion[0]",
+      "aws_iam_role_policy.runtime[0]",
+      "aws_lambda_function.account_deletion[0]",
+      "aws_lambda_function.lifecycle[0]"
+    ],
+    "allActivationGatesOff": true
+  },
+  "authorityPlan": {
+    "updatedResources": [
+      "aws_iam_role_policy.deletion[0]"
+    ],
+    "allActivationGatesOff": true
+  },
+  "playPlan": {
+    "managedChanges": 0,
+    "allActivationGatesOff": true
+  },
+  "tests": {
+    "history": 23,
+    "urlConsumerIntegration": 21,
+    "playRuntime": 13,
+    "historyIamOffline": 12
+  }
+}

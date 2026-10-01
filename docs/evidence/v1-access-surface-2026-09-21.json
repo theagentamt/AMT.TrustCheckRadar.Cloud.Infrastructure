@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-22T02:34:10.743250+00:00",
+  "scope": "Read-only Dev access surface; no authenticated check, provider request or mutation",
+  "account": "107827791950",
+  "routes": [
+    {
+      "route": "POST /v1/access/trial",
+      "authorization": "JWT",
+      "scopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzN0wUSdQ",
+      "audience": [
+        "5kvl9a8jo4fr1qqnci27tdabk4"
+      ],
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-entitlements:live/invocations",
+      "timeoutMs": 15000
+    },
+    {
+      "route": "GET /v1/access",
+      "authorization": "JWT",
+      "scopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzN0wUSdQ",
+      "audience": [
+        "5kvl9a8jo4fr1qqnci27tdabk4"
+      ],
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-entitlements:live/invocations",
+      "timeoutMs": 15000
+    }
+  ],
+  "functions": [
+    {
+      "name": "trustcheckradar-dev-url-consumer",
+      "aliasVersion": "4",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "codeSha256": "u0xSsT8LDfmkJJeAtPMsyIwcbr/cM5W2FmIFxaFJZiI=",
+      "gates": {
+        "CONSUMER_ENABLED": "false",
+        "AUTHORITY_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      },
+      "engineeringSubjectCount": 0
+    },
+    {
+      "name": "trustcheckradar-dev-v1-entitlements",
+      "aliasVersion": "4",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "v1_entitlements.app.lambda_handler",
+      "codeSha256": "zEzEhrDWhIPPvHvFbEf3X+IE39NiqiEn7hMOeR4nJIk=",
+      "gates": {
+        "CONSUMER_ENABLED": "false",
+        "AUTHORITY_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      },
+      "engineeringSubjectCount": 0
+    },
+    {
+      "name": "trustcheckradar-dev-url-lease-recovery",
+      "aliasVersion": "4",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "codeSha256": "Gu82oYXs8ptlxhp9W2QWNWMdgkwEovBjcuwzqH5aVco=",
+      "gates": {
+        "LEASE_SWEEP_ENABLED": "false"
+      },
+      "engineeringSubjectCount": 0
+    },
+    {
+      "name": "trustcheckradar-dev-v1-authority-deletion",
+      "aliasVersion": "3",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "v1_authority_deletion.app.lambda_handler",
+      "codeSha256": "vCKb8pyg4Lgp54fFVV/ackQXIhXzqMYIEwa4tEXoCzo=",
+      "gates": {
+        "V1_AUTHORITY_DELETION_ENABLED": "false"
+      },
+      "engineeringSubjectCount": 0
+    }
+  ],
+  "unauthenticatedChecks": [
+    {
+      "method": "GET",
+      "path": "/v1/access",
+      "authentication": "absent",
+      "httpStatus": 401
+    },
+    {
+      "method": "POST",
+      "path": "/v1/access/trial",
+      "authentication": "absent",
+      "httpStatus": 401
+    }
+  ]
+}

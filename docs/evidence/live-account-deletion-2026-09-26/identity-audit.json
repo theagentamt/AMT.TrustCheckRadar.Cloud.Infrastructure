@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-09-26T12:56:45.430090+00:00",
+  "accountId": "107827791950",
+  "region": "us-east-1",
+  "environment": "dev",
+  "poolId": "us-east-1_wzN0wUSdQ",
+  "tableName": "trustcheckradar-dev-users",
+  "cognitoComplete": true,
+  "profilesComplete": true,
+  "usersExamined": 3,
+  "profilesExamined": 2,
+  "invalidIdentity": 0,
+  "duplicateIdentity": 0,
+  "usernameMismatch": 0,
+  "invalidProfile": 0,
+  "duplicateProfile": 0,
+  "identityWithoutProfile": 1,
+  "profileWithoutIdentity": 0,
+  "currentMappingConsistent": false,
+  "usernameSubConsistent": true,
+  "missingProfileByUserStatus": {
+    "FORCE_CHANGE_PASSWORD": 1
+  },
+  "inventoryApproved": false,
+  "limitations": [
+    "Separate bounded observations, not a frozen cross-service snapshot.",
+    "Current identity/profile mapping only; no historical inventory or deletion approval.",
+    "No identities, attributes, tokens or pagination values are retained in the report."
+  ]
+}

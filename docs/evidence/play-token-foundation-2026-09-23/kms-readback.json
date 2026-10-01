@@ -1,0 +1,25 @@
+{
+  "observedAtUtc": "2026-09-23T04:33:49.982235+00:00",
+  "keyArn": "arn:aws:kms:us-east-1:107827791950:key/62f786f5-76ab-41c3-ac77-fe362e0108ae",
+  "validStaticContextRoundTrip": true,
+  "negativeContextChecks": [
+    {
+      "case": "missing-context",
+      "denied": true
+    },
+    {
+      "case": "wrong-environment",
+      "denied": true
+    },
+    {
+      "case": "wrong-purpose",
+      "denied": true
+    },
+    {
+      "case": "extra-context",
+      "denied": true
+    }
+  ],
+  "rotationEnabled": true,
+  "noPurchaseTokenOrAccountDataUsed": true
+}

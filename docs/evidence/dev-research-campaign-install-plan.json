@@ -1,0 +1,170 @@
+{
+  "revision": "245d67a0226cf19de5dd793daa4fa30c63fa5498",
+  "environment": "dev",
+  "stack": "campaign-processing",
+  "scope": "research-migration-flags-off",
+  "reviewedPlanDigest": "eb6370431a4331d5f4887d67a362b73132bc730dc55beccf49a04cf6b437e483",
+  "changes": [
+    {
+      "address": "aws_iam_role_policy.cluster_runtime[0]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "policy"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_iam_role_policy.deletion_runtime[0]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "policy"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_iam_role_policy.lifecycle_runtime[0]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "policy"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_iam_role_policy.publisher_runtime[0]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "policy"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_iam_role_policy.scheduler_invoke[0]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "policy"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_lambda_function.worker[\"cluster\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "environment",
+        "last_modified",
+        "runtime",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash"
+      ],
+      "changedEnvironmentFields": [
+        "CAMPAIGN_LOCATOR_INVENTORY_REVISION",
+        "CAMPAIGN_LOCATOR_MANIFEST_SHA256",
+        "CAMPAIGN_PARTICIPATION_NOTICE_VERSION",
+        "CAMPAIGN_PARTICIPATION_POLICY_VERSION",
+        "DELETION_LEDGER_TABLE_NAME",
+        "USERS_TABLE_NAME"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"deletion\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "environment",
+        "last_modified",
+        "runtime",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash"
+      ],
+      "changedEnvironmentFields": [
+        "CAMPAIGN_LOCATOR_INVENTORY_REVISION",
+        "CAMPAIGN_LOCATOR_MANIFEST_SHA256"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"lifecycle\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "environment",
+        "last_modified",
+        "runtime",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash"
+      ],
+      "changedEnvironmentFields": [
+        "CAMPAIGN_LIFECYCLE_CANDIDATE_ENABLED",
+        "CAMPAIGN_LOCATOR_INVENTORY_REVISION",
+        "CAMPAIGN_LOCATOR_MANIFEST_SHA256"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"publisher\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "environment",
+        "last_modified",
+        "runtime",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash"
+      ],
+      "changedEnvironmentFields": [
+        "CAMPAIGN_LOCATOR_INVENTORY_REVISION",
+        "CAMPAIGN_LOCATOR_MANIFEST_SHA256",
+        "CAMPAIGN_PARTICIPATION_NOTICE_VERSION",
+        "CAMPAIGN_PARTICIPATION_POLICY_VERSION"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "function": "campaign_cluster_aggregator",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/campaign_cluster_aggregator.zip",
+      "object_version": "KRIssk3ZBbu.Shm2HFhKZ1HkyviAUrNB",
+      "source_hash": "ppaduE5zmMxeKYX1w8JBuRrVgTtFMp39+RyzMF+C4ho="
+    },
+    {
+      "function": "campaign_deletion_bridge",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/campaign_deletion_bridge.zip",
+      "object_version": "lqMTcToIkcZ.uaznyAVY5ffZPZEARnV9",
+      "source_hash": "FItTXNai302HOO+oHnMNj70y6t0r/5YeWjScTX7QQMQ="
+    },
+    {
+      "function": "campaign_lifecycle",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/campaign_lifecycle.zip",
+      "object_version": "Ll8L1RLM2Uxn8LPnAmzES5hZFXO6QG8H",
+      "source_hash": "PehVB8VPv4/tkcNrigxD6Ce64mUwsET9qX10P+UAkJo="
+    },
+    {
+      "function": "campaign_observation_publisher",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/campaign_observation_publisher.zip",
+      "object_version": "Qdy6.zZRjmqTNEpeCR.TKn4RCVjzcUz8",
+      "source_hash": "n/08qq/fpGZx/fob8iTvxitMVRpACwfTvt7ScUJuSbE="
+    }
+  ],
+  "consentEnabled": false,
+  "campaignConsumersEnabled": false
+}

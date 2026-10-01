@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "baselineSourceCommit": "39cce61623794a123e61d25f5248b0c081eccf4a",
+  "overrideSourceCommit": "9123459a5c2bc9503d56235b2cb1f1e162c00da1",
+  "overrideSourcePath": "src/v1_authority_deletion/service.py",
+  "overrideSourceSha256": "f1c6a7f9081ca182eb72daf2e84e557c0c86365c41c15f25ff31c4451d96d311",
+  "wholeArchiveFromOverrideCommit": false,
+  "fullMemberManifestSha256": "f56e0d64a3cdbae9507657dad0b995e4e2223e391dab1d0572781bf201e5d96b",
+  "artifacts": {
+    "play_token_deletion": {
+      "baselineSha256": "25a30170bb53afb8253c95e335d76c5527531faea0f644c733b12cc5cfe2da14",
+      "baselineSha256Base64": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+      "sha256": "12063da35ec049f1a6f51858dd97e5ee7685970d9f92bcfa652492c854389a3a",
+      "sha256Base64": "EgY9o17ASfGm9RhY3Zfl7naFlw2fkrz6ZSSSyFQ4mjo=",
+      "sizeBytes": 6270875,
+      "memberCount": 611,
+      "changedMembers": [
+        "v1_authority_deletion/service.py"
+      ],
+      "baselineObject": {
+        "key": "releases/39cce61623794a123e61d25f5248b0c081eccf4a/play_token_deletion.zip",
+        "version": "pObvgJkqm0o5KWpFtiQ8E6tmzqGUS5MZ",
+        "sha256Base64": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ="
+      },
+      "publishedObject": {
+        "bucket": "trustcheckradar-dev-107827791950-artifacts",
+        "key": "releases/9123459a5c2bc9503d56235b2cb1f1e162c00da1/play_token_deletion.zip",
+        "object_version": "b3MQZJ0S9unJmY3MBnRy7DrpLDeM1BZQ",
+        "source_hash": "EgY9o17ASfGm9RhY3Zfl7naFlw2fkrz6ZSSSyFQ4mjo=",
+        "sha256": "12063da35ec049f1a6f51858dd97e5ee7685970d9f92bcfa652492c854389a3a"
+      }
+    },
+    "v1_authority_deletion": {
+      "baselineSha256": "e51c4943640a234f7cbed2f94cadf949a321c0c6a717bd12c5c18498e33b18c7",
+      "baselineSha256Base64": "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc=",
+      "sha256": "451e9077768cd5aa7f852b3a9a28522b18c34a38af4ca2bbb5c9dfa1238c8b9c",
+      "sha256Base64": "RR6Qd3aM1ap/hSs6mihSKxjDSjivTKK7tcnfoSOMi5w=",
+      "sizeBytes": 59827,
+      "memberCount": 28,
+      "changedMembers": [
+        "service.py",
+        "v1_authority_deletion/service.py"
+      ],
+      "baselineObject": {
+        "key": "releases/39cce61623794a123e61d25f5248b0c081eccf4a/v1_authority_deletion.zip",
+        "version": "yG9KvplPKb.k9EYNjiFt7OQei49b7scw",
+        "sha256Base64": "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc="
+      },
+      "publishedObject": {
+        "bucket": "trustcheckradar-dev-107827791950-artifacts",
+        "key": "releases/9123459a5c2bc9503d56235b2cb1f1e162c00da1/v1_authority_deletion.zip",
+        "object_version": "9xa0bzgxwfEfyIlWvBGCGPNCR1tH.F_Q",
+        "source_hash": "RR6Qd3aM1ap/hSs6mihSKxjDSjivTKK7tcnfoSOMi5w=",
+        "sha256": "451e9077768cd5aa7f852b3a9a28522b18c34a38af4ca2bbb5c9dfa1238c8b9c"
+      }
+    }
+  }
+}

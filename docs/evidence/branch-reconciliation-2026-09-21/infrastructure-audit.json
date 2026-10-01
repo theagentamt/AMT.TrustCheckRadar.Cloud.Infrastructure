@@ -1,0 +1,182 @@
+{
+  "baseRelease": "294447c308a55534acdd6da96daf78894ca0c858",
+  "mainUnchanged": "ab3527d091007e1a1d8ba80e24e9b4d948af3eba",
+  "branches": [
+    {
+      "ref": "refs/heads/codex/device-recovery-readiness",
+      "sha": "719261475e05d09135f32a864cd38ed4c005654f",
+      "disposition": "integrated-by-this-candidate"
+    },
+    {
+      "ref": "refs/heads/codex/fix-analysis-device-bindings-query",
+      "sha": "0b9fb165f7404eadc9dcf20b3cef2ee4d8ea46b9",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/heads/codex/history-badges-activation",
+      "sha": "25f9347041779d40e2341e504bbcfb2c94fbe8a8",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/heads/codex/history-deploy-eventbridge-permissions",
+      "sha": "e1c13407e91a08d859c0312b7391e1df807e8077",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/heads/codex/history-device-binding-read",
+      "sha": "7a8689db77f0e1e54749c52a4dd6db54d6dad200",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/heads/codex/infra-main-only-ci",
+      "sha": "368c35c2a4cb3498a71d66bffeb37cf2d0f31164",
+      "disposition": "patch-equivalent-to-integrated-source"
+    },
+    {
+      "ref": "refs/heads/codex/manual-dev-consumer-deployment",
+      "sha": "c5722d26fd24fcdff4fbdba1ae9eabad6af175b0",
+      "disposition": "integrated-by-this-candidate"
+    },
+    {
+      "ref": "refs/heads/codex/resolver-eip-read-fix",
+      "sha": "09238980f1051300399cb4bcb4ec217045db28ab",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/heads/codex/sprint7-history-infrastructure",
+      "sha": "6833b05a7e96198970b35caf2e88d2feda4db8b5",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/heads/codex/url-resolver-dev",
+      "sha": "5d1d986bf4e625442584aa866037a18b728089c3",
+      "disposition": "patch-equivalent-to-integrated-source"
+    },
+    {
+      "ref": "refs/heads/codex/url-resolver-release",
+      "sha": "b2777a26a527e7e7637c5511af5c75795b051ad3",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/heads/codex/v1-0-infrastructure-handoff",
+      "sha": "076a67c89358584d1f94243d449e26b3d1a51ea8",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/heads/codex/v1-message-consumer-infra",
+      "sha": "0d9668b7d3663e7fa0abc438b260f961e380b179",
+      "disposition": "patch-equivalent-to-integrated-source"
+    },
+    {
+      "ref": "refs/heads/codex/v1-url-consumer-infra",
+      "sha": "974d51ca06bf6973edcbc7dade0259fd25f6b17f",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/heads/codex/web-risk-lookup-dev",
+      "sha": "455a10b44436a5a5b20a9c96929c5c110676eb6a",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/heads/main",
+      "sha": "8dcad33aba0b2d8d5f466e2806ff35a430481960",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/heads/release-V01",
+      "sha": "294447c308a55534acdd6da96daf78894ca0c858",
+      "disposition": "already-in-release"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/fix-analysis-device-bindings-query",
+      "sha": "0b9fb165f7404eadc9dcf20b3cef2ee4d8ea46b9",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/history-deploy-eventbridge-permissions",
+      "sha": "e1c13407e91a08d859c0312b7391e1df807e8077",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/history-device-binding-read",
+      "sha": "7a8689db77f0e1e54749c52a4dd6db54d6dad200",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/infra-main-only-ci",
+      "sha": "368c35c2a4cb3498a71d66bffeb37cf2d0f31164",
+      "disposition": "patch-equivalent-to-integrated-source"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/manual-dev-consumer-deployment",
+      "sha": "c5722d26fd24fcdff4fbdba1ae9eabad6af175b0",
+      "disposition": "integrated-by-this-candidate"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/resolver-eip-read-fix",
+      "sha": "09238980f1051300399cb4bcb4ec217045db28ab",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/sprint7-history-infrastructure",
+      "sha": "6833b05a7e96198970b35caf2e88d2feda4db8b5",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/url-resolver-dev",
+      "sha": "5d1d986bf4e625442584aa866037a18b728089c3",
+      "disposition": "patch-equivalent-to-integrated-source"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/url-resolver-release",
+      "sha": "b2777a26a527e7e7637c5511af5c75795b051ad3",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/v1-0-infrastructure-handoff",
+      "sha": "076a67c89358584d1f94243d449e26b3d1a51ea8",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/v1-message-consumer-infra",
+      "sha": "0d9668b7d3663e7fa0abc438b260f961e380b179",
+      "disposition": "patch-equivalent-to-integrated-source"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/v1-url-consumer-infra",
+      "sha": "974d51ca06bf6973edcbc7dade0259fd25f6b17f",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/remotes/origin/codex/web-risk-lookup-dev",
+      "sha": "455a10b44436a5a5b20a9c96929c5c110676eb6a",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/remotes/origin/dependabot/github_actions/actions/checkout-7.0.1",
+      "sha": "c816e17d3d769d8c2952b3dab26bb1fd98fd381c",
+      "disposition": "integrated-by-this-candidate"
+    },
+    {
+      "ref": "refs/remotes/origin/dependabot/github_actions/aws-actions/configure-aws-credentials-6.2.4",
+      "sha": "c0f301ee15de3ecf97e381c99954293f8ce76bd9",
+      "disposition": "integrated-by-this-candidate"
+    },
+    {
+      "ref": "refs/remotes/origin/main",
+      "sha": "ab3527d091007e1a1d8ba80e24e9b4d948af3eba",
+      "disposition": "already-in-main"
+    },
+    {
+      "ref": "refs/remotes/origin/release-V01",
+      "sha": "294447c308a55534acdd6da96daf78894ca0c858",
+      "disposition": "already-in-release"
+    }
+  ],
+  "validation": {
+    "terraformMockedTests": 93,
+    "helperTests": 43,
+    "realAwsCalls": false,
+    "deployment": false
+  }
+}

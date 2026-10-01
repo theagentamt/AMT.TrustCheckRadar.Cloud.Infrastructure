@@ -1,0 +1,115 @@
+{
+  "observedAtUtc": "2026-09-25T03:52:39.398656+00:00",
+  "workers": [
+    {
+      "function": "trustcheckradar-dev-campaign-cluster-aggregator",
+      "codeSha256": "ppaduE5zmMxeKYX1w8JBuRrVgTtFMp39+RyzMF+C4ho=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "environmentMatchedPlan": true,
+      "reservedConcurrency": 2
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-deletion-bridge",
+      "codeSha256": "DrIvLOAPOU57Fer654myVhVIkfsfoLTsjj+KsWMKJoc=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "environmentMatchedPlan": true,
+      "reservedConcurrency": 2
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-lifecycle",
+      "codeSha256": "PehVB8VPv4/tkcNrigxD6Ce64mUwsET9qX10P+UAkJo=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "environmentMatchedPlan": true,
+      "reservedConcurrency": 2
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-observation-publisher",
+      "codeSha256": "n/08qq/fpGZx/fob8iTvxitMVRpACwfTvt7ScUJuSbE=",
+      "runtime": "python3.14",
+      "architecture": [
+        "arm64"
+      ],
+      "environmentMatchedPlan": true,
+      "reservedConcurrency": 2
+    }
+  ],
+  "eventMappings": [
+    {
+      "uuid": "3986a9e8-4718-4b3e-bc9a-cda17b7390e2",
+      "state": "Disabled"
+    },
+    {
+      "uuid": "04c7b23a-97e3-4dd1-b705-355f9fb6713d",
+      "state": "Disabled"
+    },
+    {
+      "uuid": "45da87c1-cc6d-49da-ad0c-3e0d06da4b0c",
+      "state": "Disabled"
+    }
+  ],
+  "schedules": [
+    {
+      "name": "trustcheckradar-dev-campaign-expire-transient",
+      "state": "DISABLED"
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-finalize-periods",
+      "state": "DISABLED"
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-manage-keys",
+      "state": "DISABLED"
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-reconcile-cleanup",
+      "state": "DISABLED"
+    }
+  ],
+  "alarmActions": [
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-budget",
+      "enabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-failures",
+      "enabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-heartbeat",
+      "enabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-overdue",
+      "enabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-pending-age",
+      "enabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-schema",
+      "enabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-truncated",
+      "enabled": false
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-recovery-unverified",
+      "enabled": false
+    }
+  ],
+  "allVerified": true,
+  "campaignDeletionEnabled": false,
+  "completionPolicySha256": "17c0ba3a26fd3b4610dc0deb995a3ce2b07b467e37240922524c814d38e060d0",
+  "disabledGateSmokePassed": true
+}

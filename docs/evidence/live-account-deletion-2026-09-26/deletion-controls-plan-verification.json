@@ -1,0 +1,25 @@
+{
+  "guard-api": {
+    "verified": true,
+    "changes": [
+      "aws_lambda_function.account_data[0]"
+    ],
+    "planSha256": "c50d0b978b4a1013bfb102801c38f6a0baab0d96553cf31dbb10bcc0b7435b75",
+    "activationEnabled": false
+  },
+  "controls-campaign": {
+    "verified": true,
+    "changes": [
+      "aws_cloudwatch_metric_alarm.recovery[\"budget\"]",
+      "aws_cloudwatch_metric_alarm.recovery[\"failures\"]",
+      "aws_cloudwatch_metric_alarm.recovery[\"heartbeat\"]",
+      "aws_cloudwatch_metric_alarm.recovery[\"overdue\"]",
+      "aws_cloudwatch_metric_alarm.recovery[\"pending_age\"]",
+      "aws_cloudwatch_metric_alarm.recovery[\"schema\"]",
+      "aws_cloudwatch_metric_alarm.recovery[\"truncated\"]",
+      "aws_cloudwatch_metric_alarm.recovery[\"unverified\"]"
+    ],
+    "planSha256": "d6654dca04772732fcfe90d8407128b84f01539914ac542cf39304921cbd2b92",
+    "activationEnabled": false
+  }
+}

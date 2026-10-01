@@ -1,0 +1,17 @@
+{
+  "allNoDrift": true,
+  "stacks": {
+    "api": {
+      "noDrift": true,
+      "logSha256": "004f8df724d514f9589131313187fd485c1650be9787879310ecb56c07abb8ec"
+    },
+    "url-consumer": {
+      "noDrift": true,
+      "logSha256": "2a3a58b6d425cac57f1d4d69e25f782e5259b29cdb952d7d3d8bd3ccb3f3778c"
+    },
+    "play-lifecycle": {
+      "noDrift": true,
+      "logSha256": "8f99360b0c9802e90def93de156bd98be9ae16f31e9f7d368e4c6d555a4ce8c6"
+    }
+  }
+}

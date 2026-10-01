@@ -1,0 +1,15 @@
+{
+  "setupPlanSha256": "7d6caf5b45764080346a7ef1f01202a047c4ca587d3b0f3916c57c422a58af15",
+  "activationPlans": {
+    "api": "985eb65e15a2ecb197891b509e67d7f9a79d3d6c09eec40a3de3cecafa00263d",
+    "urlConsumer": "4887792e3721e89b08c1c9d79a81a6ecdbdc44063e867719d9a27ad9063fd39b",
+    "playLifecycle": "c97e6e410a349feda4d046efebe7183af4828d946c1951d129a79821313e2699"
+  },
+  "cleanupPlanSha256": "459a1428d308565715a82b26cb323822f02b57f317ba238a76ad3d13e1ff920d",
+  "restorationPlans": {
+    "api": "e262309d1d39c2f323d4b47f1d4075ddc0699e8266777beadc18ee579f5c5267",
+    "urlConsumer": "33d69ebe4d7458c11671c85ae11a4bca7bfdc76e45e8e881d9a4bd4df87e3c7f",
+    "playLifecycle": "5edd91ff55e4584cebec33c50dd52ce522d8e410a761fc2361681caf72178e12"
+  },
+  "independentReviewPassed": true
+}

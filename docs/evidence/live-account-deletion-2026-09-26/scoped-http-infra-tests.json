@@ -1,0 +1,6 @@
+{
+  "passed": 18,
+  "failed": 0,
+  "suite": "terraform/api/tests/account-deletion-activation.tftest.hcl",
+  "logSha256": "28ba6c3d9630f92db3cdfa0726a60a82024ab116e2f3943967555eeedd9f0722"
+}

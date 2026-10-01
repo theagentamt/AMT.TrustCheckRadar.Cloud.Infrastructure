@@ -1,0 +1,96 @@
+{
+  "scope": "installed-role IAM simulation; no application writes",
+  "cases": [
+    {
+      "writer": "post-confirmation",
+      "case": "transaction",
+      "decision": "allowed"
+    },
+    {
+      "writer": "post-confirmation",
+      "case": "standalone",
+      "decision": "implicitDeny"
+    },
+    {
+      "writer": "post-confirmation",
+      "case": "other_user_partition",
+      "decision": "implicitDeny"
+    },
+    {
+      "writer": "post-confirmation",
+      "case": "read_user",
+      "decision": "implicitDeny"
+    },
+    {
+      "writer": "post-confirmation",
+      "case": "ledger_check",
+      "decision": "allowed"
+    },
+    {
+      "writer": "post-confirmation",
+      "case": "ledger_old_values",
+      "decision": "implicitDeny"
+    },
+    {
+      "writer": "post-confirmation",
+      "case": "other_ledger_partition",
+      "decision": "implicitDeny"
+    },
+    {
+      "writer": "post-confirmation",
+      "case": "ledger_write",
+      "decision": "implicitDeny"
+    },
+    {
+      "writer": "age-attestation",
+      "case": "transaction",
+      "decision": "allowed"
+    },
+    {
+      "writer": "age-attestation",
+      "case": "standalone",
+      "decision": "implicitDeny"
+    },
+    {
+      "writer": "age-attestation",
+      "case": "other_user_partition",
+      "decision": "implicitDeny"
+    },
+    {
+      "writer": "age-attestation",
+      "case": "read_user",
+      "decision": "implicitDeny"
+    },
+    {
+      "writer": "age-attestation",
+      "case": "ledger_check",
+      "decision": "allowed"
+    },
+    {
+      "writer": "age-attestation",
+      "case": "ledger_old_values",
+      "decision": "implicitDeny"
+    },
+    {
+      "writer": "age-attestation",
+      "case": "other_ledger_partition",
+      "decision": "implicitDeny"
+    },
+    {
+      "writer": "age-attestation",
+      "case": "ledger_write",
+      "decision": "implicitDeny"
+    }
+  ],
+  "roleAttachments": {
+    "trustcheckradar-dev-post-confirmation-role": [
+      "arn:aws:iam::107827791950:policy/trustcheckradar-dev-post-confirmation-dynamodb",
+      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    ],
+    "trustcheckradar-dev-age-attestation-role": [
+      "arn:aws:iam::107827791950:policy/trustcheckradar-dev-age-attestation-dynamodb",
+      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    ]
+  },
+  "passed": true
+}

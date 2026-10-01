@@ -1,0 +1,195 @@
+{
+  "accountId": "107827791950",
+  "cases": [
+    "deletion:CheckLocatorInventoryTransaction:0:condition_none_allowed",
+    "deletion:CheckLocatorInventoryTransaction:0:all_old_denied",
+    "deletion:CheckLocatorInventoryTransaction:foreign_partition_denied",
+    "deletion:CheckRetainedPeriodKey:0:condition_none_allowed",
+    "deletion:CheckRetainedPeriodKey:0:all_old_denied",
+    "deletion:CheckRetainedPeriodKey:foreign_partition_denied",
+    "deletion:GuardedDeletionCommand:0:condition_none_allowed",
+    "deletion:GuardedDeletionCommand:0:all_old_denied",
+    "deletion:GuardedDeletionCommand:foreign_partition_denied",
+    "deletion:GuardedRepairChecks:0:condition_none_allowed",
+    "deletion:GuardedRepairChecks:0:all_old_denied",
+    "deletion:GuardedRepairChecks:1:condition_none_allowed",
+    "deletion:GuardedRepairChecks:1:all_old_denied",
+    "deletion:GuardedRepairChecks:2:condition_none_allowed",
+    "deletion:GuardedRepairChecks:2:all_old_denied",
+    "deletion:GuardedRepairChecks:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:0:DeleteItem:allowed",
+    "deletion:GuardedRepairWrites:0:DeleteItem:standalone_denied",
+    "deletion:GuardedRepairWrites:0:DeleteItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:0:PutItem:allowed",
+    "deletion:GuardedRepairWrites:0:PutItem:standalone_denied",
+    "deletion:GuardedRepairWrites:0:PutItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:0:UpdateItem:allowed",
+    "deletion:GuardedRepairWrites:0:UpdateItem:standalone_denied",
+    "deletion:GuardedRepairWrites:0:UpdateItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:1:DeleteItem:allowed",
+    "deletion:GuardedRepairWrites:1:DeleteItem:standalone_denied",
+    "deletion:GuardedRepairWrites:1:DeleteItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:1:PutItem:allowed",
+    "deletion:GuardedRepairWrites:1:PutItem:standalone_denied",
+    "deletion:GuardedRepairWrites:1:PutItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:1:UpdateItem:allowed",
+    "deletion:GuardedRepairWrites:1:UpdateItem:standalone_denied",
+    "deletion:GuardedRepairWrites:1:UpdateItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:2:DeleteItem:allowed",
+    "deletion:GuardedRepairWrites:2:DeleteItem:standalone_denied",
+    "deletion:GuardedRepairWrites:2:DeleteItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:2:PutItem:allowed",
+    "deletion:GuardedRepairWrites:2:PutItem:standalone_denied",
+    "deletion:GuardedRepairWrites:2:PutItem:foreign_partition_denied",
+    "deletion:GuardedRepairWrites:2:UpdateItem:allowed",
+    "deletion:GuardedRepairWrites:2:UpdateItem:standalone_denied",
+    "deletion:GuardedRepairWrites:2:UpdateItem:foreign_partition_denied",
+    "deletion:inventory_guard_atomic_no_returned_item"
+  ],
+  "cleanupComplete": true,
+  "cleanupOutstanding": [],
+  "cloudExecuted": true,
+  "harnessSha256": "f49bf801a9874ecd896cd9e91539ec90a55db065921a6a179a4ccf66b6511431",
+  "omittedStatements": {
+    "cluster": [
+      {
+        "actions": [
+          "sqs:ReceiveMessage",
+          "sqs:GetQueueAttributes",
+          "sqs:DeleteMessage",
+          "sqs:ChangeMessageVisibility"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "ConsumeClusterQueue"
+      },
+      {
+        "actions": [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "UseCampaignEncryption"
+      }
+    ],
+    "deletion": [
+      {
+        "actions": [
+          "dynamodb:ListStreams",
+          "dynamodb:GetShardIterator",
+          "dynamodb:GetRecords",
+          "dynamodb:DescribeStream"
+        ],
+        "reason": "stream_not_qualified",
+        "sid": "ReadDeletionLedgerStream"
+      },
+      {
+        "actions": [
+          "kms:GenerateMac"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "DeriveActivePeriodTokens"
+      }
+    ],
+    "lifecycle": [
+      {
+        "actions": [
+          "kms:CreateKey"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "CreatePeriodHmacKeys"
+      },
+      {
+        "actions": [
+          "kms:TagResource",
+          "kms:GetKeyPolicy",
+          "kms:EnableKey",
+          "kms:DisableKey",
+          "kms:DescribeKey"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "ManageTaggedPeriodHmacKeys"
+      },
+      {
+        "actions": [
+          "kms:TagResource"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "TagNewPeriodHmacKeys"
+      },
+      {
+        "actions": [
+          "kms:ScheduleKeyDeletion"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "ScheduleTaggedPeriodKeyDeletion"
+      },
+      {
+        "actions": [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "UseCampaignEncryption"
+      }
+    ],
+    "publisher": [
+      {
+        "actions": [
+          "dynamodb:ListStreams",
+          "dynamodb:GetShardIterator",
+          "dynamodb:GetRecords",
+          "dynamodb:DescribeStream"
+        ],
+        "reason": "stream_not_qualified",
+        "sid": "ReadCampaignOutboxStream"
+      },
+      {
+        "actions": [
+          "sqs:SendMessage"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "SendOpaqueClusterWork"
+      },
+      {
+        "actions": [
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:Decrypt"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "UseTransientEncryption"
+      },
+      {
+        "actions": [
+          "kms:GenerateMac"
+        ],
+        "reason": "non_dynamodb_not_qualified",
+        "sid": "GenerateCurrentPeriodToken"
+      }
+    ]
+  },
+  "passed": true,
+  "policySha256": {
+    "cluster": "9c7ab74aa136d2896324fe17fe2d14cdf54fb791a81f7404e1dc866d505c967c",
+    "deletion": "f6db7a5f5eb836b0edfb72627c962f8ddccad9557bce15bbe7c9b4f3fc40eef9",
+    "lifecycle": "a495ea245b166962435286d8c24b4684a7c6be8d828ecddb3af27cad45a83a1e",
+    "publisher": "ae91d7927827d5b02b3b7971520e9ca2ee435b9ea1744d61a48d9f5df68ccf4d"
+  },
+  "region": "us-east-1",
+  "runId": "751949f06eba4e9bb59e483c512922c0",
+  "schemaVersion": 1,
+  "scope": "synthetic table IAM write/check qualification; not live worker or campaign cleanup acceptance",
+  "selectedRoles": [
+    "deletion"
+  ],
+  "sourcePlanSha256": "b738df3fc9b1b1f57eb3c7cd5dcc633bce9a2b99cffde63b0bd0e4dd1fa986a0",
+  "unexercised": [
+    "table/index read paths",
+    "stream permissions",
+    "SQS permissions",
+    "KMS permissions",
+    "application semantics"
+  ]
+}

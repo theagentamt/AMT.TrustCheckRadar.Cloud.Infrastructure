@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "checks": [
+    "origin_only_partial",
+    "partial_zero_charge",
+    "allowance_unchanged",
+    "reservation_released"
+  ],
+  "processingOutcome": "partial",
+  "chargedChecks": 0,
+  "externalLogicalRequests": 1
+}

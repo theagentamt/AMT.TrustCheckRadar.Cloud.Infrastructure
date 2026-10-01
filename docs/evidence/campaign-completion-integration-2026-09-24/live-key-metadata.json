@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-09-25T03:41:50.828728+00:00",
+  "accountId": "107827791950",
+  "region": "us-east-1",
+  "targetPeriod": 1478,
+  "tables": {
+    "trustcheckradar-dev-campaign-pipeline": {
+      "pages": 1,
+      "rows": 2,
+      "complete": true,
+      "categories": {
+        "targetPeriodRegistry": 1,
+        "otherPeriodRegistry": 1,
+        "locatorInventoryKey": 0,
+        "nonControlOrUnknown": 0,
+        "unknown": 0
+      }
+    },
+    "trustcheckradar-dev-campaign-outbox": {
+      "pages": 1,
+      "rows": 0,
+      "complete": true,
+      "categories": {
+        "targetPeriodRegistry": 0,
+        "otherPeriodRegistry": 0,
+        "locatorInventoryKey": 0,
+        "nonControlOrUnknown": 0,
+        "unknown": 0
+      }
+    },
+    "trustcheckradar-dev-campaign-intelligence": {
+      "pages": 1,
+      "rows": 0,
+      "complete": true,
+      "categories": {
+        "targetPeriodRegistry": 0,
+        "otherPeriodRegistry": 0,
+        "locatorInventoryKey": 0,
+        "nonControlOrUnknown": 0,
+        "unknown": 0
+      }
+    }
+  },
+  "allTraversalsComplete": true,
+  "onlyRecognizedControlKeysObserved": true,
+  "erasureVerified": false,
+  "inventoryApproved": false,
+  "bounds": {
+    "maxPagesPerTable": 10,
+    "pageSize": 100,
+    "callStartSeconds": 60
+  },
+  "limitations": [
+    "Full strongly consistent base-table scans are separate observations, not one snapshot or a range lock.",
+    "Physically present expired data and tombstones are blockers; TTL/age is not erasure.",
+    "Projection classifies keys and selected metadata, not unprojected attributes or all record schemas.",
+    "Non-control rows are conservatively unassigned blockers, including every legacy/unknown key family.",
+    "No source content, tokens, keys or pagination values are retained; key ARNs are used in memory only.",
+    "Current live-table observations do not prove historical erasure, writer/restore safety, or inventory approval."
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "sourceSha": "9bf336d3a39861925d5a7578e3a6de65bf3c2784",
+  "zipSha256": "d312252a6a1512597a232e505391f04624fefa3f22d9847ccb1dd43a06c51615",
+  "sizeBytes": 234703,
+  "pythonMembersVerified": 103,
+  "frozenGitBytesMatched": true,
+  "compilePassed": true,
+  "fixtureOnly": true
+}

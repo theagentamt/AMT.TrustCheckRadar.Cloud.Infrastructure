@@ -1,0 +1,432 @@
+{
+  "scope": "Saved closed Dev runtime plans; no apply or activation asserted",
+  "lambdaSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
+  "plans": [
+    {
+      "stack": "play-lifecycle",
+      "planJsonSha256": "2197ba24b0c334398b5626c19a4ac230f583bb863ad790d55e5502ab15c18f34",
+      "changes": [
+        {
+          "address": "aws_cloudwatch_log_group.runtime[\"deletion\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_group.runtime[\"ingress\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_group.runtime[\"worker\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"deletion-failed\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"deletion-fullPassAgeSeconds\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"deletion-heartbeat\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"deletion-overdue\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"ingress-failed\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"ingress-heartbeat\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"ingress-unresolved\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"worker-exhausted\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"worker-failed\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"worker-heartbeat\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"worker-oldestDueSeconds\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_log_metric_filter.operational[\"worker-unresolved\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.operational[\"deletion-failed\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.operational[\"deletion-fullPassAgeSeconds\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.operational[\"deletion-heartbeat\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.operational[\"deletion-overdue\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.operational[\"ingress-failed\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.operational[\"ingress-unresolved\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.operational[\"worker-exhausted\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.operational[\"worker-failed\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.operational[\"worker-heartbeat\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.operational[\"worker-oldestDueSeconds\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.operational[\"worker-unresolved\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.runtime[\"deletion-errors\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.runtime[\"deletion-throttles\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.runtime[\"ingress-errors\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.runtime[\"ingress-throttles\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.runtime[\"worker-errors\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_cloudwatch_metric_alarm.runtime[\"worker-throttles\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role.runtime[\"deletion\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role.runtime[\"ingress\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role.runtime[\"worker\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role.schedule[\"deletion\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role.schedule[\"worker\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.runtime[\"deletion\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.runtime[\"ingress\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.runtime[\"worker\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.schedule[\"deletion\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.schedule[\"worker\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[\"deletion\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[\"ingress\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[\"worker\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_event_source_mapping.deletion[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"deletion\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"ingress\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"worker\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_function_event_invoke_config.runtime[\"deletion\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_function_event_invoke_config.runtime[\"ingress\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_function_event_invoke_config.runtime[\"worker\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_scheduler_schedule.lifecycle[\"deletion\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_scheduler_schedule.lifecycle[\"worker\"]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_scheduler_schedule_group.lifecycle[0]",
+          "actions": [
+            "create"
+          ]
+        }
+      ]
+    },
+    {
+      "stack": "play-verification",
+      "planJsonSha256": "1199d385c57940b5cf5c0df535ea658f7b3106e47c45bb376d98ab3d31b615c9",
+      "changes": [
+        {
+          "address": "aws_apigatewayv2_route.prepare[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_iam_role_policy.lifecycle[0]",
+          "actions": [
+            "create"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[0]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[0]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_permission.prepare[0]",
+          "actions": [
+            "create"
+          ]
+        }
+      ]
+    },
+    {
+      "stack": "url-consumer",
+      "planJsonSha256": "af9b66d56559969dc6773e692372fc75612b3adfaf672cceab178888ee620277",
+      "changes": [
+        {
+          "address": "aws_lambda_alias.runtime[\"consumer\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[\"entitlements\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_alias.runtime[\"recovery\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"consumer\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"entitlements\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"recovery\"]",
+          "actions": [
+            "update"
+          ]
+        }
+      ]
+    }
+  ]
+}

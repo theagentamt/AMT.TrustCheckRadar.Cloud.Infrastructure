@@ -1,0 +1,38 @@
+{
+  "capturedAt": "2026-09-30T19:56:39-05:00",
+  "source": {
+    "awsAccount": "107827791950",
+    "bucket": "temp-web-root",
+    "cloudFrontDistribution": "E1ESXUYOU4XS2A",
+    "cloudFrontConfigETag": "E1VC38T7YXB528",
+    "bucketVersioning": "disabled"
+  },
+  "restoreMetadata": {
+    "cacheControl": "public,max-age=300",
+    "contentType": "text/html",
+    "serverSideEncryption": "AES256"
+  },
+  "objects": {
+    "privacy-policy/index.html": {
+      "present": true,
+      "size": 15423,
+      "etag": "4c5698766779ed976cb2279a3ea617c4",
+      "sha256": "f1dc54d3aaf73714106c58c4eb8bdefacaf81977491f5a795824ca8bb8cf3898"
+    },
+    "terms-of-use/index.html": {
+      "present": true,
+      "size": 10177,
+      "etag": "3faa4e5d7b27d0c240ce14d7ed8f2ac1",
+      "sha256": "2ecf219ca1774fb932808e2f15016d3c4321429ee3150f711c8eacd24eff8391"
+    },
+    "data-deletion/index.html": {
+      "present": true,
+      "size": 5769,
+      "etag": "88d0a0c8f22fba581cf0dd8ccb7d082d",
+      "sha256": "69779cefbff4d1c5893654692453d9d9cbc6ab0502f27ad62e8142ca28cce1d9"
+    },
+    "es/privacy-policy/index.html": {"present": false},
+    "es/terms-of-use/index.html": {"present": false},
+    "es/data-deletion/index.html": {"present": false}
+  }
+}

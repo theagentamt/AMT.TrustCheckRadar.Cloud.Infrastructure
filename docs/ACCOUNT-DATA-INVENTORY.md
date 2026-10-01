@@ -1,5 +1,16 @@
 # Account-data inventory and completion requirements
 
+Current scope note (2026-09-23): the baseline matrix below predates the dedicated
+`play-tokens` store and is historical, not a current activation inventory. The
+metadata audit now includes that thirteenth default-name table. Its encrypted
+purchase tokens, reverse ownership bindings and proposed bounded cleanup
+checkpoint require the separate PLAY_TOKENS receipt, metadata-only export,
+explicit expiry/account erasure and no-backup verification described in
+[the lifecycle contract](PLAY-LIFECYCLE-INFRASTRUCTURE.md). The deployed closed
+callback and privacy candidates are recorded in
+[the latest deployment record](PLAY-ACCOUNT-PRIVACY-DEV-DEPLOYMENT.md).
+Neither source coverage nor a metadata audit approves the full inventory marker.
+
 Status: infrastructure and Lambda source inventories reconciled. Dev policy
 decisions are recorded in [ACCOUNT-DATA-POLICY-DECISIONS.md](ACCOUNT-DATA-POLICY-DECISIONS.md);
 live coverage verification and implementation remain incomplete. This is not activation approval.
@@ -243,7 +254,7 @@ Run the repository helper using the already authenticated AWS CLI:
 python3 scripts/audit_account_data_storage.py --environment dev --expected-account 107827791950
 ```
 
-The helper checks the account before querying storage, then describes the twelve
+The helper checks the account before querying storage, then describes the thirteen
 default-name tables, TTL/PITR configuration and bounded Lambda/API log-group
 metadata. It never reads table items, log events, messages or secret values,
 does not log in, and never creates/changes/deletes resources. It reports missing
@@ -275,3 +286,13 @@ No table items, log events or identity attributes were read and no resources
 changed. On-demand/AWS Backup copies, S3 versions, queue replay and external
 copies remain unverified. The observed PITR windows alone do not authorize
 retiring deletion fences at 120 days or certify account-deletion readiness.
+
+## Private result feedback — ATCR-122 / SECUR4ALL-238
+
+Source implementation is in progress; this entry is not evidence of live deployment. The owner approved optional structured-only product-quality feedback on an owned retained assessment and storage on the existing purchase-entitlements CHECK row with inherited backup retention. See `PRIVATE-RESULT-FEEDBACK-DECISIONS.md` for the immutable proposal and approval record.
+
+The planned bounded object contains opaque feedback ID, one approved category, server receipt time and policy version. Existing CHECK linkage supplies account/result association. It contains no submitted message, URL, image, free text, demographics or new contact information. One report per result is immutable; ordinary analysis receipt/history projections exclude it. Feedback is separate from research/commercial consent, is not a truth label and does not change billing, verdicts or campaign data.
+
+Active access ends at the original receipt deadline; submission does not start a new seven-day period. Existing whole-row explicit expiry and account-deletion workers must remove the field with its CHECK. TTL remains eventual fallback. Verify those workers and all inventoried account key versions before activating a writer. Restrict the runtime to owned conditional updates; operational logs must not contain bodies, categories, proofs or account/result identifiers.
+
+This object inherits the shared table's PITR and any other backup copies. A read-only Dev audit on 2026-09-21 after renewed AWS sign-in verified 35-day PITR, expiresAt TTL enabled and GSI1 active. Regional DynamoDB backup/export and AWS Backup recovery-point listings were empty for this table; no replicas or stream were listed. This is not proof that no historical/manual/cross-region copy exists. See evidence/private-result-feedback-dev-audit.json. Explicit expiry and account-deletion workers, their schedules and the deletion stream mapping were deployed but disabled; qualify and enable them before feedback activation. Restores require quarantine and reapplication of expiry/deletion controls before access. No all-copy erasure at day seven is promised. Do not create longer-lived extracts/aggregates or new backups by implication. Account export must explicitly account for this new field before claiming export completeness; no complete export capability is asserted here.

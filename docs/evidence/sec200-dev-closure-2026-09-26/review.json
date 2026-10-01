@@ -1,0 +1,11 @@
+{
+  "sourceSha": "de60324aac7616d05207ad46351c936fc61841eb",
+  "infrastructureOperatorSource": "f72d5a1b20bef17dddc86661f5a8fea7e8e2b3e3",
+  "independentSourceReviewPassed": true,
+  "independentPackageReviewPassed": true,
+  "operatorBoundaryTestsNormal": 11,
+  "operatorBoundaryTestsOptimized": 11,
+  "independentFocusedSdkTests": 57,
+  "awsAcceptanceRecordedSeparately": true,
+  "nativeBackupRestoreQualified": false
+}

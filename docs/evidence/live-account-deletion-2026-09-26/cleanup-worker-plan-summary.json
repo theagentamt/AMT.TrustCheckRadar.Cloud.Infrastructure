@@ -1,0 +1,308 @@
+{
+  "campaign-processing": {
+    "allChecksPass": true,
+    "changes": [
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"budget\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"failures\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"heartbeat\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"overdue\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"pending_age\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"schema\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"truncated\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.recovery[\"unverified\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_iam_role_policy.recovery_scheduler_invoke[0]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_iam_role_policy.scheduler_invoke[0]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_lambda_event_source_mapping.deletion[0]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_lambda_function.worker[\"deletion\"]",
+        "actions": [
+          "update"
+        ],
+        "changedEnvironmentKeys": [
+          "CAMPAIGN_COMPLETION_ENABLED",
+          "CAMPAIGN_COMPLETION_INVENTORY_REVISION",
+          "CAMPAIGN_COMPLETION_MANIFEST_SHA256",
+          "CAMPAIGN_DELETION_STREAM_ENABLED",
+          "CAMPAIGN_LOCATOR_INVENTORY_REVISION",
+          "CAMPAIGN_LOCATOR_MANIFEST_SHA256",
+          "CAMPAIGN_PERIOD_ADMISSION_ENABLED",
+          "CAMPAIGN_PERIOD_ADMISSION_GENERATION",
+          "CAMPAIGN_RECOVERY_ENABLED",
+          "CAMPAIGN_RECOVERY_INVENTORY_REVISION",
+          "CAMPAIGN_RECOVERY_MANIFEST_SHA256"
+        ],
+        "codeUnchanged": true
+      },
+      {
+        "address": "aws_scheduler_schedule.recovery[0]",
+        "actions": [
+          "update"
+        ]
+      }
+    ]
+  },
+  "history-processing": {
+    "allChecksPass": true,
+    "changes": [
+      {
+        "address": "aws_cloudwatch_event_rule.account_deletion_reconcile[0]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_event_rule.sweep[0]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.account_reconciliation[\"failure\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.account_reconciliation[\"heartbeat\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.account_reconciliation[\"no_full_pass\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.account_reconciliation[\"stale_full_pass\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.function[\"Errors\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.function[\"Throttles\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.lifecycle[\"expiry_sla\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.lifecycle[\"failure\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.lifecycle[\"heartbeat\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.lifecycle[\"overdue\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.lifecycle[\"stuck\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.lifecycle[\"truncated\"]",
+        "actions": [
+          "create"
+        ]
+      },
+      {
+        "address": "aws_lambda_event_source_mapping.account_deletion[0]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_lambda_function.account_deletion[0]",
+        "actions": [
+          "update"
+        ],
+        "changedEnvironmentKeys": [
+          "HISTORY_ACCOUNT_DELETION_ENABLED"
+        ],
+        "codeUnchanged": true
+      },
+      {
+        "address": "aws_lambda_function.lifecycle[0]",
+        "actions": [
+          "update"
+        ],
+        "changedEnvironmentKeys": [
+          "HISTORY_COMPLETION_RECHECK_SECONDS",
+          "HISTORY_COMPLETION_STUCK_SECONDS",
+          "HISTORY_ERASURE_BATCH_SIZE",
+          "HISTORY_EXPIRATION_RECONCILIATION_HOURS",
+          "HISTORY_LIFECYCLE_ENABLED",
+          "HISTORY_LIFECYCLE_MAX_BUCKET_QUERIES_PER_SWEEP",
+          "HISTORY_LIFECYCLE_MAX_ITEMS_PER_SWEEP",
+          "HISTORY_LIFECYCLE_START_EPOCH_HOUR",
+          "HISTORY_MUTATION_RETENTION_DAYS"
+        ],
+        "codeUnchanged": true
+      }
+    ]
+  },
+  "url-consumer": {
+    "allChecksPass": true,
+    "changes": [
+      {
+        "address": "aws_cloudwatch_event_rule.maintenance[\"deletion\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.deletion_full_pass_age[0]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_cloudwatch_metric_alarm.worker_heartbeat[\"deletion\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_lambda_alias.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_lambda_event_source_mapping.v1_deletion[0]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ],
+        "changedEnvironmentKeys": [
+          "DEV_SUBJECT_ALLOWLIST_JSON",
+          "V1_AUTHORITY_DELETION_ENABLED"
+        ],
+        "codeUnchanged": true
+      }
+    ]
+  },
+  "play-lifecycle": {
+    "allChecksPass": true,
+    "changes": [
+      {
+        "address": "aws_cloudwatch_metric_alarm.operational[\"deletion-heartbeat\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_lambda_alias.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_lambda_event_source_mapping.deletion[0]",
+        "actions": [
+          "update"
+        ]
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ],
+        "changedEnvironmentKeys": [
+          "DEV_SUBJECT_ALLOWLIST_JSON",
+          "PLAY_TOKEN_CLEANUP_ENABLED"
+        ],
+        "codeUnchanged": true
+      },
+      {
+        "address": "aws_scheduler_schedule.lifecycle[\"deletion\"]",
+        "actions": [
+          "update"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "cleanupBridgeSourceCommit": "9effc4f0a38d7d3191b687cb07c9dbda561d69f4",
+  "cognitoIdentityAbsent": true,
+  "commandStatus": "COMPLETE",
+  "complete": true,
+  "deleteByEpoch": 1790601687,
+  "devicePartitionEmpty": true,
+  "observedAtEpoch": 1790516618,
+  "occurredAtEpoch": 1790515287,
+  "originalOperationMatches": true,
+  "pendingComponents": [],
+  "pollIntervalSeconds": 60,
+  "polls": 2,
+  "profileAbsent": true,
+  "reviewedPlanHashes": {
+    "bridge-fix": "0de53e9f188d7976c6881d94d8289ff41f636ff2121f1e128007435eb2a50c7f",
+    "delete": "a4a572f67004720ed10041fa390a5e39c12cfdea5c9312c1421410398f5833dc",
+    "play-lifecycle": "6614c0ee93c6a9080743aa0f5df1ec64829927b2b0e3c3a78c94cbeaae571675",
+    "url-consumer": "964d6aba8918cad0c5188941ba021ef05608f86eef1ba5c0882254e7dcb7e2e5"
+  },
+  "runtime": {
+    "trustcheckradar-dev-account-data-api": {
+      "codeSha256": "wUFODgRz1RaJPvbcCHq1WdFDFr/VGHFeMlly0xVKLtg=",
+      "environmentSha256": "829a264b04cfeadd8d1b1f6c511f29f13bd6180a83cacb2fc8359280b541d2c5",
+      "revisionId": "0f73bd3f-5603-4a57-afb4-ea64f11934b6",
+      "savedPlanMatches": true,
+      "version": "$LATEST"
+    },
+    "trustcheckradar-dev-account-export-api": {
+      "codeSha256": "vEGM3mwVdOoUOSBo/lNMLYJsiS80OLvmM5kPmEXfxC8=",
+      "environmentSha256": "4568acfb95e3848a11148b657c3e6057a6a99d62e3f5016f0286e24869443980",
+      "revisionId": "af95b0a8-5de8-4920-8404-14db694e8eef",
+      "savedPlanMatches": true,
+      "version": "$LATEST"
+    },
+    "trustcheckradar-dev-campaign-deletion-bridge": {
+      "codeSha256": "17pm9szRM883etjt85jjIxbqmhYt1MWYjOezvrZ9vi8=",
+      "environmentSha256": "b8eaebd992b2fac46e84db2b183521b213cd3e75ae83d0bcceced6b13441118a",
+      "revisionId": "d3118713-2413-46a1-adca-05b6ef48c383",
+      "savedPlanMatches": true,
+      "version": "$LATEST"
+    },
+    "trustcheckradar-dev-play-token-deletion": {
+      "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+      "environmentSha256": "a88156483faf79e5484ceeda9fe29acabf79c5b37f2f0ce568c0f1c55521c1d7",
+      "revisionId": "eadf515b-189a-44df-89d4-bc31abe2d538",
+      "savedPlanMatches": true,
+      "version": "5"
+    },
+    "trustcheckradar-dev-v1-authority-deletion": {
+      "codeSha256": "5RxJQ2QKI098vtL5TK35SaMhwManF70SxcGEmOM7GMc=",
+      "environmentSha256": "98d33e5ddd38a6715495ff247150ca6eb86a0b039693f6da1847278b4ac78bfa",
+      "revisionId": "d8998d17-9859-43c1-9916-8ce4ca1719f0",
+      "savedPlanMatches": true,
+      "version": "10"
+    }
+  },
+  "runtimeUnchanged": true,
+  "schemaVersion": 1,
+  "scope": "Exact original synthetic command/12receipt keys; final ownedprofile/devicepartition/Cognito absence; reviewed installedcode/env/alias readback. No invokes, POSTs or mutations.",
+  "sourceCommit": "a25e81f3ef919e65d2ec2fb702637b287e9c79d8",
+  "validComponentReceipts": 12
+}

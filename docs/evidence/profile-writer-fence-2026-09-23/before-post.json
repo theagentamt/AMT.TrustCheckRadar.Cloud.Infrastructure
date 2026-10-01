@@ -1,0 +1,13 @@
+{
+    "FunctionName": "trustcheckradar-dev-post-confirmation",
+    "RevisionId": "02a006f1-a949-4e64-84af-2e8103e82774",
+    "Runtime": "python3.13",
+    "CodeSha256": "eL0wHg5yzSbBnxV+TW8gpBTMvwKbYRJdvqFnSBLpoR4=",
+    "Timeout": 10,
+    "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-post-confirmation-role",
+    "Handler": "app.lambda_handler",
+    "Architectures": [
+        "arm64"
+    ],
+    "LastUpdateStatus": "Successful"
+}

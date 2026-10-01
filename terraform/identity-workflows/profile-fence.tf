@@ -1,5 +1,20 @@
+variable "profile_fence_transition_enabled" {
+  description = "Temporary Dev-only rollout: prepare ledger configuration and condition-check permission while preserving legacy user permissions; disable after the pinned writer is verified."
+  type        = bool
+  default     = false
+  validation {
+    condition     = !var.profile_fence_transition_enabled || var.environment == "dev"
+    error_message = "The temporary profile-fence rollout is allowed only in Dev."
+  }
+}
+
+locals {
+  profile_fence_configured           = var.profile_fence_deployment != null || var.profile_fence_transition_enabled
+  profile_fence_permissions_enforced = var.profile_fence_deployment != null && !var.profile_fence_transition_enabled
+}
+
 variable "profile_fence_deployment" {
-  description = "Pinned post-confirmation profile-fence release, coordinated with the API stack. Null preserves existing package and permissions."
+  description = "Pinned post-confirmation profile-fence release, coordinated with the API stack. Null preserves the existing package; permissions stay unchanged unless the explicit Dev transition is selected."
   type = object({
     release_id         = string
     object_version     = string
@@ -44,6 +59,8 @@ resource "aws_cloudwatch_log_group" "post_confirmation" {
 output "profile_fence_contract" {
   value = {
     environment                          = var.environment
+    transition_enabled                   = var.profile_fence_transition_enabled
+    transactional_user_permissions       = local.profile_fence_permissions_enforced
     post_confirmation_fenced             = var.profile_fence_deployment != null
     release_id                           = try(var.profile_fence_deployment.release_id, null)
     log_retention_days                   = try(var.post_confirmation_log_policy.retention_days, null)

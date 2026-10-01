@@ -1,0 +1,63 @@
+{
+  "accountId": "107827791950",
+  "bounds": {
+    "callStartSeconds": 60,
+    "maxKeys": 100,
+    "maxPages": 10
+  },
+  "erasureVerified": false,
+  "inventoryApproved": false,
+  "limitations": [
+    "Projected registry and key metadata are separate observations, not a frozen snapshot or full schema validation.",
+    "No account data, MACs, key material, arbitrary tag values or pagination identifiers are retained.",
+    "No key creation, disablement, retirement, deletion, inventory marker or application write occurred.",
+    "Missing or empty current registry cannot prove historical key destruction, restore coverage or erasure."
+  ],
+  "metadataComplete": true,
+  "observedAtUtc": "2026-09-24T21:58:18.298647+00:00",
+  "pages": 1,
+  "periods": [
+    {
+      "generateVerifyMac": true,
+      "hmac256": true,
+      "keyArn": "arn:aws:kms:us-east-1:107827791950:key/4446ab8d-75a7-4386-b29a-3a4fb5d37a5c",
+      "periodId": 1479,
+      "registryStateMatches": true,
+      "registryStatus": "ENABLED",
+      "retireAfterEpoch": 1790812800,
+      "state": "Enabled",
+      "tagMatches": {
+        "Environment": true,
+        "PeriodId": true,
+        "Project": true,
+        "Purpose": true
+      },
+      "tagsComplete": true
+    },
+    {
+      "generateVerifyMac": true,
+      "hmac256": true,
+      "keyArn": "arn:aws:kms:us-east-1:107827791950:key/18a38ac9-362c-4114-8d1e-77f16edd0b20",
+      "periodId": 1478,
+      "registryStateMatches": true,
+      "registryStatus": "RETIRED",
+      "retireAfterEpoch": 1789603200,
+      "retiredAtEpoch": 1789610357,
+      "state": "PendingDeletion",
+      "tagMatches": {
+        "Environment": true,
+        "PeriodId": true,
+        "Project": true,
+        "Purpose": true
+      },
+      "tagsComplete": true
+    }
+  ],
+  "reasons": [],
+  "region": "us-east-1",
+  "registryRows": 2,
+  "scannedCount": 2,
+  "schemaVersion": 1,
+  "table": "trustcheckradar-dev-campaign-pipeline",
+  "traversalComplete": true
+}

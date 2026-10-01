@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "environment": "dev",
+  "sourceSha": "8700d234e17ac9155bf6566f9ddcbd5bc8341146",
+  "verifiedAtUtc": "2026-09-22T02:56:35.038477+00:00",
+  "functions": [
+    {
+      "function": "trustcheckradar-dev-url-consumer",
+      "alias": "live",
+      "version": "5",
+      "codeSha256": "tWl/GeNA83Y3Eao+VnPXtadZXiVQd2QNgChqjB41eAg=",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "reservedConcurrency": 2,
+      "activationFlags": {
+        "CONSUMER_ENABLED": "false",
+        "AUTHORITY_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false",
+        "DEV_SUBJECT_ALLOWLIST_JSON": "[]"
+      },
+      "expectedArtifactVersionId": "NqgnQE5VK2xa0iNnuRRmClg_8.SqScFP",
+      "verified": true
+    },
+    {
+      "function": "trustcheckradar-dev-url-lease-recovery",
+      "alias": "live",
+      "version": "5",
+      "codeSha256": "rmopw7xe3v6zvuYXWmAyVOonGoHFaSop5gtk8OdPs/U=",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "app.lambda_handler",
+      "reservedConcurrency": 1,
+      "activationFlags": {
+        "LEASE_SWEEP_ENABLED": "false"
+      },
+      "expectedArtifactVersionId": "WOSUu3I1AW2wSLSW8dF3E4k4WORd.0zM",
+      "verified": true
+    },
+    {
+      "function": "trustcheckradar-dev-v1-entitlements",
+      "alias": "live",
+      "version": "5",
+      "codeSha256": "slCLqK11rLK2z2ofSCsMCTDIZJi6Ixjhl3prfCp4xZQ=",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "v1_entitlements.app.lambda_handler",
+      "reservedConcurrency": 2,
+      "activationFlags": {
+        "CONSUMER_ENABLED": "false",
+        "AUTHORITY_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false",
+        "DEV_SUBJECT_ALLOWLIST_JSON": "[]"
+      },
+      "expectedArtifactVersionId": "YIerN78WKpg.sBNczBskLJhejmxuKSrB",
+      "verified": true
+    },
+    {
+      "function": "trustcheckradar-dev-v1-authority-deletion",
+      "alias": "live",
+      "version": "4",
+      "codeSha256": "Xm1fz2QyyF/cnagXYuFEteSSGUc4Zf/CqVAEV/UuK+I=",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "handler": "v1_authority_deletion.app.lambda_handler",
+      "reservedConcurrency": 1,
+      "activationFlags": {
+        "V1_AUTHORITY_DELETION_ENABLED": "false",
+        "DEV_SUBJECT_ALLOWLIST_JSON": "[]"
+      },
+      "expectedArtifactVersionId": "QtSEjX7n_uYWVPolacMHcH1YnDZdjkEZ",
+      "verified": true
+    }
+  ],
+  "schedules": [
+    {
+      "name": "trustcheckradar-dev-url-lease-recovery",
+      "state": "DISABLED",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-lease-recovery:live"
+    },
+    {
+      "name": "trustcheckradar-dev-v1-authority-deletion",
+      "state": "DISABLED",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-authority-deletion:live"
+    }
+  ],
+  "deletionMappings": [
+    {
+      "uuid": "c16b1e9c-80d1-4fb2-8603-02147463c25f",
+      "state": "Disabled",
+      "functionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-authority-deletion:live"
+    }
+  ],
+  "smokes": [
+    {
+      "function": "trustcheckradar-dev-url-consumer",
+      "alias": "live",
+      "executedVersion": "5",
+      "invokeStatusCode": 200,
+      "functionError": null,
+      "input": "{}",
+      "actual": {
+        "statusCode": 503,
+        "body": {
+          "transportVersion": "1.0.0-candidate.1",
+          "checkId": null,
+          "operationProof": null,
+          "state": "unknown",
+          "access": {
+            "state": "temporarily_unavailable",
+            "basis": "unknown",
+            "externalChecksAllowed": false,
+            "builtInChecksAllowed": false,
+            "reconciliationAllowed": false,
+            "remainingChecks": null,
+            "resetsAt": null,
+            "unlimited": false,
+            "observedAt": "2026-09-22T02:56:36.788468Z"
+          },
+          "accounting": {
+            "state": "unknown",
+            "chargedChecks": null,
+            "receiptId": null,
+            "requiresReconciliation": true
+          },
+          "outcome": null,
+          "errorCode": "SERVICE_UNAVAILABLE",
+          "retryAfterSeconds": null,
+          "expiresAt": null
+        }
+      },
+      "passed": true
+    },
+    {
+      "function": "trustcheckradar-dev-url-lease-recovery",
+      "alias": "live",
+      "executedVersion": "5",
+      "invokeStatusCode": 200,
+      "functionError": null,
+      "input": "{}",
+      "actual": {
+        "enabled": false,
+        "recovered": 0
+      },
+      "passed": true
+    },
+    {
+      "function": "trustcheckradar-dev-v1-entitlements",
+      "alias": "live",
+      "executedVersion": "5",
+      "invokeStatusCode": 200,
+      "functionError": null,
+      "input": "{}",
+      "actual": {
+        "statusCode": 503,
+        "body": {
+          "schemaVersion": 1,
+          "error": {
+            "code": "ACCESS_SERVICE_UNAVAILABLE",
+            "retryable": false
+          }
+        }
+      },
+      "passed": true
+    },
+    {
+      "function": "trustcheckradar-dev-v1-authority-deletion",
+      "alias": "live",
+      "executedVersion": "4",
+      "invokeStatusCode": 200,
+      "functionError": null,
+      "input": "{}",
+      "actual": {
+        "enabled": false
+      },
+      "passed": true
+    }
+  ],
+  "activationPerformed": false,
+  "scope": "four disabled live aliases; empty requests only",
+  "allPassed": true,
+  "verificationHarnessCorrections": [
+    "Initial mapping lookup used unqualified function name; corrected to configured live alias before any invocation.",
+    "First smoke pass invoked URL, recovery and entitlements successfully with no FunctionError but verifier expected a flat error field; corrected to published error.code envelope and repeated final four-case capture. Seven empty disabled invocations total; no runtime change."
+  ],
+  "sideEffectBoundary": "Reviewed closed handler paths return before account/storage/secret/provider calls; no authenticated assessment, trial activation, billing, research or deletion work was invoked. This is path-bounded evidence, not whole-environment auditing.",
+  "deployment": {
+    "method": "manual Terraform saved-plan apply",
+    "infrastructureSource": "943645385afee7a1b0f245a732bf66e8f9c482cd",
+    "infrastructureRelease": "e638a3276721dd2003628cff73077509444eea1b",
+    "savedPlanSha256": "65fc86efc2e85c8c3586e2c9893b1d5eb0f6254448148263b48f9ad50529494b",
+    "changed": 8,
+    "added": 0,
+    "destroyed": 0,
+    "postApplyNoDrift": true
+  }
+}

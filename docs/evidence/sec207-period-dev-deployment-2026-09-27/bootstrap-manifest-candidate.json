@@ -1,0 +1,110 @@
+{
+  "accountId": "107827791950",
+  "environment": "dev",
+  "expectedCounts": {
+    "enabledRegistries": 2,
+    "excludedRegistries": 1,
+    "intelligence": 0,
+    "locatorInventory": 1,
+    "outbox": 0,
+    "terminalTombstones": 3
+  },
+  "functions": {
+    "account_data_api": {
+      "codeSha256": "c1414e0e0473d516893ef6dc087ab559d14316bfd518715e325972d3154a2ed8",
+      "configurationSha256": "4ff0912973e9dbb001b760a964d01a1bb3005a2c004753a9600403dd8ef954f1",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-account-data-api-role"
+    },
+    "account_export_api": {
+      "codeSha256": "8e3ffe0d12a455d9f84ea41be6718f306c307598f84dbbd4fce137cd7ea491e7",
+      "configurationSha256": "2f64cb21e4b7559fe6d9b304c06d10faf5e731f549bc4317699e5a99a60a9579",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-account-export-api-role"
+    },
+    "campaign_cluster_aggregator": {
+      "codeSha256": "e2d7eb0b3bc228eab15e684b01f970854e991b2940816a812d7eb95aeb84e0b9",
+      "configurationSha256": "03543e896990f3a63248259453016ca46479250ca9fcb7daa586101fe3078c29",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-cluster-aggregator-role"
+    },
+    "campaign_deletion_bridge": {
+      "codeSha256": "c694fa18f29f615bc2d876bd7ffe8b18f8e9f844d0428faa047c489098d5678c",
+      "configurationSha256": "a5af514c2652b158cd3121a8e81e942b39f710eec8db323eb33f9349e6e6a1d1",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-deletion-bridge-role"
+    },
+    "campaign_lifecycle": {
+      "codeSha256": "bc65a0f7b4ffbebe4da64c19567fa8da25ee800775b492216959a74d41313b62",
+      "configurationSha256": "615e8b6d07cbc938c087b482f29e93845251ac9fc36d0cb12f2c08003f0626a1",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-lifecycle-role"
+    },
+    "campaign_observation_publisher": {
+      "codeSha256": "56c7d2f35924986f09e5f2fb10dbdee44a7dfb0a1e2f6f25917b0c3655ded092",
+      "configurationSha256": "23945a120faf0c57998bdd28cbb08fcb84ca2edfd47b37d04691277533db76cb",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-observation-publisher-role"
+    },
+    "campaign_review": {
+      "codeSha256": "59af5b4d18691f81f246daf0a7e7b22dbfa5ba63ac5e914a1203a7465e440647",
+      "configurationSha256": "64aa00a35a83de50ccad6633ef6e310b1f79e5de1c9e4b9d287ffc4b17801e9a",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-review-role"
+    },
+    "conversation_analysis": {
+      "codeSha256": "bcc18da16b1495b44af895a538d110f2d0232be5efb0e7b23b8c1898a027d0ee",
+      "configurationSha256": "824f6eaf3d6bd93135ffd6085509fe9f392290b58c1ad79224b51c62231f1d96",
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-conversation-analysis-role"
+    }
+  },
+  "locatorSha256": "a0b68fc04458264415d627336f9212d3d7fdfefda5eff52a2a39256a124c0751",
+  "marker": {
+    "PK": "INVENTORY#dev",
+    "SK": "CAMPAIGN_PERIOD_WORK",
+    "admissionGeneration": "9f7311a2-34c9-4fe8-8fbf-56974ab32897",
+    "approvedAtEpoch": 1790484991,
+    "baseline": "EXACT_ALL_TARGETS_INDEXED",
+    "coverage": "VERIFIED_COMPLETE",
+    "environment": "dev",
+    "locatorInventoryRevision": 1,
+    "locatorManifestSha256": "bde6307ac73e1a6f60533216270566b2db0c822aa1b777cbf1e1013a168eb73f",
+    "manifestSha256": "31695c1ad9ac9d0b9382cbfd9a50dc535dcb1b03f2dbe7ad64fc612484790ef0",
+    "minimumPeriodId": 1479,
+    "recordType": "CAMPAIGN_PERIOD_WORK_INVENTORY",
+    "resources": {
+      "outbox": {
+        "tableId": "37dda667-d982-4568-8bcf-ce5297362eda",
+        "tableName": "trustcheckradar-dev-campaign-outbox"
+      },
+      "pipeline": {
+        "tableId": "6a8d5278-235e-45ac-9ccc-87d0ef6c368d",
+        "tableName": "trustcheckradar-dev-campaign-pipeline"
+      }
+    },
+    "restoreInvalidation": "REQUIRES_NEW_GENERATION",
+    "revision": 1,
+    "schemaVersion": 1,
+    "writers": [
+      "conversation_analysis",
+      "account_data_api",
+      "campaign_observation_publisher",
+      "campaign_cluster_aggregator",
+      "campaign_deletion_bridge",
+      "campaign_lifecycle"
+    ]
+  },
+  "region": "us-east-1",
+  "resources": {
+    "intelligence": {
+      "tableId": "4fe35db2-8130-4050-8547-3a1d2717fbde",
+      "tableName": "trustcheckradar-dev-campaign-intelligence"
+    },
+    "outbox": {
+      "tableId": "37dda667-d982-4568-8bcf-ce5297362eda",
+      "tableName": "trustcheckradar-dev-campaign-outbox"
+    },
+    "pipeline": {
+      "tableId": "6a8d5278-235e-45ac-9ccc-87d0ef6c368d",
+      "tableName": "trustcheckradar-dev-campaign-pipeline"
+    }
+  },
+  "retiredExclusionReference": "docs/evidence/live-account-deletion-2026-09-26/campaign-clean-start-observation.json",
+  "retiredRegistrySha256": "7654708cad26c559cf2875a97c8102bb09d7b61b0262b878d8f7bfe38760af41",
+  "schemaVersion": 1,
+  "sourceCommit": "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "sourceTreeSha256": "ea928af03e68023fa00b527d15dc23f605fa03789b3fb2945fd18a1e026f8a15"
+}

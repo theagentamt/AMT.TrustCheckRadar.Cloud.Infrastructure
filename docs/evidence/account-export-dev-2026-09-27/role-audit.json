@@ -1,0 +1,19 @@
+{
+  "readOnlyAudit": true,
+  "exactExpectedInlineAndManagedPolicies": true,
+  "trustService": "lambda.amazonaws.com",
+  "allowActions": [
+    "cognito-idp:AdminGetUser",
+    "dynamodb:DescribeTable",
+    "dynamodb:GetItem",
+    "dynamodb:Query",
+    "kms:Decrypt",
+    "kms:GenerateMac",
+    "logs:CreateLogStream",
+    "logs:PutLogEvents",
+    "secretsmanager:GetSecretValue"
+  ],
+  "sourceMutationOrProviderInvocationGrants": false,
+  "extraPolicies": false,
+  "permissionsBoundaryPresent": false
+}

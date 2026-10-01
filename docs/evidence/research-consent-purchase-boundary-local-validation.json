@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "scope": "local mocked purchase-retirement follow-up; live metadata evidence is separately labeled",
+  "baseCommit": "c191749c19b7dd368ebc190f1ddf7738f592f3ab",
+  "checks": [
+    {
+      "command": "terraform -chdir=terraform/api test -filter=tests/research-consent-migration.tftest.hcl -no-color",
+      "passed": 12,
+      "failed": 0
+    }
+  ],
+  "fileSha256": {
+    "terraform/api/research-consent-migration.tf": "59e8458b2c18f846ce03ae18f72059474ea595b93effcb3507f436a775ede49a",
+    "terraform/api/tests/research-consent-migration.tftest.hcl": "5a95e057be4440b7397832f4f75d89756c58db9c4928b855c158918e1b02b507"
+  },
+  "liveQualified": false,
+  "inventoryApproved": false,
+  "limitations": [
+    "No customer-item migration, provider requests or writes.",
+    "The role denies apply only when the optional deployment is selected; existing live routes are unchanged."
+  ]
+}

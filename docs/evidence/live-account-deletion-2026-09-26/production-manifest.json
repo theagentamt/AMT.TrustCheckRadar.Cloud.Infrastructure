@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "sourceSha": "f92285b50561397355a5fe2e466d297041336755",
+  "runtime": "python3.14",
+  "architecture": "arm64",
+  "archives": {
+    "campaign_cluster_aggregator": {
+      "handler": "app.lambda_handler",
+      "sha256": "1dbb96d3034c622838ebcd76039297e377e2018b6ffa3685dd337d5ae0e9fb15",
+      "sizeBytes": 18457
+    },
+    "campaign_deletion_bridge": {
+      "handler": "app.lambda_handler",
+      "sha256": "c37c1af984fade1c07e6a6a17dd074abf25da696f32ba530eca008e3722690c9",
+      "sizeBytes": 43525
+    },
+    "campaign_lifecycle": {
+      "handler": "app.lambda_handler",
+      "sha256": "3aab80f54a82ba6454782dab924b029d4b509bf6a7c810601ee74ef63953b31f",
+      "sizeBytes": 18677
+    },
+    "campaign_observation_publisher": {
+      "handler": "app.lambda_handler",
+      "sha256": "2fa50cdab8a7f9417f453d37669f659844d801d65e1f5cd5caa0bde5e01ed8ae",
+      "sizeBytes": 19290
+    },
+    "account_data_api": {
+      "sha256": "823a359e18e828aa48e561faefb5bb76cc11621b9bd3aabbd0e1386346113510",
+      "sizeBytes": 47678,
+      "handler": "app.lambda_handler"
+    }
+  },
+  "publicationPerformed": false
+}

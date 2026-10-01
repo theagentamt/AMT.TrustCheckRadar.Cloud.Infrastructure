@@ -1,0 +1,180 @@
+{
+  "scope": "custom-policy simulation, not live transaction acceptance",
+  "cases": [
+    {
+      "label": "consumer account update",
+      "role": "consumer",
+      "action": "UpdateItem",
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "label": "consumer inventory denied",
+      "role": "consumer",
+      "action": "UpdateItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "consumer direct update denied",
+      "role": "consumer",
+      "action": "UpdateItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "consumer inventory condition check",
+      "role": "consumer",
+      "action": "ConditionCheckItem",
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "label": "entitlements account update",
+      "role": "entitlements",
+      "action": "UpdateItem",
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "label": "entitlements inventory denied",
+      "role": "entitlements",
+      "action": "UpdateItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "entitlements direct update denied",
+      "role": "entitlements",
+      "action": "UpdateItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "entitlements inventory condition check",
+      "role": "entitlements",
+      "action": "ConditionCheckItem",
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "label": "deletion account update",
+      "role": "deletion",
+      "action": "UpdateItem",
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "label": "deletion inventory denied",
+      "role": "deletion",
+      "action": "UpdateItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "deletion direct update denied",
+      "role": "deletion",
+      "action": "UpdateItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "deletion inventory condition check",
+      "role": "deletion",
+      "action": "ConditionCheckItem",
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "label": "recovery account update",
+      "role": "recovery",
+      "action": "UpdateItem",
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "label": "recovery inventory denied",
+      "role": "recovery",
+      "action": "UpdateItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "recovery direct update denied",
+      "role": "recovery",
+      "action": "UpdateItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "recovery inventory condition check",
+      "role": "recovery",
+      "action": "ConditionCheckItem",
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "label": "recovery checkpoint",
+      "role": "recovery",
+      "action": "UpdateItem",
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "label": "recovery checkpoint delete denied",
+      "role": "recovery",
+      "action": "DeleteItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "recovery checkpoint put denied",
+      "role": "recovery",
+      "action": "PutItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "deletion account progress",
+      "role": "deletion",
+      "action": "UpdateItem",
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "label": "deletion checkpoint progress",
+      "role": "deletion",
+      "action": "UpdateItem",
+      "decision": "allowed",
+      "passed": true
+    },
+    {
+      "label": "deletion checkpoint inventory field denied",
+      "role": "deletion",
+      "action": "UpdateItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "deletion checkpoint missing attrs denied",
+      "role": "deletion",
+      "action": "UpdateItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "deletion inventory partition denied",
+      "role": "deletion",
+      "action": "UpdateItem",
+      "decision": "implicitDeny",
+      "passed": true
+    },
+    {
+      "label": "deletion checkpoint put denied",
+      "role": "deletion",
+      "action": "PutItem",
+      "decision": "implicitDeny",
+      "passed": true
+    }
+  ]
+}

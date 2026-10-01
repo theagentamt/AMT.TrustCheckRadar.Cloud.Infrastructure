@@ -1,0 +1,49 @@
+{
+  "candidates": [
+    {
+      "function": "trustcheckradar-dev-account-export-api",
+      "version": "$LATEST",
+      "revision_id": "a95d4a0c-9f98-4440-9377-6489788935ad",
+      "code_sha256": "/q1/eMfOPR6OzsVxme7ACh911HqTfS7AJO34M62U5oc=",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "closed_flags": {
+        "ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED": "false",
+        "ACCOUNT_EXPORT_ENABLED": "false"
+      },
+      "inventory_status": "pending",
+      "username_mapping_enabled": false,
+      "policy_sha256": "ef1f9df402f002e4990eb0166da3eecdcba66af443b8c3a7f015aaccdd2ed350",
+      "no_identity_delete_grant": true
+    },
+    {
+      "function": "trustcheckradar-dev-account-data-api",
+      "version": "$LATEST",
+      "revision_id": "62e6f8dc-0fe9-4191-b48f-f87a59dbe23c",
+      "code_sha256": "1QZcQV/kDtAThdaZt4K48EOW00R3dbMOqq0pQqOH7LQ=",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "closed_flags": {
+        "ACCOUNT_IDENTITY_FINALIZER_ENABLED": "false",
+        "ACCOUNT_DELETION_ENABLED": "false"
+      },
+      "inventory_status": "pending",
+      "username_mapping_enabled": false,
+      "policy_sha256": "e572b49d58e6f647dc19075a268ed180bb42d818ff799dfb35efa640512efffa",
+      "no_identity_delete_grant": true
+    }
+  ],
+  "deletion_mapping_disabled": true,
+  "reconciliation_rule_disabled": true,
+  "export_cursor_secret_empty": true,
+  "prepare_throttle": {
+    "DetailedMetricsEnabled": true,
+    "ThrottlingBurstLimit": 4,
+    "ThrottlingRateLimit": 2.0
+  },
+  "enabled_flow_acceptance": false
+}

@@ -1,0 +1,52 @@
+{
+  "planSha256": "0de53e9f188d7976c6881d94d8289ff41f636ff2121f1e128007435eb2a50c7f",
+  "changes": [
+    {
+      "address": "aws_iam_role_policy.period_lifecycle_scheduler_invoke[0]",
+      "actions": [
+        "update"
+      ],
+      "changedAttributes": [
+        "policy"
+      ],
+      "environmentUnchanged": true,
+      "roleUnchanged": true
+    },
+    {
+      "address": "aws_iam_role_policy.recovery_scheduler_invoke[0]",
+      "actions": [
+        "update"
+      ],
+      "changedAttributes": [
+        "policy"
+      ],
+      "environmentUnchanged": true,
+      "roleUnchanged": true
+    },
+    {
+      "address": "aws_iam_role_policy.scheduler_invoke[0]",
+      "actions": [
+        "update"
+      ],
+      "changedAttributes": [
+        "policy"
+      ],
+      "environmentUnchanged": true,
+      "roleUnchanged": true
+    },
+    {
+      "address": "aws_lambda_function.worker[\"deletion\"]",
+      "actions": [
+        "update"
+      ],
+      "changedAttributes": [
+        "last_modified",
+        "s3_key",
+        "s3_object_version",
+        "source_code_hash"
+      ],
+      "environmentUnchanged": true,
+      "roleUnchanged": true
+    }
+  ]
+}

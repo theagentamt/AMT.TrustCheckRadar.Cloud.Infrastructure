@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "84733306d62dd57df883b4425fa5305db6c4a62d",
+  "passed": true,
+  "checks": [
+    "unauthenticated_rejected",
+    "explicit_trial",
+    "prepared",
+    "analysis_settled",
+    "url_free_reconciliation",
+    "same_proof_duplicate",
+    "single_allowance_delta"
+  ],
+  "processingOutcome": "complete",
+  "chargedChecks": 1,
+  "scope": "sole_synthetic_dev_account",
+  "credentialsLogged": false,
+  "evidence": "Observed output of frozen HTTP harness; infrastructure independently verifies invocation counts and ledger privacy"
+}

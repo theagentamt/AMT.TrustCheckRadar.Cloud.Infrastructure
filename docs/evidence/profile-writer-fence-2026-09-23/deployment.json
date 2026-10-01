@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "environment": "dev",
+  "accountId": "107827791950",
+  "region": "us-east-1",
+  "sourceSha": "c4b1cae34b9a90a9803022302a6ad7f2d8a13e38",
+  "stages": [
+    {
+      "stage": "prepare",
+      "stack": "api",
+      "planSha256": "2a6cbda302ed1fa8b743dbb703b75f82d339fd58fb4ca547492e5be115df8e3f",
+      "applyExitCode": 0,
+      "managedActions": [
+        {
+          "address": "aws_iam_policy.age_attestation_dynamodb",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.age_attestation",
+          "actions": [
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "prepare",
+      "stack": "identity",
+      "planSha256": "93f69745ec4c209d02e2a17b2abe687cbdc07dc337e815af07441a86c13a51a0",
+      "applyExitCode": 0,
+      "managedActions": [
+        {
+          "address": "aws_iam_policy.post_confirmation_dynamodb",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.post_confirmation",
+          "actions": [
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "install",
+      "stack": "api",
+      "planSha256": "190f2f71409c4fa1c0a702fd420e14007c9211e17189bf7195fc687feccad3fb",
+      "applyExitCode": 0,
+      "managedActions": [
+        {
+          "address": "aws_lambda_function.age_attestation",
+          "actions": [
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "install",
+      "stack": "identity",
+      "planSha256": "de40c43ad69aa83d501851ba62a4695360e184244600864ac6fbf94631495d8e",
+      "applyExitCode": 0,
+      "managedActions": [
+        {
+          "address": "aws_lambda_function.post_confirmation",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "terraform_data.configure_user_pool_post_confirmation",
+          "actions": [
+            "delete",
+            "create"
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "tighten",
+      "stack": "api",
+      "planSha256": "2127d900e4a0e6ccac5d80b7be6516c0bf3c251a64db78c6c2d8ccd7bdfac67a",
+      "applyExitCode": 0,
+      "managedActions": [
+        {
+          "address": "aws_iam_policy.age_attestation_dynamodb",
+          "actions": [
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "tighten",
+      "stack": "identity",
+      "planSha256": "d4db85f03fc99feb7a6094a9654ba1424c3112ffae92262c0c2df78bdcff0c6a",
+      "applyExitCode": 0,
+      "managedActions": [
+        {
+          "address": "aws_iam_policy.post_confirmation_dynamodb",
+          "actions": [
+            "update"
+          ]
+        }
+      ]
+    }
+  ],
+  "postApplyPlanExitCodes": {
+    "api": 0,
+    "identity": 0
+  },
+  "actualAccountDeletionTested": false,
+  "actualSignupTested": false,
+  "privacyGatesActivated": false
+}

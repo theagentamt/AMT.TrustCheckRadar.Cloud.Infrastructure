@@ -1,0 +1,59 @@
+{
+  "sourceSha": "eba5d938c1da5cf36540cf654e674f46bba3fa71",
+  "plans": [
+    {
+      "plan": "amt-deletion-status-response-fix",
+      "sha256": "76a2c9d04f67ec0c07c68c11fd8134af912403f5e099394aac40b416d898f9ed",
+      "changes": [
+        {
+          "address": "aws_lambda_function.account_data[0]",
+          "actions": [
+            "update"
+          ]
+        }
+      ],
+      "allChecksPassed": true
+    },
+    {
+      "plan": "amt-deletion-second-url-consumer",
+      "sha256": "80b18c9c767c2ac40034a927dfd66f0bb15635ce05f37a0a6051588c809f0b97",
+      "changes": [
+        {
+          "address": "aws_lambda_alias.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        }
+      ],
+      "allChecksPassed": true
+    },
+    {
+      "plan": "amt-deletion-second-play-lifecycle",
+      "sha256": "8d752abd4368d10596b2dd12e41fd2646ea66eef379c41fa8390922ec2a7f1c3",
+      "changes": [
+        {
+          "address": "aws_lambda_alias.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        }
+      ],
+      "allChecksPassed": true
+    }
+  ],
+  "onlySecondDisposableSubjectSelected": true,
+  "firstOperationCompleteBeforeSelection": true,
+  "newHttpRequestSent": false
+}

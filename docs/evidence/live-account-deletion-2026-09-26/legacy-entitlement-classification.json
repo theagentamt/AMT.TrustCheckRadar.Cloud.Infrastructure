@@ -1,0 +1,40 @@
+{
+  "allRecognized": true,
+  "legacyRows": [
+    {
+      "accessFalse": true,
+      "attributeCount": 16,
+      "billingPeriodEndAbsentOrNull": true,
+      "extraFieldCount": 0,
+      "fieldSetSha256": "348da6bf39b50c51d809e8c699db7fea4b91cf473adbda22c5a7f161686e7c95",
+      "rawPurchaseTokenFieldPresent": false,
+      "recognizedLegacyShape": true,
+      "recordedUsageNonzero": false,
+      "rowSha256": "77c1cbb2d1d639786fd8ed8b5b452e727e696697407c5a07a4aaa2838dc3e5a3",
+      "statusExpired": true,
+      "tierFree": true
+    },
+    {
+      "accessFalse": true,
+      "attributeCount": 19,
+      "billingPeriodEndAbsentOrNull": true,
+      "extraFieldCount": 0,
+      "fieldSetSha256": "3a8169490ed00dcc038e73e5876e8e789736c4d17ec4a1d0a3526ac46aaefbf4",
+      "rawPurchaseTokenFieldPresent": false,
+      "recognizedLegacyShape": true,
+      "recordedUsageNonzero": true,
+      "rowSha256": "d5335423c7a0401648afef88dedff1ab71a70105bd3ebaba75e3bd96132d5840",
+      "statusExpired": true,
+      "tierFree": true
+    }
+  ],
+  "limits": [
+    "Shape coverage only; no grant/payment/allowance legitimacy, historical-erasure or marker approval.",
+    "Rows preserved unchanged; all identifiers and field values inspected only in memory."
+  ],
+  "observedAtEpoch": 1790433652,
+  "pages": 1,
+  "scanComplete": true,
+  "schemaVersion": 1,
+  "writes": 0
+}

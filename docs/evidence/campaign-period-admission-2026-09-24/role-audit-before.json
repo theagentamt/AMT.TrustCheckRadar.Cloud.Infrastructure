@@ -1,0 +1,607 @@
+{
+  "observedAtUtc": "2026-09-25T04:14:03.035264+00:00",
+  "roles": {
+    "trustcheckradar-dev-campaign-observation-publisher-role": {
+      "arn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-observation-publisher-role",
+      "permissionsBoundary": null,
+      "inline": {
+        "content-free-logging": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "logs:PutLogEvents",
+                "logs:CreateLogStream"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:logs:us-east-1:107827791950:log-group:/aws/lambda/trustcheckradar-dev-campaign-observation-publisher:*",
+              "Sid": "WriteOwnContentFreeLogs"
+            },
+            {
+              "Action": "cloudwatch:PutMetricData",
+              "Condition": {
+                "StringEquals": {
+                  "cloudwatch:namespace": "TrustCheckRadar/Campaign"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+              "Sid": "PublishContentFreeMetrics"
+            }
+          ]
+        },
+        "publisher-runtime": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringEquals": {
+                  "dynamodb:LeadingKeys": "INVENTORY#dev"
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+              "Sid": "CheckLocatorInventoryTransaction"
+            },
+            {
+              "Action": "dynamodb:GetItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "ACCOUNT#*"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+              "Sid": "ReadFixedAccountDeletionFence"
+            },
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "ACCOUNT#*"
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+              "Sid": "CheckFixedAccountDeletionFenceTransactionally"
+            },
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "CONTRIB#*"
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+              "Sid": "CheckContributorTombstoneTransaction"
+            },
+            {
+              "Action": [
+                "dynamodb:ListStreams",
+                "dynamodb:GetShardIterator",
+                "dynamodb:GetRecords",
+                "dynamodb:DescribeStream"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox/stream/2026-09-06T23:21:14.722",
+              "Sid": "ReadCampaignOutboxStream"
+            },
+            {
+              "Action": "dynamodb:GetItem",
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+              "Sid": "WriteTransientPipeline"
+            },
+            {
+              "Action": [
+                "dynamodb:UpdateItem",
+                "dynamodb:PutItem"
+              ],
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": [
+                    "EVENT#*",
+                    "CONTRIB#*"
+                  ]
+                },
+                "ForAnyValue:StringEquals": {
+                  "dynamodb:EnclosingOperation": "TransactWriteItems"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+              "Sid": "WriteFencedTransientPipeline"
+            },
+            {
+              "Action": "dynamodb:GetItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "USER#*"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
+              "Sid": "ReadParticipationState"
+            },
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "USER#*"
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
+              "Sid": "CheckParticipationStateInTransaction"
+            },
+            {
+              "Action": "sqs:SendMessage",
+              "Effect": "Allow",
+              "Resource": "arn:aws:sqs:us-east-1:107827791950:trustcheckradar-dev-campaign-cluster",
+              "Sid": "SendOpaqueClusterWork"
+            },
+            {
+              "Action": [
+                "kms:GenerateDataKey",
+                "kms:DescribeKey",
+                "kms:Decrypt"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:kms:us-east-1:107827791950:key/be146e79-877b-462c-b2ff-509cb8c6b02a",
+              "Sid": "UseTransientEncryption"
+            },
+            {
+              "Action": "kms:GenerateMac",
+              "Condition": {
+                "StringEquals": {
+                  "aws:ResourceTag/Environment": "dev",
+                  "aws:ResourceTag/Project": "trustcheckradar",
+                  "aws:ResourceTag/Purpose": "campaign-contributor-token"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:kms:us-east-1:107827791950:key/*",
+              "Sid": "GenerateCurrentPeriodToken"
+            }
+          ]
+        }
+      },
+      "managed": {}
+    },
+    "trustcheckradar-dev-campaign-cluster-aggregator-role": {
+      "arn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-cluster-aggregator-role",
+      "permissionsBoundary": null,
+      "inline": {
+        "cluster-runtime": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "dynamodb:GetItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "ACCOUNT#*"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+              "Sid": "ReadResearchEligibilityLedger"
+            },
+            {
+              "Action": "dynamodb:GetItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "EVENT#*"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox",
+              "Sid": "ReadResearchEligibilityOutbox"
+            },
+            {
+              "Action": "dynamodb:GetItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "USER#*"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
+              "Sid": "ReadResearchEligibilityUsers"
+            },
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "ACCOUNT#*"
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+              "Sid": "CheckResearchEligibilityLedger"
+            },
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "EVENT#*"
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox",
+              "Sid": "CheckResearchEligibilityOutbox"
+            },
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "USER#*"
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
+              "Sid": "CheckResearchEligibilityUsers"
+            },
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "CANDIDATE#*"
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+              "Sid": "CheckCandidateLifecycleTransaction"
+            },
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringEquals": {
+                  "dynamodb:LeadingKeys": "INVENTORY#dev"
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+              "Sid": "CheckLocatorInventoryTransaction"
+            },
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "CONTRIB#*"
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+              "Sid": "CheckContributorTombstoneTransaction"
+            },
+            {
+              "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:DeleteMessage",
+                "sqs:ChangeMessageVisibility"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:sqs:us-east-1:107827791950:trustcheckradar-dev-campaign-cluster",
+              "Sid": "ConsumeClusterQueue"
+            },
+            {
+              "Action": [
+                "dynamodb:Query",
+                "dynamodb:GetItem"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline/index/CandidateBucketIndex",
+                "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline"
+              ],
+              "Sid": "ReadTransientCandidates"
+            },
+            {
+              "Action": [
+                "dynamodb:Query",
+                "dynamodb:GetItem"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence/index/PublicationIndex",
+                "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence"
+              ],
+              "Sid": "UpdatePersistentAggregates"
+            },
+            {
+              "Action": [
+                "dynamodb:UpdateItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem"
+              ],
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": [
+                    "EVENT#*",
+                    "CONTRIB#*",
+                    "CANDIDATE#*",
+                    "BUCKET#*"
+                  ]
+                },
+                "ForAnyValue:StringEquals": {
+                  "dynamodb:EnclosingOperation": "TransactWriteItems"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+              "Sid": "WriteMutableCandidateFamilies"
+            },
+            {
+              "Action": [
+                "kms:GenerateDataKey",
+                "kms:DescribeKey",
+                "kms:Decrypt"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:kms:us-east-1:107827791950:key/be146e79-877b-462c-b2ff-509cb8c6b02a",
+                "arn:aws:kms:us-east-1:107827791950:key/a1c1aa6a-eb80-49ee-ba93-4f823a319857"
+              ],
+              "Sid": "UseCampaignEncryption"
+            }
+          ]
+        },
+        "content-free-logging": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "logs:PutLogEvents",
+                "logs:CreateLogStream"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:logs:us-east-1:107827791950:log-group:/aws/lambda/trustcheckradar-dev-campaign-cluster-aggregator:*",
+              "Sid": "WriteOwnContentFreeLogs"
+            },
+            {
+              "Action": "cloudwatch:PutMetricData",
+              "Condition": {
+                "StringEquals": {
+                  "cloudwatch:namespace": "TrustCheckRadar/Campaign"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+              "Sid": "PublishContentFreeMetrics"
+            }
+          ]
+        }
+      },
+      "managed": {}
+    },
+    "trustcheckradar-dev-campaign-lifecycle-role": {
+      "arn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-lifecycle-role",
+      "permissionsBoundary": null,
+      "inline": {
+        "content-free-logging": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "logs:PutLogEvents",
+                "logs:CreateLogStream"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:logs:us-east-1:107827791950:log-group:/aws/lambda/trustcheckradar-dev-campaign-lifecycle:*",
+              "Sid": "WriteOwnContentFreeLogs"
+            },
+            {
+              "Action": "cloudwatch:PutMetricData",
+              "Condition": {
+                "StringEquals": {
+                  "cloudwatch:namespace": "TrustCheckRadar/Campaign"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+              "Sid": "PublishContentFreeMetrics"
+            }
+          ]
+        },
+        "lifecycle-runtime": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:Query",
+                "dynamodb:GetItem"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline/index/ExpirationIndex",
+                "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline/index/CandidateBucketIndex",
+                "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+                "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence"
+              ],
+              "Sid": "LifecycleTableAccess"
+            },
+            {
+              "Action": [
+                "dynamodb:UpdateItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:BatchWriteItem"
+              ],
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "CAMPAIGN#*"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence",
+              "Sid": "WriteLifecycleAggregates"
+            },
+            {
+              "Action": [
+                "dynamodb:UpdateItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:BatchWriteItem"
+              ],
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": [
+                    "PERIOD#*",
+                    "EVENT#*",
+                    "CONTRIB#*",
+                    "CANDIDATE#*",
+                    "BUCKET#*"
+                  ]
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+              "Sid": "WriteMutableLifecyclePipeline"
+            },
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": "CAMPAIGN#*"
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence",
+              "Sid": "CheckLifecycleAggregate"
+            },
+            {
+              "Action": "dynamodb:ConditionCheckItem",
+              "Condition": {
+                "ForAllValues:StringLike": {
+                  "dynamodb:LeadingKeys": [
+                    "CANDIDATE#*",
+                    "INVENTORY#dev"
+                  ]
+                },
+                "StringEqualsIfExists": {
+                  "dynamodb:ReturnValues": "NONE"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+              "Sid": "CheckLifecyclePipelineProof"
+            },
+            {
+              "Action": "kms:CreateKey",
+              "Condition": {
+                "StringEquals": {
+                  "aws:RequestTag/Environment": "dev",
+                  "aws:RequestTag/Project": "trustcheckradar",
+                  "aws:RequestTag/Purpose": "campaign-contributor-token",
+                  "kms:KeySpec": "HMAC_256",
+                  "kms:KeyUsage": "GENERATE_VERIFY_MAC"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+              "Sid": "CreatePeriodHmacKeys"
+            },
+            {
+              "Action": [
+                "kms:TagResource",
+                "kms:GetKeyPolicy",
+                "kms:EnableKey",
+                "kms:DisableKey",
+                "kms:DescribeKey"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "aws:ResourceTag/Environment": "dev",
+                  "aws:ResourceTag/Project": "trustcheckradar",
+                  "aws:ResourceTag/Purpose": "campaign-contributor-token"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:kms:us-east-1:107827791950:key/*",
+              "Sid": "ManageTaggedPeriodHmacKeys"
+            },
+            {
+              "Action": "kms:TagResource",
+              "Condition": {
+                "StringEquals": {
+                  "aws:RequestTag/Environment": "dev",
+                  "aws:RequestTag/Project": "trustcheckradar",
+                  "aws:RequestTag/Purpose": "campaign-contributor-token"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:kms:us-east-1:107827791950:key/*",
+              "Sid": "TagNewPeriodHmacKeys"
+            },
+            {
+              "Action": "kms:ScheduleKeyDeletion",
+              "Condition": {
+                "NumericEquals": {
+                  "kms:ScheduleKeyDeletionPendingWindowInDays": "7"
+                },
+                "StringEquals": {
+                  "aws:ResourceTag/Environment": "dev",
+                  "aws:ResourceTag/Project": "trustcheckradar",
+                  "aws:ResourceTag/Purpose": "campaign-contributor-token"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "arn:aws:kms:us-east-1:107827791950:key/*",
+              "Sid": "ScheduleTaggedPeriodKeyDeletion"
+            },
+            {
+              "Action": [
+                "kms:GenerateDataKey",
+                "kms:DescribeKey",
+                "kms:Decrypt"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:kms:us-east-1:107827791950:key/be146e79-877b-462c-b2ff-509cb8c6b02a",
+                "arn:aws:kms:us-east-1:107827791950:key/a1c1aa6a-eb80-49ee-ba93-4f823a319857"
+              ],
+              "Sid": "UseCampaignEncryption"
+            }
+          ]
+        }
+      },
+      "managed": {}
+    }
+  }
+}

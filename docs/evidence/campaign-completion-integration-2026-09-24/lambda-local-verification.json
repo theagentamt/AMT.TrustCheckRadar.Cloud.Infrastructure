@@ -1,0 +1,18 @@
+{
+  "sourceSha": "dffa7eaae79632db58bc366cc48434125a9c10dc",
+  "runtime": "python3.14",
+  "architecture": "arm64",
+  "productionHandler": "app.lambda_handler",
+  "productionZipSha256": "0eb22f2ce00f394e7b15eafae789b256154891fb1fa0b4ec8e3f8ab1630a2687",
+  "productionZipBase64Sha256": "DrIvLOAPOU57Fer654myVhVIkfsfoLTsjj+KsWMKJoc=",
+  "productionZipSizeBytes": 37373,
+  "productionPythonMembers": 21,
+  "qualificationZipSha256": "a00be737a24244260e1b1bd80fc32e69cfed71dfd106b8aa6dc2b0901741085a",
+  "qualificationZipSizeBytes": 46995,
+  "qualificationPythonMembers": 22,
+  "runtimeCases": 35,
+  "productionMembersPreserved": true,
+  "localPackagedDefaultsAndDisabledCallsPassed": true,
+  "awsExecuted": false,
+  "historicalApproval": false
+}

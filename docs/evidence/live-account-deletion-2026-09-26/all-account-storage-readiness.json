@@ -1,0 +1,680 @@
+{
+  "accountId": "107827791950",
+  "deletionReadinessVerified": false,
+  "environment": "dev",
+  "limitations": [
+    "Names follow repository defaults; custom resource names require separate inspection.",
+    "No item values, expiry coverage, user ownership, logs, queue messages or secrets were read.",
+    "PITR metadata is not an inventory of on-demand, AWS Backup or exported backups.",
+    "No Cognito Username/sub identity mapping or deployed erasure behavior was verified.",
+    "Queue, S3 object/version, external-provider and mobile copies require separate inventory."
+  ],
+  "logGroups": [
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-account-data-api",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-account-export-api",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-age-attestation",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-campaign-cluster-aggregator",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-campaign-deletion-bridge",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-campaign-lifecycle",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-campaign-observation-publisher",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-campaign-participation",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-campaign-review",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-campaign-trends",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-conversation-analysis",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-device-recovery",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-device-registration",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-entitlement-snapshot",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-history-account-deletion-bridge",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-history-lifecycle",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-history-mutation-api",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-history-read-api",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-play-lifecycle-ingress",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-play-lifecycle-worker",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-play-token-deletion",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-post-confirmation",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-purchase-handoff",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-url-assessment",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-url-consumer",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-url-lease-recovery",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-url-resolver",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-v1-authority-deletion",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-v1-entitlements",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-v1-play-handoff",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-web-risk-communication",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/apigateway/trustcheckradar-dev-age-attestation-api",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    },
+    {
+      "name": "/aws/apigateway/trustcheckradar-dev-play-notifications",
+      "retentionExplicit": true,
+      "retentionInDays": 14
+    }
+  ],
+  "postConfirmationLogGroupObserved": true,
+  "region": "us-east-1",
+  "schemaVersion": 1,
+  "scope": "configuration-metadata-only",
+  "tables": [
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users",
+      "deletionProtectionEnabled": false,
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "GSI1"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-users",
+      "pointInTimeRecoveryStatus": "ENABLED",
+      "present": true,
+      "recoveryPeriodInDays": 35,
+      "status": "ACTIVE",
+      "stream": {},
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger",
+      "deletionProtectionEnabled": false,
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "campaignRecoveryPartition",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "nextAttemptAtEpoch",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "CampaignRecoveryDueIndex"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-deletion-ledger",
+      "pointInTimeRecoveryStatus": "ENABLED",
+      "present": true,
+      "recoveryPeriodInDays": 35,
+      "status": "ACTIVE",
+      "stream": {
+        "StreamEnabled": true,
+        "StreamViewType": "NEW_IMAGE"
+      },
+      "ttl": {
+        "TimeToLiveStatus": "DISABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control",
+      "deletionProtectionEnabled": false,
+      "indexes": [],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-analysis-abuse-control",
+      "pointInTimeRecoveryStatus": "ENABLED",
+      "present": true,
+      "recoveryPeriodInDays": 35,
+      "status": "ACTIVE",
+      "stream": {},
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-bindings",
+      "deletionProtectionEnabled": false,
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "GSI1"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-device-bindings",
+      "pointInTimeRecoveryStatus": "ENABLED",
+      "present": true,
+      "recoveryPeriodInDays": 35,
+      "status": "ACTIVE",
+      "stream": {},
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements",
+      "deletionProtectionEnabled": false,
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "GSI1"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-purchase-entitlements",
+      "pointInTimeRecoveryStatus": "ENABLED",
+      "present": true,
+      "recoveryPeriodInDays": 35,
+      "status": "ACTIVE",
+      "stream": {},
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-web-risk-cache",
+      "deletionProtectionEnabled": false,
+      "indexes": [],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-web-risk-cache",
+      "pointInTimeRecoveryStatus": "ENABLED",
+      "present": true,
+      "recoveryPeriodInDays": 35,
+      "status": "ACTIVE",
+      "stream": {},
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-recovery-control",
+      "deletionProtectionEnabled": false,
+      "indexes": [],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-device-recovery-control",
+      "pointInTimeRecoveryStatus": "ENABLED",
+      "present": true,
+      "recoveryPeriodInDays": 7,
+      "status": "ACTIVE",
+      "stream": {},
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox",
+      "deletionProtectionEnabled": false,
+      "indexes": [],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-campaign-outbox",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "present": true,
+      "recoveryPeriodInDays": null,
+      "status": "ACTIVE",
+      "stream": {
+        "StreamEnabled": true,
+        "StreamViewType": "NEW_IMAGE"
+      },
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-pipeline",
+      "deletionProtectionEnabled": false,
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI3PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI3SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "ExpirationIndex"
+        },
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI2PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI2SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "CandidateBucketIndex"
+        },
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "ContributorPeriodIndex"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-campaign-pipeline",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "present": true,
+      "recoveryPeriodInDays": null,
+      "status": "ACTIVE",
+      "stream": {},
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence",
+      "deletionProtectionEnabled": false,
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "PublicationIndex"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-campaign-intelligence",
+      "pointInTimeRecoveryStatus": "ENABLED",
+      "present": true,
+      "recoveryPeriodInDays": 35,
+      "status": "ACTIVE",
+      "stream": {},
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-history-content",
+      "deletionProtectionEnabled": false,
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "expiryBucket",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "expiresAt",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "ExpirationIndex"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-history-content",
+      "pointInTimeRecoveryStatus": "ENABLED",
+      "present": true,
+      "recoveryPeriodInDays": 7,
+      "status": "ACTIVE",
+      "stream": {},
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-history-control",
+      "deletionProtectionEnabled": false,
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "expiryBucket",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "expiresAt",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "ExpirationIndex"
+        },
+        {
+          "keySchema": [
+            {
+              "AttributeName": "lifecycleBucket",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "lifecycleAt",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "PendingLifecycleIndex"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-history-control",
+      "pointInTimeRecoveryStatus": "ENABLED",
+      "present": true,
+      "recoveryPeriodInDays": 7,
+      "status": "ACTIVE",
+      "stream": {},
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    {
+      "arn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens",
+      "deletionProtectionEnabled": true,
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "GSI1"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "name": "trustcheckradar-dev-play-tokens",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "present": true,
+      "recoveryPeriodInDays": null,
+      "status": "ACTIVE",
+      "stream": {},
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    }
+  ]
+}

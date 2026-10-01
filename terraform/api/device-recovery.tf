@@ -37,6 +37,30 @@ variable "device_recovery_deployment" {
   }
 }
 
+variable "device_self_recovery_acceptance" {
+  description = "Reviewed consumer contract and security acceptance for one immutable release. References record human-reviewed evidence; Terraform does not execute acceptance tests. Null leaves activation unapproved."
+  type = object({
+    approved                        = bool
+    release_id                      = string
+    contract_version                = string
+    contract_sha256                 = string
+    approval_reference              = string
+    security_verification_reference = string
+  })
+  default = null
+  validation {
+    condition = var.device_self_recovery_acceptance == null ? true : try(
+      can(regex("^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$", var.device_self_recovery_acceptance.release_id)) &&
+      can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+$", var.device_self_recovery_acceptance.contract_version)) &&
+      can(regex("^[a-f0-9]{64}$", var.device_self_recovery_acceptance.contract_sha256)) &&
+      length(trimspace(var.device_self_recovery_acceptance.approval_reference)) > 0 &&
+      length(trimspace(var.device_self_recovery_acceptance.security_verification_reference)) > 0,
+      false
+    )
+    error_message = "Consumer acceptance must identify an immutable release, semantic contract version, lowercase SHA-256 contract digest, owner approval and security-verification evidence."
+  }
+}
+
 variable "device_self_recovery_enabled" {
   description = "Expose consumer recovery only after coordinated backend and security acceptance."
   type        = bool
@@ -44,9 +68,13 @@ variable "device_self_recovery_enabled" {
   nullable    = false
   validation {
     condition = !var.device_self_recovery_enabled || try(
-      var.device_recovery_deployment.release_id == var.history_deployment.release_id && local.recovery_storage_valid, false
+      var.device_recovery_deployment.release_id == var.history_deployment.release_id &&
+      local.recovery_storage_valid &&
+      var.device_self_recovery_acceptance.approved &&
+      var.device_self_recovery_acceptance.release_id == var.device_recovery_deployment.release_id,
+      false
     )
-    error_message = "Consumer recovery requires the same pinned release for recovery, registration and all three History/analysis readers, plus approved same-account/environment recovery storage."
+    error_message = "Consumer recovery requires one pinned writer/reader release, approved same-account/environment storage, and contract/security acceptance for that exact release."
   }
 }
 
@@ -130,13 +158,28 @@ resource "aws_iam_role_policy" "device_identity" {
 data "aws_iam_policy_document" "device_recovery_control" {
   count = var.device_recovery_deployment != null && local.recovery_storage_valid ? 1 : 0
   statement {
-    sid       = "RecoveryReceiptsAuditAndRateState"
-    actions   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem"]
+    sid       = "ReadRecoveryReceiptsAndRateState"
+    actions   = ["dynamodb:GetItem"]
     resources = [local.recovery_storage.table_arn]
     condition {
       test     = "ForAllValues:StringLike"
       variable = "dynamodb:LeadingKeys"
       values   = ["USER#*"]
+    }
+  }
+  statement {
+    sid       = "RecoveryReceiptsAuditAndRateState"
+    actions   = ["dynamodb:PutItem", "dynamodb:UpdateItem"]
+    resources = [local.recovery_storage.table_arn]
+    condition {
+      test     = "ForAllValues:StringLike"
+      variable = "dynamodb:LeadingKeys"
+      values   = ["USER#*"]
+    }
+    condition {
+      test     = "ForAnyValue:StringEquals"
+      variable = "dynamodb:EnclosingOperation"
+      values   = ["TransactWriteItems"]
     }
   }
 }
@@ -176,5 +219,8 @@ output "device_self_recovery_contract" {
     identity                         = "Cognito access-token sub only; request body cannot select an account"
     reauthentication_max_age_seconds = 300
     previous_device_binding_required = false
+    acceptance_approved              = try(var.device_self_recovery_acceptance.approved && var.device_self_recovery_acceptance.release_id == var.device_recovery_deployment.release_id, false)
+    contract_version                 = var.device_self_recovery_enabled ? var.device_self_recovery_acceptance.contract_version : null
+    contract_sha256                  = var.device_self_recovery_enabled ? var.device_self_recovery_acceptance.contract_sha256 : null
   }
 }

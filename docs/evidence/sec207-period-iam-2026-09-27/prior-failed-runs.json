@@ -1,0 +1,51 @@
+{
+  "allRemainFailed": true,
+  "rootCauseEstablishedForPriorServiceRefusals": false,
+  "runs": [
+    {
+      "awsErrorCode": "UnrecognizedClientException",
+      "cleanupReportedComplete": true,
+      "executorSha256": "db90a7a68c621f55654e5a48877431bb65d9c2f69bee14ed0f5aa1f8a75477a1",
+      "failure": "fixture_operation_failed",
+      "passed": false,
+      "recordedCases": 17,
+      "sourceFile": "amt-sec207-period-iam-results-diagnostic.json",
+      "sourceSha256": "15f459d4a2f0e0a3833837c993d0490c7f1f3781615f385419ef882574f0caad",
+      "validatorSha256": "d6b8761177ac4dffac6df8e0482e5e5d8336e85e945432aeb2c87fbdf38265bb"
+    },
+    {
+      "awsErrorCode": null,
+      "cleanupReportedComplete": true,
+      "executorSha256": "72bbbf6eefdb7f5df1be9098ac98b1f4719da66c23d9384fec71b85415a3f388",
+      "failure": "fixture_operation_failed",
+      "passed": false,
+      "recordedCases": 35,
+      "sourceFile": "amt-sec207-period-iam-results-final.json",
+      "sourceSha256": "ac54cebecc2fab68e827b3812cb9a9ea0eaf9e9644e416ebd6ea89eb45b48fe9",
+      "validatorSha256": "d6b8761177ac4dffac6df8e0482e5e5d8336e85e945432aeb2c87fbdf38265bb"
+    },
+    {
+      "awsErrorCode": null,
+      "cleanupReportedComplete": true,
+      "executorSha256": "1f945487824a7a786cc3b12632e0d90d64a18a5c961595ae2abddf8fdcb16fe7",
+      "failure": "propagation_failed",
+      "passed": false,
+      "recordedCases": 0,
+      "sourceFile": "amt-sec207-period-iam-results-propagation.json",
+      "sourceSha256": "440167c11ccbe1d3c52415ed4aef6abe33f0ac2e601969fcafc0c25593bfed64",
+      "validatorSha256": "d6b8761177ac4dffac6df8e0482e5e5d8336e85e945432aeb2c87fbdf38265bb"
+    },
+    {
+      "awsErrorCode": "AccessDeniedException",
+      "cleanupReportedComplete": true,
+      "executorSha256": "99b7bb5de61f84b27217041fafab949b5282a8a70b51afc4b9c37c04ed665e23",
+      "failure": "fixture_operation_failed",
+      "passed": false,
+      "recordedCases": 96,
+      "sourceFile": "amt-sec207-period-iam-results-regional.json",
+      "sourceSha256": "825fa8c3a45181b938f40e118e3990b16639f8920e48d1af9fe4718053d7f0ad",
+      "validatorSha256": "d6b8761177ac4dffac6df8e0482e5e5d8336e85e945432aeb2c87fbdf38265bb"
+    }
+  ],
+  "schemaVersion": 1
+}

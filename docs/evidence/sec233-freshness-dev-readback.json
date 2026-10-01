@@ -1,0 +1,93 @@
+{
+  "observedAt": "2026-09-29T04:12:09.958550+00:00",
+  "source": "27ba230f6a96fe5bf1c96719903c3c7016765bbb",
+  "infrastructureSource": "2430fce552eed5f95e957ca7b4793013ecbbd3c8",
+  "results": [
+    {
+      "function": "trustcheckradar-dev-url-consumer",
+      "qualifier": "live",
+      "version": "8",
+      "hash": "UZGXzwy/TqyybWVl6js5NJ8YH8syJciQeYpmebBY3Is=",
+      "runtime": "python3.14",
+      "state": "Active",
+      "environmentMatchesReviewedPlan": true,
+      "gates": {
+        "CONSUMER_ENABLED": "false",
+        "AUTHORITY_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      }
+    },
+    {
+      "function": "trustcheckradar-dev-v1-entitlements",
+      "qualifier": "live",
+      "version": "8",
+      "hash": "pkYk7X7Pj1b9atbCqSusGMfObvmIM2bCKpqneUeQiw0=",
+      "runtime": "python3.14",
+      "state": "Active",
+      "environmentMatchesReviewedPlan": true,
+      "gates": {
+        "CONSUMER_ENABLED": "false",
+        "AUTHORITY_ENABLED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      }
+    },
+    {
+      "function": "trustcheckradar-dev-url-assessment",
+      "qualifier": "live",
+      "version": "3",
+      "hash": "ZR2IfD7e51zdXQPhdA1rCp0KzD4gdYLK7VlHRTUQaVA=",
+      "runtime": "python3.14",
+      "state": "Active",
+      "environmentMatchesReviewedPlan": true,
+      "gates": {}
+    },
+    {
+      "function": "trustcheckradar-dev-account-export-api",
+      "qualifier": "$LATEST",
+      "version": "$LATEST",
+      "hash": "l/+b7HSw0SBY+k4qFdMW8iPiwdawaYqRhN+uaxvXejE=",
+      "runtime": "python3.14",
+      "state": "Active",
+      "environmentMatchesReviewedPlan": true,
+      "gates": {
+        "ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED": "false",
+        "ACCOUNT_EXPORT_ENABLED": "false",
+        "ACCOUNT_EXPORT_INVENTORY_STATUS": "pending"
+      }
+    },
+    {
+      "function": "trustcheckradar-dev-url-lease-recovery",
+      "qualifier": "live",
+      "version": "7",
+      "hash": "a5uouU5vy1ZJMuWpjQY4GUQ236d4jpRS23yTmaP5K+Y=",
+      "unchanged": true
+    },
+    {
+      "function": "trustcheckradar-dev-v1-authority-deletion",
+      "qualifier": "live",
+      "version": "20",
+      "hash": "RR6Qd3aM1ap/hSs6mihSKxjDSjivTKK7tcnfoSOMi5w=",
+      "unchanged": true
+    }
+  ],
+  "providerCalls": false,
+  "customerDataReadOrWritten": false,
+  "activationChanged": false,
+  "postApplyPlans": [
+    {
+      "stack": "url-consumer",
+      "sha256": "47f94ae88bbc39ecc96c2529981baa83858a45e5ad72617ce768482a869a7bae",
+      "managedChanges": []
+    },
+    {
+      "stack": "url-assessment",
+      "sha256": "016b5039eb12fed3f938dad38aba23082da7ce8024079e316db3facf37ac0689",
+      "managedChanges": []
+    },
+    {
+      "stack": "api",
+      "sha256": "88ed3c1f5707d83587e444626c39b0e03a4d23f21957c146eaa629534ee01861",
+      "managedChanges": []
+    }
+  ]
+}

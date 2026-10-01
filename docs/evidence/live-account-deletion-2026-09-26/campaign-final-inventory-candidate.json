@@ -1,0 +1,1884 @@
+{
+  "account": "107827791950",
+  "allExecutionRolePolicyBindings": {
+    "trustcheckradar-dev-account-data-api-role": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "68a708456a282ef8a4bc62e0aae4e9b4a4797011228fb0b45ea6fdb285234044",
+          "effect": "Allow",
+          "statementSha256": "a3defe0abba8719935afc88adcc698975bc4d325041d86333cb69b7b19278b79",
+          "table": "outbox"
+        }
+      ],
+      "policySha256": [
+        "b6b1332d5d14b76b52c906afdd085968cf9b7e071f8d907038be70c499b8ef9d"
+      ]
+    },
+    "trustcheckradar-dev-account-export-api-role": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "de5e9347a657d1ea75c553a5720ae2d13432c80d1f491f12a9afe962f7ce43b2"
+      ]
+    },
+    "trustcheckradar-dev-age-attestation-role": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "8992968b3dd4b9898b807c3af58ac8e5322f8991eef973e4ccdf877b1fed99cf",
+        "8df00f8a16f804197c918f701b67864f2a3540ff5f8195232a62998cfb6a319e"
+      ]
+    },
+    "trustcheckradar-dev-campaign-cluster-aggregator-role": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "f58aa288b317f63fbc2479a09dd3445c3bc180a26432d4c9d969f9ff05c1a283",
+          "effect": "Allow",
+          "statementSha256": "a2c125c2e9836b7fcbb2827f740a89a66a4aab110c0dd1127a3b310791bb3524",
+          "table": "pipeline"
+        }
+      ],
+      "policySha256": [
+        "9943a19160a4b72c94d113dd8a65a7b595570b26cb86496b4c6fa4b2fdcb4cfd",
+        "c306fd2a4adf042fce4f44ba7b555b9db128707f5fad1c41590622e0c41bdcd6",
+        "dcc71a3c5a806683ef9a679b1bc8eae23aaaf392dec96faebd48a38d9d29967e"
+      ]
+    },
+    "trustcheckradar-dev-campaign-deletion-bridge-role": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "4d8f80b26d8aa90a99e93073caa204c5b1bfa40abf64f63face62d4f1ae5251c",
+          "effect": "Allow",
+          "statementSha256": "afc269cc16ece33399f5e2e1d5edf0305f392c592f014a8066f31cc43d04de38",
+          "table": "pipeline"
+        }
+      ],
+      "policySha256": [
+        "17c0ba3a26fd3b4610dc0deb995a3ce2b07b467e37240922524c814d38e060d0",
+        "595584834728a83a2492cc7fdbd7a9c594d13da6a4ef8f25d9f3940db958d04e",
+        "5aabbbdba49df45baf6eee36f8e3a89d392e3dc93ebee8155f7d331f0feed931",
+        "d508505b1ecbd1d5713a2fd3114a1c4e1d3b3a6b8e6ce51701cc21361c87b2da",
+        "e48bb12845dca92a87e84304e4f15450d3c5539ee99fcf1b87cdc3095a4786fc",
+        "e61be842c1f01da71eab9b3a5072fba0270dd6b27fe53d69dcd29cadfe122b66"
+      ]
+    },
+    "trustcheckradar-dev-campaign-lifecycle-role": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "babdc19d46882059c78d4d30cf66b9d758e032780f6289b4597132e4c8b14544",
+          "effect": "Allow",
+          "statementSha256": "023e44827904b9cb3d36cd1dd40cbc4d7192be4e09ad5ae7a77b0a846dd8fc51",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "32c69af6338c487cbd1afffcd11d4f87773c7f6be526f1018b4ad61faa376fe6",
+          "effect": "Allow",
+          "statementSha256": "c958daeca049548d09fb6ede676c105a020f570eac336443c093d119076e63bb",
+          "table": "intelligence"
+        },
+        {
+          "conditionSha256": "fff9a2f917333b69b17444d5ec6514d333813c89d4b5baab2e2d8000de0cfa8e",
+          "effect": "Allow",
+          "statementSha256": "20cb818eccf5ac191630db5188c0fec2c96c39762c80ac47db0367019742eda4",
+          "table": "pipeline"
+        }
+      ],
+      "policySha256": [
+        "5dba7dae0096a2f2961af7798379e2f2ae69a63917fb34c10e791238e2eea9e6",
+        "ad87926bfe09657b5ceb827f6754a4542f5ed9a37a69872ba3dd875d4389d7d9",
+        "c54fdcee5a6a0924d57b9a0521c8a3fe82fb02d653f6419d034e19089274c8cc",
+        "d861cc613c31a05d85dba10c6ba73328bb429c6e02ac785ea39bba885dc5473a"
+      ]
+    },
+    "trustcheckradar-dev-campaign-observation-publisher-role": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "392f1630f785f4e8cfbe7436fedfb557dd4ca3cade201221631947da2f6edb84",
+          "effect": "Allow",
+          "statementSha256": "a8de2a09774ff2fedb3b3aac8354ff33bf33906e53b3e388f6a0255062f5293e",
+          "table": "pipeline"
+        }
+      ],
+      "policySha256": [
+        "91c27ebaab044db6d0cc22aa987b39a6ea87e7805dc10edbab33011398751e8c",
+        "c306fd2a4adf042fce4f44ba7b555b9db128707f5fad1c41590622e0c41bdcd6",
+        "f1b53a90a4614faa7e02191c86339fe190fd6bcf6027dadcf5f014a862b3f45c"
+      ]
+    },
+    "trustcheckradar-dev-campaign-participation-role": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "6b14fb4b08d29cca73f065dc9f85656dab223ab4356d62aa5d70940397113b1d",
+        "8992968b3dd4b9898b807c3af58ac8e5322f8991eef973e4ccdf877b1fed99cf",
+        "cc6490bc3e9e378bb9d74d524cc8c97fbfb41124e5cd520a80753a679a99a0e4"
+      ]
+    },
+    "trustcheckradar-dev-campaign-review-role": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Allow",
+          "statementSha256": "33fd4d4ca3abede0423ce117e44a14a4e1067c0461aa1efad690195266a45c1f",
+          "table": "intelligence"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "0da50bb8fa1b36af6ae4679b11d7df3fad227e0f18986210c1227be89c60b923",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "0da50bb8fa1b36af6ae4679b11d7df3fad227e0f18986210c1227be89c60b923",
+          "table": "outbox"
+        }
+      ],
+      "policySha256": [
+        "376400bc7935324045765787a3c01c815bae286904fc5054f6e01995b5998879"
+      ]
+    },
+    "trustcheckradar-dev-campaign-trends-role": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "deb46ec098c4207c39b48c08b67b2ad86c0141d4a1ce76f15f22f8f2a5801d4c",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "deb46ec098c4207c39b48c08b67b2ad86c0141d4a1ce76f15f22f8f2a5801d4c",
+          "table": "outbox"
+        }
+      ],
+      "policySha256": [
+        "977d6131f013b542fdd801bbe999077754e28c1711726711627ddb047e8af29b"
+      ]
+    },
+    "trustcheckradar-dev-conversation-analysis-role": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "outbox"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "intelligence"
+        },
+        {
+          "conditionSha256": "05fa45bc6bc441f82e0bb12a3d78de1754b01f58df311a3b39f80081c95c6e7d",
+          "effect": "Allow",
+          "statementSha256": "841486e82f1fbabc0ba9565bf38da2a19d8877af944bacc05c65618f0771ede0",
+          "table": "outbox"
+        }
+      ],
+      "policySha256": [
+        "1620a4b10a6d93dd57fc774a1edfd37975a4f6311e6fd45b6aa92f43bc4ef2fd",
+        "5cdeba7fb68376adbfe91d9bd98aea8db85893a418c76b66a79af0610876bea7",
+        "8992968b3dd4b9898b807c3af58ac8e5322f8991eef973e4ccdf877b1fed99cf",
+        "c02032cd895e957b4908f3c25123aae8d72159dc8163cbfd15bfc51817809187"
+      ]
+    },
+    "trustcheckradar-dev-device-recovery-role": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "2005c137b3f3e9d3086065fb7b7079efcb64e4710eea72195b70aa6e0efa78aa",
+        "29f7911ed4e0734c5bbe9e7ca4928fa59b1748268a84e98f566206cde39ff2c2",
+        "8992968b3dd4b9898b807c3af58ac8e5322f8991eef973e4ccdf877b1fed99cf",
+        "b4777c1fe62109c98afae0a931b0bcd8d973c4cacc52d23fb1d91be562c6d7b6"
+      ]
+    },
+    "trustcheckradar-dev-device-registration-role": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "29f7911ed4e0734c5bbe9e7ca4928fa59b1748268a84e98f566206cde39ff2c2",
+        "8992968b3dd4b9898b807c3af58ac8e5322f8991eef973e4ccdf877b1fed99cf",
+        "b4777c1fe62109c98afae0a931b0bcd8d973c4cacc52d23fb1d91be562c6d7b6"
+      ]
+    },
+    "trustcheckradar-dev-entitlement-snapshot-role": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "outbox"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "intelligence"
+        }
+      ],
+      "policySha256": [
+        "1d5aad1606801a9bcf44e17d7a551d0e2c9ba65f4bb1992fda8083f17013a77a",
+        "242874b129d0c9285b96a227ed374a724a5d6c751fc3ea311e764a92d1e18b6c",
+        "8992968b3dd4b9898b807c3af58ac8e5322f8991eef973e4ccdf877b1fed99cf"
+      ]
+    },
+    "trustcheckradar-dev-history-account-deletion-bridge-role": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "caa055309698c79d71385c7bc6a6c7cd658881b305d14506d2aa78e0de9f33e2"
+      ]
+    },
+    "trustcheckradar-dev-history-lifecycle-role": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "12d9051f6df16e90d49902c1a610ef5a6e5d36973c3a4225c89ee7b681a0d6a1"
+      ]
+    },
+    "trustcheckradar-dev-history-mutation-api-role": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "0919d6babc449ccd3545338f63a63a3eebfc0be8a3dd8b8e1108dc86dd165324"
+      ]
+    },
+    "trustcheckradar-dev-history-read-api-role": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "f8747c93b5171b172cc052a4204c57b52546504a56194fa9a8df723ac8dae2bb"
+      ]
+    },
+    "trustcheckradar-dev-play-lifecycle-ingress-execution": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4903a82f3d3533e8476fcacef3763cfd6dab85d631704ee34daa256ba3c2cb01",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4903a82f3d3533e8476fcacef3763cfd6dab85d631704ee34daa256ba3c2cb01",
+          "table": "outbox"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4903a82f3d3533e8476fcacef3763cfd6dab85d631704ee34daa256ba3c2cb01",
+          "table": "intelligence"
+        }
+      ],
+      "policySha256": [
+        "314902f3920ad8926563f5a7461a2109eb6083817dbade3596e4aaa1c7a5a2fd"
+      ]
+    },
+    "trustcheckradar-dev-play-lifecycle-worker-execution": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4903a82f3d3533e8476fcacef3763cfd6dab85d631704ee34daa256ba3c2cb01",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4903a82f3d3533e8476fcacef3763cfd6dab85d631704ee34daa256ba3c2cb01",
+          "table": "outbox"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4903a82f3d3533e8476fcacef3763cfd6dab85d631704ee34daa256ba3c2cb01",
+          "table": "intelligence"
+        }
+      ],
+      "policySha256": [
+        "beb06ecc8777ac9d7425b761a7d3d9bdedb5adf47f4e8fb7c7140c43e05d2cb4"
+      ]
+    },
+    "trustcheckradar-dev-play-token-deletion-execution": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4903a82f3d3533e8476fcacef3763cfd6dab85d631704ee34daa256ba3c2cb01",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4903a82f3d3533e8476fcacef3763cfd6dab85d631704ee34daa256ba3c2cb01",
+          "table": "outbox"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4903a82f3d3533e8476fcacef3763cfd6dab85d631704ee34daa256ba3c2cb01",
+          "table": "intelligence"
+        }
+      ],
+      "policySha256": [
+        "c73889e6fd16725adf66e7bec39456adff54fa77a1a6713331a96c6e25a2561a"
+      ]
+    },
+    "trustcheckradar-dev-post-confirmation-role": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "8992968b3dd4b9898b807c3af58ac8e5322f8991eef973e4ccdf877b1fed99cf",
+        "d76c56f33b3a6811bd14768b55769e6953825243a4ae0cb8349015e5eb5f3493"
+      ]
+    },
+    "trustcheckradar-dev-purchase-handoff-role": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "outbox"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "intelligence"
+        }
+      ],
+      "policySha256": [
+        "242874b129d0c9285b96a227ed374a724a5d6c751fc3ea311e764a92d1e18b6c",
+        "76ced298c1b983f17a80966a1eba40924d887b1e48c379f8b7c496c42167d555",
+        "8992968b3dd4b9898b807c3af58ac8e5322f8991eef973e4ccdf877b1fed99cf"
+      ]
+    },
+    "trustcheckradar-dev-url-assessment-execution": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4bac6003794e03fa2904e528f332532f1fb4e19110d917aa961790636f8a234f",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4bac6003794e03fa2904e528f332532f1fb4e19110d917aa961790636f8a234f",
+          "table": "outbox"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "4bac6003794e03fa2904e528f332532f1fb4e19110d917aa961790636f8a234f",
+          "table": "intelligence"
+        }
+      ],
+      "policySha256": [
+        "82120f791f36546206034354cedbc1b22b0463c952d96367e03f761f91e438c3"
+      ]
+    },
+    "trustcheckradar-dev-url-consumer-execution": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "0317f710ac62ac2a1242e1f40b3ba9f033e89a686f23638c094117d3ae026dc0"
+      ]
+    },
+    "trustcheckradar-dev-url-lease-recovery-execution": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "f556674acec46576caf4e2e1afb102984a42b67457c5d27a3bcbd9daa1918f77"
+      ]
+    },
+    "trustcheckradar-dev-url-resolver-execution": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "538ee8143faac13cd7472183827b37cd6618e623b4d8fc56010f640a2a51d2b7",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "538ee8143faac13cd7472183827b37cd6618e623b4d8fc56010f640a2a51d2b7",
+          "table": "outbox"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "538ee8143faac13cd7472183827b37cd6618e623b4d8fc56010f640a2a51d2b7",
+          "table": "intelligence"
+        }
+      ],
+      "policySha256": [
+        "8f6e47b48f5ad49da1273a8c23609b6429f8f93a7dd16a813b9c596814b806df"
+      ]
+    },
+    "trustcheckradar-dev-v1-authority-deletion-execution": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "b578f1124ae4a36582e601732b36fac190aea1001e90965059ddf10a0523887a"
+      ]
+    },
+    "trustcheckradar-dev-v1-entitlements-execution": {
+      "boundaryPresent": false,
+      "overlap": [],
+      "policySha256": [
+        "24f0413d5d658692b25990f3ba48f6f5110166544a6493a5082ba6c9b2343575"
+      ]
+    },
+    "trustcheckradar-dev-v1-play-handoff-execution": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "6df4c11fa9b297d7479036c9cfb700235d4e8175340552be0c82413f78aa08cd",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "6df4c11fa9b297d7479036c9cfb700235d4e8175340552be0c82413f78aa08cd",
+          "table": "outbox"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "6df4c11fa9b297d7479036c9cfb700235d4e8175340552be0c82413f78aa08cd",
+          "table": "intelligence"
+        }
+      ],
+      "policySha256": [
+        "41486b33422eb1eb58047445b2d794dbd6d629c37babf4b13f8a7503828e4bf6",
+        "616878d4e1524ff84bfa9d90293304e3c4a9e4c2a36771a65b1d72cb30eb9426"
+      ]
+    },
+    "trustcheckradar-dev-web-risk-communication-role": {
+      "boundaryPresent": false,
+      "overlap": [
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "outbox"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c395dc6ead3b8e749e7bcb929c2d3e0b34f9909a0687bf5f5b4c3126df224881",
+          "table": "intelligence"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c9922a2ab5f69119fa4caa4d4a536159537500ec761c2b7f134ead3716a2d3d0",
+          "table": "pipeline"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c9922a2ab5f69119fa4caa4d4a536159537500ec761c2b7f134ead3716a2d3d0",
+          "table": "outbox"
+        },
+        {
+          "conditionSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "effect": "Deny",
+          "statementSha256": "c9922a2ab5f69119fa4caa4d4a536159537500ec761c2b7f134ead3716a2d3d0",
+          "table": "intelligence"
+        }
+      ],
+      "policySha256": [
+        "15dcbadf03f8713a3c3078fd48f3d4ded394ba8391a2726fc1fbbad14b7d0635",
+        "2f90c242e2d3e8bd32674530847cbc1ad06597a5382b066aa4e8fd575927b845",
+        "8992968b3dd4b9898b807c3af58ac8e5322f8991eef973e4ccdf877b1fed99cf"
+      ]
+    }
+  },
+  "approved": false,
+  "artifactKind": "CAMPAIGN_CURRENT_RESOURCE_INVENTORY_CANDIDATE",
+  "audit": {
+    "auditSourceSha256": "1feb2798576add7a85a044a8884324eea69c93dfe04ea0aa219fb17ed62b5906",
+    "observedAtUtc": "2026-09-26T14:56:04.488009+00:00",
+    "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/campaign-post-http-scope-assessment.json",
+    "sha256": "2127b20970dce2c4e3971e662d5a53d25ed613ed9c63d0f5f1f39b88507e1ce1"
+  },
+  "candidateWriterConfigurations": {
+    "account-data-api": {
+      "aliases": [],
+      "asyncConfigs": [
+        {
+          "arnSha256": "08cbd5c7d95bcc7617d9152997228d63af4d6d83a2d45eab16e42686ed3ede2b",
+          "destinationsSha256": "e29f74b8a3902e10246d63dd05a233021d88c14c27c6b9f2095ba77da90c1731",
+          "maxAge": 300,
+          "maxRetries": 1
+        }
+      ],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "tuYWOnIfwap0NHZOE9Bm5hC4kWFnXJHwrrV9hSjMZRk=",
+      "configurationSha256": "729dd8d0ec27fb215af8a9e371b5cb04cb9c46550fe0d33fbd8fdb9eef04e665",
+      "configurationStable": true,
+      "gates": {
+        "ACCOUNT_DELETION_ENABLED": "false",
+        "ACCOUNT_IDENTITY_FINALIZER_ENABLED": "false",
+        "CAMPAIGN_RECOVERY_WRITES_ENABLED": "false"
+      },
+      "lastModified": "2026-09-26T14:53:00.000+0000",
+      "revisionIdSha256": "46348c3524e846d47162c115f90fad03d830333b52672f56cb5ab7e1afefc951",
+      "role": "trustcheckradar-dev-account-data-api-role",
+      "timeout": 30,
+      "versions": [
+        {
+          "codeSha256": "tuYWOnIfwap0NHZOE9Bm5hC4kWFnXJHwrrV9hSjMZRk=",
+          "environmentSha256": "8359d03d2f142ac0332a9069e25a0de6c1e146ee795e3bd66d6999f2346d1c9d",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "account-export-api": {
+      "aliases": [],
+      "asyncConfigs": [
+        {
+          "arnSha256": "4e5a447dbdeaf7a255d77c662b8852a32173cedd65eef0fc65cf3a6da63cec3b",
+          "destinationsSha256": "e29f74b8a3902e10246d63dd05a233021d88c14c27c6b9f2095ba77da90c1731",
+          "maxAge": 60,
+          "maxRetries": 0
+        }
+      ],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "ynYTDY4o8nhqZOq+uIuyFTckEamaec1TWt9TKmRdsSk=",
+      "configurationSha256": "dda99a283a4bc46c3a31438caf0458ffdaf0fe80765f7cd8e7cb69d9ada4691c",
+      "configurationStable": true,
+      "gates": {
+        "ACCOUNT_EXPORT_ENABLED": "false",
+        "ACCOUNT_EXPORT_PLAY_TOKENS_ENABLED": "false"
+      },
+      "lastModified": "2026-09-26T13:26:35.000+0000",
+      "revisionIdSha256": "c733fd8b7ebee3d8ef9278bf1c1648fce59d90ab11fb3491a6c8a65a22e69dd1",
+      "role": "trustcheckradar-dev-account-export-api-role",
+      "timeout": 29,
+      "versions": [
+        {
+          "codeSha256": "ynYTDY4o8nhqZOq+uIuyFTckEamaec1TWt9TKmRdsSk=",
+          "environmentSha256": "c5db5e24e55b8e9ee9678ef25b2816393f5edf20dcf5477ab480a3e5ed75427e",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "campaign-cluster-aggregator": {
+      "aliases": [],
+      "asyncConfigs": [],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "HbuW0wNMYig46812A5KX43fiAYtv+jaF3TN9WuDp+xU=",
+      "configurationSha256": "84539b8c006c1c3a06ee24c4984c628e113ceabba1de0659a14ae706d14a49c9",
+      "configurationStable": true,
+      "gates": {
+        "CAMPAIGN_PERIOD_ADMISSION_ENABLED": "false"
+      },
+      "lastModified": "2026-09-26T13:23:39.000+0000",
+      "revisionIdSha256": "5cf229db57eaa05c6f6f4f43e260b9eca11aa45ca5f7b818bdac78f9e86865a7",
+      "role": "trustcheckradar-dev-campaign-cluster-aggregator-role",
+      "timeout": 30,
+      "versions": [
+        {
+          "codeSha256": "HbuW0wNMYig46812A5KX43fiAYtv+jaF3TN9WuDp+xU=",
+          "environmentSha256": "bba6a52506c5773a9a218155ff1a1b6737989260159d9de27f78fb29010d5ec4",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "campaign-deletion-bridge": {
+      "aliases": [],
+      "asyncConfigs": [
+        {
+          "arnSha256": "0171dbf6c043211183289bb1e842f5ddd22dcd0cb100b0354d1677c8a5bf4062",
+          "destinationsSha256": "e29f74b8a3902e10246d63dd05a233021d88c14c27c6b9f2095ba77da90c1731",
+          "maxAge": 60,
+          "maxRetries": 0
+        }
+      ],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "w3wa+YT63hwH5qahfdB0q/JdppbzK6Uw7KAI43ImkMk=",
+      "configurationSha256": "6a54013a4529612db682e1c1e71972752f01b74297a7ed02d150df94af7b6aff",
+      "configurationStable": true,
+      "gates": {
+        "CAMPAIGN_COMPLETION_ENABLED": "false",
+        "CAMPAIGN_DELETION_STREAM_ENABLED": "false",
+        "CAMPAIGN_PERIOD_ADMISSION_ENABLED": "false",
+        "CAMPAIGN_RECOVERY_ENABLED": "false"
+      },
+      "lastModified": "2026-09-26T13:23:39.000+0000",
+      "revisionIdSha256": "f0a3b94debecbef27b67f1b0da935e98735d05d148b409151f8e5d3cc2567c4b",
+      "role": "trustcheckradar-dev-campaign-deletion-bridge-role",
+      "timeout": 30,
+      "versions": [
+        {
+          "codeSha256": "w3wa+YT63hwH5qahfdB0q/JdppbzK6Uw7KAI43ImkMk=",
+          "environmentSha256": "097bb4dfca79f03bc788a33490debb4151c208ac4ae7a587c3dd084daacfe15e",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "campaign-lifecycle": {
+      "aliases": [],
+      "asyncConfigs": [],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "OquA9UqCumRUeC2rkksCnUtQm/anyBBgHudO9jlTsx8=",
+      "configurationSha256": "d5a4ee43409b4900fcf1ff9d57f7c631ddab102073c565ca5595c5be21871d68",
+      "configurationStable": true,
+      "gates": {
+        "CAMPAIGN_LIFECYCLE_CANDIDATE_ENABLED": "false",
+        "CAMPAIGN_PERIOD_ADMISSION_ENABLED": "false"
+      },
+      "lastModified": "2026-09-26T13:23:39.000+0000",
+      "revisionIdSha256": "a700b638bb41c767103067327cfe0f3b80f2b23ac53565dda7c52c9e184b2059",
+      "role": "trustcheckradar-dev-campaign-lifecycle-role",
+      "timeout": 60,
+      "versions": [
+        {
+          "codeSha256": "OquA9UqCumRUeC2rkksCnUtQm/anyBBgHudO9jlTsx8=",
+          "environmentSha256": "31207427a1378b65713eded833fece5b3b91950ae4db358e4d0cc557c87b2f59",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "campaign-observation-publisher": {
+      "aliases": [],
+      "asyncConfigs": [],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "L6UM2rin+UF/RT03Zp9lmETYAdZeH1zVyqC95eAe2K4=",
+      "configurationSha256": "cbd1c6afe406f55ccb3e7437d71381292cf867b8e237db83ecf8a931ca21ffb9",
+      "configurationStable": true,
+      "gates": {
+        "CAMPAIGN_PERIOD_ADMISSION_ENABLED": "false"
+      },
+      "lastModified": "2026-09-26T13:23:39.000+0000",
+      "revisionIdSha256": "ea2082198a961899938299a67a28d505bfa6450498c2aff8f27687b62eb150bb",
+      "role": "trustcheckradar-dev-campaign-observation-publisher-role",
+      "timeout": 30,
+      "versions": [
+        {
+          "codeSha256": "L6UM2rin+UF/RT03Zp9lmETYAdZeH1zVyqC95eAe2K4=",
+          "environmentSha256": "bba6a52506c5773a9a218155ff1a1b6737989260159d9de27f78fb29010d5ec4",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "campaign-participation": {
+      "aliases": [],
+      "asyncConfigs": [],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "p+wPYSC7BSxN5jYSffePQAu2DLZLfDhZ+cJLKP2dnX8=",
+      "configurationSha256": "49afb2c520623c9cfaafb81411e08fe9c86e9cd24bbc77285ba072607272b62f",
+      "configurationStable": true,
+      "gates": {
+        "CAMPAIGN_RECOVERY_WRITES_ENABLED": "false",
+        "CONSENT_INDEPENDENCE_ENABLED": "false"
+      },
+      "lastModified": "2026-09-25T02:20:23.000+0000",
+      "revisionIdSha256": "5effbf44644eb552680bb55597f9ae5d4269f544f50ac48baa0285349fc5f806",
+      "role": "trustcheckradar-dev-campaign-participation-role",
+      "timeout": 10,
+      "versions": [
+        {
+          "codeSha256": "p+wPYSC7BSxN5jYSffePQAu2DLZLfDhZ+cJLKP2dnX8=",
+          "environmentSha256": "e26d0957001aa9230571667c569382f636561f97b4f83862119d268f145f90a9",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "campaign-review": {
+      "aliases": [],
+      "asyncConfigs": [],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "Rt7zx/3OYnwzBeC4wZVlrFIXtOxtLdK/i9nErXqAH9U=",
+      "configurationSha256": "8114865d78b312b2a0c2e8f0644dbd2980da1742d7fd5c5d656fd2af2eb2329a",
+      "configurationStable": true,
+      "gates": {},
+      "lastModified": "2026-09-08T05:05:39.000+0000",
+      "revisionIdSha256": "fca6ab535dd7b78b85fa59772868497085e9fe1288d854bd758bdf8b22ea6e8b",
+      "role": "trustcheckradar-dev-campaign-review-role",
+      "timeout": 10,
+      "versions": [
+        {
+          "codeSha256": "Rt7zx/3OYnwzBeC4wZVlrFIXtOxtLdK/i9nErXqAH9U=",
+          "environmentSha256": "85578f99cef824d3debcc3951261c52f45b5f0ded5a40591025649f44e447f75",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "campaign-trends": {
+      "aliases": [],
+      "asyncConfigs": [],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "RlYd2VYTUFXnkI1SACzu/B8lqNw+y0HbnVZFCCrkvfY=",
+      "configurationSha256": "d1f9e8f77ffab6b4f3964437f395bab19a92a71b96e53f120cbe4baf19f2e133",
+      "configurationStable": true,
+      "gates": {},
+      "lastModified": "2026-09-08T05:05:44.000+0000",
+      "revisionIdSha256": "feb29fd0fcd222dd0cbc7074ec758225d69a8f98e1b13822be4e01d3c3158726",
+      "role": "trustcheckradar-dev-campaign-trends-role",
+      "timeout": 10,
+      "versions": [
+        {
+          "codeSha256": "RlYd2VYTUFXnkI1SACzu/B8lqNw+y0HbnVZFCCrkvfY=",
+          "environmentSha256": "a6cd4d2ade5a4b533fbb05b5b99303cc50d7261adf44f0fec10fcc286c5309d9",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "conversation-analysis": {
+      "aliases": [],
+      "asyncConfigs": [],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=",
+      "configurationSha256": "7f3f7649092956f05b312e6a2248dd19aeb87584d9acebae140a0e167c0df2c5",
+      "configurationStable": true,
+      "gates": {
+        "HISTORY_DURABLE_REPLAY_ENABLED": "false",
+        "HISTORY_WRITES_ENABLED": "false",
+        "RECOGNITION_ENABLED": "false"
+      },
+      "lastModified": "2026-09-22T02:07:15.000+0000",
+      "revisionIdSha256": "05f5b5ee404b906d7a510dbdd31544e1031a3e4144d184649555e6274afff5f6",
+      "role": "trustcheckradar-dev-conversation-analysis-role",
+      "timeout": 30,
+      "versions": [
+        {
+          "codeSha256": "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=",
+          "environmentSha256": "8530eb17e942798c7ba79c607b61f8ce99255ac462c8dade6a128aef6878263e",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "entitlement-snapshot": {
+      "aliases": [],
+      "asyncConfigs": [],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "3HxxsEAtAEKls89OxN91CfNQo1edq6ucNus4r+o2RVo=",
+      "configurationSha256": "f76318359602723f9cdfcfd38a106f96015693994f9cd2be5da54e27dcc88dac",
+      "configurationStable": true,
+      "gates": {},
+      "lastModified": "2026-09-22T02:07:15.000+0000",
+      "revisionIdSha256": "71cf15270350e14bddfb39c3d87ec04eb97b902e75e22429e304911e8302e002",
+      "role": "trustcheckradar-dev-entitlement-snapshot-role",
+      "timeout": 10,
+      "versions": [
+        {
+          "codeSha256": "3HxxsEAtAEKls89OxN91CfNQo1edq6ucNus4r+o2RVo=",
+          "environmentSha256": "af3cc76a45de1a01cda5e2ad16525ff70498ad51afd05eebda6b0ff8c0397da6",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "play-lifecycle-ingress": {
+      "aliases": [
+        {
+          "additionalVersionCount": 0,
+          "nameSha256": "247610f4dedd4ab7247d07dbda19c81ca9817f85820742cad49d407ffae9e4ed",
+          "version": "2"
+        }
+      ],
+      "asyncConfigs": [
+        {
+          "arnSha256": "18b01e1d4ca2db539ea7b52ac1c3f94d86e43fd726b2a15124428a3d85a68db2",
+          "destinationsSha256": "e29f74b8a3902e10246d63dd05a233021d88c14c27c6b9f2095ba77da90c1731",
+          "maxAge": 60,
+          "maxRetries": 0
+        }
+      ],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "BocXkxw6VeJSHp4Ggtmc5wlz4lxetWhXpTbz+mYtrRo=",
+      "configurationSha256": "77d4cba9ed8d42de6411fd8ff50a5ed1031f130eba8289daca16cc3aa5fd41a7",
+      "configurationStable": true,
+      "gates": {
+        "AUTHORITY_ENABLED": "false",
+        "PLAY_LIFECYCLE_ENABLED": "false",
+        "PLAY_PREPARATION_ENABLED": "false",
+        "PLAY_TOKEN_CLEANUP_ENABLED": "false"
+      },
+      "lastModified": "2026-09-23T06:01:20.000+0000",
+      "revisionIdSha256": "5582920b75ec70dcfe8dff52bccf06c1ef5d3adcbab8c18f9f03c3aed9cf0407",
+      "role": "trustcheckradar-dev-play-lifecycle-ingress-execution",
+      "timeout": 29,
+      "versions": [
+        {
+          "codeSha256": "BocXkxw6VeJSHp4Ggtmc5wlz4lxetWhXpTbz+mYtrRo=",
+          "environmentSha256": "474e8e35c49f674c16edd78fc1fe76cc1df38fe35adcb01ca43e18e055149c47",
+          "version": "$LATEST"
+        },
+        {
+          "codeSha256": "BocXkxw6VeJSHp4Ggtmc5wlz4lxetWhXpTbz+mYtrRo=",
+          "environmentSha256": "8b46803e90a76c31ec078dea2d7469fc6af08b8398729a502fddb68c63473e00",
+          "version": "1"
+        },
+        {
+          "codeSha256": "BocXkxw6VeJSHp4Ggtmc5wlz4lxetWhXpTbz+mYtrRo=",
+          "environmentSha256": "474e8e35c49f674c16edd78fc1fe76cc1df38fe35adcb01ca43e18e055149c47",
+          "version": "2"
+        }
+      ]
+    },
+    "play-lifecycle-worker": {
+      "aliases": [
+        {
+          "additionalVersionCount": 0,
+          "nameSha256": "247610f4dedd4ab7247d07dbda19c81ca9817f85820742cad49d407ffae9e4ed",
+          "version": "1"
+        }
+      ],
+      "asyncConfigs": [
+        {
+          "arnSha256": "aa64d96a236d23a52bfbfb94c82f558fb5b2614e6a5ac8494c55b0df71598e54",
+          "destinationsSha256": "e29f74b8a3902e10246d63dd05a233021d88c14c27c6b9f2095ba77da90c1731",
+          "maxAge": 60,
+          "maxRetries": 0
+        }
+      ],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "YdZv9rHFPAYScnVhJLFh9/NZ598R3SgaeEzi7A2Xgcs=",
+      "configurationSha256": "9941c2e2fc5b43dd1b4f41e369fa8da61eb74cbffd9302beb263debf72b89cc1",
+      "configurationStable": true,
+      "gates": {
+        "AUTHORITY_ENABLED": "false",
+        "PLAY_LIFECYCLE_ENABLED": "false",
+        "PLAY_PREPARATION_ENABLED": "false",
+        "PLAY_TOKEN_CLEANUP_ENABLED": "false"
+      },
+      "lastModified": "2026-09-23T05:01:22.058+0000",
+      "revisionIdSha256": "4bd1c9a79ce4375e68ae089b5c25546fd9fc0f84270868e9ec5e528c4cf2cf00",
+      "role": "trustcheckradar-dev-play-lifecycle-worker-execution",
+      "timeout": 60,
+      "versions": [
+        {
+          "codeSha256": "YdZv9rHFPAYScnVhJLFh9/NZ598R3SgaeEzi7A2Xgcs=",
+          "environmentSha256": "ce6156e367dae38b9e5b722691bee5d578f2930df9c8c7c7e946d0e5a652fbda",
+          "version": "$LATEST"
+        },
+        {
+          "codeSha256": "YdZv9rHFPAYScnVhJLFh9/NZ598R3SgaeEzi7A2Xgcs=",
+          "environmentSha256": "ce6156e367dae38b9e5b722691bee5d578f2930df9c8c7c7e946d0e5a652fbda",
+          "version": "1"
+        }
+      ]
+    },
+    "play-token-deletion": {
+      "aliases": [
+        {
+          "additionalVersionCount": 0,
+          "nameSha256": "247610f4dedd4ab7247d07dbda19c81ca9817f85820742cad49d407ffae9e4ed",
+          "version": "1"
+        }
+      ],
+      "asyncConfigs": [
+        {
+          "arnSha256": "4c5ee25bca9ee1cc5790fd30a2311e052e07365320b4a60e39fdff155ce9bd52",
+          "destinationsSha256": "e29f74b8a3902e10246d63dd05a233021d88c14c27c6b9f2095ba77da90c1731",
+          "maxAge": 60,
+          "maxRetries": 0
+        }
+      ],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+      "configurationSha256": "77d70e36b5c070fc2419ceab2ecb94bea6d3cd979660994ec67cb25c79f195a2",
+      "configurationStable": true,
+      "gates": {
+        "AUTHORITY_ENABLED": "false",
+        "PLAY_LIFECYCLE_ENABLED": "false",
+        "PLAY_PREPARATION_ENABLED": "false",
+        "PLAY_TOKEN_CLEANUP_ENABLED": "false"
+      },
+      "lastModified": "2026-09-23T05:01:21.829+0000",
+      "revisionIdSha256": "d0a29c58d6c4d67ac94dcfa3588921469f57b779a06567af723f3efbe4f71388",
+      "role": "trustcheckradar-dev-play-token-deletion-execution",
+      "timeout": 60,
+      "versions": [
+        {
+          "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+          "environmentSha256": "1bd6db151a4acd9e0ba1ab5c2bec469daa3ce99fa5355237507b61d543ab9f0c",
+          "version": "$LATEST"
+        },
+        {
+          "codeSha256": "JaMBcLtTr7glPJXjNddsVSdTH66g9kTHM7Esxc/i2hQ=",
+          "environmentSha256": "1bd6db151a4acd9e0ba1ab5c2bec469daa3ce99fa5355237507b61d543ab9f0c",
+          "version": "1"
+        }
+      ]
+    },
+    "purchase-handoff": {
+      "aliases": [],
+      "asyncConfigs": [],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "fbF+jSPpXRPrYKqDtE3jcosIMAfnpZLlsztfkaSyvRI=",
+      "configurationSha256": "958a1cba19bac67862dd4254d90cd9cbc6d2cabd2ffad640f9d37d9c3d7ba014",
+      "configurationStable": true,
+      "gates": {
+        "PURCHASE_OWNERSHIP_CANDIDATE_ENABLED": "false"
+      },
+      "lastModified": "2026-09-22T02:07:15.000+0000",
+      "revisionIdSha256": "7e6ca63ddc89aea7f60298f105f2f36308acd5164bbf1d09a246b4565e0b6092",
+      "role": "trustcheckradar-dev-purchase-handoff-role",
+      "timeout": 15,
+      "versions": [
+        {
+          "codeSha256": "fbF+jSPpXRPrYKqDtE3jcosIMAfnpZLlsztfkaSyvRI=",
+          "environmentSha256": "42b8d0a0c86223a0835ab5890710d06701c0b83226e88193410b45b63b013aa2",
+          "version": "$LATEST"
+        }
+      ]
+    },
+    "url-assessment": {
+      "aliases": [
+        {
+          "additionalVersionCount": 0,
+          "nameSha256": "247610f4dedd4ab7247d07dbda19c81ca9817f85820742cad49d407ffae9e4ed",
+          "version": "2"
+        }
+      ],
+      "asyncConfigs": [
+        {
+          "arnSha256": "5f95e472dcdf2c8c1cb6400a216b79cc20e38765d866b8ad85ff57a36360e7d5",
+          "destinationsSha256": "e29f74b8a3902e10246d63dd05a233021d88c14c27c6b9f2095ba77da90c1731",
+          "maxAge": 60,
+          "maxRetries": 0
+        }
+      ],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "SL308FYMSDSio/+6Omi0QCJVErDFwtJ6UZZLNniqPew=",
+      "configurationSha256": "cbd6a6236ed21ef8253ba9c25f9221246e18a5d2c0f069a267b504cb3f7d85b2",
+      "configurationStable": true,
+      "gates": {},
+      "lastModified": "2026-09-20T22:48:00.000+0000",
+      "revisionIdSha256": "47d61e5993fabe08fd498da6111f3fc00be2f75700e2d0ab2fd0e028675d26ee",
+      "role": "trustcheckradar-dev-url-assessment-execution",
+      "timeout": 35,
+      "versions": [
+        {
+          "codeSha256": "SL308FYMSDSio/+6Omi0QCJVErDFwtJ6UZZLNniqPew=",
+          "environmentSha256": "112a6c1f89e7fb70d3bb958eb8711d499faa4cb5e0c5e93f37975f8298412f8d",
+          "version": "$LATEST"
+        },
+        {
+          "codeSha256": "k4aHp3JkRAzIQp69vpQRxRkAxos3QgGySl4csW+UvVQ=",
+          "environmentSha256": "112a6c1f89e7fb70d3bb958eb8711d499faa4cb5e0c5e93f37975f8298412f8d",
+          "version": "1"
+        },
+        {
+          "codeSha256": "SL308FYMSDSio/+6Omi0QCJVErDFwtJ6UZZLNniqPew=",
+          "environmentSha256": "112a6c1f89e7fb70d3bb958eb8711d499faa4cb5e0c5e93f37975f8298412f8d",
+          "version": "2"
+        }
+      ]
+    },
+    "url-resolver": {
+      "aliases": [
+        {
+          "additionalVersionCount": 0,
+          "nameSha256": "247610f4dedd4ab7247d07dbda19c81ca9817f85820742cad49d407ffae9e4ed",
+          "version": "2"
+        }
+      ],
+      "asyncConfigs": [
+        {
+          "arnSha256": "e2b12ba2357c962541fd8f5ec10706a7b4b0ebc720d14f1dc98caf4ec1674ab8",
+          "destinationsSha256": "e29f74b8a3902e10246d63dd05a233021d88c14c27c6b9f2095ba77da90c1731",
+          "maxAge": 60,
+          "maxRetries": 0
+        }
+      ],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "0QeYi0QSW0hfQ5Z4stNK5968KHovT00yoXq1MrBmbmw=",
+      "configurationSha256": "be0259d03a8631f6222d2f10e16cc77fcaacef534938f89a592a0d1ae3a3d586",
+      "configurationStable": true,
+      "gates": {},
+      "lastModified": "2026-09-20T07:17:52.000+0000",
+      "revisionIdSha256": "e13010f536cb6cb310476657b1c903d11b90d5b0a7b1d110f1d40a45305879e5",
+      "role": "trustcheckradar-dev-url-resolver-execution",
+      "timeout": 12,
+      "versions": [
+        {
+          "codeSha256": "0QeYi0QSW0hfQ5Z4stNK5968KHovT00yoXq1MrBmbmw=",
+          "environmentSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "version": "$LATEST"
+        },
+        {
+          "codeSha256": "0QeYi0QSW0hfQ5Z4stNK5968KHovT00yoXq1MrBmbmw=",
+          "environmentSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "version": "1"
+        },
+        {
+          "codeSha256": "0QeYi0QSW0hfQ5Z4stNK5968KHovT00yoXq1MrBmbmw=",
+          "environmentSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "version": "2"
+        }
+      ]
+    },
+    "v1-play-handoff": {
+      "aliases": [
+        {
+          "additionalVersionCount": 0,
+          "nameSha256": "247610f4dedd4ab7247d07dbda19c81ca9817f85820742cad49d407ffae9e4ed",
+          "version": "2"
+        }
+      ],
+      "asyncConfigs": [
+        {
+          "arnSha256": "904bc4248c6649b9f28d43805152317d6598a17fc3e9e5198dd416af6e4e652a",
+          "destinationsSha256": "e29f74b8a3902e10246d63dd05a233021d88c14c27c6b9f2095ba77da90c1731",
+          "maxAge": 60,
+          "maxRetries": 0
+        }
+      ],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "2sCKdiQE4NaS7cdUeYcWj6TwdtT4CXa6bM8133yb8aw=",
+      "configurationSha256": "65f1d72acb0379a8670c15a47599213dff7ccb1d93cf93d64df4a9e127434bc7",
+      "configurationStable": true,
+      "gates": {
+        "AUTHORITY_ENABLED": "false",
+        "PLAY_HANDOFF_ENABLED": "false",
+        "PLAY_LIFECYCLE_ENABLED": "false",
+        "PLAY_PREPARATION_ENABLED": "false"
+      },
+      "lastModified": "2026-09-23T05:01:51.000+0000",
+      "revisionIdSha256": "84e29cf63fd3ac9de3d8e20385f137353119e28346c3f081ae295a059290a20c",
+      "role": "trustcheckradar-dev-v1-play-handoff-execution",
+      "timeout": 29,
+      "versions": [
+        {
+          "codeSha256": "2sCKdiQE4NaS7cdUeYcWj6TwdtT4CXa6bM8133yb8aw=",
+          "environmentSha256": "5a5d3d1f04de2e100bf9d6dd99bad7700c8e294c92ef04158deaf0144555e3ac",
+          "version": "$LATEST"
+        },
+        {
+          "codeSha256": "lCFJyf2hIG/WbhrxySRVTCxERwdnP4IWc/nAKyf7l/I=",
+          "environmentSha256": "364433d96f1b608f864fe2bced3f4bea2f28ca1c5985094c8f1a27de3076e7b4",
+          "version": "1"
+        },
+        {
+          "codeSha256": "2sCKdiQE4NaS7cdUeYcWj6TwdtT4CXa6bM8133yb8aw=",
+          "environmentSha256": "5a5d3d1f04de2e100bf9d6dd99bad7700c8e294c92ef04158deaf0144555e3ac",
+          "version": "2"
+        }
+      ]
+    },
+    "web-risk-communication": {
+      "aliases": [],
+      "asyncConfigs": [],
+      "cloudWatch": {
+        "AsyncEventAge": {
+          "observedValue": null,
+          "points": 0
+        },
+        "AsyncEventsReceived": {
+          "observedValue": null,
+          "points": 0
+        },
+        "ConcurrentExecutions": {
+          "observedValue": null,
+          "points": 0
+        },
+        "Invocations": {
+          "observedValue": null,
+          "points": 0
+        }
+      },
+      "codeSha256": "rOF7rlDO8hJA/u1SHOiC1ebYM5I3czocmUtj77wwnCI=",
+      "configurationSha256": "63d3e367b8f8880bc49a3d7714ce661447dbad975ec60c223dd354ad151e3edd",
+      "configurationStable": true,
+      "gates": {},
+      "lastModified": "2026-09-22T02:07:15.000+0000",
+      "revisionIdSha256": "61c07ae98c45562c5fce90086377431d28a966969346e046706315cef7045149",
+      "role": "trustcheckradar-dev-web-risk-communication-role",
+      "timeout": 15,
+      "versions": [
+        {
+          "codeSha256": "rOF7rlDO8hJA/u1SHOiC1ebYM5I3czocmUtj77wwnCI=",
+          "environmentSha256": "2537a3b3b1acf2c819513ab504c966dc7e956c0f8221e327ad544123110cb4e5",
+          "version": "$LATEST"
+        }
+      ]
+    }
+  },
+  "cutoverBoundary": {
+    "path": "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/campaign-post-http-scope-boundary.json",
+    "settledSecondsBeforeRead": 147,
+    "sha256": "cc9e823deee2ccc7c1f3a3cae7031e35f8e67749107e9c7708fdf58f476d190d"
+  },
+  "environment": "dev",
+  "evidenceFileSha256": {
+    "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/all-component-cleanup.json": "49957dfa357f332c58e37c1f11183e9eaa6f4d97200d1eb02dce23de1cc02cf3",
+    "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/all-component-runtime.json": "2cba0b50a7cc3356f981c66da1dc870304d913581013268f090ab3a969d50161",
+    "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/campaign-cleanup-iam-results.json": "07d7f7b8ca1b8f9b1c65b215a2935af3f25fe94c3d97d39944fb78b979af8930",
+    "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/campaign-post-http-scope-assessment.json": "2127b20970dce2c4e3971e662d5a53d25ed613ed9c63d0f5f1f39b88507e1ce1",
+    "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/campaign-review-source-binding.json": "4b5e837cbfc8c0cb6622b940ed322201f2695c32061d39f085831554bda14938",
+    "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/current-period-key-result.json": "b8f35e7a3d1ba67e57bcc91a4a6e217780e4fd04025d72d50220d2b50c47092b",
+    "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/encrypted-table-read-probe.json": "b860b50fd8f92d8d76389f96261fbf1ad759314b9f4f5054945bf1266b591e4b",
+    "/tmp/amt-play-lifecycle-dev-deployment/docs/evidence/live-account-deletion-2026-09-26/http-scope-deployment-readback.json": "1c0dc660cfe119b301b290d5cd57590adee88284d241c948da0eb52ef3a87cfa"
+  },
+  "historicalPhysicalErasureVerified": false,
+  "ledgerClassification": {
+    "complete": true,
+    "inventoryApproved": false,
+    "observedAtEpoch": 1790432854,
+    "readOnly": true,
+    "rows": [
+      {
+        "attributeCount": 6,
+        "classification": "V1_DELETION_RECONCILIATION_CURSOR",
+        "continuationPresent": false,
+        "exactSchemaValid": true,
+        "knownAttributeNames": [
+          "PK",
+          "SK",
+          "cursor"
+        ],
+        "observedRecordType": "ABSENT_OR_UNKNOWN",
+        "passHadFailures": null,
+        "pendingAccountCommand": false,
+        "rowSha256": "f957e2fb3965d0a8e3f4588afc8ac9303d6ab7eb4196d1140a787b5c7553e8f2",
+        "v1ShapeMatches": true
+      }
+    ]
+  },
+  "markerWriteAuthorizedByArtifact": false,
+  "minimumPeriodDerivation": "floor(finalAuditEpoch / 1209600); recompute and review if clock crosses period before initialization",
+  "priorPeriodInvariantScope": "Proposed qualified absence on the exact attached current resources, under fenced writers and restore quarantine; not historical physical erasure. Requires explicit review before any true marker.",
+  "proposedMinimumPeriodId": 1480,
+  "readOnlyAssessment": "CURRENT_ATTACHED_RESOURCE_ABSENCE_QUALIFIED",
+  "region": "us-east-1",
+  "replaySurfaces": {
+    "eventRules": [
+      {
+        "name": "trustcheckradar-dev-account-deletion-reconcile",
+        "state": "DISABLED",
+        "targets": [
+          "bd75df6a9c94794a491724badc87540dab09381bb1f50395a5a3353f4493eb0c"
+        ]
+      },
+      {
+        "name": "trustcheckradar-dev-history-deletion-reconcile",
+        "state": "DISABLED",
+        "targets": [
+          "b73c12d28580bc664845f32ee6c22a466b6904b1c02c0e06303b3597bb850068"
+        ]
+      },
+      {
+        "name": "trustcheckradar-dev-history-lifecycle-sweep",
+        "state": "DISABLED",
+        "targets": [
+          "79d32fbc4caf9acdf126440d15c8aad6f1d37e173ce658127b490831237e90d1"
+        ]
+      },
+      {
+        "name": "trustcheckradar-dev-url-lease-recovery",
+        "state": "DISABLED",
+        "targets": [
+          "3098e7c81ead8f98eb761aadb38065993eee8d421f41ff50aec61b24bd8b25b3"
+        ]
+      },
+      {
+        "name": "trustcheckradar-dev-v1-authority-deletion",
+        "state": "DISABLED",
+        "targets": [
+          "27a45cbe20e40ee7521197c3d9aa3d7b1a6031826969571fc9f58466101409b6"
+        ]
+      }
+    ],
+    "mappings": [
+      {
+        "destinationSha256": "94dc0433db630e34ee6e58e876193c7b3c1f2dca87d3ef9c35a03fdebe73ab07",
+        "lastProcessingResult": "No records processed",
+        "sourceSha256": "98a0176cfa5ad186a3061392fd2a426ed28ce3a209751aa6db5bf5709d4dc93d",
+        "state": "Disabled",
+        "targetSha256": "edf36b6864ac9528d181e716f3f3c84a416697a07dbf71b5e6d79daf485b2393"
+      },
+      {
+        "destinationSha256": "94dc0433db630e34ee6e58e876193c7b3c1f2dca87d3ef9c35a03fdebe73ab07",
+        "lastProcessingResult": "No records processed",
+        "sourceSha256": "21a948c84f9efefc8bd12ae13a52ce0eedf78ec278ca48d8c2d0d163f4c9e611",
+        "state": "Disabled",
+        "targetSha256": "4c5ee25bca9ee1cc5790fd30a2311e052e07365320b4a60e39fdff155ce9bd52"
+      },
+      {
+        "destinationSha256": "94dc0433db630e34ee6e58e876193c7b3c1f2dca87d3ef9c35a03fdebe73ab07",
+        "lastProcessingResult": "No records processed",
+        "sourceSha256": "21a948c84f9efefc8bd12ae13a52ce0eedf78ec278ca48d8c2d0d163f4c9e611",
+        "state": "Disabled",
+        "targetSha256": "bd75df6a9c94794a491724badc87540dab09381bb1f50395a5a3353f4493eb0c"
+      },
+      {
+        "destinationSha256": "94dc0433db630e34ee6e58e876193c7b3c1f2dca87d3ef9c35a03fdebe73ab07",
+        "lastProcessingResult": "PROBLEM: Function call failed",
+        "sourceSha256": "21a948c84f9efefc8bd12ae13a52ce0eedf78ec278ca48d8c2d0d163f4c9e611",
+        "state": "Disabled",
+        "targetSha256": "57f3907e2134aac16d36f0d7a24600e20ce296281168519f7150efb76021c514"
+      },
+      {
+        "destinationSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "lastProcessingResult": "OTHER_OR_ABSENT",
+        "sourceSha256": "96d2616ffe3671aa28ada141718d760b0921fc92b93231b1743e2352432939d0",
+        "state": "Disabled",
+        "targetSha256": "51da79b8fc6210b6c7d487a521335e362f34cbee7a8a953422cc21cac7c588af"
+      }
+    ],
+    "queues": [
+      {
+        "delayed": 0,
+        "inflight": 0,
+        "policySha256": "fd636af568f828ad266485050a7c0854b1caede8881deba81921f4c33cb02ce0",
+        "queueName": "trustcheckradar-dev-campaign-cluster",
+        "redriveSha256": "722a7c0080c78b745373da9667ac3c5fa8ca1ad56054b278b4aa146e7c684f8f",
+        "retentionSeconds": 345600,
+        "visible": 0
+      },
+      {
+        "delayed": 0,
+        "inflight": 0,
+        "policySha256": "f90cd60603ee806dae0c1f49869854bd2f2ccb34fe2b092813c5ef6c1ee722ec",
+        "queueName": "trustcheckradar-dev-campaign-cluster-dlq",
+        "redriveSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retentionSeconds": 1209600,
+        "visible": 0
+      }
+    ],
+    "schedules": [
+      {
+        "deadLetterSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "name": "trustcheckradar-dev-campaign-manage-keys",
+        "retry": {
+          "MaximumEventAgeInSeconds": 3600,
+          "MaximumRetryAttempts": 2
+        },
+        "state": "DISABLED",
+        "targetSha256": "3c6b33bbffcf64f5888dc8670170da0a92ffe05cb71cb80da43d82a2d7cd8f37"
+      },
+      {
+        "deadLetterSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "name": "trustcheckradar-dev-campaign-finalize-periods",
+        "retry": {
+          "MaximumEventAgeInSeconds": 3600,
+          "MaximumRetryAttempts": 2
+        },
+        "state": "DISABLED",
+        "targetSha256": "3c6b33bbffcf64f5888dc8670170da0a92ffe05cb71cb80da43d82a2d7cd8f37"
+      },
+      {
+        "deadLetterSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "name": "trustcheckradar-dev-campaign-expire-transient",
+        "retry": {
+          "MaximumEventAgeInSeconds": 3600,
+          "MaximumRetryAttempts": 2
+        },
+        "state": "DISABLED",
+        "targetSha256": "3c6b33bbffcf64f5888dc8670170da0a92ffe05cb71cb80da43d82a2d7cd8f37"
+      },
+      {
+        "deadLetterSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "name": "trustcheckradar-dev-campaign-reconcile-cleanup",
+        "retry": {
+          "MaximumEventAgeInSeconds": 300,
+          "MaximumRetryAttempts": 0
+        },
+        "state": "DISABLED",
+        "targetSha256": "57f3907e2134aac16d36f0d7a24600e20ce296281168519f7150efb76021c514"
+      },
+      {
+        "deadLetterSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "name": "trustcheckradar-dev-play-token-deletion",
+        "retry": {
+          "MaximumEventAgeInSeconds": 60,
+          "MaximumRetryAttempts": 0
+        },
+        "state": "DISABLED",
+        "targetSha256": "4c5ee25bca9ee1cc5790fd30a2311e052e07365320b4a60e39fdff155ce9bd52"
+      },
+      {
+        "deadLetterSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "name": "trustcheckradar-dev-play-lifecycle-worker",
+        "retry": {
+          "MaximumEventAgeInSeconds": 60,
+          "MaximumRetryAttempts": 0
+        },
+        "state": "DISABLED",
+        "targetSha256": "aa64d96a236d23a52bfbfb94c82f558fb5b2614e6a5ac8494c55b0df71598e54"
+      }
+    ]
+  },
+  "requiredApprovalGaps": [
+    "Coherent reviewed locator/recovery/completion and full account manifests",
+    "Current-period create-only registry initialization",
+    "Separate worker and scoped HTTP activation and actual authenticated acceptance"
+  ],
+  "reviewDocument": {
+    "path": "/tmp/amt-campaign-inventory-candidate.md",
+    "sha256": "ecae27371cec24ada6ed22fb8e12cf8593226032c8fb7f4f3ea3994390bc08f1"
+  },
+  "schemaVersion": 1,
+  "tables": {
+    "intelligence": {
+      "after": {
+        "complete": true,
+        "fullContentsRead": true,
+        "fullTableSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "pages": 1,
+        "registry": [],
+        "rows": 0,
+        "unknownOrDataRows": [],
+        "work": null
+      },
+      "arnSha256": "f1057abb63eacd91ec763ce7270ea99356d26577565be33f1d7ef71237ee1ac9",
+      "awsBackupRecoveryPointCount": 0,
+      "before": {
+        "complete": true,
+        "fullContentsRead": true,
+        "fullTableSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "pages": 1,
+        "registry": [],
+        "rows": 0,
+        "unknownOrDataRows": [],
+        "work": null
+      },
+      "createdAt": "2026-09-06T18:21:12.684000-05:00",
+      "exportCount": 0,
+      "nativeBackupCount": 0,
+      "pitr": "ENABLED",
+      "recoveryPeriodDays": 35,
+      "replicaCount": 0,
+      "resourcePolicySha256": "21d60919bcc8b5e36f8a566e85cb07bb48f03e7c04bce7cdbe1591abb245e2b2",
+      "restoreSummaryPresent": false,
+      "stableContents": true,
+      "status": "ACTIVE",
+      "streamEnabled": false,
+      "tableIdSha256": "123c034b7e234392b46d9225416f264c8a843c80d72c676ca1934d7031805d13",
+      "ttlStatus": "ENABLED"
+    },
+    "ledger": {
+      "after": {
+        "complete": true,
+        "fullContentsRead": true,
+        "fullTableSha256": "e2d0e1659f8d061ba4de1cb0157143886daaa0a5133966334282bdff7c107d68",
+        "pages": 1,
+        "registry": [],
+        "rows": 1,
+        "unknownOrDataRows": [
+          {
+            "attributeNamesSha256": "141c43d4ebc67703ae8550f618cb93df0abab3a7116a304ea6e51e31151877c6",
+            "keySha256": "6785a9bb359f39ef2ffe997f036f23716fd59813c1a03b02bb62cdf00424cdf9",
+            "rowSha256": "f957e2fb3965d0a8e3f4588afc8ac9303d6ab7eb4196d1140a787b5c7553e8f2"
+          }
+        ],
+        "work": {
+          "otherRows": 1,
+          "pendingWithdrawals": 0,
+          "recoveryControls": 0,
+          "recoveryJobs": 0,
+          "requestedAccountCommands": 0
+        }
+      },
+      "arnSha256": "11b14525e991cb38917cdaca003b2ff73c55a3953204b89d5e313b809d68fd73",
+      "awsBackupRecoveryPointCount": 0,
+      "before": {
+        "complete": true,
+        "fullContentsRead": true,
+        "fullTableSha256": "e2d0e1659f8d061ba4de1cb0157143886daaa0a5133966334282bdff7c107d68",
+        "pages": 1,
+        "registry": [],
+        "rows": 1,
+        "unknownOrDataRows": [
+          {
+            "attributeNamesSha256": "141c43d4ebc67703ae8550f618cb93df0abab3a7116a304ea6e51e31151877c6",
+            "keySha256": "6785a9bb359f39ef2ffe997f036f23716fd59813c1a03b02bb62cdf00424cdf9",
+            "rowSha256": "f957e2fb3965d0a8e3f4588afc8ac9303d6ab7eb4196d1140a787b5c7553e8f2"
+          }
+        ],
+        "work": {
+          "otherRows": 1,
+          "pendingWithdrawals": 0,
+          "recoveryControls": 0,
+          "recoveryJobs": 0,
+          "requestedAccountCommands": 0
+        }
+      },
+      "createdAt": "2026-09-03T21:19:27.005000-05:00",
+      "exportCount": 0,
+      "nativeBackupCount": 0,
+      "pitr": "ENABLED",
+      "recoveryPeriodDays": 35,
+      "replicaCount": 0,
+      "resourcePolicySha256": null,
+      "restoreSummaryPresent": false,
+      "stableContents": true,
+      "status": "ACTIVE",
+      "streamEnabled": true,
+      "tableIdSha256": "621535dc6a17a0e1793ca5f52ce1f1a704a319ed142aaf1fdd7a48672a06e371",
+      "ttlStatus": "DISABLED"
+    },
+    "outbox": {
+      "after": {
+        "complete": true,
+        "fullContentsRead": true,
+        "fullTableSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "pages": 1,
+        "registry": [],
+        "rows": 0,
+        "unknownOrDataRows": [],
+        "work": null
+      },
+      "arnSha256": "786237475c68893e9bd8d077b6bea4a567e86b3848e66729153b2f5bf2f7928f",
+      "awsBackupRecoveryPointCount": 0,
+      "before": {
+        "complete": true,
+        "fullContentsRead": true,
+        "fullTableSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "pages": 1,
+        "registry": [],
+        "rows": 0,
+        "unknownOrDataRows": [],
+        "work": null
+      },
+      "createdAt": "2026-09-06T18:21:14.722000-05:00",
+      "exportCount": 0,
+      "nativeBackupCount": 0,
+      "pitr": "DISABLED",
+      "recoveryPeriodDays": null,
+      "replicaCount": 0,
+      "resourcePolicySha256": "0e38ec042cd61c077cf96ef5771b900ef248edeccfc81679efeffd516f419a92",
+      "restoreSummaryPresent": false,
+      "stableContents": true,
+      "status": "ACTIVE",
+      "streamEnabled": true,
+      "tableIdSha256": "0016865de47b1cbbc31dfd5cc018dba6b48f72fe5acc43784e26cdf7e6c1c10f",
+      "ttlStatus": "ENABLED"
+    },
+    "pipeline": {
+      "after": {
+        "complete": true,
+        "fullContentsRead": true,
+        "fullTableSha256": "c7854936bef28428db23b5a1293e4a3188d55d76af5b20ba1fdafb8d351cb1a9",
+        "pages": 1,
+        "registry": [
+          {
+            "exactLegacySchemaValid": true,
+            "fullRowSha256": "3f81abb4b2f4e3537016ddb4364f8770803f4b8e4c6b506912323a70731567bf",
+            "keyArnSha256": "1ad70596036c86b3266c661149a11566ec0eb9c178f54c023c7fd5eb20e2d434",
+            "periodId": 1479,
+            "status": "ENABLED"
+          },
+          {
+            "exactLegacySchemaValid": true,
+            "fullRowSha256": "7654708cad26c559cf2875a97c8102bb09d7b61b0262b878d8f7bfe38760af41",
+            "keyArnSha256": "7ab55f5c4d8b8946c13cfb1eb8d50a28833fdad92358443e4a0762256b51317c",
+            "periodId": 1478,
+            "status": "RETIRED"
+          }
+        ],
+        "rows": 2,
+        "unknownOrDataRows": [],
+        "work": null
+      },
+      "arnSha256": "6693c554d034c2ea6e612cb2c319e1e4c84c4bda7ea2d6b3cae6520235338d82",
+      "awsBackupRecoveryPointCount": 0,
+      "before": {
+        "complete": true,
+        "fullContentsRead": true,
+        "fullTableSha256": "c7854936bef28428db23b5a1293e4a3188d55d76af5b20ba1fdafb8d351cb1a9",
+        "pages": 1,
+        "registry": [
+          {
+            "exactLegacySchemaValid": true,
+            "fullRowSha256": "3f81abb4b2f4e3537016ddb4364f8770803f4b8e4c6b506912323a70731567bf",
+            "keyArnSha256": "1ad70596036c86b3266c661149a11566ec0eb9c178f54c023c7fd5eb20e2d434",
+            "periodId": 1479,
+            "status": "ENABLED"
+          },
+          {
+            "exactLegacySchemaValid": true,
+            "fullRowSha256": "7654708cad26c559cf2875a97c8102bb09d7b61b0262b878d8f7bfe38760af41",
+            "keyArnSha256": "7ab55f5c4d8b8946c13cfb1eb8d50a28833fdad92358443e4a0762256b51317c",
+            "periodId": 1478,
+            "status": "RETIRED"
+          }
+        ],
+        "rows": 2,
+        "unknownOrDataRows": [],
+        "work": null
+      },
+      "createdAt": "2026-09-06T18:21:12.717000-05:00",
+      "exportCount": 0,
+      "nativeBackupCount": 0,
+      "pitr": "DISABLED",
+      "recoveryPeriodDays": null,
+      "replicaCount": 0,
+      "resourcePolicySha256": "de7af93391fc68d3350bc0fd6ea1b06a62439a990527fbab6105d99e71609d91",
+      "restoreSummaryPresent": false,
+      "stableContents": true,
+      "status": "ACTIVE",
+      "streamEnabled": false,
+      "tableIdSha256": "6a2d8fc9194b9549962c565a9530bd0a4e0755d861d8f139bdb7141c4136d2f1",
+      "ttlStatus": "ENABLED"
+    }
+  },
+  "trackedAllowWriterSourcePins": {
+    "account-data-api": "65df9c7e7fe338f00df8ecc13795014ab928cdfa",
+    "campaign-cluster-aggregator": "f92285b50561397355a5fe2e466d297041336755",
+    "campaign-deletion-bridge": "f92285b50561397355a5fe2e466d297041336755",
+    "campaign-lifecycle": "f92285b50561397355a5fe2e466d297041336755",
+    "campaign-observation-publisher": "f92285b50561397355a5fe2e466d297041336755",
+    "campaign-review": "218769da5b482f98b8cb7e0be93d16e656c38c3e",
+    "conversation-analysis": "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
+  }
+}

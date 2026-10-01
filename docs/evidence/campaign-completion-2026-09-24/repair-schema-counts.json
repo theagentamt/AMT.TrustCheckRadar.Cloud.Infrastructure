@@ -1,0 +1,52 @@
+{
+  "accountId": "107827791950",
+  "allTraversalsComplete": true,
+  "bounds": {
+    "maxPagesPerCount": 10,
+    "pageSize": 1000,
+    "seconds": 60
+  },
+  "counts": {
+    "contributions": {
+      "count": 0,
+      "pages": 1,
+      "scannedCount": 2,
+      "stopReason": "enumerated",
+      "traversalComplete": true
+    },
+    "contributionsMissingReconstructionSchema": {
+      "count": 0,
+      "pages": 1,
+      "scannedCount": 2,
+      "stopReason": "enumerated",
+      "traversalComplete": true
+    },
+    "repairCheckpoints": {
+      "count": 0,
+      "pages": 1,
+      "scannedCount": 2,
+      "stopReason": "enumerated",
+      "traversalComplete": true
+    },
+    "repairCheckpointsMissingReconstructionSchema": {
+      "count": 0,
+      "pages": 1,
+      "scannedCount": 2,
+      "stopReason": "enumerated",
+      "traversalComplete": true
+    }
+  },
+  "erasureVerified": false,
+  "inventoryApproved": false,
+  "limitations": [
+    "Separate strongly consistent scans are not one frozen snapshot.",
+    "Schema presence/version does not establish valid reconstruction fields or complete historical coverage.",
+    "Counts exclude other key families and all external, restored, expired or retired copies.",
+    "No item values or pagination identifiers are retained; no markers or application records are changed."
+  ],
+  "mode": "read-only Select=COUNT",
+  "observedAtUtc": "2026-09-24T21:36:02.369531+00:00",
+  "region": "us-east-1",
+  "schemaVersion": 1,
+  "table": "trustcheckradar-dev-campaign-pipeline"
+}

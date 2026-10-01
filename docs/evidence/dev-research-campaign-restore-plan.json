@@ -1,0 +1,91 @@
+{
+  "revision": "41cf7b0033150476cb08ca648162cfb3d660cd25",
+  "environment": "dev",
+  "stack": "campaign-processing",
+  "scope": "research-migration-flags-off",
+  "reviewedPlanDigest": "b1d5994953945e2bba18b57bb5c919e9c56561ee3ec19b8174ddc3014e9cc6ce",
+  "changes": [
+    {
+      "address": "aws_iam_role_policy.scheduler_invoke[0]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "policy"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_lambda_function.worker[\"cluster\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "reserved_concurrent_executions"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_lambda_function.worker[\"deletion\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "reserved_concurrent_executions"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_lambda_function.worker[\"lifecycle\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "reserved_concurrent_executions"
+      ],
+      "changedEnvironmentFields": []
+    },
+    {
+      "address": "aws_lambda_function.worker[\"publisher\"]",
+      "actions": [
+        "update"
+      ],
+      "changedFields": [
+        "reserved_concurrent_executions"
+      ],
+      "changedEnvironmentFields": []
+    }
+  ],
+  "artifacts": [
+    {
+      "function": "campaign_cluster_aggregator",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/campaign_cluster_aggregator.zip",
+      "object_version": "KRIssk3ZBbu.Shm2HFhKZ1HkyviAUrNB",
+      "source_hash": "ppaduE5zmMxeKYX1w8JBuRrVgTtFMp39+RyzMF+C4ho="
+    },
+    {
+      "function": "campaign_deletion_bridge",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/campaign_deletion_bridge.zip",
+      "object_version": "lqMTcToIkcZ.uaznyAVY5ffZPZEARnV9",
+      "source_hash": "FItTXNai302HOO+oHnMNj70y6t0r/5YeWjScTX7QQMQ="
+    },
+    {
+      "function": "campaign_lifecycle",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/campaign_lifecycle.zip",
+      "object_version": "Ll8L1RLM2Uxn8LPnAmzES5hZFXO6QG8H",
+      "source_hash": "PehVB8VPv4/tkcNrigxD6Ce64mUwsET9qX10P+UAkJo="
+    },
+    {
+      "function": "campaign_observation_publisher",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/campaign_observation_publisher.zip",
+      "object_version": "Qdy6.zZRjmqTNEpeCR.TKn4RCVjzcUz8",
+      "source_hash": "n/08qq/fpGZx/fob8iTvxitMVRpACwfTvt7ScUJuSbE="
+    }
+  ],
+  "consentEnabled": false,
+  "campaignConsumersEnabled": false
+}

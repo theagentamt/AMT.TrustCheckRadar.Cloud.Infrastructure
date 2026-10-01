@@ -77,6 +77,11 @@ def main():
     lambda_config["PostConfirmation"] = args.post_confirmation_arn
     payload["LambdaConfig"] = lambda_config
 
+    # Artifact-only updates keep the same trigger ARN. Avoid an unnecessary
+    # UpdateUserPool call that could reset fields absent from our update payload.
+    if lambda_config == (described.get("LambdaConfig") or {}):
+        return
+
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as handle:
         json.dump(payload, handle)
         temp_path = handle.name

@@ -1,0 +1,319 @@
+{
+  "auditSha256": "e5b05e2e0efc0c971ce2d47157bdd2dc535d0bfdaf928b5733aeae7fff9f6dcb",
+  "sourceBindings": {
+    "play-token-deletion": {
+      "reviewedSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/play-lifecycle.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "history-mutation-api": {
+      "reviewedSource": "c0396535d7ebe2f9f60a98b6c62f48ea1981b3ca",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "campaign-participation": {
+      "reviewedSource": "d98ffd65b42d54953ad83e980e58846b6fc02c5d",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "purchase-handoff": {
+      "reviewedSource": "d98ffd65b42d54953ad83e980e58846b6fc02c5d",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "device-recovery": {
+      "reviewedSource": "8d25e19b691d82caf630edc7ebd84c0b45de0c5c",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "device-registration": {
+      "reviewedSource": "8d25e19b691d82caf630edc7ebd84c0b45de0c5c",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "history-account-deletion-bridge": {
+      "reviewedSource": "997e265f7edf10ce7369481f7d576b4276e8c418",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/history-processing.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "url-lease-recovery": {
+      "reviewedSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/url-consumer.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "url-consumer": {
+      "reviewedSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/url-consumer.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "campaign-review": {
+      "reviewedSource": "218769da5b482f98b8cb7e0be93d16e656c38c3e",
+      "codeHashFoundInCurrentDevTfvars": [],
+      "sourceBindingEvidence": "prior byte-exact deployed ZIP audit"
+    },
+    "v1-entitlements": {
+      "reviewedSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/url-consumer.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "post-confirmation": {
+      "reviewedSource": "c4b1cae34b9a90a9803022302a6ad7f2d8a13e38",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/identity-workflows.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "v1-authority-deletion": {
+      "reviewedSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/url-consumer.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "campaign-lifecycle": {
+      "reviewedSource": "f92285b50561397355a5fe2e466d297041336755",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/campaign-processing.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "campaign-cluster-aggregator": {
+      "reviewedSource": "f92285b50561397355a5fe2e466d297041336755",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/campaign-processing.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "v1-play-handoff": {
+      "reviewedSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/play-verification.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "url-resolver": {
+      "reviewedSource": "url-resolver-py314-dev-20260920-d107988b4412",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/url-resolver.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "play-lifecycle-worker": {
+      "reviewedSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/play-lifecycle.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "age-attestation": {
+      "reviewedSource": "c4b1cae34b9a90a9803022302a6ad7f2d8a13e38",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "campaign-deletion-bridge": {
+      "reviewedSource": "f92285b50561397355a5fe2e466d297041336755",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/campaign-processing.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "campaign-trends": {
+      "reviewedSource": null,
+      "codeHashFoundInCurrentDevTfvars": [],
+      "sourceBindingEvidence": "metadata only; no current reviewed source pin established here"
+    },
+    "campaign-observation-publisher": {
+      "reviewedSource": "f92285b50561397355a5fe2e466d297041336755",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/campaign-processing.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "entitlement-snapshot": {
+      "reviewedSource": "d98ffd65b42d54953ad83e980e58846b6fc02c5d",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "play-lifecycle-ingress": {
+      "reviewedSource": "39cce61623794a123e61d25f5248b0c081eccf4a",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/play-lifecycle.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "conversation-analysis": {
+      "reviewedSource": "d98ffd65b42d54953ad83e980e58846b6fc02c5d",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "url-assessment": {
+      "reviewedSource": "84733306d62dd57df883b4425fa5305db6c4a62d",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/url-assessment.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "web-risk-communication": {
+      "reviewedSource": "d98ffd65b42d54953ad83e980e58846b6fc02c5d",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "account-export-api": {
+      "reviewedSource": "e1651f86e30fc1478f69ba16a4049be8baf0e5f3",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "account-data-api": {
+      "reviewedSource": "65df9c7e7fe338f00df8ecc13795014ab928cdfa",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "history-lifecycle": {
+      "reviewedSource": "997e265f7edf10ce7369481f7d576b4276e8c418",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/history-processing.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    },
+    "history-read-api": {
+      "reviewedSource": "c0396535d7ebe2f9f60a98b6c62f48ea1981b3ca",
+      "codeHashFoundInCurrentDevTfvars": [
+        "environments/dev/api.tfvars"
+      ],
+      "sourceBindingEvidence": "current immutable Dev artifact hash"
+    }
+  },
+  "reviewedSourceFiles": {
+    "device_registration/service.py": {
+      "source": "8d25e19b691d82caf630edc7ebd84c0b45de0c5c",
+      "sha256": "390a2ea91d673ddd8db45f010609480a3d18c30fd40685043d3c5f64f4ad8024"
+    },
+    "device_recovery/service.py": {
+      "source": "8d25e19b691d82caf630edc7ebd84c0b45de0c5c",
+      "sha256": "8f68d324126c747154ba50522e6cbaa98f910ee8d84a48da5e50db252331ee10"
+    },
+    "post_confirmation/app.py": {
+      "source": "c4b1cae34b9a90a9803022302a6ad7f2d8a13e38",
+      "sha256": "15e043353e173981b1fed514602d3d7d983a40e84367735c0920370d00c7e45e"
+    },
+    "age_attestation/app.py": {
+      "source": "c4b1cae34b9a90a9803022302a6ad7f2d8a13e38",
+      "sha256": "d8dcc90fbb260c97c2a9a2ffd76b1ecaee4c08b02dc2694008a6c234c5c56bed"
+    },
+    "history_read_api/service.py": {
+      "source": "c0396535d7ebe2f9f60a98b6c62f48ea1981b3ca",
+      "sha256": "954166a61c0fb0901da88f51d9ea96c1ee3e0eabf88757b292c70edb7eb542e8"
+    },
+    "history_read_api/app.py": {
+      "source": "c0396535d7ebe2f9f60a98b6c62f48ea1981b3ca",
+      "sha256": "545943eaed1fad2fc120f351337df35a7b08f542b98cd14d4fab47337aa8a7ed"
+    }
+  },
+  "storesPotentialIdentityPolicyWriters": {
+    "users": [
+      "campaign-participation",
+      "post-confirmation",
+      "age-attestation",
+      "campaign-deletion-bridge",
+      "account-data-api"
+    ],
+    "deletion-ledger": [
+      "play-token-deletion",
+      "campaign-participation",
+      "history-account-deletion-bridge",
+      "v1-authority-deletion",
+      "campaign-deletion-bridge",
+      "account-data-api",
+      "history-lifecycle"
+    ],
+    "analysis-abuse-control": [
+      "history-mutation-api",
+      "account-data-api",
+      "history-lifecycle"
+    ],
+    "device-bindings": [
+      "device-recovery",
+      "device-registration",
+      "account-data-api"
+    ],
+    "purchase-entitlements": [
+      "url-lease-recovery",
+      "url-consumer",
+      "v1-entitlements",
+      "v1-authority-deletion",
+      "v1-play-handoff",
+      "play-lifecycle-worker",
+      "play-lifecycle-ingress",
+      "account-data-api"
+    ],
+    "web-risk-cache": [],
+    "device-recovery-control": [
+      "device-recovery",
+      "account-data-api"
+    ],
+    "campaign-outbox": [
+      "account-data-api"
+    ],
+    "campaign-pipeline": [
+      "campaign-lifecycle",
+      "campaign-cluster-aggregator",
+      "campaign-deletion-bridge",
+      "campaign-observation-publisher"
+    ],
+    "campaign-intelligence": [
+      "campaign-review",
+      "campaign-lifecycle"
+    ],
+    "history-content": [
+      "history-mutation-api",
+      "history-lifecycle"
+    ],
+    "history-control": [
+      "history-mutation-api",
+      "history-account-deletion-bridge",
+      "history-lifecycle",
+      "history-read-api"
+    ],
+    "play-tokens": [
+      "play-token-deletion",
+      "v1-play-handoff",
+      "play-lifecycle-worker",
+      "play-lifecycle-ingress"
+    ]
+  },
+  "roleBoundaryCount": 0,
+  "metadataOnly": true,
+  "inventoryApproved": false
+}

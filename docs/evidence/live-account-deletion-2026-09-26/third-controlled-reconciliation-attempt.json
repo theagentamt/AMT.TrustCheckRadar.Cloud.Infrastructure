@@ -1,0 +1,14 @@
+{
+  "attempts": [
+    {
+      "index": 1,
+      "attempted": true,
+      "verified": false
+    }
+  ],
+  "commandsInjected": 0,
+  "receiptsInjected": 0,
+  "maxInvocations": 3,
+  "operatorTriggered": true,
+  "terminalStatusObserved": false
+}

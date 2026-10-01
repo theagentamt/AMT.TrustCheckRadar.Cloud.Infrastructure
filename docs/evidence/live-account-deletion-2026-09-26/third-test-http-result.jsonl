@@ -1,0 +1,2 @@
+{"stage": "ACCEPTED", "httpPost": 202, "monitoring": true}
+{"stage": "ACCEPTED", "httpGet": 200, "httpPost": 202, "erasureVerified": false, "nativeSignupTriggerQualified": false, "httpAccepted": true, "monitorCompleted": true, "polls": 41, "applicationGetDenied": true, "cognitoGetUserRejected": true, "httpRetryCounts": {"429": 0, "500": 0, "502": 0, "503": 1, "504": 0}, "transportFailures": 0, "httpStatus": 401, "httpErrorCode": "UNAUTHORIZED", "category": "ACCESS_REJECTED"}

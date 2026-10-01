@@ -1,0 +1,56 @@
+{
+  "sourceSha": "cab9a2a3976e52b64b75057a8432b1506a365b02",
+  "publicationComplete": true,
+  "runtimeUpdated": false,
+  "activationApproved": false,
+  "artifacts": {
+    "publisher": {
+      "function": "campaign_observation_publisher",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/cab9a2a3976e52b64b75057a8432b1506a365b02/campaign_observation_publisher.zip",
+      "objectVersion": "Wun74uNFT5jALtlplbXYXAM.gPxNmRH0",
+      "sourceCodeHash": "RAIFC3HCgwfCIOZK/+rVWC0LyHTp7xpz42lLAuOc56w=",
+      "sha256": "4402050b71c28307c220e64affead5582d0bc874e9ef1a73e3694b02e39ce7ac",
+      "bytes": 18189,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler"
+    },
+    "cluster": {
+      "function": "campaign_cluster_aggregator",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/cab9a2a3976e52b64b75057a8432b1506a365b02/campaign_cluster_aggregator.zip",
+      "objectVersion": "HnHIU59qeJdL9enK_BD_.0VlT1uPzuIZ",
+      "sourceCodeHash": "ATkFbdQyn5uDD4nEYb6A7s0ceOQIYWzJiIucTPSCPwk=",
+      "sha256": "0139056dd4329f9b830f89c461be80eecd1c78e408616cc9888b9c4cf4823f09",
+      "bytes": 17356,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler"
+    },
+    "deletion": {
+      "function": "campaign_deletion_bridge",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/cab9a2a3976e52b64b75057a8432b1506a365b02/campaign_deletion_bridge.zip",
+      "objectVersion": "Obz.qyXSypzZXcH3oA55V5BdjCxPtfCB",
+      "sourceCodeHash": "Fy8gTcYd/ZYILh/7hu1Vnd01Ma7MK0YbUNKk8Y7q9GM=",
+      "sha256": "172f204dc61dfd96082e1ffb86ed559ddd3531aecc2b461b50d2a4f18eeaf463",
+      "bytes": 39837,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler"
+    },
+    "lifecycle": {
+      "function": "campaign_lifecycle",
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/cab9a2a3976e52b64b75057a8432b1506a365b02/campaign_lifecycle.zip",
+      "objectVersion": "9GrjFGD4qPFc5eZ3XZjTOUYvqGiegKy8",
+      "sourceCodeHash": "/skIiDDzLddciU3V55Je4NlVNDYT3OCrnCmT6knaBRs=",
+      "sha256": "fec9088830f32dd75c894dd5e7925ee0d955343613dce0ab9c2993ea49da051b",
+      "bytes": 17442,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler"
+    }
+  }
+}

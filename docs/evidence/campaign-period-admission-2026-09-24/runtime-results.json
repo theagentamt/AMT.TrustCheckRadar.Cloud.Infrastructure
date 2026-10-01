@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-09-25T04:32:14.001426+00:00",
+  "sourceSha": "cab9a2a3976e52b64b75057a8432b1506a365b02",
+  "zipSha256": "d636d5de87603c72e8179bb308f14092c428dbaad8c4f664049f7d66d1387bc6",
+  "runId": "c9415ab382de",
+  "runtime": "python3.14",
+  "architectures": [
+    "arm64"
+  ],
+  "runtimeVersionArn": "arn:aws:lambda:us-east-1::runtime:ab559f26fdef82cfdfbb2942d07b46f84b45b52d0d760d3d623001ab0218052e",
+  "cases": [
+    {
+      "case": "account_complete_replay",
+      "passed": true
+    },
+    {
+      "case": "withdrawal_complete_replay",
+      "passed": true
+    },
+    {
+      "case": "lost_ack",
+      "passed": true
+    },
+    {
+      "case": "old_users_current_ledger",
+      "passed": true
+    },
+    {
+      "case": "old_ledger_current_pipeline",
+      "passed": true
+    },
+    {
+      "case": "sealed_with_job",
+      "passed": true
+    },
+    {
+      "case": "old_pipeline_locator",
+      "passed": true
+    },
+    {
+      "case": "delayed_producer",
+      "passed": true
+    },
+    {
+      "case": "retired_prior_key",
+      "passed": true
+    },
+    {
+      "case": "missing_prior_key",
+      "passed": true
+    },
+    {
+      "case": "stale_completion_marker",
+      "passed": true
+    },
+    {
+      "case": "stale_recovery_marker",
+      "passed": true
+    },
+    {
+      "case": "stale_job",
+      "passed": true
+    },
+    {
+      "case": "stale_control",
+      "passed": true
+    },
+    {
+      "case": "post_completion_locator",
+      "passed": true
+    },
+    {
+      "case": "expired_withdrawal_audit",
+      "passed": true
+    },
+    {
+      "case": "tomb_race",
+      "passed": true
+    },
+    {
+      "case": "key_race",
+      "passed": true
+    },
+    {
+      "case": "inventory_race",
+      "passed": true
+    },
+    {
+      "case": "writer_tombstone_race",
+      "passed": true
+    },
+    {
+      "case": "replay_proof_race",
+      "passed": true
+    },
+    {
+      "case": "budget_cutoff",
+      "passed": true
+    },
+    {
+      "case": "wrong_resource",
+      "passed": true
+    },
+    {
+      "case": "wrong_environment",
+      "passed": true
+    },
+    {
+      "case": "concurrent_completion",
+      "passed": true
+    },
+    {
+      "case": "overlapping_withdrawal",
+      "passed": true
+    },
+    {
+      "case": "terminal_account",
+      "passed": true
+    },
+    {
+      "case": "replay_expiry_race",
+      "passed": true
+    },
+    {
+      "case": "handler_stream_complete",
+      "passed": true
+    },
+    {
+      "case": "handler_stream_replay",
+      "passed": true
+    },
+    {
+      "case": "handler_scheduled_complete",
+      "passed": true
+    },
+    {
+      "case": "handler_stream_disabled",
+      "passed": true
+    },
+    {
+      "case": "handler_completion_disabled",
+      "passed": true
+    },
+    {
+      "case": "handler_missing_completion_marker",
+      "passed": true
+    },
+    {
+      "case": "handler_stale_cleanup_after_seal",
+      "passed": true
+    },
+    {
+      "case": "period_close_replay",
+      "passed": true
+    },
+    {
+      "case": "period_legacy_refusal",
+      "passed": true
+    },
+    {
+      "case": "period_stale_generation",
+      "passed": true
+    },
+    {
+      "case": "period_foreign_key",
+      "passed": true
+    },
+    {
+      "case": "period_publisher_first_race",
+      "passed": true
+    },
+    {
+      "case": "period_publisher_last_race",
+      "passed": true
+    },
+    {
+      "case": "period_late_cluster",
+      "passed": true
+    },
+    {
+      "case": "period_cluster_new_race",
+      "passed": true
+    },
+    {
+      "case": "period_cluster_repeat_race",
+      "passed": true
+    },
+    {
+      "case": "period_cluster_capped_race",
+      "passed": true
+    },
+    {
+      "case": "period_cleanup_closing",
+      "passed": true
+    }
+  ],
+  "allPassed": true,
+  "syntheticOnly": true,
+  "historicalCoverageApproved": false,
+  "productionActivation": false,
+  "limits": [
+    "Synthetic snapshot reconstruction, not native AWS backup restoration.",
+    "Fixture seeding role is not production completion IAM acceptance.",
+    "Some races/lost acknowledgments are deliberately injected around actual AWS SDK operations.",
+    "Period producer cases inject SQS and candidate-index discovery; logical outbox records share the isolated users fixture table. These do not qualify actual transport or separate outbox-table bindings."
+  ],
+  "elapsedSeconds": 39.366
+}

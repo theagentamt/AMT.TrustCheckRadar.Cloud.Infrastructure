@@ -1,0 +1,37 @@
+{
+  "observedOnUtc": "2026-09-27",
+  "sourceCommit": "a8e765d271f7e358df927d96409ebfbdbac17d56",
+  "releaseMerge": "468d0ff3db9a1f49d04a2453d2c3f6cac317221b",
+  "lambdaSource": "9123459a5c2bc9503d56235b2cb1f1e162c00da1",
+  "lambdaReleaseMerge": "73362dbddcf3511db7091142ad8ec69205d1e206",
+  "stacks": {
+    "play-lifecycle": {
+      "apply": {
+        "added": 0,
+        "changed": 2,
+        "destroyed": 0,
+        "exitCode": 0,
+        "logSha256": "76a099cc247eef89111189e51cd7e765f8e0e87d2e63f868d976fe4a45179907"
+      },
+      "freshPlan": {
+        "detailedExitCode": 0,
+        "noChanges": true,
+        "logSha256": "8bc42ec6eab5ace423a55eb6686a82fa98be1560c73ef22e834e0da89ffe42a7"
+      }
+    },
+    "url-consumer": {
+      "apply": {
+        "added": 0,
+        "changed": 2,
+        "destroyed": 0,
+        "exitCode": 0,
+        "logSha256": "3bd264ff47ff684c063d6d40e535ab4c86091a37103d8af5cc8f2204837f9b5c"
+      },
+      "freshPlan": {
+        "detailedExitCode": 0,
+        "noChanges": true,
+        "logSha256": "f4eb12f01b81592a76d5d5562e5f00379166b344af86d798b304e3158ebd6e18"
+      }
+    }
+  }
+}

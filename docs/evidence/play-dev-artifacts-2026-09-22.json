@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "scope": "play_accounting_disabled_candidate",
+  "sourceSha": "28b4da19f321e6dc98ce2fc8b4e71632451b4362",
+  "environment": "dev",
+  "runtimeUpdated": false,
+  "activationApproved": false,
+  "artifacts": [
+    {
+      "function": "v1_play_handoff",
+      "artifact": "v1_play_handoff.zip",
+      "sha256": "942149c9fda1206fd66e1af1c924554c2c444707673f821673f9c02b27fb97f2",
+      "sourceCodeHash": "lCFJyf2hIG/WbhrxySRVTCxERwdnP4IWc/nAKyf7l/I=",
+      "bytes": 6209605,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "v1_play_handoff.app.lambda_handler",
+      "bundledDependencies": [
+        "certifi-2026.7.22.dist-info",
+        "cffi-2.1.1.dist-info",
+        "charset_normalizer-3.5.1.dist-info",
+        "cryptography-50.0.1.dist-info",
+        "google_auth-2.57.0.dist-info",
+        "idna-3.20.dist-info",
+        "pyasn1-0.6.4.dist-info",
+        "pyasn1_modules-0.4.2.dist-info",
+        "pycparser-3.0.dist-info",
+        "requests-2.34.2.dist-info",
+        "urllib3-2.8.0.dist-info"
+      ],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/v1_play_handoff.zip",
+      "versionId": "pLLnpT50xdObhmAne64pzqysd4YaTHoo"
+    },
+    {
+      "function": "url_consumer",
+      "artifact": "url_consumer.zip",
+      "sha256": "b2a7a0b1c6c0b5416b594168aeb076bfec2927b22c9f2c66a6311a6dbff46512",
+      "sourceCodeHash": "sqegscbAtUFrWUForrB2v+wpJ7IsnyxmpjEabb/0ZRI=",
+      "bytes": 689704,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "bundledDependencies": [
+        "attrs-26.1.0.dist-info",
+        "jsonschema-4.25.1.dist-info",
+        "jsonschema_specifications-2025.9.1.dist-info",
+        "referencing-0.37.0.dist-info",
+        "rpds_py-2026.6.3.dist-info"
+      ],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/url_consumer.zip",
+      "versionId": "xVQqzGgyqoGBisfRfRZWiEyyTfHflnKg"
+    },
+    {
+      "function": "url_lease_recovery",
+      "artifact": "url_lease_recovery.zip",
+      "sha256": "a1fbb641eabc6693f195288aa357810d32d34a9ab96fbf1248e065857bc1b400",
+      "sourceCodeHash": "ofu2Qeq8ZpPxlSiKo1eBDTLTSpq5b78SSOBlhXvBtAA=",
+      "bytes": 44482,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "bundledDependencies": [],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/url_lease_recovery.zip",
+      "versionId": "ibnXKj0vHg38E6kKr6JKXHYW3aI76df4"
+    },
+    {
+      "function": "v1_entitlements",
+      "artifact": "v1_entitlements.zip",
+      "sha256": "dc1f5ca356d4c361019e12b8f78ddd3d3bf1560057be8c0d6362f299fa0d1ebe",
+      "sourceCodeHash": "3B9co1bUw2EBnhK4943dPTvxVgBXvowNY2LymfoNHr4=",
+      "bytes": 48479,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "v1_entitlements.app.lambda_handler",
+      "bundledDependencies": [],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/v1_entitlements.zip",
+      "versionId": "iz7t7.FQr.z0a.pjA9_p4hgqq7cRr71S"
+    },
+    {
+      "function": "v1_authority_deletion",
+      "artifact": "v1_authority_deletion.zip",
+      "sha256": "62f107d2a861bcc48ee0c09d8f82747ec57db0be5983e5539b7568cc80f3cc2d",
+      "sourceCodeHash": "YvEH0qhhvMSO4MCdj4J0fsV9sL5Zg+VTm3VozIDzzC0=",
+      "bytes": 55874,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "v1_authority_deletion.app.lambda_handler",
+      "bundledDependencies": [],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/v1_authority_deletion.zip",
+      "versionId": "h15XlWwddxXStuY6t.xIFr4zWqksuaqH"
+    },
+    {
+      "function": "message_consumer",
+      "artifact": "message_consumer.zip",
+      "sha256": "e3dc51e6a8c76ffdde89767881966b9616090f789454cd5fd8c5659bbae85299",
+      "sourceCodeHash": "49xR5qjHb/3eiXZ4gZZrlhYJD3iUVM1f2MVlm7roUpk=",
+      "bytes": 750288,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "bundledDependencies": [
+        "attrs-26.1.0.dist-info",
+        "jsonschema-4.25.1.dist-info",
+        "jsonschema_specifications-2025.9.1.dist-info",
+        "referencing-0.37.0.dist-info",
+        "rpds_py-2026.6.3.dist-info"
+      ],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/message_consumer.zip",
+      "versionId": "m0tcP6ucKoztg8nBsp5lRUBlaVwHlEQm"
+    },
+    {
+      "function": "recovery_consumer",
+      "artifact": "recovery_consumer.zip",
+      "sha256": "49fd67feb60d54e7e4e17287be28d6ad0f45153df3f7059b9afbce2815257ba3",
+      "sourceCodeHash": "Sf1n/rYNVOfk4XKHvijWrQ9FFT3z9wWbmvvOKBUle6M=",
+      "bytes": 730038,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "bundledDependencies": [
+        "attrs-26.1.0.dist-info",
+        "jsonschema-4.25.1.dist-info",
+        "jsonschema_specifications-2025.9.1.dist-info",
+        "referencing-0.37.0.dist-info",
+        "rpds_py-2026.6.3.dist-info"
+      ],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/recovery_consumer.zip",
+      "versionId": "6TNypwjjkmVpzfzGT1d8L7U.qMXzpYsy"
+    },
+    {
+      "function": "result_feedback",
+      "artifact": "result_feedback.zip",
+      "sha256": "fe3834bddb25209c49f74f762a05011564f4cdf7596f2d2fe911b4efff2abbcc",
+      "sourceCodeHash": "/jg0vdslIJxJ9092KgUBFWT0zfdZby0v6RG07/8qu8w=",
+      "bytes": 711314,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "bundledDependencies": [
+        "attrs-26.1.0.dist-info",
+        "jsonschema-4.25.1.dist-info",
+        "jsonschema_specifications-2025.9.1.dist-info",
+        "referencing-0.37.0.dist-info",
+        "rpds_py-2026.6.3.dist-info"
+      ],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/result_feedback.zip",
+      "versionId": "CDiNQHjr8J5ygn9tgoXXGnqUlHbovnBg"
+    },
+    {
+      "function": "account_export_api",
+      "artifact": "account_export_api.zip",
+      "sha256": "7e7fdb62fd2b418bb31856b1837bd58e30a49e56d2bca56644d625b81013c74c",
+      "sourceCodeHash": "fn/bYv0rQYuzGFaxg3vVjjCknlbSvKVmRNYluBATx0w=",
+      "bytes": 5050509,
+      "runtime": "python3.14",
+      "architecture": "arm64",
+      "handler": "app.lambda_handler",
+      "bundledDependencies": [
+        "cffi-2.1.1.dist-info",
+        "cryptography-50.0.1.dist-info",
+        "pycparser-3.0.dist-info"
+      ],
+      "bucket": "trustcheckradar-dev-107827791950-artifacts",
+      "key": "releases/28b4da19f321e6dc98ce2fc8b4e71632451b4362/account_export_api.zip",
+      "versionId": "IOOdT2cox0p1fUx3wrt1_3UJsCQAqut5"
+    }
+  ],
+  "publicationComplete": true
+}

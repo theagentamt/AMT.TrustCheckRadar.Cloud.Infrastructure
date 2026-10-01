@@ -1,0 +1,30 @@
+{
+  "plans": [
+    {
+      "stack": "api",
+      "planSha256": "91d92123c01d5e828b8640d76ac2c1be31c88f42d637e24585ed1edebe19c5c8",
+      "changedResources": 1,
+      "onlyFreshSubjectAdded": true,
+      "originalScopePreserved": true,
+      "codeAndRoleUnchanged": true
+    },
+    {
+      "stack": "url-consumer",
+      "planSha256": "31ae70c8f09e4d939f03dfd467af12cfc52cfe7ed1b3194d4898f7b0689bb6c7",
+      "changedResources": 2,
+      "onlyFreshSubjectAdded": true,
+      "originalScopePreserved": true,
+      "codeAndRoleUnchanged": true
+    },
+    {
+      "stack": "play-lifecycle",
+      "planSha256": "21d41218ef8d75ebaa32ce81b237069820fe7b620dbb2c49461e86344381003b",
+      "changedResources": 2,
+      "onlyFreshSubjectAdded": true,
+      "originalScopePreserved": true,
+      "codeAndRoleUnchanged": true
+    }
+  ],
+  "exportActivated": false,
+  "historyActivated": false
+}

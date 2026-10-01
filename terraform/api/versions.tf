@@ -5,8 +5,9 @@ terraform {
 
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
+      source = "hashicorp/aws"
+      # Python 3.14 is first supported by the AWS provider in 6.20.
+      version = ">= 6.20, < 7.0"
     }
   }
 }

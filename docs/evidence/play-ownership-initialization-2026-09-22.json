@@ -1,0 +1,24 @@
+{
+  "observedAtUtc": "2026-09-23T03:44:44.302768+00:00",
+  "table": "trustcheckradar-dev-purchase-entitlements",
+  "action": "Conditional creation of previously absent ownership inventory only",
+  "marker": {
+    "PK": "PURCHASE#CONTROL",
+    "SK": "OWNERSHIP_INVENTORY",
+    "recordType": "PURCHASE_OWNERSHIP_INVENTORY",
+    "schemaVersion": 1,
+    "revision": 1,
+    "coverage": "VERIFIED_COMPLETE",
+    "environment": "dev"
+  },
+  "readBackExact": true,
+  "previousProjectedRowsUnchanged": true,
+  "beforeProjectedDigest": "e2b1b62ea205888ed59830e1c070909bb68e1a99c9de8f34d23b11a7721de436",
+  "afterItemCount": 6,
+  "allKnownRuntimeWriterGatesClosed": true,
+  "legacyUsageMigrated": false,
+  "accessActivated": false,
+  "providerCalled": false,
+  "scope": "Current empty owner/locator namespace coverage; does not approve historical paid usage reconstruction, cleanup qualification or paid access",
+  "restoreRule": "Keep gates closed and repeat qualification before restoring/copying ownership state or repointing the table."
+}

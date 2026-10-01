@@ -1,0 +1,18 @@
+[
+  {
+    "root": "api",
+    "terraformDetailedExitCode": 0
+  },
+  {
+    "root": "url-resolver",
+    "terraformDetailedExitCode": 0
+  },
+  {
+    "root": "url-consumer",
+    "terraformDetailedExitCode": 0
+  },
+  {
+    "root": "play-verification",
+    "terraformDetailedExitCode": 0
+  }
+]

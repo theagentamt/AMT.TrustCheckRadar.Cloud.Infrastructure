@@ -11,12 +11,14 @@ data "terraform_remote_state" "foundation" {
 }
 
 locals {
-  foundation           = data.terraform_remote_state.foundation.outputs.downstream_contract
-  artifact_prefix      = "releases/${var.artifact_release}"
-  name_prefix          = "${var.project_name}-${var.environment}"
-  lambda_name          = coalesce(var.post_confirmation_lambda_name, "${local.name_prefix}-post-confirmation")
-  artifact_bucket_name = coalesce(var.post_confirmation_lambda_s3_bucket, local.foundation.artifact_bucket_name)
-  artifact_key         = coalesce(var.post_confirmation_lambda_s3_key, "${local.artifact_prefix}/post_confirmation.zip")
+  foundation                        = data.terraform_remote_state.foundation.outputs.downstream_contract
+  artifact_prefix                   = "releases/${var.artifact_release}"
+  name_prefix                       = "${var.project_name}-${var.environment}"
+  lambda_name                       = coalesce(var.post_confirmation_lambda_name, "${local.name_prefix}-post-confirmation")
+  artifact_bucket_name              = coalesce(var.post_confirmation_lambda_s3_bucket, local.foundation.artifact_bucket_name)
+  artifact_key                      = coalesce(var.post_confirmation_lambda_s3_key, "${local.artifact_prefix}/post_confirmation.zip")
+  age_attestation_authority_enabled = var.age_attestation_contract != null
+  age_post_confirmation_artifact    = try(var.age_attestation_contract.artifacts.post_confirmation, null)
   user_pool_lambda_config = merge(
     var.user_pool_lambda_config_overrides,
     { PostConfirmation = aws_lambda_function.post_confirmation.arn }
@@ -34,6 +36,17 @@ check "foundation_contract_version" {
   assert {
     condition     = local.foundation.schema_version == 1
     error_message = "The foundation state contract is incompatible with this identity-workflows stack."
+  }
+}
+
+check "age_attestation_post_confirmation_contract" {
+  assert {
+    condition = !local.age_attestation_authority_enabled || (
+      local.profile_fence_configured &&
+      var.post_confirmation_log_policy != null &&
+      var.post_confirmation_lambda_runtime == "python3.14"
+    )
+    error_message = "The age-attestation PostConfirmation candidate requires the deletion-fenced writer, explicit log retention and Python 3.14."
   }
 }
 
@@ -66,7 +79,7 @@ data "aws_iam_policy_document" "post_confirmation_dynamodb" {
   statement {
     sid    = "UsersTableWrite"
     effect = "Allow"
-    actions = var.profile_fence_deployment != null ? ["dynamodb:PutItem"] : [
+    actions = local.profile_fence_permissions_enforced ? ["dynamodb:PutItem"] : [
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:UpdateItem"
@@ -74,15 +87,15 @@ data "aws_iam_policy_document" "post_confirmation_dynamodb" {
 
     resources = [local.foundation.users_table_arn]
     dynamic "condition" {
-      for_each = var.profile_fence_deployment != null ? [1] : []
+      for_each = local.profile_fence_permissions_enforced ? [1] : []
       content {
-        test     = "StringEquals"
+        test     = "ForAnyValue:StringEquals"
         variable = "dynamodb:EnclosingOperation"
         values   = ["TransactWriteItems"]
       }
     }
     dynamic "condition" {
-      for_each = var.profile_fence_deployment != null ? [1] : []
+      for_each = local.profile_fence_permissions_enforced ? [1] : []
       content {
         test     = "ForAllValues:StringLike"
         variable = "dynamodb:LeadingKeys"
@@ -91,15 +104,37 @@ data "aws_iam_policy_document" "post_confirmation_dynamodb" {
     }
   }
   dynamic "statement" {
-    for_each = var.profile_fence_deployment != null ? [1] : []
+    for_each = local.age_attestation_authority_enabled ? [1] : []
+    content {
+      sid       = "CheckExistingProfileForDuplicateTrigger"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.foundation.users_table_arn]
+      # ConditionCheckItem is available only in a transaction. AWS does not
+      # support dynamodb:EnclosingOperation for this action.
+      condition {
+        test     = "StringEqualsIfExists"
+        variable = "dynamodb:ReturnValues"
+        values   = ["NONE"]
+      }
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = local.profile_fence_configured ? [1] : []
     content {
       sid       = "PreventDeletedProfileRecreation"
       actions   = ["dynamodb:ConditionCheckItem"]
       resources = [local.foundation.deletion_ledger_table_arn]
+      # ConditionCheckItem is transaction-only by API design; EnclosingOperation
+      # is not a supported condition key for this action in the service reference.
       condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
+        test     = "StringEqualsIfExists"
+        variable = "dynamodb:ReturnValues"
+        values   = ["NONE"]
       }
       condition {
         test     = "ForAllValues:StringLike"
@@ -132,13 +167,19 @@ resource "aws_lambda_function" "post_confirmation" {
   memory_size   = var.post_confirmation_lambda_memory_mb
   architectures = var.post_confirmation_lambda_architectures
 
-  s3_bucket         = local.artifact_bucket_name
-  s3_key            = var.profile_fence_deployment == null ? local.artifact_key : "releases/${var.profile_fence_deployment.release_id}/post_confirmation.zip"
-  s3_object_version = var.profile_fence_deployment == null ? var.post_confirmation_lambda_s3_object_version : var.profile_fence_deployment.object_version
-  source_code_hash  = var.profile_fence_deployment == null ? null : var.profile_fence_deployment.source_hash
+  s3_bucket = local.artifact_bucket_name
+  s3_key = local.age_attestation_authority_enabled ? "releases/${local.age_post_confirmation_artifact.release_id}/post_confirmation.zip" : (
+    var.profile_fence_deployment == null ? local.artifact_key : "releases/${var.profile_fence_deployment.release_id}/post_confirmation.zip"
+  )
+  s3_object_version = local.age_attestation_authority_enabled ? local.age_post_confirmation_artifact.object_version : (
+    var.profile_fence_deployment == null ? var.post_confirmation_lambda_s3_object_version : var.profile_fence_deployment.object_version
+  )
+  source_code_hash = local.age_attestation_authority_enabled ? local.age_post_confirmation_artifact.source_hash : (
+    var.profile_fence_deployment == null ? null : var.profile_fence_deployment.source_hash
+  )
 
   environment {
-    variables = merge(var.post_confirmation_lambda_env, var.profile_fence_deployment == null ? {} : {
+    variables = merge(var.post_confirmation_lambda_env, !local.profile_fence_configured ? {} : {
       DELETION_LEDGER_TABLE_NAME = local.foundation.deletion_ledger_table_name
       }, {
       USERS_TABLE_ARN = local.foundation.users_table_arn
@@ -147,7 +188,7 @@ resource "aws_lambda_function" "post_confirmation" {
 
   lifecycle {
     precondition {
-      condition = var.profile_fence_deployment == null ? true : (
+      condition = !local.profile_fence_configured ? true : (
         local.foundation.deletion_ledger_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.name_prefix}-deletion-ledger" &&
         local.foundation.deletion_ledger_table_name == "${local.name_prefix}-deletion-ledger" &&
         local.foundation.users_table_arn == "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${local.name_prefix}-users"

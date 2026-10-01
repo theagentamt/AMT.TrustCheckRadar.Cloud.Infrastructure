@@ -1,0 +1,26 @@
+{
+  "terraformVersion": "1.12.1",
+  "environment": "dev",
+  "stacks": [
+    {
+      "stack": "campaign-processing",
+      "noChanges": true,
+      "localLogSha256": "22478791eeee18b82cba073fdfd21949e5bf1f6a1b38792740d6f4d99d677c05"
+    },
+    {
+      "stack": "api",
+      "noChanges": true,
+      "localLogSha256": "bc153cda0d222dfb992e516fd367dbebc5c76793b9ebed37fb2a3b3474584f9b"
+    },
+    {
+      "stack": "url-consumer",
+      "noChanges": true,
+      "localLogSha256": "990dd44ecb442cff714a0eb67e301823717e8017be7e14d0f6338f17c0dfba48"
+    },
+    {
+      "stack": "play-lifecycle",
+      "noChanges": true,
+      "localLogSha256": "b7496375350805a8ba57b4a79914e35a142af9dfe08473a6bc8ac3c2ea880b97"
+    }
+  ]
+}

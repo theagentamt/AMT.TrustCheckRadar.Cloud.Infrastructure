@@ -1,0 +1,58 @@
+{
+  "plans": [
+    {
+      "stack": "api",
+      "planSha256": "4e6784e68b92c5d84e5e671209c5a483b6e4cd3babdff5f457489c5aa0bacaf1",
+      "changes": [
+        {
+          "address": "aws_lambda_function.account_data[0]",
+          "actions": [
+            "update"
+          ]
+        }
+      ],
+      "allChecksPassed": true
+    },
+    {
+      "stack": "url-consumer",
+      "planSha256": "8609f14077d1c090ace3685d3b6a5fb2014e7f7a34213cf8cee9590349251621",
+      "changes": [
+        {
+          "address": "aws_lambda_alias.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        }
+      ],
+      "allChecksPassed": true
+    },
+    {
+      "stack": "play-lifecycle",
+      "planSha256": "c77867e913bc4995fca5c260792ca7406bc38d4efcf0b495ecb11df16586c2d0",
+      "changes": [
+        {
+          "address": "aws_lambda_alias.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        },
+        {
+          "address": "aws_lambda_function.runtime[\"deletion\"]",
+          "actions": [
+            "update"
+          ]
+        }
+      ],
+      "allChecksPassed": true
+    }
+  ],
+  "onlySubjectChanged": true,
+  "sourceUnchanged": "eba5d938c1da5cf36540cf654e674f46bba3fa71",
+  "firstTwoOperationsComplete": true
+}

@@ -1,0 +1,427 @@
+{
+  "schemaVersion": 1,
+  "observedAtEpoch": 1790486238,
+  "functions": {
+    "lifecycle": {
+      "codeSha256": "vGWg97T/vr5NpkwZVn+o2iXugAd1tJIhaVmnTUExO2I=",
+      "revisionId": "7ce64f78-a137-4eeb-a6af-34e146a314af",
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ],
+      "retirementEnabled": false,
+      "environmentSha256": "89994abf27fd8417fba2026fb1cd13dcb1e8b34bd90af266701fa02bfabacee2",
+      "reservedConcurrency": 2
+    }
+  },
+  "schedules": [
+    {
+      "Name": "trustcheckradar-dev-campaign-reconcile-aggregates",
+      "GroupName": "trustcheckradar-dev-campaign",
+      "State": "ENABLED",
+      "ScheduleExpression": "rate(5 minutes)",
+      "Target": {
+        "Arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-lifecycle",
+        "Input": "{\"environment\":\"dev\",\"operation\":\"reconcile_aggregates\",\"schemaVersion\":1}",
+        "RetryPolicy": {
+          "MaximumEventAgeInSeconds": 300,
+          "MaximumRetryAttempts": 0
+        },
+        "RoleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-period-scheduler"
+      }
+    },
+    {
+      "Name": "trustcheckradar-dev-campaign-reconcile-periods",
+      "GroupName": "trustcheckradar-dev-campaign",
+      "State": "ENABLED",
+      "ScheduleExpression": "rate(5 minutes)",
+      "Target": {
+        "Arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-lifecycle",
+        "Input": "{\"environment\":\"dev\",\"operation\":\"reconcile_periods\",\"schemaVersion\":1}",
+        "RetryPolicy": {
+          "MaximumEventAgeInSeconds": 300,
+          "MaximumRetryAttempts": 0
+        },
+        "RoleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-period-scheduler"
+      }
+    }
+  ],
+  "alarmStates": [
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-aggregate-failures",
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 23:43:08.044000-05:00",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "MetricName": "AggregateFailures",
+      "Metrics": null
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-aggregate-full-pass",
+      "StateValue": "ALARM",
+      "StateUpdatedTimestamp": "2026-09-27 00:12:41.526000-05:00",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "MetricName": "AggregateFullPassAgeSeconds",
+      "Metrics": null
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-aggregate-heartbeat",
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-27 00:12:53.685000-05:00",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "MetricName": "AggregateHeartbeat",
+      "Metrics": null
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-aggregate-unverified",
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 23:43:18.041000-05:00",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "MetricName": "AggregateWorkUnverified",
+      "Metrics": null
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-period-failures",
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 23:43:14.265000-05:00",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "MetricName": "LifecycleFailures",
+      "Metrics": null
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-period-full-pass",
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 23:42:17.773000-05:00",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "MetricName": "LifecycleFullPassAgeSeconds",
+      "Metrics": null
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-period-heartbeat",
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-27 00:12:10.996000-05:00",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "MetricName": "LifecycleHeartbeat",
+      "Metrics": null
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-period-stalled",
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 23:42:20.488000-05:00",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "MetricName": null,
+      "Metrics": [
+        {
+          "Id": "age",
+          "MetricStat": {
+            "Metric": {
+              "Namespace": "TrustCheckRadar/Campaign",
+              "MetricName": "LifecycleProgressAgeSeconds",
+              "Dimensions": [
+                {
+                  "Name": "Environment",
+                  "Value": "dev"
+                }
+              ]
+            },
+            "Period": 300,
+            "Stat": "Maximum"
+          },
+          "ReturnData": false
+        },
+        {
+          "Id": "overdue",
+          "MetricStat": {
+            "Metric": {
+              "Namespace": "TrustCheckRadar/Campaign",
+              "MetricName": "PrivacyDeadlineMissed",
+              "Dimensions": [
+                {
+                  "Name": "Environment",
+                  "Value": "dev"
+                }
+              ]
+            },
+            "Period": 300,
+            "Stat": "Sum"
+          },
+          "ReturnData": false
+        },
+        {
+          "Id": "observed_overdue_age",
+          "Expression": "IF(overdue>0,age,0)",
+          "Label": "Observed overdue work with aged backlog",
+          "ReturnData": true
+        }
+      ]
+    },
+    {
+      "AlarmName": "trustcheckradar-dev-campaign-period-unverified",
+      "StateValue": "OK",
+      "StateUpdatedTimestamp": "2026-09-26 23:42:52.884000-05:00",
+      "ActionsEnabled": true,
+      "AlarmActions": [
+        "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-campaign-budget-alerts"
+      ],
+      "MetricName": "LifecycleWorkUnverified",
+      "Metrics": null
+    }
+  ],
+  "metrics": {
+    "LifecycleHeartbeat": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 1.0,
+        "Maximum": 1.0,
+        "Unit": "Count"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 1.0,
+        "Maximum": 1.0,
+        "Unit": "Count"
+      }
+    ],
+    "LifecycleFailures": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      }
+    ],
+    "LifecycleWorkAttempted": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      }
+    ],
+    "LifecycleWorkUnverified": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      }
+    ],
+    "LifecycleBacklog": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 3.0,
+        "Maximum": 3.0,
+        "Unit": "Count"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 3.0,
+        "Maximum": 3.0,
+        "Unit": "Count"
+      }
+    ],
+    "PrivacyDeadlineMissed": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      }
+    ],
+    "LifecycleFullPassAgeSeconds": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Seconds"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Seconds"
+      }
+    ],
+    "LifecycleProgressAgeSeconds": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 50656.0,
+        "Maximum": 50656.0,
+        "Unit": "Seconds"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 50955.0,
+        "Maximum": 50955.0,
+        "Unit": "Seconds"
+      }
+    ],
+    "AggregateHeartbeat": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 1.0,
+        "Maximum": 1.0,
+        "Unit": "Count"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 1.0,
+        "Maximum": 1.0,
+        "Unit": "Count"
+      }
+    ],
+    "AggregateFailures": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      }
+    ],
+    "AggregateWorkUnverified": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      }
+    ],
+    "AggregateWorkDeleted": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 0.0,
+        "Maximum": 0.0,
+        "Unit": "Count"
+      }
+    ],
+    "AggregateFullPassAgeSeconds": [
+      {
+        "Timestamp": "2026-09-27 00:11:00-05:00",
+        "Sum": 1790485893.0,
+        "Maximum": 1790485893.0,
+        "Unit": "Seconds"
+      },
+      {
+        "Timestamp": "2026-09-27 00:16:00-05:00",
+        "Sum": 1790486171.0,
+        "Maximum": 1790486171.0,
+        "Unit": "Seconds"
+      }
+    ]
+  },
+  "counts": {
+    "intelligence": 0,
+    "outbox": 0,
+    "pipeline": 18
+  },
+  "genuineScheduledObservation": true,
+  "directInvocationsByThisObserver": 0,
+  "stablePipelineSha256": "5679328a71ab5e87c5fd0f7b0b1a00b5f9dd93617e001ce9dda38962b2bbacf9",
+  "originalTombstonesSha256": "3db0febd0a40d675fcbe7c97ecbd9f9840f1df8dac6f02d4fb519caad297c4c2",
+  "sweepProgress": [
+    {
+      "revision": 4,
+      "nextPeriodId": 1479,
+      "lastFullPassAtEpoch": 1790486195,
+      "lastTickAtEpoch": 1790486195
+    }
+  ],
+  "aggregateProgress": [
+    {
+      "revision": 4,
+      "shard": 4,
+      "expiresAt": 1790572293,
+      "lastFullPassAtEpoch": 0,
+      "passIncomplete": false
+    }
+  ],
+  "periodStates": [
+    {
+      "periodId": 1478,
+      "state": null,
+      "status": "RETIRED",
+      "retireAfterEpoch": 1789603200
+    },
+    {
+      "periodId": 1479,
+      "state": "CLOSING",
+      "status": "ENABLED",
+      "retireAfterEpoch": 1790812800
+    },
+    {
+      "periodId": 1480,
+      "state": "OPEN",
+      "status": "ENABLED",
+      "retireAfterEpoch": 1792022400
+    }
+  ],
+  "enabledKeys": {
+    "1479": "Enabled",
+    "1480": "Enabled"
+  }
+}

@@ -1,0 +1,517 @@
+{
+  "observedAt": "2026-09-21T23:40:03.921942+00:00",
+  "scope": "Dev read-only Lambda metadata, aliases, event sources and API route/integration metadata; no customer items, logs, provider secrets, requests or mutations",
+  "accountId": "107827791950",
+  "region": "us-east-1",
+  "functions": [
+    {
+      "FunctionName": "trustcheckradar-dev-campaign-participation",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-participation",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "svPex3x/45O8MqupWCXor+7Y95iS/DVc/ZQHeXO6fko=",
+      "LastModified": "2026-09-08T05:04:46.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {
+        "CAMPAIGN_PARTICIPATION_POLICY_VERSION": "policy-1",
+        "CAMPAIGN_PARTICIPATION_NOTICE_VERSION": "2026-09-07"
+      },
+      "aliases": [],
+      "eventSources": []
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-purchase-handoff",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-purchase-handoff",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "t4Uj64ekW/+6l68P529CWJ1Hy6PVNBUpv1iewHHBUyw=",
+      "LastModified": "2026-09-08T05:04:47.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {},
+      "aliases": [],
+      "eventSources": []
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-device-recovery",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-device-recovery",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "PcZ8tfY6Hu91NeI/IWTIz719S9vRHi3cjdcS1nT7U7U=",
+      "LastModified": "2026-09-16T01:32:11.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {},
+      "aliases": [],
+      "eventSources": []
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-url-lease-recovery",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-lease-recovery",
+      "Runtime": "python3.14",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "Gu82oYXs8ptlxhp9W2QWNWMdgkwEovBjcuwzqH5aVco=",
+      "LastModified": "2026-09-20T23:07:09.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {},
+      "aliases": [
+        {
+          "AliasArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-lease-recovery:live",
+          "Name": "live",
+          "FunctionVersion": "4",
+          "configuration": {
+            "Runtime": "python3.14",
+            "Handler": "app.lambda_handler",
+            "CodeSha256": "Gu82oYXs8ptlxhp9W2QWNWMdgkwEovBjcuwzqH5aVco=",
+            "Version": "4",
+            "LastModified": "2026-09-20T23:07:09.000+0000",
+            "selectedFlags": {}
+          }
+        }
+      ],
+      "eventSources": []
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-url-consumer",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-consumer",
+      "Runtime": "python3.14",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "u0xSsT8LDfmkJJeAtPMsyIwcbr/cM5W2FmIFxaFJZiI=",
+      "LastModified": "2026-09-20T23:07:09.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {
+        "AUTHORITY_ENABLED": "false"
+      },
+      "aliases": [
+        {
+          "AliasArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-consumer:live",
+          "Name": "live",
+          "FunctionVersion": "4",
+          "configuration": {
+            "Runtime": "python3.14",
+            "Handler": "app.lambda_handler",
+            "CodeSha256": "u0xSsT8LDfmkJJeAtPMsyIwcbr/cM5W2FmIFxaFJZiI=",
+            "Version": "4",
+            "LastModified": "2026-09-20T23:07:09.000+0000",
+            "selectedFlags": {
+              "AUTHORITY_ENABLED": "false"
+            }
+          }
+        }
+      ],
+      "eventSources": []
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-campaign-review",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-review",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "Rt7zx/3OYnwzBeC4wZVlrFIXtOxtLdK/i9nErXqAH9U=",
+      "LastModified": "2026-09-08T05:05:39.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {},
+      "aliases": [],
+      "eventSources": []
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-v1-entitlements",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-entitlements",
+      "Runtime": "python3.14",
+      "Handler": "v1_entitlements.app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "zEzEhrDWhIPPvHvFbEf3X+IE39NiqiEn7hMOeR4nJIk=",
+      "LastModified": "2026-09-20T23:07:09.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {
+        "AUTHORITY_ENABLED": "false"
+      },
+      "aliases": [
+        {
+          "AliasArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-entitlements:live",
+          "Name": "live",
+          "FunctionVersion": "4",
+          "configuration": {
+            "Runtime": "python3.14",
+            "Handler": "v1_entitlements.app.lambda_handler",
+            "CodeSha256": "zEzEhrDWhIPPvHvFbEf3X+IE39NiqiEn7hMOeR4nJIk=",
+            "Version": "4",
+            "LastModified": "2026-09-20T23:07:09.000+0000",
+            "selectedFlags": {
+              "AUTHORITY_ENABLED": "false"
+            }
+          }
+        }
+      ],
+      "eventSources": []
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-campaign-lifecycle",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-lifecycle",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "W88gmQE6+EyhHjNSbjIZvQIVNS08oDmM7RvujJfNzXQ=",
+      "LastModified": "2026-09-08T05:05:13.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {},
+      "aliases": [],
+      "eventSources": []
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-campaign-cluster-aggregator",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-cluster-aggregator",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "pTEIVKtpUbfxan991CFhAEdaezAZXCRzEV+y4EJPTqE=",
+      "LastModified": "2026-09-08T05:05:13.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {},
+      "aliases": [],
+      "eventSources": [
+        {
+          "UUID": "3986a9e8-4718-4b3e-bc9a-cda17b7390e2",
+          "EventSourceArn": "arn:aws:sqs:us-east-1:107827791950:trustcheckradar-dev-campaign-cluster",
+          "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-cluster-aggregator",
+          "State": "Enabled"
+        }
+      ]
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-campaign-deletion-bridge",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-deletion-bridge",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "2fIZLfKi9pTXU1m0Aj8xUSfEi8xkIPU3rmM9Od0NS0M=",
+      "LastModified": "2026-09-08T05:05:13.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {},
+      "aliases": [],
+      "eventSources": [
+        {
+          "UUID": "04c7b23a-97e3-4dd1-b705-355f9fb6713d",
+          "EventSourceArn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-06T23:20:47.091",
+          "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-deletion-bridge",
+          "State": "Enabled"
+        }
+      ]
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-campaign-trends",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-trends",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "RlYd2VYTUFXnkI1SACzu/B8lqNw+y0HbnVZFCCrkvfY=",
+      "LastModified": "2026-09-08T05:05:44.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {},
+      "aliases": [],
+      "eventSources": []
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-campaign-observation-publisher",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-observation-publisher",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "tDoCApsIA14by+yljjfQlzuY04O6sBeWPOk69t12y20=",
+      "LastModified": "2026-09-16T01:28:37.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {},
+      "aliases": [],
+      "eventSources": [
+        {
+          "UUID": "45da87c1-cc6d-49da-ad0c-3e0d06da4b0c",
+          "EventSourceArn": "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox/stream/2026-09-06T23:21:14.722",
+          "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-observation-publisher",
+          "State": "Enabled"
+        }
+      ]
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-entitlement-snapshot",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-entitlement-snapshot",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "3olU68bZYdPTd8lHFpnqI/8F0c3PDGPD5ugotLAJr+E=",
+      "LastModified": "2026-09-08T05:04:46.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {},
+      "aliases": [],
+      "eventSources": []
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-conversation-analysis",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-conversation-analysis",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "b1Qzzpm5PcJl/3jkTPrK1soU833O7N/hw6040QUTZ5o=",
+      "LastModified": "2026-09-16T21:20:54.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {
+        "HISTORY_WRITES_ENABLED": "false",
+        "RECOGNITION_ENABLED": "false",
+        "HISTORY_DURABLE_REPLAY_ENABLED": "false"
+      },
+      "aliases": [],
+      "eventSources": []
+    },
+    {
+      "FunctionName": "trustcheckradar-dev-web-risk-communication",
+      "FunctionArn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-web-risk-communication",
+      "Runtime": "python3.13",
+      "Handler": "app.lambda_handler",
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "w+xDVotyYFt3XP2Zs60sjvPqu/CL1RME1SmSHJ5dl4g=",
+      "LastModified": "2026-09-08T05:04:46.000+0000",
+      "Version": "$LATEST",
+      "State": "Active",
+      "LastUpdateStatus": "Successful",
+      "selectedFlags": {},
+      "aliases": [],
+      "eventSources": []
+    }
+  ],
+  "apis": [
+    {
+      "name": "trustcheckradar-dev-age-attestation-api",
+      "id": "icuak34th9",
+      "routes": [
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "jmi5hk",
+          "RouteId": "4xyai7m",
+          "RouteKey": "POST /v1/internal/campaigns/{campaignId}/transitions",
+          "Target": "integrations/dztx3a4"
+        },
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "jmi5hk",
+          "RouteId": "6y4udwp",
+          "RouteKey": "POST /analysis",
+          "Target": "integrations/de3rbx1"
+        },
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "itms4b",
+          "RouteId": "8xk33ya",
+          "RouteKey": "POST /v1/url-checks",
+          "Target": "integrations/9t5ylo8"
+        },
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "jmi5hk",
+          "RouteId": "gdk2cho",
+          "RouteKey": "PUT /v1/users/campaign-participation",
+          "Target": "integrations/95dfou6"
+        },
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "jmi5hk",
+          "RouteId": "ggrdjqm",
+          "RouteKey": "GET /v1/users/campaign-participation",
+          "Target": "integrations/95dfou6"
+        },
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "itms4b",
+          "RouteId": "miqzcdl",
+          "RouteKey": "POST /v1/url-checks/prepare",
+          "Target": "integrations/9t5ylo8"
+        },
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "jmi5hk",
+          "RouteId": "p71w2f0",
+          "RouteKey": "GET /entitlements/snapshot",
+          "Target": "integrations/1vadf5u"
+        },
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "itms4b",
+          "RouteId": "r294j98",
+          "RouteKey": "POST /v1/access/trial",
+          "Target": "integrations/nnde6xs"
+        },
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "itms4b",
+          "RouteId": "s9c4f07",
+          "RouteKey": "POST /v1/url-checks/reconcile",
+          "Target": "integrations/9t5ylo8"
+        },
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "itms4b",
+          "RouteId": "wwci5ts",
+          "RouteKey": "GET /v1/access",
+          "Target": "integrations/nnde6xs"
+        },
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "jmi5hk",
+          "RouteId": "wyx3dqr",
+          "RouteKey": "POST /web-risk-communication",
+          "Target": "integrations/j6gghuf"
+        },
+        {
+          "AuthorizationType": "JWT",
+          "AuthorizerId": "jmi5hk",
+          "RouteId": "zn73xia",
+          "RouteKey": "POST /purchase-handoff",
+          "Target": "integrations/41qxpnd"
+        }
+      ],
+      "integrations": {
+        "1vadf5u": {
+          "IntegrationId": "1vadf5u",
+          "IntegrationType": "AWS_PROXY",
+          "IntegrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-entitlement-snapshot/invocations",
+          "PayloadFormatVersion": "2.0"
+        },
+        "41qxpnd": {
+          "IntegrationId": "41qxpnd",
+          "IntegrationType": "AWS_PROXY",
+          "IntegrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-purchase-handoff/invocations",
+          "PayloadFormatVersion": "2.0"
+        },
+        "95dfou6": {
+          "IntegrationId": "95dfou6",
+          "IntegrationType": "AWS_PROXY",
+          "IntegrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-participation/invocations",
+          "PayloadFormatVersion": "2.0"
+        },
+        "9t5ylo8": {
+          "IntegrationId": "9t5ylo8",
+          "IntegrationType": "AWS_PROXY",
+          "IntegrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-consumer:live/invocations",
+          "PayloadFormatVersion": "2.0"
+        },
+        "de3rbx1": {
+          "IntegrationId": "de3rbx1",
+          "IntegrationType": "AWS_PROXY",
+          "IntegrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-conversation-analysis/invocations",
+          "PayloadFormatVersion": "2.0"
+        },
+        "dztx3a4": {
+          "IntegrationId": "dztx3a4",
+          "IntegrationType": "AWS_PROXY",
+          "IntegrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-review/invocations",
+          "PayloadFormatVersion": "2.0"
+        },
+        "j6gghuf": {
+          "IntegrationId": "j6gghuf",
+          "IntegrationType": "AWS_PROXY",
+          "IntegrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-web-risk-communication/invocations",
+          "PayloadFormatVersion": "2.0"
+        },
+        "nnde6xs": {
+          "IntegrationId": "nnde6xs",
+          "IntegrationType": "AWS_PROXY",
+          "IntegrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-entitlements:live/invocations",
+          "PayloadFormatVersion": "2.0"
+        }
+      }
+    }
+  ],
+  "migrationApplied": false,
+  "limitations": [
+    "Selected flags are not a complete environment or safety assessment.",
+    "No live provider or authenticated customer request performed.",
+    "No item inventory, cleanup or restore qualification.",
+    "Absence from selection is not proof no other writer exists."
+  ],
+  "campaignSchedules": [
+    {
+      "Name": "trustcheckradar-dev-campaign-manage-keys",
+      "State": "ENABLED",
+      "ScheduleExpression": "rate(1 day)",
+      "ScheduleExpressionTimezone": "Etc/UTC"
+    },
+    {
+      "Name": "trustcheckradar-dev-campaign-finalize-periods",
+      "State": "ENABLED",
+      "ScheduleExpression": "rate(6 hours)",
+      "ScheduleExpressionTimezone": "Etc/UTC"
+    },
+    {
+      "Name": "trustcheckradar-dev-campaign-expire-transient",
+      "State": "ENABLED",
+      "ScheduleExpression": "rate(1 hour)",
+      "ScheduleExpressionTimezone": "Etc/UTC"
+    }
+  ],
+  "findings": [
+    "Legacy analysis, snapshot, participation, purchase and direct Web Risk routes point to unqualified functions on Python3.13.",
+    "Current participation notice2026-09-07/policy-1 is still deployed.",
+    "Publisher, cluster and deletion event mappings are Enabled; all three campaign schedules are ENABLED.",
+    "API access and URL-check routes point to live aliases version4; the actual alias configurations have AUTHORITY_ENABLED=false.",
+    "The migration source has not been deployed. Replacement service availability and pipeline pause are required before cutover."
+  ]
+}

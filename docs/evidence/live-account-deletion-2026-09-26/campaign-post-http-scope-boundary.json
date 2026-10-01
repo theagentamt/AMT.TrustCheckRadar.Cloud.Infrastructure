@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "boundaryRecordedAtEpoch": 1790434418,
+  "boundaryRecordedAtUtc": "2026-09-26T14:53:38.961307+00:00",
+  "scope": [
+    "trustcheckradar-dev-campaign-pipeline",
+    "trustcheckradar-dev-campaign-outbox",
+    "trustcheckradar-dev-campaign-intelligence",
+    "trustcheckradar-dev-deletion-ledger"
+  ],
+  "operator": "root orchestration",
+  "attestation": "No deploy/manual writes against attached campaign resources; agents read-only; synthetic fixture writes remain disjoint. No runtime activation/data writes before qualification review.",
+  "minimumSettlingSeconds": 60,
+  "inventoryApproved": false,
+  "reason": "Account-data65df closed deployment; root serializes deployment/manual writes until refreshed strong-scan and writer audit complete."
+}

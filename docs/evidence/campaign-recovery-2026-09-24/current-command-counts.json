@@ -1,0 +1,39 @@
+{
+  "accountId": "107827791950",
+  "counts": {
+    "pendingAccountCommands": {
+      "complete": true,
+      "count": 0,
+      "pages": 1,
+      "scannedCount": 1
+    },
+    "pendingWithdrawalCommands": {
+      "complete": true,
+      "count": 0,
+      "pages": 1,
+      "scannedCount": 1
+    },
+    "recoveryMetadataRows": {
+      "complete": true,
+      "count": 0,
+      "pages": 1,
+      "scannedCount": 1
+    }
+  },
+  "historicalCoverageQualified": false,
+  "inventoryApproved": false,
+  "limitations": [
+    "Separate strongly consistent COUNT traversals are not one frozen snapshot.",
+    "Current counts do not prove historical/restore/producer coverage or authorize backfill or activation.",
+    "No item values or pagination keys are retained; no records or markers are changed."
+  ],
+  "limits": {
+    "callStartSeconds": 60,
+    "maxPagesPerCount": 10,
+    "pageSize": 1000
+  },
+  "observedAtUtc": "2026-09-25T01:30:25.809788+00:00",
+  "region": "us-east-1",
+  "schemaVersion": 1,
+  "table": "trustcheckradar-dev-deletion-ledger"
+}

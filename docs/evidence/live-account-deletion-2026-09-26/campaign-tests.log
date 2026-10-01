@@ -1,0 +1,56 @@
+tests/account-cleanup.tftest.hcl... in progress
+  run "cleanup_grants_only_aggregate_read_and_exact_checks"... pass
+  run "null_has_no_cleanup_policy"... pass
+  run "reject_uncoordinated_source"... pass
+  run "decrypt_only_exact_campaign_keys_via_dynamodb"... pass
+tests/account-cleanup.tftest.hcl... tearing down
+tests/account-cleanup.tftest.hcl... pass
+tests/completion.tftest.hcl... in progress
+  run "completion_default_absent"... pass
+  run "completion_selects_only_deletion_and_keeps_gates_closed"... pass
+  run "completion_rejects_missing_recovery"... pass
+  run "completion_rejects_mutable_artifact"... pass
+tests/completion.tftest.hcl... tearing down
+tests/completion.tftest.hcl... pass
+tests/disabled.tftest.hcl... in progress
+  run "disabled_environment_creates_no_workers"... pass
+  run "enabled_dev_respects_kill_switch_and_runtime_bounds"... pass
+  run "active_dev_enables_every_event_source_and_schedule"... pass
+  run "kill_switch_release_requires_explicit_approval"... pass
+tests/disabled.tftest.hcl... tearing down
+tests/disabled.tftest.hcl... pass
+tests/period-admission.tftest.hcl... in progress
+  run "period_admission_default_absent"... pass
+  run "period_admission_closed_coordinated_workers"... pass
+  run "period_admission_rejects_mixed_source"... pass
+  run "period_admission_rejects_missing_completion"... pass
+tests/period-admission.tftest.hcl... tearing down
+tests/period-admission.tftest.hcl... pass
+tests/privacy.tftest.hcl... in progress
+  run "privacy_bundle_is_immutable_and_inactive"... pass
+  run "cleanup_writes_are_transaction_scoped_and_cannot_complete"... pass
+  run "privacy_bundle_preserves_default_workers"... pass
+  run "privacy_bundle_rejects_active_consumers"... pass
+  run "privacy_bundle_rejects_conflicting_publisher"... pass
+  run "privacy_bundle_rejects_foreign_account_resources"... pass
+  run "privacy_bundle_rejects_missing_worker_pin"... pass
+  run "workers_cannot_approve_locator_inventory"... pass
+  run "cluster_checks_candidate_lifecycle_only_in_transactions"... pass
+  run "research_candidate_checks_current_consent_and_remains_paused"... pass
+  run "research_candidate_requires_immutable_workers"... pass
+  run "research_candidate_rejects_foreign_outbox"... pass
+  run "dev_research_install_may_remain_fully_paused"... pass
+  run "zero_concurrency_is_not_a_general_runtime_exception"... pass
+  run "candidate_condition_checks_use_supported_keys_without_old_value_disclosure"... pass
+  run "retained_period_key_guard_is_check_only_and_scoped"... pass
+tests/privacy.tftest.hcl... tearing down
+tests/privacy.tftest.hcl... pass
+tests/recovery.tftest.hcl... in progress
+  run "recovery_default_is_absent"... pass
+  run "prepared_recovery_stays_closed_and_content_free"... pass
+  run "reject_foreign_index"... pass
+  run "reject_full_projection"... pass
+tests/recovery.tftest.hcl... tearing down
+tests/recovery.tftest.hcl... pass
+
+Success! 36 passed, 0 failed.

@@ -1,0 +1,86 @@
+{
+  "environment": "dev",
+  "androidActionsDispatched": false,
+  "runs": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-09-22T01:59:46Z",
+      "databaseId": 35677812219,
+      "event": "workflow_dispatch",
+      "headSha": "245d67a0226cf19de5dd793daa4fa30c63fa5498",
+      "status": "completed",
+      "updatedAt": "2026-09-22T02:00:25Z",
+      "url": "https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35677812219"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-09-22T02:01:01Z",
+      "databaseId": 35677898642,
+      "event": "workflow_dispatch",
+      "headSha": "245d67a0226cf19de5dd793daa4fa30c63fa5498",
+      "status": "completed",
+      "updatedAt": "2026-09-22T02:02:07Z",
+      "url": "https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35677898642"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-09-22T02:05:21Z",
+      "databaseId": 35678175700,
+      "event": "workflow_dispatch",
+      "headSha": "ebbff20f8dc126f5f11517b4f95fbdf78a6924c4",
+      "status": "completed",
+      "updatedAt": "2026-09-22T02:06:06Z",
+      "url": "https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35678175700"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-09-22T02:06:32Z",
+      "databaseId": 35678251386,
+      "event": "workflow_dispatch",
+      "headSha": "ebbff20f8dc126f5f11517b4f95fbdf78a6924c4",
+      "status": "completed",
+      "updatedAt": "2026-09-22T02:07:31Z",
+      "url": "https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35678251386"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-09-22T02:12:13Z",
+      "databaseId": 35678599151,
+      "event": "workflow_dispatch",
+      "headSha": "41cf7b0033150476cb08ca648162cfb3d660cd25",
+      "status": "completed",
+      "updatedAt": "2026-09-22T02:12:59Z",
+      "url": "https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35678599151"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-09-22T02:12:43Z",
+      "databaseId": 35678628261,
+      "event": "workflow_dispatch",
+      "headSha": "41cf7b0033150476cb08ca648162cfb3d660cd25",
+      "status": "completed",
+      "updatedAt": "2026-09-22T02:13:33Z",
+      "url": "https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35678628261"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-09-22T02:14:18Z",
+      "databaseId": 35678724604,
+      "event": "workflow_dispatch",
+      "headSha": "41cf7b0033150476cb08ca648162cfb3d660cd25",
+      "status": "completed",
+      "updatedAt": "2026-09-22T02:15:08Z",
+      "url": "https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35678724604"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-09-22T02:14:44Z",
+      "databaseId": 35678750363,
+      "event": "workflow_dispatch",
+      "headSha": "41cf7b0033150476cb08ca648162cfb3d660cd25",
+      "status": "completed",
+      "updatedAt": "2026-09-22T02:15:53Z",
+      "url": "https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/35678750363"
+    }
+  ]
+}

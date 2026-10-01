@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "scope": "read-only fixed production subscription catalog; no customer purchases/orders",
+  "package": "com.andmorethings.trustcheckradar",
+  "productId": "trustcheck_radar_pro_monthly",
+  "secretArn": "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/google-play-service-account-F89Y5G",
+  "credentialFormatValid": true,
+  "oauthUsable": true,
+  "credentialProjectId": "trustcheck-radar",
+  "httpStatus": 403,
+  "configurationReadable": false,
+  "googleStatus": "PERMISSION_DENIED",
+  "serviceMetadata": [
+    {
+      "service": "androidpublisher.googleapis.com",
+      "consumer": "projects/1034373992662"
+    }
+  ],
+  "reasons": [
+    "SERVICE_DISABLED"
+  ],
+  "notVerified": [
+    "license tester enrollment",
+    "internal/closed test track availability",
+    "purchase/order/ack permissions",
+    "real purchase lifecycle",
+    "RTDN delivery"
+  ],
+  "observedAtUtc": "2026-09-22T04:16:05.137208+00:00",
+  "ownerReportedApiEnabled": true,
+  "followUp": "Await exact project console confirmation; do not repeat probes without new configuration evidence."
+}

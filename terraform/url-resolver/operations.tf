@@ -6,6 +6,21 @@ locals {
   alarm_arns = concat(local.resolver_alarm_arns, var.assessment_alarm_notifications_enabled ? [
     for suffix in ["errors", "throttles", "dependency-failures"] :
     "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-url-assessment-${suffix}"
+    ] : [], var.consumer_alarm_notifications_enabled ? concat(
+    flatten([for function in ["url-consumer", "v1-entitlements", "url-lease-recovery", "v1-authority-deletion"] : [
+      for suffix in ["errors", "throttles"] : "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-${function}-${suffix}"
+    ]]),
+    flatten([for function in ["url-lease-recovery", "v1-authority-deletion"] : [
+      for suffix in ["failed-items", "heartbeat"] : "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-${function}-${suffix}"
+    ]]),
+    ["arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-url-lease-recovery-expiry-overdue"],
+    [for suffix in ["overdue", "full-pass-age"] : "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-v1-authority-deletion-${suffix}"]
+    ) : [], var.play_alarm_notifications_enabled ? [
+    for suffix in ["errors", "throttles"] :
+    "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-v1-play-handoff-${suffix}"
+    ] : [], var.account_cleanup_alarm_notifications_enabled ? [
+    for suffix in ["account-data-api-errors", "account-data-api-lag", "account-data-api-reconciliation-command_failure", "account-data-api-reconciliation-failure", "account-data-api-reconciliation-heartbeat", "account-data-api-reconciliation-no_full_pass", "account-data-api-reconciliation-outbox_blocked", "account-data-api-reconciliation-pass_failure", "account-data-api-reconciliation-policy_blocked", "account-data-api-reconciliation-profile_blocked", "account-data-api-reconciliation-stale_full_pass", "account-data-api-session-revocation-failure", "account-data-api-throttles", "play-deletion-failed", "play-deletion-fullPassAgeSeconds", "play-deletion-heartbeat", "play-deletion-overdue", "play-token-deletion-errors", "play-token-deletion-throttles"] :
+    "arn:${data.aws_partition.current.partition}:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${var.environment}-${suffix}"
   ] : [])
 }
 

@@ -1,0 +1,53 @@
+{
+  "snsOnlyOnePolicyUpdate": true,
+  "existingAlarmCount": 23,
+  "addedExactAlarmArns": [
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-errors",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-lag",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-command_failure",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-failure",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-heartbeat",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-no_full_pass",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-outbox_blocked",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-pass_failure",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-policy_blocked",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-profile_blocked",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-reconciliation-stale_full_pass",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-session-revocation-failure",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-account-data-api-throttles",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-deletion-failed",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-deletion-fullPassAgeSeconds",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-deletion-heartbeat",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-deletion-overdue",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-token-deletion-errors",
+    "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-dev-play-token-deletion-throttles"
+  ],
+  "existingPublisherPermissionsUnchanged": true,
+  "campaignDataMutationPermissionsUnchanged": true,
+  "campaignExactStreamRecordReadsPreserved": true,
+  "campaignRegionalListStreams": {
+    "Action": "dynamodb:ListStreams",
+    "Condition": {
+      "StringEquals": {
+        "aws:RequestedRegion": "us-east-1"
+      }
+    },
+    "Effect": "Allow",
+    "Resource": "*",
+    "Sid": "DiscoverDeletionLedgerStreams"
+  },
+  "tests": {
+    "campaignDeletionActivation": 8,
+    "resolverSecurity": 14
+  },
+  "plans": {
+    "amt-deletion-workers-campaign-processing-v2": {
+      "binarySha256": "f2eec0ba33e9ac624bf591ec14fb0ce9b7eb486aba380a41bc3f05d7b3a5d263",
+      "jsonSha256": "4d93d6d8af05c5e15b78553ba19c46c799804729522ca67ccf830acb826adfc1"
+    },
+    "amt-deletion-alert-publish": {
+      "binarySha256": "73c7949fc835484af429e7b3ac35ebdb1518176d664179eb77a5a6ec48f5020b",
+      "jsonSha256": "92690d3cef34277667f391daea57458a2dcb4b2fdad161fdfe211f26e8d15edd"
+    }
+  }
+}

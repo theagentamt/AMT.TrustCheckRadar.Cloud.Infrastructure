@@ -24,6 +24,7 @@ output "endpoint_paths" {
     age_attestation        = "/v1/users/age-attestation"
     analysis               = var.analysis_primary_path
     campaign_participation = var.campaign_participation_path
+    demographic_research   = var.demographic_research_deployment == null ? null : local.demographic_research_path
     device_registration    = var.device_registration_path
     device_recovery        = var.enable_device_recovery ? var.device_recovery_path : null
     entitlement_snapshot   = var.entitlement_snapshot_path
@@ -95,6 +96,64 @@ output "age_attestation_api_url" {
 output "age_attestation_endpoint_url" {
   description = "Full POST endpoint URL for age attestation"
   value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}/v1/users/age-attestation"
+}
+
+output "age_attestation_backend_settings" {
+  description = "Versioned Android/Lambda/operations contract for authoritative adult self-attestation"
+  value = {
+    enabled                   = local.age_attestation_authority_enabled
+    endpointPath              = "/v1/users/age-attestation"
+    canonicalEndpointUrl      = local.age_attestation_canonical_endpoint_url
+    executeApiEndpointUrl     = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}/v1/users/age-attestation"
+    executeApiEndpointEnabled = !var.disable_execute_api_endpoint
+    method                    = "POST"
+    authorizationType         = "CognitoJWT"
+    authorizationHeader       = "Authorization: Bearer <access-token>"
+    tokenType                 = local.age_attestation_authority_enabled ? "access" : "legacy-unspecified"
+    requiredScope             = local.age_attestation_authority_enabled ? "aws.cognito.signin.user.admin" : null
+    audience                  = local.cognito_app_client_id
+    issuer                    = local.jwt_issuer
+    routeKey                  = aws_apigatewayv2_route.age_attestation.route_key
+    contractPath              = local.age_attestation_contract_path
+    contractVersion           = local.age_attestation_contract_version
+    errorSchemaPath           = "${local.age_attestation_contract_path}/error-response.schema.json"
+    errorCodes = {
+      "400" = ["INVALID_REQUEST"]
+      "401" = ["AUTHENTICATION_REQUIRED"]
+      "403" = ["PHONE_REGION_NOT_ALLOWED", "PHONE_NUMBER_UNSUPPORTED"]
+      "404" = ["PROFILE_NOT_FOUND"]
+      "409" = ["ACCOUNT_STATE_CONFLICT", "IDEMPOTENCY_CONFLICT"]
+      "429" = ["RATE_LIMITED"]
+      "503" = ["SERVICE_UNAVAILABLE"]
+    }
+    artifactPins = try(var.age_attestation_contract.artifacts, null)
+    clientWriteBoundaryFinalized = try(
+      local.foundation_age_attestation_authority.enabled &&
+      !local.foundation_age_attestation_authority.custom_over_18_client_writable &&
+      local.foundation_age_attestation_authority.artifact_pins == var.age_attestation_contract.artifacts,
+      false,
+    )
+    schemaVersion      = local.age_attestation_schema_version
+    agePolicyVersion   = local.age_attestation_policy_version
+    allowedRegionCodes = sort(tolist(var.age_attestation_allowed_region_codes))
+    request = {
+      operationId             = "UUIDv4"
+      over18AcknowledgedConst = true
+      additionalProperties    = false
+    }
+    idempotency = {
+      receiptTtlSeconds = local.age_attestation_receipt_ttl_seconds
+      ttlAttribute      = "expiresAt"
+      partitionKey      = "USER#<sub>"
+      sortKey           = "AGE_ATTESTATION#<operationId>"
+    }
+    lambdaLogGroup    = aws_cloudwatch_log_group.age_attestation_lambda.name
+    apiAccessLogGroup = aws_cloudwatch_log_group.age_attestation_api.name
+    alarmNames = local.age_attestation_monitoring_enabled ? concat(
+      sort([for alarm in aws_cloudwatch_metric_alarm.age_attestation_lambda : alarm.alarm_name]),
+      [aws_cloudwatch_metric_alarm.age_attestation_api_5xx[0].alarm_name],
+    ) : []
+  }
 }
 
 output "analysis_lambda_name" {
@@ -326,8 +385,8 @@ output "device_recovery_http_method" {
 }
 
 output "device_recovery_endpoint_path" {
-  description = "Primary path the mobile app should call for device recovery"
-  value       = var.device_recovery_path
+  description = "Operator-only AWS_IAM recovery path, not a mobile endpoint; null when unprovisioned"
+  value       = var.enable_device_recovery ? var.device_recovery_path : null
 }
 
 output "device_recovery_integration_timeout_ms" {
@@ -336,8 +395,8 @@ output "device_recovery_integration_timeout_ms" {
 }
 
 output "device_recovery_endpoint_url" {
-  description = "Full execute-api URL for device recovery"
-  value       = "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.device_recovery_path}"
+  description = "Operator-only AWS_IAM recovery URL, not a mobile endpoint; null when unprovisioned"
+  value       = var.enable_device_recovery ? "${trimsuffix(aws_apigatewayv2_stage.age_attestation.invoke_url, "/")}${var.device_recovery_path}" : null
 }
 
 output "device_recovery_lambda_log_group_name" {

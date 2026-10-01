@@ -1,0 +1,14 @@
+{
+  "auditedAtUtc": "2026-09-21T21:28:25.917757+00:00",
+  "environment": "dev",
+  "accountId": "107827791950",
+  "region": "us-east-1",
+  "terraformVersion": "1.12.1",
+  "awsProviderVersion": "6.66.0",
+  "existingArtifactRelease": "8d25e19b691d82caf630edc7ebd84c0b45de0c5c",
+  "newCandidateSelected": false,
+  "managedResourceChanges": [],
+  "refreshDriftCount": 16,
+  "applied": false,
+  "scope": "Read-only provider migration plan with existing Dev History artifact inputs. Not a candidate deployment or source acceptance."
+}

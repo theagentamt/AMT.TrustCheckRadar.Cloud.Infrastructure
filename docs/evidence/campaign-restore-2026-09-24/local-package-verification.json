@@ -1,0 +1,14 @@
+{
+  "sourceSha": "ea9b6361f879ed3ee0420e6024d569c2e2f025b1",
+  "qualificationZipSha256": "ebf372912956cbecff37bdd31f73251085cb1b079e6cd0a3d32cf0fbbc4f1f5f",
+  "qualificationZipSizeBytes": 42789,
+  "productionZipSha256": "549dc660df791e8bee88563c3a7d87506b669b31ecb4ca935f7923921c7bbf56",
+  "handler": "campaign_qualification.lambda_handler",
+  "runtime": "python3.14",
+  "architecture": "arm64",
+  "pythonMembers": 21,
+  "localPackagedImport": true,
+  "packagedManifestVerified": true,
+  "runtimeCases": 28,
+  "awsExecuted": false
+}

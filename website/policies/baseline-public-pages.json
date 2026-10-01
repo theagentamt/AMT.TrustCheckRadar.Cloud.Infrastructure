@@ -1,0 +1,18 @@
+{
+  "observed": "2026-09-27",
+  "scope": "Existing public HTML, read-only; replacements remain drafts",
+  "pages": {
+    "https://andmorethings.com/privacy-policy/": {
+      "bytes": 15423,
+      "sha256": "f1dc54d3aaf73714106c58c4eb8bdefacaf81977491f5a795824ca8bb8cf3898"
+    },
+    "https://andmorethings.com/terms-of-use/": {
+      "bytes": 10177,
+      "sha256": "2ecf219ca1774fb932808e2f15016d3c4321429ee3150f711c8eacd24eff8391"
+    },
+    "https://andmorethings.com/data-deletion/": {
+      "bytes": 5769,
+      "sha256": "69779cefbff4d1c5893654692453d9d9cbc6ab0502f27ad62e8142ca28cce1d9"
+    }
+  }
+}

@@ -12,13 +12,24 @@ variable "account_deletion_artifact" {
   }
 }
 
+variable "account_deletion_terminal_candidate" {
+  description = "Prepare the corrected terminal-fence bridge on Python 3.14 with transactional receipts. Preparation stays inactive unless separately qualified terminal activation is selected."
+  type        = bool
+  default     = false
+  nullable    = false
+  validation {
+    condition     = !var.account_deletion_terminal_candidate || var.account_deletion_artifact != null
+    error_message = "The terminal-fence candidate requires a pinned bridge artifact."
+  }
+}
+
 variable "account_deletion_active" {
   description = "Enable the deletion stream only after account-fence producer, outage recovery, alert delivery and erasure acceptance."
   type        = bool
   default     = false
   nullable    = false
   validation {
-    condition     = !var.account_deletion_active || (var.account_deletion_artifact != null && var.lifecycle_active && var.account_deletion_observability_approved)
+    condition     = !var.account_deletion_active || (var.account_deletion_artifact != null && var.lifecycle_active && var.account_deletion_observability_approved && var.account_deletion_terminal_activation != null)
     error_message = "Account deletion activation requires the deployed bridge, active lifecycle cleanup and verified reconciliation metrics/alert delivery."
   }
 }
@@ -51,10 +62,52 @@ resource "aws_iam_role" "account_deletion" {
 
 data "aws_iam_policy_document" "account_deletion" {
   count = local.account_deletion_deployed ? 1 : 0
+  dynamic "statement" {
+    for_each = var.account_deletion_terminal_candidate ? [1] : []
+    content {
+      sid       = "CheckHistoryStateForCompletion"
+      actions   = ["dynamodb:ConditionCheckItem"]
+      resources = [local.history.control_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["USER#*"]
+      }
+      condition {
+        test     = "StringEqualsIfExists"
+        variable = "dynamodb:ReturnValues"
+        values   = ["NONE"]
+      }
+    }
+  }
+
   statement {
     sid       = "ConsumeOnlyDeletionLedgerStream"
-    actions   = ["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator", "dynamodb:ListStreams"]
+    actions   = ["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator"]
     resources = [local.foundation.deletion_ledger_stream_arn]
+  }
+  statement {
+    sid       = "DiscoverRegionalStreams"
+    actions   = ["dynamodb:ListStreams"]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestedRegion"
+      values   = [var.aws_region]
+    }
+  }
+  dynamic "statement" {
+    for_each = var.account_deletion_terminal_candidate ? [1] : []
+    content {
+      sid       = "ReadAuthoritativeAccountFence"
+      actions   = ["dynamodb:GetItem"]
+      resources = [local.foundation.deletion_ledger_table_arn]
+      condition {
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = ["ACCOUNT#*"]
+      }
+    }
   }
   statement {
     sid       = "ReadHistoryAccountState"
@@ -93,9 +146,14 @@ data "aws_iam_policy_document" "account_deletion" {
       values   = ["USER#*"]
     }
     condition {
-      test     = "StringEquals"
+      test     = "ForAnyValue:StringEquals"
       variable = "dynamodb:EnclosingOperation"
       values   = ["TransactWriteItems"]
+    }
+    condition {
+      test     = "StringEqualsIfExists"
+      variable = "dynamodb:ReturnValues"
+      values   = ["NONE"]
     }
   }
   statement {
@@ -108,9 +166,9 @@ data "aws_iam_policy_document" "account_deletion" {
       values   = ["ACCOUNT#*"]
     }
     condition {
-      test     = "StringEquals"
-      variable = "dynamodb:EnclosingOperation"
-      values   = ["TransactWriteItems"]
+      test     = "StringEqualsIfExists"
+      variable = "dynamodb:ReturnValues"
+      values   = ["NONE"]
     }
   }
   # IAM LeadingKeys cannot constrain SK; the tested handler permits only the
@@ -123,6 +181,19 @@ data "aws_iam_policy_document" "account_deletion" {
       test     = "ForAllValues:StringLike"
       variable = "dynamodb:LeadingKeys"
       values   = ["ACCOUNT#*"]
+    }
+    dynamic "condition" {
+      for_each = var.account_deletion_terminal_candidate ? [1] : []
+      content {
+        test     = "ForAnyValue:StringEquals"
+        variable = "dynamodb:EnclosingOperation"
+        values   = ["TransactWriteItems"]
+      }
+    }
+    condition {
+      test     = "StringEqualsIfExists"
+      variable = "dynamodb:ReturnValues"
+      values   = ["NONE"]
     }
   }
   statement {
@@ -143,7 +214,7 @@ resource "aws_lambda_function" "account_deletion" {
   count                          = local.account_deletion_deployed ? 1 : 0
   function_name                  = local.account_deletion_name
   role                           = aws_iam_role.account_deletion[0].arn
-  runtime                        = "python3.13"
+  runtime                        = var.account_deletion_terminal_candidate ? "python3.14" : "python3.13"
   handler                        = "app.lambda_handler"
   architectures                  = ["arm64"]
   memory_size                    = 256
@@ -164,6 +235,10 @@ resource "aws_lambda_function" "account_deletion" {
     }
   }
   lifecycle {
+    precondition {
+      condition     = !var.account_deletion_terminal_candidate || ((!var.account_deletion_active && !var.lifecycle_active) || var.account_deletion_terminal_activation != null)
+      error_message = "Terminal-safe consumers must stay inactive until separate terminal activation is qualified."
+    }
     precondition {
       condition = try(
         local.foundation.deletion_ledger_table_name == "${var.project_name}-${var.environment}-deletion-ledger" &&

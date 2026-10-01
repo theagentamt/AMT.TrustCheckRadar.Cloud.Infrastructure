@@ -1,0 +1,18 @@
+{
+  "campaign-processing": {
+    "planSha256": "2568c59597d17c0ffe47500afa13a324d26f787ebf2d480c5bf10e6619b6cd3e",
+    "jsonSha256": "7e2750cde679fe394b8c919a491f694b68fc54147b2d3fdc39179034409cbc1f"
+  },
+  "history-processing": {
+    "planSha256": "93090161aacd2fe249245df34e6aa1c7ae56f19e00cf3c4e32eabc9cb82b9822",
+    "jsonSha256": "224ada9c0b09c473b55d51e71d74ab9a1fed97e797e72a711a5f749cb89c8620"
+  },
+  "url-consumer": {
+    "planSha256": "b678a91a5b63fe4a5f5a45eec77a79448b7020b4b5b9ab4ee8e51576e7a349a6",
+    "jsonSha256": "39b8d400a8fc8052e12427679ff48a99755ac23bc8313ca6235e6a5b5166d50a"
+  },
+  "play-lifecycle": {
+    "planSha256": "c450dd7728a6fc9cac4146fc7b042560f768aa2aacebdbbb7ef50f69c5073744",
+    "jsonSha256": "f94f3d2c45afd97fc53cc20f9839f5784926afd4263d83cd225b65b040486202"
+  }
+}

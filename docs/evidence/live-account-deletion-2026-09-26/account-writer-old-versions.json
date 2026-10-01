@@ -1,0 +1,190 @@
+{
+  "observedAtUtc": "2026-09-26T14:57:42.795005+00:00",
+  "readOnly": true,
+  "versions": {
+    "url-consumer:3": {
+      "codeSha256": "u0xSsT8LDfmkJJeAtPMsyIwcbr/cM5W2FmIFxaFJZiI=",
+      "environmentSha256": "857832fb77313feed9bfbca970634e942e68916165576e056d921f6381e22876",
+      "keys": [
+        "ATTEMPTS_PER_WINDOW",
+        "ATTEMPT_WINDOW_SECONDS",
+        "AUTHORITY_ENABLED",
+        "AUTHORITY_HMAC_SECRET_ARN",
+        "AUTHORITY_POLICY_VERSION",
+        "AUTHORITY_TABLE_NAME",
+        "COGNITO_APP_CLIENT_ID",
+        "COGNITO_ISSUER",
+        "COGNITO_REQUIRED_SCOPE",
+        "CONSUMER_ENABLED",
+        "COUNTER_RETENTION_SECONDS",
+        "DELETION_LEDGER_TABLE_NAME",
+        "DEVICE_BINDINGS_TABLE_NAME",
+        "DEV_SUBJECT_ALLOWLIST_JSON",
+        "MAX_INFLIGHT",
+        "OPERATION_VALIDITY_SECONDS",
+        "RECEIPT_RETENTION_SECONDS",
+        "RECONCILIATION_SECONDS",
+        "STAGE",
+        "TRIAL_AUTHORITY_RETENTION_APPROVED",
+        "URL_ASSESSMENT_FUNCTION_ARN",
+        "USERS_TABLE_NAME",
+        "V1_ENTITLEMENTS_ENABLED",
+        "WORKER_SETTLEMENT_SECONDS"
+      ],
+      "allowlistMetadata": {
+        "DEV_SUBJECT_ALLOWLIST_JSON": {
+          "nonempty": true,
+          "entryCount": 1
+        }
+      },
+      "resourcePolicyPresent": false
+    },
+    "v1-entitlements:3": {
+      "codeSha256": "zEzEhrDWhIPPvHvFbEf3X+IE39NiqiEn7hMOeR4nJIk=",
+      "environmentSha256": "511945ca27397f2da7d0466eda1f9b7d2684ea43432b9d737a0f077e1f1988a4",
+      "keys": [
+        "ATTEMPTS_PER_WINDOW",
+        "ATTEMPT_WINDOW_SECONDS",
+        "AUTHORITY_ENABLED",
+        "AUTHORITY_HMAC_SECRET_ARN",
+        "AUTHORITY_POLICY_VERSION",
+        "AUTHORITY_TABLE_NAME",
+        "COGNITO_APP_CLIENT_ID",
+        "COGNITO_ISSUER",
+        "COGNITO_REQUIRED_SCOPE",
+        "CONSUMER_ENABLED",
+        "COUNTER_RETENTION_SECONDS",
+        "DELETION_LEDGER_TABLE_NAME",
+        "DEVICE_BINDINGS_TABLE_NAME",
+        "DEV_SUBJECT_ALLOWLIST_JSON",
+        "MAX_INFLIGHT",
+        "OPERATION_VALIDITY_SECONDS",
+        "RECEIPT_RETENTION_SECONDS",
+        "RECONCILIATION_SECONDS",
+        "STAGE",
+        "TRIAL_AUTHORITY_RETENTION_APPROVED",
+        "USERS_TABLE_NAME",
+        "V1_ENTITLEMENTS_ENABLED",
+        "WORKER_SETTLEMENT_SECONDS"
+      ],
+      "allowlistMetadata": {
+        "DEV_SUBJECT_ALLOWLIST_JSON": {
+          "nonempty": true,
+          "entryCount": 1
+        }
+      },
+      "resourcePolicyPresent": false
+    },
+    "url-lease-recovery:3": {
+      "codeSha256": "Gu82oYXs8ptlxhp9W2QWNWMdgkwEovBjcuwzqH5aVco=",
+      "environmentSha256": "61987187d514c5815de7383a30523c63d6dd3f464f8bd30b3476d613dd196f5b",
+      "keys": [
+        "AUTHORITY_TABLE_NAME",
+        "LEASE_SWEEP_ENABLED",
+        "STAGE"
+      ],
+      "allowlistMetadata": {},
+      "resourcePolicyPresent": false
+    },
+    "v1-authority-deletion:2": {
+      "codeSha256": "vCKb8pyg4Lgp54fFVV/ackQXIhXzqMYIEwa4tEXoCzo=",
+      "environmentSha256": "32e0037968460385dfb7d911a69e9363d46212dbcf5269fc3c85dbde292e8652",
+      "keys": [
+        "AUTHORITY_HMAC_SECRET_ARN",
+        "AUTHORITY_TABLE_NAME",
+        "DELETION_LEDGER_STREAM_ARN",
+        "DELETION_LEDGER_TABLE_NAME",
+        "DELETION_RECEIPT_RETENTION_SECONDS",
+        "DEV_SUBJECT_ALLOWLIST_JSON",
+        "STAGE",
+        "V1_AUTHORITY_DELETION_ENABLED"
+      ],
+      "allowlistMetadata": {
+        "DEV_SUBJECT_ALLOWLIST_JSON": {
+          "nonempty": true,
+          "entryCount": 1
+        }
+      },
+      "resourcePolicyPresent": false
+    }
+  },
+  "rules": [
+    {
+      "name": "trustcheckradar-dev-account-deletion-reconcile",
+      "state": "DISABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-account-data-api"
+        }
+      ]
+    },
+    {
+      "name": "trustcheckradar-dev-history-deletion-reconcile",
+      "state": "DISABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-history-account-deletion-bridge"
+        }
+      ]
+    },
+    {
+      "name": "trustcheckradar-dev-history-lifecycle-sweep",
+      "state": "DISABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-history-lifecycle"
+        }
+      ]
+    },
+    {
+      "name": "trustcheckradar-dev-url-lease-recovery",
+      "state": "DISABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-lease-recovery:live"
+        }
+      ]
+    },
+    {
+      "name": "trustcheckradar-dev-v1-authority-deletion",
+      "state": "DISABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-authority-deletion:live"
+        }
+      ]
+    }
+  ],
+  "schedules": [
+    {
+      "name": "trustcheckradar-dev-campaign-manage-keys",
+      "state": "DISABLED",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-lifecycle"
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-finalize-periods",
+      "state": "DISABLED",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-lifecycle"
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-expire-transient",
+      "state": "DISABLED",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-lifecycle"
+    },
+    {
+      "name": "trustcheckradar-dev-campaign-reconcile-cleanup",
+      "state": "DISABLED",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-campaign-deletion-bridge"
+    },
+    {
+      "name": "trustcheckradar-dev-play-token-deletion",
+      "state": "DISABLED",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-play-token-deletion:live"
+    },
+    {
+      "name": "trustcheckradar-dev-play-lifecycle-worker",
+      "state": "DISABLED",
+      "target": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-play-lifecycle-worker:live"
+    }
+  ]
+}

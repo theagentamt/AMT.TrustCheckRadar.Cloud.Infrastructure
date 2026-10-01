@@ -1,0 +1,45 @@
+{
+  "verified": true,
+  "changes": [
+    {
+      "address": "aws_iam_role_policy.account_data[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.account_export[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.device_recovery_control[0]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.account_data[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.account_export[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.device_recovery[0]",
+      "actions": [
+        "update"
+      ]
+    }
+  ],
+  "deletionEnabled": false,
+  "identityFinalizerEnabled": false,
+  "selfRecoveryEnabled": false,
+  "planJsonSha256": "82f242b217a6da177a242b705d521b7d8bf443fea4eaba1134b6995000efeafd"
+}

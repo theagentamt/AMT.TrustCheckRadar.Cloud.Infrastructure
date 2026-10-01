@@ -1,0 +1,106 @@
+{
+  "observedAtUtc": "2026-09-26T13:24:19.665433+00:00",
+  "workers": [
+    {
+      "function": "trustcheckradar-dev-campaign-cluster-aggregator",
+      "codeSha256": "HbuW0wNMYig46812A5KX43fiAYtv+jaF3TN9WuDp+xU=",
+      "configurationMatched": true,
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-deletion-bridge",
+      "codeSha256": "w3wa+YT63hwH5qahfdB0q/JdppbzK6Uw7KAI43ImkMk=",
+      "configurationMatched": true,
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-lifecycle",
+      "codeSha256": "OquA9UqCumRUeC2rkksCnUtQm/anyBBgHudO9jlTsx8=",
+      "configurationMatched": true,
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ]
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-observation-publisher",
+      "codeSha256": "L6UM2rin+UF/RT03Zp9lmETYAdZeH1zVyqC95eAe2K4=",
+      "configurationMatched": true,
+      "runtime": "python3.14",
+      "architectures": [
+        "arm64"
+      ]
+    }
+  ],
+  "policies": [
+    {
+      "role": "trustcheckradar-dev-campaign-deletion-bridge-role",
+      "name": "campaign-account-cleanup",
+      "matched": true
+    },
+    {
+      "role": "trustcheckradar-dev-campaign-lifecycle-role",
+      "name": "campaign-account-cleanup",
+      "matched": true
+    },
+    {
+      "role": "trustcheckradar-dev-campaign-deletion-bridge-role",
+      "name": "campaign-account-cleanup-decryption",
+      "matched": true
+    },
+    {
+      "role": "trustcheckradar-dev-campaign-lifecycle-role",
+      "name": "lifecycle-runtime",
+      "matched": true
+    },
+    {
+      "role": "trustcheckradar-dev-campaign-cluster-aggregator-role",
+      "name": "campaign-period-admission",
+      "matched": true
+    },
+    {
+      "role": "trustcheckradar-dev-campaign-lifecycle-role",
+      "name": "campaign-period-admission",
+      "matched": true
+    },
+    {
+      "role": "trustcheckradar-dev-campaign-observation-publisher-role",
+      "name": "campaign-period-admission",
+      "matched": true
+    }
+  ],
+  "disabledMappings": 3,
+  "disabledSchedules": 4,
+  "disabledAlarmActions": 8,
+  "negativeSmoke": [
+    {
+      "function": "campaign-observation-publisher",
+      "disabledRefusal": true,
+      "error": "Campaign locator coverage is unavailable"
+    },
+    {
+      "function": "campaign-cluster-aggregator",
+      "disabledRefusal": true,
+      "error": "Campaign locator coverage is unavailable"
+    },
+    {
+      "function": "campaign-lifecycle",
+      "disabledRefusal": true,
+      "error": "Campaign lifecycle candidate is disabled"
+    },
+    {
+      "function": "campaign-deletion-bridge",
+      "disabledRefusal": true,
+      "error": "CAMPAIGN_DELETION_STREAM_DISABLED"
+    }
+  ],
+  "allVerified": true,
+  "admissionEnabled": false,
+  "campaignDeletionEnabled": false
+}

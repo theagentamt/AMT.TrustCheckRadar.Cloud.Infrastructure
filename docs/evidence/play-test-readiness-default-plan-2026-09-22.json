@@ -1,0 +1,15 @@
+{
+  "resourceChanges": 0,
+  "candidateGateValues": {
+    "access_only_engineering": false,
+    "access_enabled": false,
+    "consumer_enabled": false,
+    "recovery_enabled": false,
+    "deletion_enabled": false,
+    "trial_activation_enabled": false,
+    "general_customer_access": false
+  },
+  "outputOnlyChanges": true,
+  "applied": false,
+  "terraformMockCases": 13
+}

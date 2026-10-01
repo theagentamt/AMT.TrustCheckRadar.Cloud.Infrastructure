@@ -1,0 +1,114 @@
+{
+  "engineeringActive": false,
+  "functions": {
+    "consumer": {
+      "name": "trustcheckradar-dev-url-consumer",
+      "version": "4",
+      "hash": "u0xSsT8LDfmkJJeAtPMsyIwcbr/cM5W2FmIFxaFJZiI=",
+      "role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-url-consumer-execution"
+    },
+    "recovery": {
+      "name": "trustcheckradar-dev-url-lease-recovery",
+      "version": "4",
+      "hash": "Gu82oYXs8ptlxhp9W2QWNWMdgkwEovBjcuwzqH5aVco=",
+      "role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-url-lease-recovery-execution"
+    },
+    "entitlements": {
+      "name": "trustcheckradar-dev-v1-entitlements",
+      "version": "4",
+      "hash": "zEzEhrDWhIPPvHvFbEf3X+IE39NiqiEn7hMOeR4nJIk=",
+      "role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-v1-entitlements-execution"
+    },
+    "deletion": {
+      "name": "trustcheckradar-dev-v1-authority-deletion",
+      "version": "3",
+      "hash": "vCKb8pyg4Lgp54fFVV/ackQXIhXzqMYIEwa4tEXoCzo=",
+      "role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-v1-authority-deletion-execution"
+    },
+    "assessment": {
+      "name": "trustcheckradar-dev-url-assessment",
+      "version": "2",
+      "hash": "SL308FYMSDSio/+6Omi0QCJVErDFwtJ6UZZLNniqPew=",
+      "role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-url-assessment-execution"
+    }
+  },
+  "routeTests": [
+    {
+      "route": "POST /v1/url-checks",
+      "auth": "absent",
+      "status": 401
+    },
+    {
+      "route": "POST /v1/url-checks",
+      "auth": "invalid",
+      "status": 401
+    },
+    {
+      "route": "POST /v1/url-checks",
+      "auth": "valid-disabled",
+      "status": 503
+    },
+    {
+      "route": "POST /v1/url-checks/prepare",
+      "auth": "absent",
+      "status": 401
+    },
+    {
+      "route": "POST /v1/url-checks/prepare",
+      "auth": "invalid",
+      "status": 401
+    },
+    {
+      "route": "POST /v1/url-checks/prepare",
+      "auth": "valid-disabled",
+      "status": 503
+    },
+    {
+      "route": "POST /v1/access/trial",
+      "auth": "absent",
+      "status": 401
+    },
+    {
+      "route": "POST /v1/access/trial",
+      "auth": "invalid",
+      "status": 401
+    },
+    {
+      "route": "POST /v1/access/trial",
+      "auth": "valid-disabled",
+      "status": 503
+    },
+    {
+      "route": "POST /v1/url-checks/reconcile",
+      "auth": "absent",
+      "status": 401
+    },
+    {
+      "route": "POST /v1/url-checks/reconcile",
+      "auth": "invalid",
+      "status": 401
+    },
+    {
+      "route": "POST /v1/url-checks/reconcile",
+      "auth": "valid-disabled",
+      "status": 503
+    },
+    {
+      "route": "GET /v1/access",
+      "auth": "absent",
+      "status": 401
+    },
+    {
+      "route": "GET /v1/access",
+      "auth": "invalid",
+      "status": 401
+    },
+    {
+      "route": "GET /v1/access",
+      "auth": "valid-disabled",
+      "status": 503
+    }
+  ],
+  "resolverAndLegacyUnchanged": true,
+  "verifiedAlarmCount": 15
+}

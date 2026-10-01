@@ -192,3 +192,96 @@ run "assessment_topic_grant_is_exact_and_optional" {
     error_message = "Shared topic must allow exactly the existing resolver alarms and three named assessment alarms."
   }
 }
+
+run "consumer_topic_grant_is_exact_and_optional" {
+  command = apply
+  variables {
+    enabled                              = true
+    consumer_alarm_notifications_enabled = true
+    artifact = {
+      bucket         = "test-bucket"
+      key            = "releases/test/url_redirect_resolver.zip"
+      object_version = "test-version"
+      source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  assert {
+    condition     = length(jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"]) == 18 && contains(jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"], "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-url-lease-recovery-expiry-overdue") && alltrue([for arn in jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"] : !strcontains(arn, "*")])
+    error_message = "Support topic must accept only three resolver and fifteen explicit V1 alarms, without wildcard publishers."
+  }
+}
+
+run "play_topic_grant_is_exact_and_optional" {
+  command = apply
+  variables {
+    enabled                          = true
+    play_alarm_notifications_enabled = true
+    artifact = {
+      bucket         = "test-bucket"
+      key            = "releases/test/url_redirect_resolver.zip"
+      object_version = "test-version"
+      source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  assert {
+    condition = toset(jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"]) == toset(concat(local.resolver_alarm_arns, [
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-v1-play-handoff-errors",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-v1-play-handoff-throttles"
+    ]))
+    error_message = "The optional verifier integration must add exactly its two native alarms, with no wildcard or other publisher."
+  }
+}
+run "no_prod_play_topic_grant" {
+  command = plan
+  variables {
+    environment                      = "prod"
+    play_alarm_notifications_enabled = true
+  }
+  expect_failures = [var.play_alarm_notifications_enabled]
+}
+
+run "exact_cleanup_alarm_publishers" {
+  command = apply
+  variables {
+    enabled                                     = true
+    account_cleanup_alarm_notifications_enabled = true
+    artifact = {
+      bucket         = "test-bucket"
+      key            = "releases/test/url_redirect_resolver.zip"
+      object_version = "test-version"
+      source_hash    = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  }
+  assert {
+    condition = toset(jsondecode(aws_sns_topic_policy.operations[0].policy).Statement[1].Condition.ArnEquals["aws:SourceArn"]) == toset(concat(local.resolver_alarm_arns, [
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-errors",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-lag",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-command_failure",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-failure",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-heartbeat",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-no_full_pass",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-outbox_blocked",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-pass_failure",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-policy_blocked",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-profile_blocked",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-reconciliation-stale_full_pass",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-session-revocation-failure",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-account-data-api-throttles",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-deletion-failed",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-deletion-fullPassAgeSeconds",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-deletion-heartbeat",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-deletion-overdue",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-token-deletion-errors",
+      "arn:aws:cloudwatch:us-east-1:123456789012:alarm:trustcheckradar-dev-play-token-deletion-throttles",
+    ]))
+    error_message = "Cleanup monitoring must authorize exactly its nineteen current alarms, without wildcard publishers."
+  }
+}
+run "reject_prod_cleanup_topic_grant" {
+  command = plan
+  variables {
+    environment                                 = "prod"
+    account_cleanup_alarm_notifications_enabled = true
+  }
+  expect_failures = [var.account_cleanup_alarm_notifications_enabled]
+}

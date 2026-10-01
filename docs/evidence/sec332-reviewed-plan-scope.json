@@ -1,0 +1,62 @@
+{
+  "play-lifecycle": {
+    "planSha256": "2c2dc8225d2ceb55fa73311cbe372685c2511de2c1c52a63093d17ef20715b84",
+    "changes": [
+      {
+        "address": "aws_lambda_alias.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ],
+        "changedFields": [
+          "function_version"
+        ]
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ],
+        "changedFields": [
+          "last_modified",
+          "qualified_arn",
+          "qualified_invoke_arn",
+          "s3_key",
+          "s3_object_version",
+          "source_code_hash",
+          "version"
+        ]
+      }
+    ],
+    "environmentRoleRuntimeLimitsPreserved": true
+  },
+  "url-consumer": {
+    "planSha256": "c3216df0236d913b29e1f1ef290f63b3364203c15e1ce54daa2d844aad6546c5",
+    "changes": [
+      {
+        "address": "aws_lambda_alias.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ],
+        "changedFields": [
+          "function_version"
+        ]
+      },
+      {
+        "address": "aws_lambda_function.runtime[\"deletion\"]",
+        "actions": [
+          "update"
+        ],
+        "changedFields": [
+          "last_modified",
+          "qualified_arn",
+          "qualified_invoke_arn",
+          "s3_key",
+          "s3_object_version",
+          "source_code_hash",
+          "version"
+        ]
+      }
+    ],
+    "environmentRoleRuntimeLimitsPreserved": true
+  }
+}

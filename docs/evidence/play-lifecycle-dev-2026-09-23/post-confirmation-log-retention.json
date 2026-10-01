@@ -1,0 +1,20 @@
+{
+  "infrastructureMerge": "4ea949bc16d183e950fb466d0243d37cb0d57b21",
+  "savedPlanSha256": "e25b78eca57eb47709b7a8229c0d66c6f27193c6778fb0b810c1624e8777044f",
+  "applyExitCode": 0,
+  "postApplyPlanExitCode": 0,
+  "imported": 1,
+  "updated": 1,
+  "created": 0,
+  "destroyed": 0,
+  "logGroups": [
+    {
+      "name": "/aws/lambda/trustcheckradar-dev-post-confirmation",
+      "retentionInDays": 14
+    }
+  ],
+  "lambdaChanged": false,
+  "iamChanged": false,
+  "cognitoChanged": false,
+  "runtimeActivated": false
+}

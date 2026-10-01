@@ -37,8 +37,8 @@ override_data {
     deletion_ledger_stream_arn        = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-14T00:00:00.000"
     analysis_abuse_control_table_name = "trustcheckradar-dev-analysis-abuse-control"
     analysis_abuse_control_table_arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-analysis-abuse-control"
-    purchase_entitlements_table_name  = "entitlements"
-    purchase_entitlements_table_arn   = "arn:aws:dynamodb:us-east-1:107827791950:table/entitlements"
+    purchase_entitlements_table_name  = "trustcheckradar-dev-purchase-entitlements"
+    purchase_entitlements_table_arn   = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
     device_bindings_table_name        = "trustcheckradar-dev-device-bindings"
     device_bindings_table_arn         = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-device-bindings"
     web_risk_cache_table_name         = "web-risk-cache"
@@ -92,6 +92,21 @@ run "candidate_monitoring_is_opt_in" {
   }
 }
 
+run "stream_discovery_is_regional_and_reads_are_exact" {
+  command = plan
+  assert {
+    condition = (
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "ReadOwnDeletionStream"]).actions == toset(["dynamodb:DescribeStream", "dynamodb:GetRecords", "dynamodb:GetShardIterator"]) &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "ReadOwnDeletionStream"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger/stream/2026-09-14T00:00:00.000"]) &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "DiscoverDeletionStreamsInRegion"]).actions == toset(["dynamodb:ListStreams"]) &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "DiscoverDeletionStreamsInRegion"]).resources == toset(["*"]) &&
+      one(one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "DiscoverDeletionStreamsInRegion"]).condition).variable == "aws:RequestedRegion" &&
+      one(one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "DiscoverDeletionStreamsInRegion"]).condition).values == tolist(["us-east-1"])
+    )
+    error_message = "ListStreams needs regional discovery permission; stream content reads must stay restricted to the exact deletion stream."
+  }
+}
+
 run "account_monitoring_uses_source_metrics_without_activating_workers" {
   command = plan
   variables {
@@ -100,7 +115,7 @@ run "account_monitoring_uses_source_metrics_without_activating_workers" {
   assert {
     condition = (
       length(aws_cloudwatch_metric_alarm.account_data_function) == 3 &&
-      length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 7 &&
+      length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 9 &&
       length(aws_cloudwatch_metric_alarm.account_data_stream_failure) == 1 &&
       alltrue([for alarm in aws_cloudwatch_metric_alarm.account_data_function :
         alarm.namespace == "AWS/Lambda" &&
@@ -126,6 +141,14 @@ run "account_monitoring_uses_source_metrics_without_activating_workers" {
         aws_cloudwatch_metric_alarm.account_data_reconciliation[key].treat_missing_data == "notBreaching"
       ]) &&
       aws_cloudwatch_metric_alarm.account_data_reconciliation["failure"].actions_enabled &&
+      alltrue([for key in ["command_failure", "pass_failure"] :
+        aws_cloudwatch_metric_alarm.account_data_reconciliation[key].actions_enabled &&
+        aws_cloudwatch_metric_alarm.account_data_reconciliation[key].period == 300 &&
+        aws_cloudwatch_metric_alarm.account_data_reconciliation[key].threshold == 0 &&
+        aws_cloudwatch_metric_alarm.account_data_reconciliation[key].treat_missing_data == "notBreaching"
+      ]) &&
+      aws_cloudwatch_metric_alarm.account_data_reconciliation["command_failure"].metric_name == "AccountDeletionReconciliationCommandFailures" &&
+      aws_cloudwatch_metric_alarm.account_data_reconciliation["pass_failure"].metric_name == "AccountDeletionReconciliationPassFailures" &&
       aws_cloudwatch_metric_alarm.account_data_reconciliation["policy_blocked"].actions_enabled &&
       aws_cloudwatch_metric_alarm.account_data_reconciliation["policy_blocked"].metric_name == "AccountDeletionAnalysisAbusePolicyBlocked" &&
       aws_cloudwatch_metric_alarm.account_data_reconciliation["outbox_blocked"].metric_name == "AccountDeletionCampaignOutboxPolicyBlocked" &&
@@ -184,6 +207,7 @@ run "candidate_is_immutable_private_and_fail_closed" {
       aws_lambda_function.account_data[0].s3_object_version == "synthetic-version" &&
       aws_lambda_function.account_data[0].source_code_hash == var.account_data_deployment.source_hash &&
       aws_lambda_function.account_data[0].reserved_concurrent_executions == 1 &&
+      aws_lambda_function.account_data[0].runtime == "python3.14" &&
       aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_ENABLED"] == "false" &&
       aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_POLICY_STATUS"] == "pending" &&
       aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DATA_INVENTORY_STATUS"] == "pending" &&
@@ -226,7 +250,7 @@ run "account_data_permissions_scope_device_cleanup_and_reconciliation" {
   assert {
     condition = alltrue([for statement in data.aws_iam_policy_document.account_data[0].statement :
       (!contains(statement.actions, "dynamodb:Scan") || (statement.sid == "ReconcileMissedRevocations" && statement.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]))) &&
-      (!contains(statement.actions, "dynamodb:DeleteItem") || contains(["EraseFencedUserDeviceBindings", "ReadCommandAndWriteRevocationReceipt", "MinimizeFencedUserRecoveryEvidence", "EnumerateAndEraseFencedAnalysisState", "EraseAccountOutboxContent", "EraseFencedUserProfileState"], statement.sid)) &&
+      (!contains(statement.actions, "dynamodb:DeleteItem") || contains(["EraseFencedUserDeviceBindings", "ReadCommandAndWriteRevocationReceipt", "MinimizeFencedUserRecoveryEvidence", "EnumerateAndEraseFencedAnalysisState", "EraseAccountOutboxContent", "EraseFencedUserProfileState", "EraseOwnedPurchaseTransaction"], statement.sid)) &&
       !contains(statement.actions, "cognito-idp:AdminDeleteUser") && !contains(statement.actions, "*")
       ]) && (
       one([for statement in data.aws_iam_policy_document.account_data[0].statement : statement if statement.sid == "RevokeSessionsInOwnPool"]).resources == toset(["arn:aws:cognito-idp:us-east-1:107827791950:userpool/us-east-1_example"]) &&
@@ -241,12 +265,19 @@ run "account_data_permissions_scope_device_cleanup_and_reconciliation" {
 
 run "account_reconciliation_remains_disabled_and_bounded" {
   command = plan
+  override_resource {
+    target          = aws_cloudwatch_event_rule.account_data_reconcile[0]
+    override_during = plan
+    values          = { arn = "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-account-deletion-reconcile" }
+  }
   assert {
     condition = (
       aws_cloudwatch_event_rule.account_data_reconcile[0].state == "DISABLED" &&
       aws_cloudwatch_event_rule.account_data_reconcile[0].schedule_expression == "rate(5 minutes)" &&
       aws_cloudwatch_event_target.account_data_reconcile[0].input == jsonencode({ schemaVersion = 1, operation = "reconcile-session-revocation" }) &&
       aws_lambda_permission.account_data_reconcile[0].principal == "events.amazonaws.com" &&
+      aws_lambda_permission.account_data_reconcile[0].source_account == "107827791950" &&
+      aws_lambda_permission.account_data_reconcile[0].source_arn == aws_cloudwatch_event_rule.account_data_reconcile[0].arn &&
       aws_lambda_function_event_invoke_config.account_data_reconcile[0].maximum_event_age_in_seconds == 300 &&
       aws_lambda_function_event_invoke_config.account_data_reconcile[0].maximum_retry_attempts == 1 &&
       aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_RECONCILIATION_SCAN_LIMIT"] == "100" &&
@@ -473,12 +504,14 @@ run "purchase_fence_is_pinned_and_authority_checked" {
       release_id         = "purchase-fence", object_version = "purchase-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
       approval_reference = "synthetic-test-not-user-approval", promotion_approved = false
     }
-    purchase_handoff_lambda_env       = { USERS_TABLE_NAME = "wrong-users", DELETION_LEDGER_TABLE_NAME = "wrong-ledger" }
+    purchase_handoff_lambda_env       = { USERS_TABLE_NAME = "wrong-users", DELETION_LEDGER_TABLE_NAME = "wrong-ledger", PURCHASE_OWNERSHIP_CANDIDATE_ENABLED = "true" }
     purchase_handoff_lambda_s3_bucket = "wrong-bucket"
   }
   assert {
     condition = (
       aws_lambda_function.purchase_handoff.s3_bucket == "synthetic-artifacts" &&
+      aws_lambda_function.purchase_handoff.runtime == "python3.14" &&
+      aws_lambda_function.purchase_handoff.environment[0].variables["PURCHASE_OWNERSHIP_CANDIDATE_ENABLED"] == "false" &&
       aws_lambda_function.purchase_handoff.s3_key == "releases/purchase-fence/purchase_handoff.zip" &&
       aws_lambda_function.purchase_handoff.s3_object_version == "purchase-version" &&
       aws_lambda_function.purchase_handoff.source_code_hash == var.purchase_handoff_fence_deployment.source_hash &&
@@ -505,10 +538,20 @@ run "purchase_fence_is_pinned_and_authority_checked" {
     condition = (
       one([for s in data.aws_iam_policy_document.purchase_handoff_runtime.statement : s if s.sid == "PurchaseEntitlementsReadWrite"]).actions == toset(["dynamodb:GetItem"]) &&
       one([for s in data.aws_iam_policy_document.purchase_handoff_runtime.statement : s if s.sid == "WriteFencedPurchaseTransaction"]).actions == toset(["dynamodb:PutItem"]) &&
+      one([for s in data.aws_iam_policy_document.purchase_handoff_runtime.statement : s if s.sid == "ReadPurchaseOwnershipInventory"]).actions == toset(["dynamodb:GetItem"]) &&
+      one([for s in data.aws_iam_policy_document.purchase_handoff_runtime.statement : s if s.sid == "CheckPurchaseOwnershipInventory"]).actions == toset(["dynamodb:ConditionCheckItem"]) &&
+      alltrue([for sid in ["ReadPurchaseOwnershipInventory", "CheckPurchaseOwnershipInventory"] :
+        anytrue([for c in one([for s in data.aws_iam_policy_document.purchase_handoff_runtime.statement : s if s.sid == sid]).condition :
+          c.test == "ForAllValues:StringEquals" && c.variable == "dynamodb:LeadingKeys" && toset(c.values) == toset(["PURCHASE#CONTROL"])
+        ])
+      ]) &&
+      anytrue([for c in one([for s in data.aws_iam_policy_document.purchase_handoff_runtime.statement : s if s.sid == "CheckPurchaseOwnershipInventory"]).condition :
+        c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])
+      ]) &&
       alltrue([for s in data.aws_iam_policy_document.purchase_handoff_runtime.statement :
         !contains(s.actions, "dynamodb:UpdateItem") && !contains(s.actions, "dynamodb:DeleteItem") &&
         (!contains(s.actions, "dynamodb:PutItem") || (
-          s.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/entitlements"]) &&
+          s.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"]) &&
           anytrue([for c in s.condition : c.test == "StringEquals" && c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])]) &&
           anytrue([for c in s.condition : c.test == "ForAllValues:StringLike" && c.variable == "dynamodb:LeadingKeys" && toset(c.values) == toset(["USER#*", "TOKEN#*"])])
         ))
@@ -523,9 +566,11 @@ run "default_purchase_package_and_permissions_are_preserved" {
   assert {
     condition = (
       aws_lambda_function.purchase_handoff.s3_key == "releases/existing-release/purchase_handoff.zip" &&
+      aws_lambda_function.purchase_handoff.runtime == var.purchase_handoff_lambda_runtime &&
+      !contains(keys(aws_lambda_function.purchase_handoff.environment[0].variables), "PURCHASE_OWNERSHIP_CANDIDATE_ENABLED") &&
       !contains(keys(aws_lambda_function.purchase_handoff.environment[0].variables), "DELETION_LEDGER_TABLE_NAME") &&
       alltrue([for s in data.aws_iam_policy_document.purchase_handoff_runtime.statement :
-        !startswith(s.sid, "CheckPurchaseAuthority") && s.sid != "ReadPurchaseDeletionFence"
+        !startswith(s.sid, "CheckPurchaseAuthority") && !contains(["ReadPurchaseDeletionFence", "ReadPurchaseOwnershipInventory", "CheckPurchaseOwnershipInventory"], s.sid)
       ])
     )
     error_message = "Purchase fencing must not alter the default release or grant new ledger access."
@@ -568,7 +613,9 @@ run "age_attestation_candidate_is_pinned_with_atomic_ledger_fence" {
       one([for statement in data.aws_iam_policy_document.age_attestation_dynamodb.statement : statement if statement.sid == "UsersTableReadUpdate"]).actions == toset(["dynamodb:UpdateItem"]) &&
       one([for statement in data.aws_iam_policy_document.age_attestation_dynamodb.statement : statement if statement.sid == "PreventDeletedProfileReactivation"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]) &&
       alltrue([for statement in data.aws_iam_policy_document.age_attestation_dynamodb.statement :
-        anytrue([for condition in statement.condition : condition.variable == "dynamodb:EnclosingOperation" && toset(condition.values) == toset(["TransactWriteItems"])])
+        contains(statement.actions, "dynamodb:ConditionCheckItem") ?
+        alltrue([for condition in statement.condition : condition.variable != "dynamodb:EnclosingOperation"]) :
+        anytrue([for condition in statement.condition : condition.test == "ForAnyValue:StringEquals" && condition.variable == "dynamodb:EnclosingOperation" && toset(condition.values) == toset(["TransactWriteItems"])])
       ])
     )
     error_message = "Age attestation must update the profile only transactionally with the authoritative deletion fence and pinned corrected package."
@@ -615,4 +662,184 @@ run "another_environment_cannot_use_dev_account_data" {
     )
     error_message = "Invalid recovery storage must not supply a table name or cleanup IAM grant."
   }
+}
+
+run "purchase_cleanup_and_inventory_proofs_are_fenced" {
+  command = plan
+  assert {
+    condition = (
+      aws_lambda_function.account_data[0].environment[0].variables["ENTITLEMENTS_TABLE_NAME"] == "trustcheckradar-dev-purchase-entitlements" &&
+      aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_ENABLED"] == "false" &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "ReadAccountInventoryProof"]).actions == toset(["dynamodb:GetItem"]) &&
+      one(one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "ReadAccountInventoryProof"]).condition).values == tolist(["INVENTORY#dev"]) &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "EraseOwnedPurchaseTransaction"]).actions == toset(["dynamodb:DeleteItem"]) &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "EraseOwnedPurchaseTransaction"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"]) &&
+      one(one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "FindOwnedPurchaseCleanupTargets"]).condition).values == tolist(["USER#*"]) &&
+      alltrue([for sid in ["EraseOwnedPurchaseTransaction", "TransactionallyFenceAuthoritativeProfile"] :
+        anytrue([for c in one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == sid]).condition :
+          c.test == "ForAnyValue:StringEquals" && c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])
+          ]) && anytrue([for c in one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == sid]).condition :
+          c.test == "StringEqualsIfExists" && c.variable == "dynamodb:ReturnValues" && toset(c.values) == toset(["NONE"])
+        ])
+      ]) &&
+      alltrue([for s in data.aws_iam_policy_document.account_data[0].statement :
+        !anytrue([for action in s.actions : contains(["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem"], action)]) ||
+        alltrue([for c in s.condition : c.variable != "dynamodb:LeadingKeys" || alltrue([for key in c.values : !startswith(key, "INVENTORY#") && key != "*" && key != "PURCHASE#CONTROL"])])
+      ])
+    )
+    error_message = "Purchase erasure must be subject/transaction bounded, and workers must not write their own authoritative inventory approval rows."
+  }
+}
+
+run "account_data_checks_have_supported_context_without_recovery_preparation" {
+  command = plan
+  assert {
+    condition = alltrue([for sid, scope in {
+      CheckDeletionProofTransaction = {
+        arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"
+        keys = ["ACCOUNT#*", "INVENTORY#dev"]
+        test = "ForAllValues:StringLike"
+      }
+      CheckPurchaseCleanupInventory = {
+        arn  = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+        keys = ["PURCHASE#CONTROL"]
+        test = "ForAllValues:StringEquals"
+      }
+      } : alltrue([for st in [one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == sid])] :
+        st.actions == toset(["dynamodb:ConditionCheckItem"]) && st.resources == toset([scope.arn]) &&
+        length(st.condition) == 2 &&
+        alltrue([for c in st.condition : c.variable != "dynamodb:EnclosingOperation"]) &&
+        anytrue([for c in st.condition : c.test == scope.test && c.variable == "dynamodb:LeadingKeys" && toset(c.values) == toset(scope.keys)]) &&
+        anytrue([for c in st.condition : c.test == "StringEqualsIfExists" && c.variable == "dynamodb:ReturnValues" && toset(c.values) == toset(["NONE"])])
+    ])])
+    error_message = "Both account-data checks must preserve exact resources/key families and NONE without unsupported enclosing context, even when campaign recovery is unselected."
+  }
+}
+
+run "identity_finalizer_candidate_is_pinned_but_disabled" {
+  command = plan
+  variables {
+    account_data_finalization_candidate = {
+      manifest_sha256    = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      inventory_revision = 2
+      approval_reference = "synthetic-test-not-user-approval"
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_IDENTITY_FINALIZER_ENABLED"] == "false" &&
+      aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DELETION_ENABLED"] == "false" &&
+      aws_lambda_function.account_data[0].environment[0].variables["COGNITO_USERNAME_IS_SUB"] == "false" &&
+      aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DATA_INVENTORY_STATUS"] == "pending" &&
+      aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DATA_INVENTORY_MANIFEST_SHA256"] == var.account_data_finalization_candidate.manifest_sha256 &&
+      aws_lambda_function.account_data[0].environment[0].variables["ACCOUNT_DATA_INVENTORY_REVISION"] == "2" &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "FinalizeIdentityInOwnPool"]).actions == toset(["cognito-idp:AdminGetUser", "cognito-idp:AdminDeleteUser"]) &&
+      one([for s in data.aws_iam_policy_document.account_data[0].statement : s if s.sid == "FinalizeIdentityInOwnPool"]).resources == toset(["arn:aws:cognito-idp:us-east-1:107827791950:userpool/us-east-1_example"]) &&
+      !aws_lambda_event_source_mapping.account_data_revocation[0].enabled &&
+      aws_cloudwatch_event_rule.account_data_reconcile[0].state == "DISABLED" &&
+      output.account_data_candidate_contract.routes == []
+    )
+    error_message = "Reviewed finalizer pins grant only exact-pool IAM and must not activate admission, cleanup, identity mapping or routes."
+  }
+}
+
+run "identity_finalizer_requires_artifact" {
+  command = plan
+  variables {
+    account_data_deployment = null
+    account_data_finalization_candidate = {
+      manifest_sha256    = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      inventory_revision = 1
+      approval_reference = "synthetic-test-not-user-approval"
+    }
+  }
+  expect_failures = [var.account_data_finalization_candidate]
+}
+
+run "identity_finalizer_rejects_invalid_pins" {
+  command = plan
+  variables {
+    account_data_finalization_candidate = {
+      manifest_sha256    = "not-a-manifest"
+      inventory_revision = 1.5
+      approval_reference = ""
+    }
+  }
+  expect_failures = [var.account_data_finalization_candidate]
+}
+
+run "transition_prepares_without_changing_existing_source_or_users_permissions" {
+  command = plan
+  variables {
+    account_data_deployment          = null
+    profile_fence_deployment         = null
+    profile_fence_transition_enabled = true
+  }
+  assert {
+    condition = (
+      aws_lambda_function.age_attestation.s3_key == "releases/existing-release/age_attestation.zip" &&
+      aws_lambda_function.age_attestation.environment[0].variables["DELETION_LEDGER_TABLE_NAME"] == "trustcheckradar-dev-deletion-ledger" &&
+      one([for st in data.aws_iam_policy_document.age_attestation_dynamodb.statement : st if st.sid == "UsersTableReadUpdate"]).actions == toset(["dynamodb:GetItem", "dynamodb:UpdateItem"]) &&
+      length(one([for st in data.aws_iam_policy_document.age_attestation_dynamodb.statement : st if st.sid == "UsersTableReadUpdate"]).condition) == 0 &&
+      output.profile_fence_contract.transition_enabled &&
+      !output.profile_fence_contract.transactional_user_permissions &&
+      !output.profile_fence_contract.account_deletion_activation_approved
+    )
+    error_message = "Prepare must add exact ledger configuration while preserving old source and its users permissions."
+  }
+  assert {
+    condition = alltrue([for st in data.aws_iam_policy_document.age_attestation_dynamodb.statement :
+      contains(st.actions, "dynamodb:ConditionCheckItem") ? (
+        st.resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger"]) &&
+        alltrue([for c in st.condition : c.variable != "dynamodb:EnclosingOperation"]) &&
+        anytrue([for c in st.condition : c.variable == "dynamodb:LeadingKeys" && c.test == "ForAllValues:StringLike" && toset(c.values) == toset(["ACCOUNT#*"])]) &&
+        anytrue([for c in st.condition : c.variable == "dynamodb:ReturnValues" && c.test == "StringEqualsIfExists" && toset(c.values) == toset(["NONE"])])
+      ) : true
+    ])
+    error_message = "Transition must add only same-environment scoped condition checks with no returned ledger contents."
+  }
+}
+
+run "transition_pins_source_before_tightening_users_permissions" {
+  command = plan
+  variables {
+    account_data_deployment          = null
+    profile_fence_transition_enabled = true
+    profile_fence_deployment = {
+      release_id         = "profile-candidate", object_version = "immutable-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      approval_reference = "synthetic-test", promotion_approved = false
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.age_attestation.s3_key == "releases/profile-candidate/age_attestation.zip" &&
+      one([for st in data.aws_iam_policy_document.age_attestation_dynamodb.statement : st if st.sid == "UsersTableReadUpdate"]).actions == toset(["dynamodb:GetItem", "dynamodb:UpdateItem"]) &&
+      !output.profile_fence_contract.transactional_user_permissions
+    )
+    error_message = "Installation must allow old in-flight writes until source verification and drain complete."
+  }
+}
+
+run "transition_does_not_bypass_production_approval" {
+  command = plan
+  variables {
+    account_data_deployment          = null
+    profile_fence_transition_enabled = true
+    environment                      = "prod"
+  }
+  expect_failures = [var.profile_fence_transition_enabled]
+}
+
+run "transition_rejects_other_caller_account" {
+  command = plan
+  variables {
+    account_data_deployment          = null
+    profile_fence_transition_enabled = true
+    profile_fence_deployment         = null
+  }
+  override_data {
+    target = data.aws_caller_identity.account_fence[0]
+    values = { account_id = "999999999999" }
+  }
+  expect_failures = [aws_lambda_function.age_attestation]
 }

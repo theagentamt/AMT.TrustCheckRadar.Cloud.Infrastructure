@@ -1,0 +1,334 @@
+{
+  "aggregateAlarmHistory": [
+    {
+      "actionState": "Succeeded",
+      "snsTargetMatches": true,
+      "time": "2026-09-27T00:12:41.577000-05:00",
+      "type": "Action"
+    },
+    {
+      "newState": "ALARM",
+      "oldState": "OK",
+      "time": "2026-09-27T00:12:41.526000-05:00",
+      "type": "StateUpdate"
+    },
+    {
+      "time": "2026-09-27T00:10:45.725000-05:00",
+      "type": "ConfigurationUpdate"
+    }
+  ],
+  "alarms": [
+    {
+      "actionsEnabled": true,
+      "name": "trustcheckradar-dev-campaign-aggregate-failures",
+      "state": "OK",
+      "updatedAt": "2026-09-26T23:43:08.044000-05:00"
+    },
+    {
+      "actionsEnabled": true,
+      "name": "trustcheckradar-dev-campaign-aggregate-full-pass",
+      "state": "ALARM",
+      "updatedAt": "2026-09-27T00:12:41.526000-05:00"
+    },
+    {
+      "actionsEnabled": true,
+      "name": "trustcheckradar-dev-campaign-aggregate-heartbeat",
+      "state": "OK",
+      "updatedAt": "2026-09-27T00:12:53.685000-05:00"
+    },
+    {
+      "actionsEnabled": true,
+      "name": "trustcheckradar-dev-campaign-aggregate-unverified",
+      "state": "OK",
+      "updatedAt": "2026-09-26T23:43:18.041000-05:00"
+    },
+    {
+      "actionsEnabled": true,
+      "name": "trustcheckradar-dev-campaign-period-failures",
+      "state": "OK",
+      "updatedAt": "2026-09-26T23:43:14.265000-05:00"
+    },
+    {
+      "actionsEnabled": true,
+      "name": "trustcheckradar-dev-campaign-period-full-pass",
+      "state": "OK",
+      "updatedAt": "2026-09-26T23:42:17.773000-05:00"
+    },
+    {
+      "actionsEnabled": true,
+      "name": "trustcheckradar-dev-campaign-period-heartbeat",
+      "state": "OK",
+      "updatedAt": "2026-09-27T00:12:10.996000-05:00"
+    },
+    {
+      "actionsEnabled": true,
+      "name": "trustcheckradar-dev-campaign-period-stalled",
+      "state": "OK",
+      "updatedAt": "2026-09-26T23:42:20.488000-05:00"
+    },
+    {
+      "actionsEnabled": true,
+      "name": "trustcheckradar-dev-campaign-period-unverified",
+      "state": "OK",
+      "updatedAt": "2026-09-26T23:42:52.884000-05:00"
+    }
+  ],
+  "counts": {
+    "intelligence": 0,
+    "outbox": 0,
+    "pipeline": 18
+  },
+  "findings": [
+    "Initial aggregate full pass remains pending; initial ALARM is not reported as recovered."
+  ],
+  "functionRevisionId": "7ce64f78-a137-4eeb-a6af-34e146a314af",
+  "installedCodeMatchesFrozenSource": true,
+  "keyMetadata": [
+    {
+      "periodId": 1479,
+      "retireAfterEpoch": 1790812800,
+      "state": "Enabled"
+    },
+    {
+      "periodId": 1480,
+      "retireAfterEpoch": 1792022400,
+      "state": "Enabled"
+    }
+  ],
+  "metrics": {
+    "AggregateFailures": [
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ],
+    "AggregateFullPassAgeSeconds": [
+      {
+        "maximum": 1790485893.0,
+        "sum": 1790485893.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 1790486171.0,
+        "sum": 1790486171.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ],
+    "AggregateHeartbeat": [
+      {
+        "maximum": 1.0,
+        "sum": 1.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 1.0,
+        "sum": 1.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ],
+    "AggregateWorkDeleted": [
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ],
+    "AggregateWorkUnverified": [
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ],
+    "LifecycleBacklog": [
+      {
+        "maximum": 3.0,
+        "sum": 3.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 3.0,
+        "sum": 3.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ],
+    "LifecycleFailures": [
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ],
+    "LifecycleFullPassAgeSeconds": [
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ],
+    "LifecycleHeartbeat": [
+      {
+        "maximum": 1.0,
+        "sum": 1.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 1.0,
+        "sum": 1.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ],
+    "LifecycleWorkAttempted": [
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ],
+    "LifecycleWorkUnverified": [
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ],
+    "PrivacyDeadlineMissed": [
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:11:00-05:00"
+      },
+      {
+        "maximum": 0.0,
+        "sum": 0.0,
+        "time": "2026-09-27T00:16:00-05:00"
+      }
+    ]
+  },
+  "noAwsMutationsOrInvocations": true,
+  "observedAtUtc": "2026-09-27T05:19:29.333791+00:00",
+  "originalTargetsAndClocksPreserved": true,
+  "originalTargetsSha256": "3db0febd0a40d675fcbe7c97ecbd9f9840f1df8dac6f02d4fb519caad297c4c2",
+  "progress": {
+    "AGGREGATE_SWEEP#dev": {
+      "lastFullPassAtEpoch": 0,
+      "passIncomplete": false,
+      "revision": 4,
+      "shard": 4
+    },
+    "PERIOD_SWEEP#dev": {
+      "lastFullPassAtEpoch": 1790486195,
+      "lastTickAtEpoch": 1790486195,
+      "nextPeriodId": 1479,
+      "revision": 4
+    },
+    "PERIOD_WORK_CONTROL#1479": {
+      "lastFullPassAtEpoch": 1790486195,
+      "lastProgressAtEpoch": 0,
+      "nextOrdinal": 1,
+      "passCursor": 0,
+      "passHighWater": 0,
+      "pendingCount": 0,
+      "revision": 5
+    },
+    "PERIOD_WORK_CONTROL#1480": {
+      "lastFullPassAtEpoch": 1790486195,
+      "lastProgressAtEpoch": 0,
+      "nextOrdinal": 4,
+      "passCursor": 3,
+      "passHighWater": 3,
+      "pendingCount": 3,
+      "revision": 11
+    }
+  },
+  "readOnly": true,
+  "retirementEnabled": false,
+  "runtimeScope": {
+    "aggregateIndexQueryAndCursorTransactionsObserved": true,
+    "complete16ShardPassObserved": false,
+    "emptyIndexOnlyNoLiveDeletionClaim": true,
+    "lifecycleFullPassObserved": true,
+    "observedAggregateCursorRevision": 4,
+    "sourceInterpretation": "Each successful aggregate cursor revision follows an actual ExpirationIndex query and guarded cursor transaction; two shards per tick, sixteen shards per full pass. No claim of nonempty index deletion acceptance."
+  },
+  "schedules": [
+    {
+      "operation": "periods",
+      "retry": {
+        "MaximumEventAgeInSeconds": 300,
+        "MaximumRetryAttempts": 0
+      },
+      "schedule": "rate(5 minutes)",
+      "state": "ENABLED"
+    },
+    {
+      "operation": "aggregates",
+      "retry": {
+        "MaximumEventAgeInSeconds": 300,
+        "MaximumRetryAttempts": 0
+      },
+      "schedule": "rate(5 minutes)",
+      "state": "ENABLED"
+    }
+  ],
+  "schemaVersion": 1,
+  "sns": {
+    "trustcheckradar-dev-campaign-budget-alerts": {
+      "confirmedSupportEmailSubscription": true,
+      "individualEmailReceiptProven": false,
+      "topicAggregateMetrics": {
+        "NumberOfMessagesPublished": 1.0,
+        "NumberOfNotificationsDelivered": 1.0,
+        "NumberOfNotificationsFailed": 0.0
+      }
+    },
+    "trustcheckradar-dev-url-resolver-alerts": {
+      "confirmedSupportEmailSubscription": true,
+      "individualEmailReceiptProven": false,
+      "topicAggregateMetrics": {
+        "NumberOfMessagesPublished": 0,
+        "NumberOfNotificationsDelivered": 0,
+        "NumberOfNotificationsFailed": 0
+      }
+    }
+  },
+  "sourceCommit": "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "stablePipelineSha256": "5679328a71ab5e87c5fd0f7b0b1a00b5f9dd93617e001ce9dda38962b2bbacf9",
+  "zeroFailureAndUnverifiedMetricsObserved": true
+}

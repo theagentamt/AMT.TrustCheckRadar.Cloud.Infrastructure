@@ -1,0 +1,165 @@
+tests/account-data.tftest.hcl... in progress
+  run "default_creates_no_account_data_resources"... pass
+  run "candidate_monitoring_is_opt_in"... pass
+  run "stream_discovery_is_regional_and_reads_are_exact"... pass
+  run "account_monitoring_uses_source_metrics_without_activating_workers"... pass
+  run "monitoring_rejects_missing_candidate"... pass
+  run "monitoring_rejects_cross_account_topic"... pass
+  run "monitoring_rejects_cross_region_topic"... pass
+  run "monitoring_rejects_fifo_topic"... pass
+  run "candidate_rejects_foreign_deploying_account"... pass
+  run "candidate_is_immutable_private_and_fail_closed"... pass
+  run "account_data_permissions_scope_device_cleanup_and_reconciliation"... pass
+  run "account_reconciliation_remains_disabled_and_bounded"... pass
+  run "recovery_cleanup_has_exact_scope_and_approved_retention"... pass
+  run "analysis_cleanup_permissions_and_policy_gates_are_separate"... pass
+  run "outbox_cleanup_is_subject_scoped_and_coverage_gated"... pass
+  run "disabled_campaign_grants_no_outbox_cleanup_access"... pass
+  run "outbox_cleanup_rejects_another_account"... pass
+  run "participation_fence_is_pinned_and_transaction_scoped"... pass
+  run "default_participation_does_not_select_fence_release_or_permissions"... pass
+  run "participation_fence_rejects_mutable_artifact"... pass
+  run "participation_fence_rejects_cross_environment_tables"... pass
+  run "purchase_fence_is_pinned_and_authority_checked"... pass
+  run "default_purchase_package_and_permissions_are_preserved"... pass
+  run "profile_cleanup_is_subject_scoped_and_remains_pending"... pass
+  run "age_attestation_candidate_is_pinned_with_atomic_ledger_fence"... pass
+  run "default_age_attestation_remains_unchanged"... pass
+  run "mutable_account_data_artifact_is_rejected"... pass
+  run "another_environment_cannot_use_dev_account_data"... pass
+  run "purchase_cleanup_and_inventory_proofs_are_fenced"... pass
+  run "account_data_checks_have_supported_context_without_recovery_preparation"... pass
+  run "identity_finalizer_candidate_is_pinned_but_disabled"... pass
+  run "identity_finalizer_requires_artifact"... pass
+  run "identity_finalizer_rejects_invalid_pins"... pass
+  run "transition_prepares_without_changing_existing_source_or_users_permissions"... pass
+  run "transition_pins_source_before_tightening_users_permissions"... pass
+  run "transition_does_not_bypass_production_approval"... pass
+  run "transition_rejects_other_caller_account"... pass
+tests/account-data.tftest.hcl... tearing down
+tests/account-data.tftest.hcl... pass
+tests/account-deletion-activation.tftest.hcl... in progress
+  run "null_leaves_candidate_closed"... pass
+  run "workers_enable_reconciliation_before_admission"... pass
+  run "api_requires_prior_worker_evidence"... pass
+  run "api_exposes_only_authenticated_exact_routes"... pass
+  run "reject_missing_finalizer_pins"... pass
+  run "reject_missing_monitoring"... pass
+  run "reject_unprepared_recovery"... pass
+  run "reject_mismatched_source"... pass
+  run "reject_unsupported_phase"... pass
+  run "reject_unreviewed_identity"... pass
+  run "reject_missing_recovery_contract"... pass
+  run "reject_foreign_outbox"... pass
+  run "reject_missing_deletion_stream"... pass
+tests/account-deletion-activation.tftest.hcl... tearing down
+tests/account-deletion-activation.tftest.hcl... pass
+tests/account-export.tftest.hcl... in progress
+  run "default_has_no_export_surface"... pass
+  run "candidate_is_pinned_private_and_unavailable"... pass
+  run "export_permissions_are_read_only_and_credential_scoped"... pass
+  run "candidate_rejects_wrong_deploying_account"... pass
+  run "rejects_foreign_secret"... pass
+  run "rejects_other_environment_secret"... pass
+  run "rejects_unversioned_artifact"... pass
+  run "rejects_invalid_hash"... pass
+  run "campaign_projection_access_is_index_and_purpose_scoped"... pass
+  run "export_monitoring_is_opt_in"... pass
+  run "monitoring_matches_handled_failure_metrics"... pass
+  run "export_monitoring_rejects_missing_candidate"... pass
+  run "export_monitoring_rejects_foreign_topic"... pass
+  run "play_token_metadata_reader_stays_closed"... pass
+tests/account-export.tftest.hcl... tearing down
+tests/account-export.tftest.hcl... pass
+tests/campaign-outbox.tftest.hcl... in progress
+  run "analysis_can_query_device_bindings_indexes"... pass
+  run "disabled_analysis_has_no_campaign_access"... pass
+  run "enabled_analysis_uses_its_environment_outbox"... pass
+  run "cross_environment_campaign_state_is_rejected"... pass
+tests/campaign-outbox.tftest.hcl... tearing down
+tests/campaign-outbox.tftest.hcl... pass
+tests/campaign-participation.tftest.hcl... in progress
+  run "participation_api_is_authenticated_and_environment_scoped"... pass
+  run "participation_contract_keeps_consent_optional_and_quota_bounded"... pass
+tests/campaign-participation.tftest.hcl... tearing down
+tests/campaign-participation.tftest.hcl... pass
+tests/campaign-recovery.tftest.hcl... in progress
+  run "null_preserves_participation_checks_and_corrects_account_data_checks"... pass
+  run "preparation_retains_exact_account_data_and_participation_checks"... pass
+  run "preparation_preserves_source_and_deletion_gates"... pass
+  run "reject_missing_contract"... pass
+  run "reject_wrong_projection"... pass
+  run "reject_wrong_index_account"... pass
+  run "reject_wrong_shard_count"... pass
+  run "reject_upstream_writes_enabled"... pass
+  run "reject_unpinned_participation"... pass
+  run "reject_empty_review_reference"... pass
+  run "preparation_adds_only_confirmed_scoped_operations"... pass
+  run "general_environment_map_cannot_enable_recovery_writes"... pass
+  run "null_adds_no_new_operation_or_environment_grant"... pass
+tests/campaign-recovery.tftest.hcl... tearing down
+tests/campaign-recovery.tftest.hcl... pass
+tests/device-recovery.tftest.hcl... in progress
+  run "operator_recovery_rejects_consumer_jwt_authorization"... pass
+  run "operator_allowlist_cannot_be_overridden_by_generic_environment"... pass
+  run "operator_allowlist_rejects_wildcards"... pass
+  run "operator_allowlist_rejects_other_accounts"... pass
+  run "custom_operator_path_stays_exact"... pass
+  run "wildcard_operator_path_is_rejected"... pass
+  run "operator_path_cannot_replace_consumer_route"... pass
+  run "consumer_recovery_requires_coordinated_artifacts"... pass
+  run "consumer_recovery_is_pinned_scoped_and_fresh_auth_only"... pass
+  run "operator_candidate_has_pointer_permission_without_consumer_storage"... pass
+  run "consumer_recovery_cannot_leave_old_readers_deployed"... pass
+  run "disabled_operator_endpoint_creates_no_recovery_route"... pass
+  run "generic_environment_cannot_activate_consumers_or_weaken_reauthentication"... pass
+  run "coordinated_packages_do_not_imply_security_acceptance"... pass
+  run "acceptance_for_another_release_cannot_activate_consumers"... pass
+  run "contract_acceptance_rejects_malformed_or_missing_evidence"... pass
+  run "review_references_without_approval_do_not_activate_consumers"... pass
+  run "play_route_throttle_is_bounded"... pass
+  run "prepare_throttle_requires_explicit_route_selection"... pass
+tests/device-recovery.tftest.hcl... tearing down
+tests/device-recovery.tftest.hcl... pass
+tests/history.tftest.hcl... in progress
+  run "disabled_leaves_existing_analysis_untouched"... pass
+  run "candidate_is_pinned_disabled_and_access_token_only"... pass
+  run "runtime_permissions_are_scoped"... pass
+  run "activation_requires_active_cleanup"... pass
+  run "writes_require_durable_replay"... pass
+  run "active_cleanup_allows_explicit_activation"... pass
+  run "active_sweeps_without_account_deletion_are_insufficient"... pass
+  run "cross_environment_cleanup_is_rejected"... pass
+  run "same_names_in_another_account_are_rejected"... pass
+  run "shortened_dedup_retention_is_rejected"... pass
+tests/history.tftest.hcl... tearing down
+tests/history.tftest.hcl... pass
+tests/research-consent-migration.tftest.hcl... in progress
+  run "null_preserves_legacy_configuration"... pass
+  run "coordinated_candidate_is_pinned_and_consent_stays_closed"... pass
+  run "missing_artifact_is_rejected"... pass
+  run "unpinned_version_is_rejected"... pass
+  run "invalid_hash_is_rejected"... pass
+  run "unreviewed_consent_activation_is_rejected"... pass
+  run "unapproved_uat_is_rejected"... pass
+  run "active_history_writer_is_rejected"... pass
+  run "explicitly_reviewed_consent_activation_is_separate"... pass
+  run "active_campaign_pipeline_is_rejected"... pass
+  run "different_worker_release_is_rejected"... pass
+  run "foreign_worker_account_is_rejected"... pass
+tests/research-consent-migration.tftest.hcl... tearing down
+tests/research-consent-migration.tftest.hcl... pass
+tests/research-release-compatibility.tftest.hcl... in progress
+  run "reviewed_exact_pair_preserves_api_artifacts"... pass
+  run "default_still_rejects_different_releases"... pass
+  run "reject_stale_api"... pass
+  run "reject_stale_consumer"... pass
+  run "reject_missing_review"... pass
+  run "reject_active_consumers"... pass
+  run "reject_foreign_account"... pass
+  run "reject_wrong_environment"... pass
+  run "reject_no_migration"... pass
+tests/research-release-compatibility.tftest.hcl... tearing down
+tests/research-release-compatibility.tftest.hcl... pass
+
+Success! 133 passed, 0 failed.

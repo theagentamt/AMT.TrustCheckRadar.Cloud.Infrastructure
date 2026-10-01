@@ -1,0 +1,53 @@
+{
+  "complete": true,
+  "knownLegacyControlObservations": [
+    {
+      "control": "LEASE_SWEEP_CURSOR",
+      "cursorAbsentOrNull": true,
+      "cursorIsMap": false,
+      "exists": true,
+      "revisionIsIntegral": true
+    },
+    {
+      "control": "EXPIRY_SWEEP_CURSOR",
+      "cursorAbsentOrNull": true,
+      "cursorIsMap": false,
+      "exists": true,
+      "revisionIsIntegral": true
+    }
+  ],
+  "metadataShapeCounts": [
+    {
+      "count": 1,
+      "shape": {
+        "hashDelimiterCount": 1,
+        "knownPrefix": "V1#",
+        "knownRecordType": "ABSENT",
+        "pkLength": 10,
+        "skKnownFamily": "OTHER",
+        "skLength": 19,
+        "suffixHasLength64": false,
+        "suffixIsHex64": false,
+        "v1KeyIdIsCurrentK1": false
+      }
+    },
+    {
+      "count": 1,
+      "shape": {
+        "hashDelimiterCount": 1,
+        "knownPrefix": "V1#",
+        "knownRecordType": "ABSENT",
+        "pkLength": 10,
+        "skKnownFamily": "OTHER",
+        "skLength": 18,
+        "suffixHasLength64": false,
+        "suffixIsHex64": false,
+        "v1KeyIdIsCurrentK1": false
+      }
+    }
+  ],
+  "observedAtUtc": "2026-09-26T14:33:46.554211+00:00",
+  "scope": "No raw PK/SK or account identifiers retained. Shapes only; no application or key-material reads.",
+  "trackedCheckpointIsolationCommit": "28b4da19f321e6dc98ce2fc8b4e71632451b4362",
+  "unknownRows": 2
+}

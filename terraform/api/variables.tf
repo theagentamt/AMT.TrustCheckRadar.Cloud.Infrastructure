@@ -199,6 +199,86 @@ variable "age_attestation_log_retention_days" {
   default     = 14
 }
 
+variable "age_attestation_contract" {
+  description = "Reviewed authoritative age-attestation release pair. Null keeps the legacy Lambda/token behavior."
+  type = object({
+    approval_reference = string
+    promotion_approved = bool
+    artifacts = object({
+      age_attestation = object({
+        release_id     = string
+        object_version = string
+        source_hash    = string
+      })
+      post_confirmation = object({
+        release_id     = string
+        object_version = string
+        source_hash    = string
+      })
+    })
+  })
+  default = null
+
+  validation {
+    condition = var.age_attestation_contract == null ? true : try(
+      length(trimspace(var.age_attestation_contract.approval_reference)) > 0 &&
+      (var.environment == "dev" || var.age_attestation_contract.promotion_approved) &&
+      alltrue([for artifact in values(var.age_attestation_contract.artifacts) :
+        can(regex("^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$", artifact.release_id)) &&
+        length(trimspace(artifact.object_version)) > 0 && artifact.object_version != "null" &&
+        can(regex("^[A-Za-z0-9+/]{43}=$", artifact.source_hash))
+      ]), false
+    )
+    error_message = "Authoritative age attestation requires immutable age/post-confirmation release, object-version and hash pins, a review reference and separate UAT/Prod promotion approval."
+  }
+}
+
+variable "age_attestation_allowed_region_codes" {
+  description = "ISO regions accepted from the self-provided Cognito phone_number. This validates region only; it does not prove phone control, identity, seat ownership or recovery authority."
+  type        = set(string)
+  default     = ["US", "PR", "VI", "GU", "AS", "MP"]
+
+  validation {
+    condition = (
+      length(var.age_attestation_allowed_region_codes) > 0 &&
+      alltrue([for code in var.age_attestation_allowed_region_codes : can(regex("^[A-Z]{2}$", code))])
+    )
+    error_message = "age_attestation_allowed_region_codes must contain uppercase two-letter ISO region codes."
+  }
+}
+
+variable "age_attestation_canonical_base_url" {
+  description = "Canonical edge base URL handed to clients; execute-api remains available separately until all consumers migrate."
+  type        = string
+  default     = null
+  nullable    = true
+
+  validation {
+    condition = var.age_attestation_canonical_base_url == null ? true : can(
+      regex("^https://[A-Za-z0-9.-]+(?::[0-9]+)?$", var.age_attestation_canonical_base_url)
+    )
+    error_message = "age_attestation_canonical_base_url must be an HTTPS origin without a path or trailing slash."
+  }
+}
+
+variable "age_attestation_monitoring" {
+  description = "Optional same-account/Region SNS alarm destination. The established Dev topic is confirmed for support@andmorethings.com."
+  type        = object({ alarm_topic_arn = string })
+  default     = null
+
+  validation {
+    condition = var.age_attestation_monitoring == null ? true : try(
+      var.age_attestation_contract != null &&
+      can(regex(
+        "^arn:aws:sns:${var.aws_region}:${split(":", local.users_table_arn)[4]}:[A-Za-z0-9_-]+$",
+        var.age_attestation_monitoring.alarm_topic_arn,
+      )),
+      false,
+    )
+    error_message = "Age-attestation monitoring requires the reviewed contract and an exact same-account/Region standard SNS topic."
+  }
+}
+
 variable "api_stage_name" {
   description = "API Gateway stage name"
   type        = string
@@ -903,4 +983,24 @@ variable "cors_allow_methods" {
   description = "Allowed CORS methods for the HTTP API"
   type        = list(string)
   default     = ["OPTIONS", "GET", "POST", "PUT"]
+}
+
+variable "play_verification_route_throttle_enabled" {
+  description = "Install the dedicated modern Play route throttle after its separate closed verifier route exists."
+  type        = bool
+  default     = false
+  validation {
+    condition     = !var.play_verification_route_throttle_enabled || var.environment == "dev"
+    error_message = "Modern Play qualification is Dev-only."
+  }
+}
+
+variable "play_preparation_route_throttle_enabled" {
+  description = "Install prepare throttle only after the separately managed closed prepare route exists; never implied by the existing verify throttle."
+  type        = bool
+  default     = false
+  validation {
+    condition     = !var.play_preparation_route_throttle_enabled || var.environment == "dev"
+    error_message = "Play preparation qualification is Dev-only."
+  }
 }

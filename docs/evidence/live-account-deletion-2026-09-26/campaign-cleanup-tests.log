@@ -1,0 +1,8 @@
+tests/account-cleanup.tftest.hcl... in progress
+  run "cleanup_grants_only_aggregate_read_and_exact_checks"... pass
+  run "null_has_no_cleanup_policy"... pass
+  run "reject_uncoordinated_source"... pass
+tests/account-cleanup.tftest.hcl... tearing down
+tests/account-cleanup.tftest.hcl... pass
+
+Success! 3 passed, 0 failed.

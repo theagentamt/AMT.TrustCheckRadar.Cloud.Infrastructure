@@ -1,0 +1,49 @@
+{
+  "observedAtEpoch": 1790516506,
+  "sourceCommit": "9effc4f0a38d7d3191b687cb07c9dbda561d69f4",
+  "planSha256": "0de53e9f188d7976c6881d94d8289ff41f636ff2121f1e128007435eb2a50c7f",
+  "workers": [
+    {
+      "function": "trustcheckradar-dev-campaign-cluster-aggregator",
+      "codeSha256": "4tfrCzvCKOqxXmhLAflwhU6ZGylAgWqBLX65WuuE4Lk=",
+      "matchesReviewedPlan": true,
+      "environmentUnchanged": true
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-deletion-bridge",
+      "codeSha256": "17pm9szRM883etjt85jjIxbqmhYt1MWYjOezvrZ9vi8=",
+      "matchesReviewedPlan": true,
+      "environmentUnchanged": true
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-lifecycle",
+      "codeSha256": "vGWg97T/vr5NpkwZVn+o2iXugAd1tJIhaVmnTUExO2I=",
+      "matchesReviewedPlan": true,
+      "environmentUnchanged": true
+    },
+    {
+      "function": "trustcheckradar-dev-campaign-observation-publisher",
+      "codeSha256": "VsfS81kkmG8J5fL7ENve5Ep9+woeL28lkXsMNlXe0JI=",
+      "matchesReviewedPlan": true,
+      "environmentUnchanged": true
+    }
+  ],
+  "schedulerPolicies": [
+    {
+      "role": "trustcheckradar-dev-campaign-period-scheduler",
+      "policy": "invoke-period-lifecycle",
+      "exactPolicyUnchanged": true
+    },
+    {
+      "role": "trustcheckradar-dev-campaign-recovery-scheduler",
+      "policy": "invoke-campaign-recovery",
+      "exactPolicyUnchanged": true
+    },
+    {
+      "role": "trustcheckradar-dev-campaign-scheduler-role",
+      "policy": "invoke-lifecycle",
+      "exactPolicyUnchanged": true
+    }
+  ],
+  "allGatesAndOtherWorkerArtifactsPreserved": true
+}

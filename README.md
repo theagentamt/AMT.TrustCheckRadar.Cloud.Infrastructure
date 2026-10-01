@@ -52,13 +52,14 @@ terraform/
 scripts/
   terraform.sh           # Consistent local Terraform entry point
 .github/workflows/
-  ci.yml                 # Format and validate every change
+  ci.yml                 # Format and validate after main integration
   deploy.yml             # Ordered, environment-gated deployments
 ```
 
 ## Delivery Model
 
-- Pull requests and pushes run recursive formatting and validation.
+- Automatic GitHub CI runs recursive formatting and validation only after a push or merge to `main`.
+- Feature and `release-V01` changes run the appropriate checks locally; record the results and verify the pushed commit before merging. GitHub PR/release checks are not required.
 - A push to `main` deploys `dev` using the release configured in the GitHub `dev` environment.
 - UAT and production are promoted with the `Deploy infrastructure` workflow.
 - Manual deployments default to plan-only mode; rerun with `execution_mode=apply` after reviewing the plan.

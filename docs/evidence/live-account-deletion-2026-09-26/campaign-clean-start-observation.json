@@ -1,0 +1,596 @@
+{
+  "accountRegionVerified": true,
+  "allObservedCampaignAdmissionGatesClosed": true,
+  "auditSourceSha256": "37bdebb60d2a3741514840e6cac337dc10683cb189ef07223bab9f0a87dece45",
+  "complete": true,
+  "functions": {
+    "account-data-api": {
+      "aliases": [],
+      "architecture": [
+        "arm64"
+      ],
+      "campaignPotentialMutationStatements": [
+        {
+          "conditionPresent": true,
+          "statementSha256": "a3defe0abba8719935afc88adcc698975bc4d325041d86333cb69b7b19278b79",
+          "table": "outbox"
+        }
+      ],
+      "codeSha256": "gjo1nhjoKKpI5WH677W7dswRYhub06q70OE4Y0YRNRA=",
+      "configuredOutboxVerified": true,
+      "eventMappings": [
+        {
+          "sourceArnSha256": "21a948c84f9efefc8bd12ae13a52ce0eedf78ec278ca48d8c2d0d163f4c9e611",
+          "sourceMatchesTrackedPlan": true,
+          "state": "Disabled",
+          "targetUnqualifiedFunction": true
+        }
+      ],
+      "gates": {
+        "CAMPAIGN_RECOVERY_WRITES_ENABLED": "false"
+      },
+      "identityPolicyCount": 1,
+      "identityPolicySha256": [
+        "b6b1332d5d14b76b52c906afdd085968cf9b7e071f8d907038be70c499b8ef9d"
+      ],
+      "lastModified": "2026-09-26T13:26:41.000+0000",
+      "matchesPlannedCodeHash": false,
+      "matchesPlannedRole": true,
+      "outboxPotentialWriteStatements": [],
+      "roleArnSha256": "38ab7b466f8fac9abbba30eac93e4062fe63417874d738fb7f9183b4df5264ec",
+      "runtime": "python3.14",
+      "timeoutSeconds": 30,
+      "trackedFunction": true
+    },
+    "account-export-api": {
+      "aliases": [],
+      "architecture": [
+        "arm64"
+      ],
+      "campaignPotentialMutationStatements": [],
+      "codeSha256": "ynYTDY4o8nhqZOq+uIuyFTckEamaec1TWt9TKmRdsSk=",
+      "configuredOutboxVerified": true,
+      "eventMappings": [],
+      "gates": {},
+      "identityPolicyCount": 1,
+      "identityPolicySha256": [
+        "de5e9347a657d1ea75c553a5720ae2d13432c80d1f491f12a9afe962f7ce43b2"
+      ],
+      "lastModified": "2026-09-26T13:26:35.000+0000",
+      "matchesPlannedCodeHash": true,
+      "matchesPlannedRole": true,
+      "outboxPotentialWriteStatements": [],
+      "roleArnSha256": "9abcf20082f9b28ae32d45d52bafd924e11fbfe4a2d7ce659faf51e35f347dd6",
+      "runtime": "python3.14",
+      "timeoutSeconds": 29,
+      "trackedFunction": true
+    },
+    "campaign-cluster-aggregator": {
+      "aliases": [],
+      "architecture": [
+        "arm64"
+      ],
+      "campaignPotentialMutationStatements": [
+        {
+          "conditionPresent": true,
+          "statementSha256": "a2c125c2e9836b7fcbb2827f740a89a66a4aab110c0dd1127a3b310791bb3524",
+          "table": "pipeline"
+        }
+      ],
+      "codeSha256": "HbuW0wNMYig46812A5KX43fiAYtv+jaF3TN9WuDp+xU=",
+      "configuredOutboxVerified": true,
+      "eventMappings": [
+        {
+          "sourceArnSha256": "96d2616ffe3671aa28ada141718d760b0921fc92b93231b1743e2352432939d0",
+          "sourceMatchesTrackedPlan": true,
+          "state": "Disabled",
+          "targetUnqualifiedFunction": true
+        }
+      ],
+      "gates": {
+        "CAMPAIGN_LOCATOR_INVENTORY_REVISION": "0",
+        "CAMPAIGN_LOCATOR_MANIFEST_SHA256": "EMPTY",
+        "CAMPAIGN_PERIOD_ADMISSION_ENABLED": "false",
+        "CAMPAIGN_PERIOD_ADMISSION_GENERATION": "EMPTY"
+      },
+      "identityPolicyCount": 3,
+      "identityPolicySha256": [
+        "9943a19160a4b72c94d113dd8a65a7b595570b26cb86496b4c6fa4b2fdcb4cfd",
+        "c306fd2a4adf042fce4f44ba7b555b9db128707f5fad1c41590622e0c41bdcd6",
+        "dcc71a3c5a806683ef9a679b1bc8eae23aaaf392dec96faebd48a38d9d29967e"
+      ],
+      "lastModified": "2026-09-26T13:23:39.000+0000",
+      "matchesPlannedCodeHash": true,
+      "matchesPlannedRole": true,
+      "outboxPotentialWriteStatements": [],
+      "roleArnSha256": "ef3bf671b24e96d0daacee7d3965c404c352104f71e02c3906e740cfd2f316c2",
+      "runtime": "python3.14",
+      "timeoutSeconds": 30,
+      "trackedFunction": true
+    },
+    "campaign-deletion-bridge": {
+      "aliases": [],
+      "architecture": [
+        "arm64"
+      ],
+      "campaignPotentialMutationStatements": [
+        {
+          "conditionPresent": true,
+          "statementSha256": "afc269cc16ece33399f5e2e1d5edf0305f392c592f014a8066f31cc43d04de38",
+          "table": "pipeline"
+        }
+      ],
+      "codeSha256": "w3wa+YT63hwH5qahfdB0q/JdppbzK6Uw7KAI43ImkMk=",
+      "configuredOutboxVerified": true,
+      "eventMappings": [
+        {
+          "sourceArnSha256": "21a948c84f9efefc8bd12ae13a52ce0eedf78ec278ca48d8c2d0d163f4c9e611",
+          "sourceMatchesTrackedPlan": true,
+          "state": "Disabled",
+          "targetUnqualifiedFunction": true
+        }
+      ],
+      "gates": {
+        "CAMPAIGN_COMPLETION_ENABLED": "false",
+        "CAMPAIGN_COMPLETION_INVENTORY_REVISION": "0",
+        "CAMPAIGN_COMPLETION_MANIFEST_SHA256": "EMPTY",
+        "CAMPAIGN_DELETION_STREAM_ENABLED": "false",
+        "CAMPAIGN_LOCATOR_INVENTORY_REVISION": "0",
+        "CAMPAIGN_LOCATOR_MANIFEST_SHA256": "EMPTY",
+        "CAMPAIGN_PERIOD_ADMISSION_ENABLED": "false",
+        "CAMPAIGN_PERIOD_ADMISSION_GENERATION": "EMPTY",
+        "CAMPAIGN_RECOVERY_ENABLED": "false",
+        "CAMPAIGN_RECOVERY_INVENTORY_REVISION": "0",
+        "CAMPAIGN_RECOVERY_MANIFEST_SHA256": "EMPTY"
+      },
+      "identityPolicyCount": 6,
+      "identityPolicySha256": [
+        "17c0ba3a26fd3b4610dc0deb995a3ce2b07b467e37240922524c814d38e060d0",
+        "595584834728a83a2492cc7fdbd7a9c594d13da6a4ef8f25d9f3940db958d04e",
+        "5aabbbdba49df45baf6eee36f8e3a89d392e3dc93ebee8155f7d331f0feed931",
+        "d508505b1ecbd1d5713a2fd3114a1c4e1d3b3a6b8e6ce51701cc21361c87b2da",
+        "e48bb12845dca92a87e84304e4f15450d3c5539ee99fcf1b87cdc3095a4786fc",
+        "e61be842c1f01da71eab9b3a5072fba0270dd6b27fe53d69dcd29cadfe122b66"
+      ],
+      "lastModified": "2026-09-26T13:23:39.000+0000",
+      "matchesPlannedCodeHash": true,
+      "matchesPlannedRole": true,
+      "outboxPotentialWriteStatements": [],
+      "roleArnSha256": "95e1bbea3f5b97faa1bf8d2ecb3e994e89ac6201048766c3afd37fac9484b7c0",
+      "runtime": "python3.14",
+      "timeoutSeconds": 30,
+      "trackedFunction": true
+    },
+    "campaign-lifecycle": {
+      "aliases": [],
+      "architecture": [
+        "arm64"
+      ],
+      "campaignPotentialMutationStatements": [
+        {
+          "conditionPresent": true,
+          "statementSha256": "023e44827904b9cb3d36cd1dd40cbc4d7192be4e09ad5ae7a77b0a846dd8fc51",
+          "table": "pipeline"
+        },
+        {
+          "conditionPresent": true,
+          "statementSha256": "c958daeca049548d09fb6ede676c105a020f570eac336443c093d119076e63bb",
+          "table": "intelligence"
+        },
+        {
+          "conditionPresent": true,
+          "statementSha256": "20cb818eccf5ac191630db5188c0fec2c96c39762c80ac47db0367019742eda4",
+          "table": "pipeline"
+        }
+      ],
+      "codeSha256": "OquA9UqCumRUeC2rkksCnUtQm/anyBBgHudO9jlTsx8=",
+      "configuredOutboxVerified": true,
+      "eventMappings": [],
+      "gates": {
+        "CAMPAIGN_LIFECYCLE_CANDIDATE_ENABLED": "false",
+        "CAMPAIGN_LOCATOR_INVENTORY_REVISION": "0",
+        "CAMPAIGN_LOCATOR_MANIFEST_SHA256": "EMPTY",
+        "CAMPAIGN_PERIOD_ADMISSION_ENABLED": "false",
+        "CAMPAIGN_PERIOD_ADMISSION_GENERATION": "EMPTY"
+      },
+      "identityPolicyCount": 4,
+      "identityPolicySha256": [
+        "5dba7dae0096a2f2961af7798379e2f2ae69a63917fb34c10e791238e2eea9e6",
+        "ad87926bfe09657b5ceb827f6754a4542f5ed9a37a69872ba3dd875d4389d7d9",
+        "c54fdcee5a6a0924d57b9a0521c8a3fe82fb02d653f6419d034e19089274c8cc",
+        "d861cc613c31a05d85dba10c6ba73328bb429c6e02ac785ea39bba885dc5473a"
+      ],
+      "lastModified": "2026-09-26T13:23:39.000+0000",
+      "matchesPlannedCodeHash": true,
+      "matchesPlannedRole": true,
+      "outboxPotentialWriteStatements": [],
+      "roleArnSha256": "eed77b1be201e6023df0e947da626061a1263e934e3dbe2c2369e1eee77f4dd9",
+      "runtime": "python3.14",
+      "timeoutSeconds": 60,
+      "trackedFunction": true
+    },
+    "campaign-observation-publisher": {
+      "aliases": [],
+      "architecture": [
+        "arm64"
+      ],
+      "campaignPotentialMutationStatements": [
+        {
+          "conditionPresent": true,
+          "statementSha256": "a8de2a09774ff2fedb3b3aac8354ff33bf33906e53b3e388f6a0255062f5293e",
+          "table": "pipeline"
+        }
+      ],
+      "codeSha256": "L6UM2rin+UF/RT03Zp9lmETYAdZeH1zVyqC95eAe2K4=",
+      "configuredOutboxVerified": true,
+      "eventMappings": [
+        {
+          "sourceArnSha256": "98a0176cfa5ad186a3061392fd2a426ed28ce3a209751aa6db5bf5709d4dc93d",
+          "sourceMatchesTrackedPlan": true,
+          "state": "Disabled",
+          "targetUnqualifiedFunction": true
+        }
+      ],
+      "gates": {
+        "CAMPAIGN_LOCATOR_INVENTORY_REVISION": "0",
+        "CAMPAIGN_LOCATOR_MANIFEST_SHA256": "EMPTY",
+        "CAMPAIGN_PERIOD_ADMISSION_ENABLED": "false",
+        "CAMPAIGN_PERIOD_ADMISSION_GENERATION": "EMPTY"
+      },
+      "identityPolicyCount": 3,
+      "identityPolicySha256": [
+        "91c27ebaab044db6d0cc22aa987b39a6ea87e7805dc10edbab33011398751e8c",
+        "c306fd2a4adf042fce4f44ba7b555b9db128707f5fad1c41590622e0c41bdcd6",
+        "f1b53a90a4614faa7e02191c86339fe190fd6bcf6027dadcf5f014a862b3f45c"
+      ],
+      "lastModified": "2026-09-26T13:23:39.000+0000",
+      "matchesPlannedCodeHash": true,
+      "matchesPlannedRole": true,
+      "outboxPotentialWriteStatements": [],
+      "roleArnSha256": "0c3ba176fdee15c5f0e294de29d78fe720dfb6503784731947461cbf88dd1fdd",
+      "runtime": "python3.14",
+      "timeoutSeconds": 30,
+      "trackedFunction": true
+    },
+    "campaign-participation": {
+      "aliases": [],
+      "architecture": [
+        "arm64"
+      ],
+      "campaignPotentialMutationStatements": [],
+      "codeSha256": "p+wPYSC7BSxN5jYSffePQAu2DLZLfDhZ+cJLKP2dnX8=",
+      "configuredOutboxVerified": false,
+      "eventMappings": [],
+      "gates": {
+        "CAMPAIGN_RECOVERY_WRITES_ENABLED": "false"
+      },
+      "identityPolicyCount": 3,
+      "identityPolicySha256": [
+        "6b14fb4b08d29cca73f065dc9f85656dab223ab4356d62aa5d70940397113b1d",
+        "8992968b3dd4b9898b807c3af58ac8e5322f8991eef973e4ccdf877b1fed99cf",
+        "cc6490bc3e9e378bb9d74d524cc8c97fbfb41124e5cd520a80753a679a99a0e4"
+      ],
+      "lastModified": "2026-09-25T02:20:23.000+0000",
+      "matchesPlannedCodeHash": true,
+      "matchesPlannedRole": true,
+      "outboxPotentialWriteStatements": [],
+      "roleArnSha256": "40ef70db85af20b7005d9fa9e8cc5bcdc8a4a5e6f113de8e7a06d9c1d03ab57e",
+      "runtime": "python3.14",
+      "timeoutSeconds": 10,
+      "trackedFunction": true
+    },
+    "campaign-review": {
+      "aliases": [],
+      "architecture": [
+        "arm64"
+      ],
+      "campaignPotentialMutationStatements": [
+        {
+          "conditionPresent": false,
+          "statementSha256": "33fd4d4ca3abede0423ce117e44a14a4e1067c0461aa1efad690195266a45c1f",
+          "table": "intelligence"
+        }
+      ],
+      "codeSha256": "Rt7zx/3OYnwzBeC4wZVlrFIXtOxtLdK/i9nErXqAH9U=",
+      "configuredOutboxVerified": false,
+      "eventMappings": [],
+      "gates": {},
+      "identityPolicyCount": 1,
+      "identityPolicySha256": [
+        "376400bc7935324045765787a3c01c815bae286904fc5054f6e01995b5998879"
+      ],
+      "lastModified": "2026-09-08T05:05:39.000+0000",
+      "matchesPlannedCodeHash": false,
+      "matchesPlannedRole": false,
+      "outboxPotentialWriteStatements": [],
+      "roleArnSha256": "fa802419f1ca7ee3e7f88df88dbb7c998930638f1252880b11d879f53087e45d",
+      "runtime": "python3.13",
+      "timeoutSeconds": 10,
+      "trackedFunction": false
+    },
+    "campaign-trends": {
+      "aliases": [],
+      "architecture": [
+        "arm64"
+      ],
+      "campaignPotentialMutationStatements": [],
+      "codeSha256": "RlYd2VYTUFXnkI1SACzu/B8lqNw+y0HbnVZFCCrkvfY=",
+      "configuredOutboxVerified": false,
+      "eventMappings": [],
+      "gates": {},
+      "identityPolicyCount": 1,
+      "identityPolicySha256": [
+        "977d6131f013b542fdd801bbe999077754e28c1711726711627ddb047e8af29b"
+      ],
+      "lastModified": "2026-09-08T05:05:44.000+0000",
+      "matchesPlannedCodeHash": false,
+      "matchesPlannedRole": false,
+      "outboxPotentialWriteStatements": [],
+      "roleArnSha256": "f75c24642c10c3995369b253a0ae9830f1bd3edd221506b5fb4e3c92e7de581d",
+      "runtime": "python3.13",
+      "timeoutSeconds": 10,
+      "trackedFunction": false
+    },
+    "conversation-analysis": {
+      "aliases": [],
+      "architecture": [
+        "arm64"
+      ],
+      "campaignPotentialMutationStatements": [
+        {
+          "conditionPresent": true,
+          "statementSha256": "841486e82f1fbabc0ba9565bf38da2a19d8877af944bacc05c65618f0771ede0",
+          "table": "outbox"
+        }
+      ],
+      "codeSha256": "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=",
+      "configuredOutboxVerified": true,
+      "eventMappings": [],
+      "gates": {},
+      "identityPolicyCount": 4,
+      "identityPolicySha256": [
+        "1620a4b10a6d93dd57fc774a1edfd37975a4f6311e6fd45b6aa92f43bc4ef2fd",
+        "5cdeba7fb68376adbfe91d9bd98aea8db85893a418c76b66a79af0610876bea7",
+        "8992968b3dd4b9898b807c3af58ac8e5322f8991eef973e4ccdf877b1fed99cf",
+        "c02032cd895e957b4908f3c25123aae8d72159dc8163cbfd15bfc51817809187"
+      ],
+      "lastModified": "2026-09-22T02:07:15.000+0000",
+      "matchesPlannedCodeHash": true,
+      "matchesPlannedRole": true,
+      "outboxPotentialWriteStatements": [
+        {
+          "conditionPresent": true,
+          "statementSha256": "841486e82f1fbabc0ba9565bf38da2a19d8877af944bacc05c65618f0771ede0"
+        }
+      ],
+      "roleArnSha256": "aeb9c5a386cb17a04e2317736b6c52b3af17b255253ba1a1f3d056ddc93e5f83",
+      "runtime": "python3.14",
+      "timeoutSeconds": 30,
+      "trackedFunction": true
+    }
+  },
+  "historicalErasureVerified": false,
+  "inventoryApproved": false,
+  "limitations": [
+    "Strongly consistent base scans are separate observations, not a transaction snapshot or writer lock.",
+    "Current configs and supplied Terraform plans do not reconstruct every historical deployment or unmanaged copy.",
+    "Projection excludes application content and detects all non-control rows; it does not validate unprojected control attributes.",
+    "Existing API outbox writer permission is reported; closed downstream gates alone do not prevent upstream insertion.",
+    "PITR snapshots remain subject to disclosed retention and explicit restore quarantine; this audit neither restores nor approves them."
+  ],
+  "liveAfter": {
+    "allTraversalsComplete": true,
+    "bounds": {
+      "callStartSeconds": 60,
+      "maxPagesPerTable": 10,
+      "pageSize": 100
+    },
+    "erasureVerified": false,
+    "inventoryApproved": false,
+    "limitations": [
+      "Full strongly consistent base-table scans are separate observations, not one snapshot or a range lock.",
+      "Physically present expired data and tombstones are blockers; TTL/age is not erasure.",
+      "Projection classifies keys and selected metadata, not unprojected attributes or all record schemas.",
+      "Non-control rows are conservatively unassigned blockers, including every legacy/unknown key family.",
+      "No source content, tokens, keys or pagination values are retained; key ARNs are used in memory only.",
+      "Current live-table observations do not prove historical erasure, writer/restore safety, or inventory approval."
+    ],
+    "observedAtUtc": "2026-09-26T13:40:01.262900+00:00",
+    "onlyRecognizedControlKeysObserved": true,
+    "schemaVersion": 1,
+    "tables": {
+      "intelligence": {
+        "categories": {
+          "locatorInventoryKey": 0,
+          "nonControlOrUnknown": 0,
+          "otherPeriodRegistry": 0,
+          "targetPeriodRegistry": 0,
+          "unknown": 0
+        },
+        "complete": true,
+        "pages": 1,
+        "rows": 0
+      },
+      "outbox": {
+        "categories": {
+          "locatorInventoryKey": 0,
+          "nonControlOrUnknown": 0,
+          "otherPeriodRegistry": 0,
+          "targetPeriodRegistry": 0,
+          "unknown": 0
+        },
+        "complete": true,
+        "pages": 1,
+        "rows": 0
+      },
+      "pipeline": {
+        "categories": {
+          "locatorInventoryKey": 0,
+          "nonControlOrUnknown": 0,
+          "otherPeriodRegistry": 1,
+          "targetPeriodRegistry": 1,
+          "unknown": 0
+        },
+        "complete": true,
+        "pages": 1,
+        "rows": 2
+      }
+    },
+    "targetPeriod": 1478
+  },
+  "liveBefore": {
+    "allTraversalsComplete": true,
+    "bounds": {
+      "callStartSeconds": 60,
+      "maxPagesPerTable": 10,
+      "pageSize": 100
+    },
+    "erasureVerified": false,
+    "inventoryApproved": false,
+    "limitations": [
+      "Full strongly consistent base-table scans are separate observations, not one snapshot or a range lock.",
+      "Physically present expired data and tombstones are blockers; TTL/age is not erasure.",
+      "Projection classifies keys and selected metadata, not unprojected attributes or all record schemas.",
+      "Non-control rows are conservatively unassigned blockers, including every legacy/unknown key family.",
+      "No source content, tokens, keys or pagination values are retained; key ARNs are used in memory only.",
+      "Current live-table observations do not prove historical erasure, writer/restore safety, or inventory approval."
+    ],
+    "observedAtUtc": "2026-09-26T13:39:48.613146+00:00",
+    "onlyRecognizedControlKeysObserved": true,
+    "schemaVersion": 1,
+    "tables": {
+      "intelligence": {
+        "categories": {
+          "locatorInventoryKey": 0,
+          "nonControlOrUnknown": 0,
+          "otherPeriodRegistry": 0,
+          "targetPeriodRegistry": 0,
+          "unknown": 0
+        },
+        "complete": true,
+        "pages": 1,
+        "rows": 0
+      },
+      "outbox": {
+        "categories": {
+          "locatorInventoryKey": 0,
+          "nonControlOrUnknown": 0,
+          "otherPeriodRegistry": 0,
+          "targetPeriodRegistry": 0,
+          "unknown": 0
+        },
+        "complete": true,
+        "pages": 1,
+        "rows": 0
+      },
+      "pipeline": {
+        "categories": {
+          "locatorInventoryKey": 0,
+          "nonControlOrUnknown": 0,
+          "otherPeriodRegistry": 1,
+          "targetPeriodRegistry": 1,
+          "unknown": 0
+        },
+        "complete": true,
+        "pages": 1,
+        "rows": 2
+      }
+    },
+    "targetPeriod": 1478
+  },
+  "liveKeysToolSha256": "c6c97f1d934d0821911ed79f7ad6dd80fae77dc4a623b0099a3b1b0dc6304123",
+  "observedAtUtc": "2026-09-26T13:39:46.237561+00:00",
+  "observedRowsStableAcrossTraversals": true,
+  "planSha256": [
+    "faffa26eb09a6d36e8b74f42bb2b7855044c0cfdc9ce53eb33b4cba4c4af017a",
+    "0bd3de13dc9195ee14df86dcd0820378fc4d35e57262a71221eac843c8697d17"
+  ],
+  "projectFunctionEnumerationComplete": true,
+  "projectFunctionsEnumerated": 31,
+  "readOnly": true,
+  "schedules": [
+    {
+      "matchesTrackedTarget": true,
+      "nameSha256": "6186a9abfb1b3cad72b9442d2695390b1feb8ed6bee880f9d35378b4fb3a71cc",
+      "state": "DISABLED"
+    },
+    {
+      "matchesTrackedTarget": true,
+      "nameSha256": "a703a6b903e2db92f96383d338e14a57d318e8cd4b89401fc4abf8a36e330b89",
+      "state": "DISABLED"
+    },
+    {
+      "matchesTrackedTarget": true,
+      "nameSha256": "e1e5ca4e79af279e895d49e033f07d12c3929fe9ccf589d6e028858fef767328",
+      "state": "DISABLED"
+    },
+    {
+      "matchesTrackedTarget": true,
+      "nameSha256": "2e4010aa5f9d5a7fedfdd3911a37eab17303cdbfa82381c8a4671ff522bcd0c4",
+      "state": "DISABLED"
+    }
+  ],
+  "schemaVersion": 1,
+  "tables": {
+    "deletion-ledger": {
+      "createdAtUtc": "2026-09-04T02:19:27.005000+00:00",
+      "earliestRestorableUtc": "2026-09-04T02:19:40+00:00",
+      "latestRestorableUtc": "2026-09-26T13:34:48.582000+00:00",
+      "pitrStatus": "ENABLED",
+      "replicaCount": 0,
+      "restoreSummaryPresent": false,
+      "status": "ACTIVE",
+      "tableArnSha256": "11b14525e991cb38917cdaca003b2ff73c55a3953204b89d5e313b809d68fd73",
+      "tableIdSha256": "621535dc6a17a0e1793ca5f52ce1f1a704a319ed142aaf1fdd7a48672a06e371",
+      "trackedArnVerified": true
+    },
+    "intelligence": {
+      "createdAtUtc": "2026-09-06T23:21:12.684000+00:00",
+      "earliestRestorableUtc": "2026-09-06T23:26:53+00:00",
+      "latestRestorableUtc": "2026-09-26T13:34:48.212000+00:00",
+      "pitrStatus": "ENABLED",
+      "replicaCount": 0,
+      "restoreSummaryPresent": false,
+      "status": "ACTIVE",
+      "tableArnSha256": "f1057abb63eacd91ec763ce7270ea99356d26577565be33f1d7ef71237ee1ac9",
+      "tableIdSha256": "123c034b7e234392b46d9225416f264c8a843c80d72c676ca1934d7031805d13",
+      "trackedArnVerified": true
+    },
+    "outbox": {
+      "createdAtUtc": "2026-09-06T23:21:14.722000+00:00",
+      "earliestRestorableUtc": null,
+      "latestRestorableUtc": null,
+      "pitrStatus": "DISABLED",
+      "replicaCount": 0,
+      "restoreSummaryPresent": false,
+      "status": "ACTIVE",
+      "tableArnSha256": "786237475c68893e9bd8d077b6bea4a567e86b3848e66729153b2f5bf2f7928f",
+      "tableIdSha256": "0016865de47b1cbbc31dfd5cc018dba6b48f72fe5acc43784e26cdf7e6c1c10f",
+      "trackedArnVerified": true
+    },
+    "pipeline": {
+      "createdAtUtc": "2026-09-06T23:21:12.717000+00:00",
+      "earliestRestorableUtc": null,
+      "latestRestorableUtc": null,
+      "pitrStatus": "DISABLED",
+      "replicaCount": 0,
+      "restoreSummaryPresent": false,
+      "status": "ACTIVE",
+      "tableArnSha256": "6693c554d034c2ea6e612cb2c319e1e4c84c4bda7ea2d6b3cae6520235338d82",
+      "tableIdSha256": "6a2d8fc9194b9549962c565a9530bd0a4e0755d861d8f139bdb7141c4136d2f1",
+      "trackedArnVerified": true
+    },
+    "users": {
+      "createdAtUtc": "2026-09-04T02:19:26.995000+00:00",
+      "earliestRestorableUtc": "2026-09-04T02:19:54+00:00",
+      "latestRestorableUtc": "2026-09-26T13:34:48.404000+00:00",
+      "pitrStatus": "ENABLED",
+      "replicaCount": 0,
+      "restoreSummaryPresent": false,
+      "status": "ACTIVE",
+      "tableArnSha256": "8ac49f8c8686d3eba244c2ed42948f7b4cc24a337a7a3bd30eb7bcfe4103cdf0",
+      "tableIdSha256": "713bfed42fabf2273632e109a64325fb0c241cbd408426a24cd379da1b531db4",
+      "trackedArnVerified": true
+    }
+  }
+}

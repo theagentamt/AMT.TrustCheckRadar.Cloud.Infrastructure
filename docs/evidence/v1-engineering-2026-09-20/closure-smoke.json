@@ -1,0 +1,19 @@
+{
+  "sourceCommit": "84733306d62dd57df883b4425fa5305db6c4a62d",
+  "passed": true,
+  "phase": "authoritative_unadmitted_closure",
+  "httpStatus": 200,
+  "state": "rejected",
+  "errorCode": "OPERATION_EXPIRED",
+  "accounting": {
+    "state": "not_started",
+    "chargedChecks": 0,
+    "receiptId": null,
+    "requiresReconciliation": false
+  },
+  "outcome": null,
+  "duplicateReconciliationPassed": true,
+  "providerSubmissionCount": 0,
+  "caveat": "The first reconciliation assertion failed and its response was not captured. A subsequent sanitized diagnostic observed the expected closure; two further explicit URL-free reconciliations passed exact assertions. The initial response cause remains unproven.",
+  "scope": "One allowlisted synthetic Dev account; no customer activation or full account deletion claim."
+}

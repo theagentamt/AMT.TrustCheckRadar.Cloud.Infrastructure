@@ -1,0 +1,86 @@
+{
+  "observedAtEpoch": 1790484225,
+  "functions": {
+    "conversation_analysis": {
+      "codeSha256": "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=",
+      "reservedConcurrency": 0,
+      "closedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "false"
+      },
+      "eventMappingsDisabled": true,
+      "timeout": 30
+    },
+    "account_data_api": {
+      "codeSha256": "7gXjecACio4Di2m383J+pwUkFz1yzLCcGqbNJ3359kY=",
+      "reservedConcurrency": 0,
+      "closedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "false",
+        "ACCOUNT_DELETION_ENABLED": "false",
+        "ACCOUNT_IDENTITY_FINALIZER_ENABLED": "false"
+      },
+      "eventMappingsDisabled": true,
+      "timeout": 30
+    },
+    "campaign_observation_publisher": {
+      "codeSha256": "L6UM2rin+UF/RT03Zp9lmETYAdZeH1zVyqC95eAe2K4=",
+      "reservedConcurrency": 0,
+      "closedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "false"
+      },
+      "eventMappingsDisabled": true,
+      "timeout": 30
+    },
+    "campaign_cluster_aggregator": {
+      "codeSha256": "HbuW0wNMYig46812A5KX43fiAYtv+jaF3TN9WuDp+xU=",
+      "reservedConcurrency": 0,
+      "closedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "false"
+      },
+      "eventMappingsDisabled": true,
+      "timeout": 30
+    },
+    "campaign_deletion_bridge": {
+      "codeSha256": "w3wa+YT63hwH5qahfdB0q/JdppbzK6Uw7KAI43ImkMk=",
+      "reservedConcurrency": 0,
+      "closedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "false",
+        "CAMPAIGN_DELETION_STREAM_ENABLED": "false",
+        "CAMPAIGN_COMPLETION_ENABLED": "false",
+        "CAMPAIGN_RECOVERY_ENABLED": "false"
+      },
+      "eventMappingsDisabled": true,
+      "timeout": 30
+    },
+    "campaign_lifecycle": {
+      "codeSha256": "OquA9UqCumRUeC2rkksCnUtQm/anyBBgHudO9jlTsx8=",
+      "reservedConcurrency": 0,
+      "closedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "false",
+        "CAMPAIGN_LIFECYCLE_CANDIDATE_ENABLED": "false",
+        "CAMPAIGN_PERIOD_LIFECYCLE_ENABLED": "false",
+        "CAMPAIGN_PERIOD_RETIREMENT_ENABLED": "false"
+      },
+      "eventMappingsDisabled": true,
+      "timeout": 60
+    },
+    "account_export_api": {
+      "codeSha256": "ynYTDY4o8nhqZOq+uIuyFTckEamaec1TWt9TKmRdsSk=",
+      "reservedConcurrency": 0,
+      "closedGates": {
+        "CAMPAIGN_PERIOD_WORK_ENABLED": "false",
+        "ACCOUNT_EXPORT_ENABLED": "false"
+      },
+      "eventMappingsDisabled": true,
+      "timeout": 29
+    },
+    "campaign_review": {
+      "codeSha256": "Rt7zx/3OYnwzBeC4wZVlrFIXtOxtLdK/i9nErXqAH9U=",
+      "reservedConcurrency": 0,
+      "closedGates": {},
+      "eventMappingsDisabled": true,
+      "timeout": 10
+    }
+  },
+  "allClosed": true,
+  "accountDataReconcileState": "DISABLED"
+}

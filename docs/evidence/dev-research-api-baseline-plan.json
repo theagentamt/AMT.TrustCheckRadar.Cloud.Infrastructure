@@ -1,0 +1,9 @@
+{
+  "revision": "0ff0af91e05e24e471f2b489ed098ed0fc80b8c7",
+  "environment": "dev",
+  "stack": "api",
+  "candidateSelected": false,
+  "planSha256": "2246884258a836c539d48635836af1573bb14ce86f433a7a48cff162065ae66d",
+  "changes": [],
+  "applyAuthorizedByThisReport": false
+}

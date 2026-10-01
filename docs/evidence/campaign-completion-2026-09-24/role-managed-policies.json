@@ -1,0 +1,26 @@
+{
+  "observedAtUtc": "2026-09-24T21:46:32.255617+00:00",
+  "roles": {
+    "cluster": {
+      "attachedPolicies": [],
+      "permissionsBoundary": null,
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-cluster-aggregator-role"
+    },
+    "deletion": {
+      "attachedPolicies": [],
+      "permissionsBoundary": null,
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-deletion-bridge-role"
+    },
+    "lifecycle": {
+      "attachedPolicies": [],
+      "permissionsBoundary": null,
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-lifecycle-role"
+    },
+    "publisher": {
+      "attachedPolicies": [],
+      "permissionsBoundary": null,
+      "roleArn": "arn:aws:iam::107827791950:role/trustcheckradar-dev-campaign-observation-publisher-role"
+    }
+  },
+  "scope": "read-only campaign role managed policies and boundary metadata"
+}

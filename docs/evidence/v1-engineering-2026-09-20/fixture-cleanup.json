@@ -1,0 +1,11 @@
+{
+  "syntheticCognitoUserDeleted": true,
+  "syntheticProfileAndBindingsDeleted": true,
+  "syntheticLedgerReceiptsRemoved": true,
+  "deletedRows": {
+    "users": 1,
+    "device-bindings": 2,
+    "deletion-ledger": 2
+  },
+  "fullAccountDeletionQualified": false
+}

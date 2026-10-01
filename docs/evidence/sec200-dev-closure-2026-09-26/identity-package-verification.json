@@ -1,0 +1,8 @@
+{
+  "sourceSha": "de60324aac7616d05207ad46351c936fc61841eb",
+  "zipSha256": "20de7bd11e481642960822a37c9fa6915bb5fa603e703a764b5aebd01da2287e",
+  "pythonMembersVerified": 98,
+  "allMembersMatchFrozenGit": true,
+  "handler": "cognito_qualification.lambda_handler",
+  "productionArtifactsDeployed": false
+}

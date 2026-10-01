@@ -1,0 +1,98 @@
+{
+  "actionClassification": {
+    "ConditionCheck:CONTRIB": 3,
+    "ConditionCheck:INVENTORY": 1,
+    "ConditionCheck:PERIOD": 1,
+    "Put:INVENTORY": 1,
+    "Put:PERIOD": 2,
+    "Put:PERIOD_WORK": 3,
+    "Put:PERIOD_WORK_CONTROL": 2,
+    "Put:WORK_LOOKUP": 3
+  },
+  "bootstrapPlanSha256": "846c202da97253b2fa8577206dd4c872715df8251783af307c33b24c31d1dbfd",
+  "candidateManifestSha256": "530cffa187ba552450229308407a188adcd955e4701bdb273f3780bb7e27c2ac",
+  "externalApprovalStillRequired": true,
+  "findings": [],
+  "finishedAtUtc": "2026-09-27T05:03:36.982413+00:00",
+  "freshSourceResourceClosureAndBaselineMatch": true,
+  "initialControls": [
+    {
+      "nextOrdinal": 1,
+      "pendingCount": 0,
+      "periodId": 1479
+    },
+    {
+      "nextOrdinal": 4,
+      "pendingCount": 3,
+      "periodId": 1480
+    }
+  ],
+  "noAwsWritesOrInvokes": true,
+  "observedAtUtc": "2026-09-27T05:03:25.903036+00:00",
+  "priorIamCases": 109,
+  "readOnly": true,
+  "registryChanges": [
+    {
+      "admissionSchemaVersion": 2,
+      "admissionState": "CLOSING",
+      "periodId": 1479,
+      "retirementStateIntroduced": false
+    },
+    {
+      "admissionSchemaVersion": 2,
+      "admissionState": "OPEN",
+      "periodId": 1480,
+      "retirementStateIntroduced": false
+    }
+  ],
+  "retiredRegistryConditionOnly": true,
+  "reviewInventorySha256": "31695c1ad9ac9d0b9382cbfd9a50dc535dcb1b03f2dbe7ad64fc612484790ef0",
+  "reviewPassed": true,
+  "roles": {
+    "account_data_api": {
+      "allSourcesMatch109CaseQualifiedUnion": true,
+      "liveInventoryMatchesCandidate": true,
+      "projectedDdbOnlyRuntimeProof": true
+    },
+    "account_export_api": {
+      "allSourcesMatch109CaseQualifiedUnion": true,
+      "liveInventoryMatchesCandidate": true,
+      "projectedDdbOnlyRuntimeProof": true
+    },
+    "campaign_cluster_aggregator": {
+      "allSourcesMatch109CaseQualifiedUnion": true,
+      "liveInventoryMatchesCandidate": true,
+      "projectedDdbOnlyRuntimeProof": true
+    },
+    "campaign_deletion_bridge": {
+      "allSourcesMatch109CaseQualifiedUnion": true,
+      "liveInventoryMatchesCandidate": true,
+      "projectedDdbOnlyRuntimeProof": true
+    },
+    "campaign_lifecycle": {
+      "allSourcesMatch109CaseQualifiedUnion": true,
+      "liveInventoryMatchesCandidate": true,
+      "projectedDdbOnlyRuntimeProof": true
+    },
+    "campaign_observation_publisher": {
+      "allSourcesMatch109CaseQualifiedUnion": true,
+      "liveInventoryMatchesCandidate": true,
+      "projectedDdbOnlyRuntimeProof": true
+    },
+    "campaign_review": {
+      "allSourcesMatch109CaseQualifiedUnion": false,
+      "liveInventoryMatchesCandidate": true,
+      "matchesReviewedTerraformPolicy": true,
+      "scope": "Eighth paused aggregate-review writer is outside seven-role fixture; no runtime IAM claim."
+    },
+    "conversation_analysis": {
+      "allSourcesMatch109CaseQualifiedUnion": true,
+      "liveInventoryMatchesCandidate": true,
+      "projectedDdbOnlyRuntimeProof": true
+    }
+  },
+  "schemaVersion": 1,
+  "sevenCurrentPackagesAndRetiredAnalysisBindingMatch": true,
+  "sourceCommit": "9147d545b719e54c1f967e35042bc502d79bc0f1",
+  "tombstonesConditionOnly": true
+}

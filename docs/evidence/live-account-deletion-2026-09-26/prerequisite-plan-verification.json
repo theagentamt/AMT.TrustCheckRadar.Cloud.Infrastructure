@@ -1,0 +1,74 @@
+{
+  "verified": true,
+  "mode": "target",
+  "planJsonSha256": "ced2c67e57cd762fd766985da6246b97281dc13daa16e51350057a40d16aa2d6",
+  "sourceSha": "cab9a2a3976e52b64b75057a8432b1506a365b02",
+  "allGatesClosed": true,
+  "changes": [
+    {
+      "address": "aws_iam_role_policy.lifecycle_runtime[0]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.period_admission[\"cluster\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.period_admission[\"lifecycle\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_iam_role_policy.period_admission[\"publisher\"]",
+      "actions": [
+        "create"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"cluster\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"deletion\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"lifecycle\"]",
+      "actions": [
+        "update"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.worker[\"publisher\"]",
+      "actions": [
+        "update"
+      ]
+    }
+  ],
+  "fullSourcePolicySha256": {
+    "publisher": {
+      "auditedRuntime": "c0509d31f4ab545413b929bd64f9bf8c5eaa1acc4e3bd0393fa363c3d39a4321",
+      "plannedRuntime": "c0509d31f4ab545413b929bd64f9bf8c5eaa1acc4e3bd0393fa363c3d39a4321",
+      "newAdmissionPolicy": "5027176ed01667421dccd114e04dd8fac62a9261f5a41519eaae154d775c43fb"
+    },
+    "cluster": {
+      "auditedRuntime": "fb3dd61f727f6830c9ce05f3b5357ddea864911d4f571041153c4fcf920e6135",
+      "plannedRuntime": "fb3dd61f727f6830c9ce05f3b5357ddea864911d4f571041153c4fcf920e6135",
+      "newAdmissionPolicy": "5027176ed01667421dccd114e04dd8fac62a9261f5a41519eaae154d775c43fb"
+    },
+    "lifecycle": {
+      "auditedRuntime": "12b6c5e162f853cde48bc27cf0144123c38e88ed4a1a3b91a15e75530149aa1c",
+      "plannedRuntime": "27dd9c201e14f08d56bddbfcebdd8fdae3f59c3b9ca359dd3221f3c2cdfb42d0",
+      "newAdmissionPolicy": "2db4e1b3c492b1650c3226d042b836e161fba3e4b35515c91cfb417effb58701"
+    }
+  }
+}

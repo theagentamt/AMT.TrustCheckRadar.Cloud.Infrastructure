@@ -1,0 +1,498 @@
+{
+  "observedAt": "2026-09-21T20:19:54.290064+00:00",
+  "environment": "dev",
+  "accountId": "107827791950",
+  "region": "us-east-1",
+  "scope": "read-only-plan-no-apply",
+  "providerVersion": "6.65.0",
+  "terraformVersion": "1.12.1",
+  "configuredArtifactRelease": "e7b9e84211406cc6e1587f86ac0bd0a67af4d3c2",
+  "managedResourceActions": [],
+  "refreshDriftKeys": [
+    {
+      "address": "aws_apigatewayv2_api.age_attestation",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_authorizer.cognito_jwt",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_integration.age_attestation_lambda",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_integration.analysis_lambda",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_integration.campaign_participation_lambda",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_integration.device_recovery_lambda[0]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_integration.device_registration_lambda",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_integration.entitlement_snapshot_lambda",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_integration.history[\"mutation\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_integration.history[\"read\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_integration.purchase_handoff_lambda",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_integration.web_risk_communication_lambda[0]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.age_attestation",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.analysis",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.campaign_participation_get",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.campaign_participation_put",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.device_recovery[0]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.device_registration",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.entitlement_snapshot",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.history[\"bootstrap\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.history[\"clear\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.history[\"delete\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.history[\"detail\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.history[\"export\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.history[\"list\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.history[\"progress\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.history[\"reset\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.purchase_handoff",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_route.web_risk_communication[0]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_apigatewayv2_stage.age_attestation",
+      "changedKeys": [
+        "deployment_id",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.age_attestation_api",
+      "changedKeys": [
+        "deletion_protection_enabled",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.age_attestation_lambda",
+      "changedKeys": [
+        "deletion_protection_enabled",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.analysis_lambda",
+      "changedKeys": [
+        "deletion_protection_enabled",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.campaign_participation_lambda",
+      "changedKeys": [
+        "deletion_protection_enabled",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.device_recovery_lambda[0]",
+      "changedKeys": [
+        "deletion_protection_enabled",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.device_registration_lambda",
+      "changedKeys": [
+        "deletion_protection_enabled",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.entitlement_snapshot_lambda",
+      "changedKeys": [
+        "deletion_protection_enabled",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.history_api[\"mutation\"]",
+      "changedKeys": [
+        "deletion_protection_enabled",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.history_api[\"read\"]",
+      "changedKeys": [
+        "deletion_protection_enabled",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.purchase_handoff_lambda",
+      "changedKeys": [
+        "deletion_protection_enabled",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_cloudwatch_log_group.web_risk_communication_lambda[0]",
+      "changedKeys": [
+        "deletion_protection_enabled",
+        "region"
+      ]
+    },
+    {
+      "address": "aws_iam_role.history_api[\"mutation\"]",
+      "changedKeys": [
+        "inline_policy"
+      ]
+    },
+    {
+      "address": "aws_iam_role.history_api[\"read\"]",
+      "changedKeys": [
+        "inline_policy"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.age_attestation",
+      "changedKeys": [
+        "region",
+        "response_streaming_invoke_arn",
+        "source_kms_key_arn"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.analysis",
+      "changedKeys": [
+        "region",
+        "response_streaming_invoke_arn",
+        "source_kms_key_arn"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.campaign_participation",
+      "changedKeys": [
+        "region",
+        "response_streaming_invoke_arn",
+        "source_kms_key_arn"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.device_recovery[0]",
+      "changedKeys": [
+        "region",
+        "response_streaming_invoke_arn",
+        "source_kms_key_arn"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.device_registration",
+      "changedKeys": [
+        "region",
+        "response_streaming_invoke_arn",
+        "source_kms_key_arn"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.entitlement_snapshot",
+      "changedKeys": [
+        "region",
+        "response_streaming_invoke_arn",
+        "source_kms_key_arn"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.history_api[\"mutation\"]",
+      "changedKeys": [
+        "region",
+        "response_streaming_invoke_arn",
+        "source_kms_key_arn"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.history_api[\"read\"]",
+      "changedKeys": [
+        "region",
+        "response_streaming_invoke_arn",
+        "source_kms_key_arn"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.purchase_handoff",
+      "changedKeys": [
+        "region",
+        "response_streaming_invoke_arn",
+        "source_kms_key_arn"
+      ]
+    },
+    {
+      "address": "aws_lambda_function.web_risk_communication[0]",
+      "changedKeys": [
+        "region",
+        "response_streaming_invoke_arn",
+        "source_kms_key_arn"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.allow_api_gateway_invoke_age_attestation",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.allow_api_gateway_invoke_analysis",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.allow_api_gateway_invoke_campaign_participation",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.allow_api_gateway_invoke_device_recovery[0]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.allow_api_gateway_invoke_device_registration",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.allow_api_gateway_invoke_entitlement_snapshot",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.allow_api_gateway_invoke_purchase_handoff",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.allow_api_gateway_invoke_web_risk_communication[0]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.history_gateway[\"bootstrap\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.history_gateway[\"clear\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.history_gateway[\"delete\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.history_gateway[\"detail\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.history_gateway[\"export\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.history_gateway[\"list\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.history_gateway[\"progress\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_lambda_permission.history_gateway[\"reset\"]",
+      "changedKeys": [
+        "region"
+      ]
+    },
+    {
+      "address": "aws_secretsmanager_secret.google_play[0]",
+      "changedKeys": [
+        "region",
+        "type"
+      ]
+    },
+    {
+      "address": "aws_secretsmanager_secret.history_cursor[0]",
+      "changedKeys": [
+        "region",
+        "type"
+      ]
+    },
+    {
+      "address": "aws_secretsmanager_secret.openai[0]",
+      "changedKeys": [
+        "region",
+        "type"
+      ]
+    },
+    {
+      "address": "aws_secretsmanager_secret.web_risk[0]",
+      "changedKeys": [
+        "region",
+        "type"
+      ]
+    }
+  ],
+  "outputChanges": {
+    "device_self_recovery_contract": [
+      "update"
+    ]
+  },
+  "limitations": [
+    "Plan used current Dev inputs with account-data and account-export candidates disabled.",
+    "No apply, saved state write or resource mutation performed.",
+    "Plan is evidence only; regenerate after artifact or configuration changes before any rollout.",
+    "Contains no secret values, customer rows or complete state/plan payload."
+  ]
+}

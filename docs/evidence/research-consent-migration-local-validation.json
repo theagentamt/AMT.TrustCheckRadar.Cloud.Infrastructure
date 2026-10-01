@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "scope": "local mocked infrastructure tests; no AWS deployment or data migration",
+  "baseCommit": "ea123c961d428146d66883627646a31e9a2c5a03",
+  "terraformVersion": "1.12.1",
+  "checks": [
+    {
+      "command": "terraform -chdir=terraform/api test -no-color",
+      "passed": 89,
+      "failed": 0
+    },
+    {
+      "command": "terraform -chdir=terraform/campaign-processing test -no-color",
+      "passed": 16,
+      "failed": 0
+    },
+    {
+      "command": "terraform validate (both stacks)",
+      "result": "passed"
+    },
+    {
+      "command": "terraform fmt -check (changed Terraform files)",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "fileSha256": {
+    "terraform/api/main.tf": "30766021e3cb8fec7ecc72a780a0323de2c55e11df83143bf2aa010f4cc00c7a",
+    "terraform/api/account-fence-identity.tf": "00efe2ba68b618b713fd22008e08f0f8ee09d5578a9d22358b326eff117c4a12",
+    "terraform/api/research-consent-migration.tf": "00eeeb7aa54b50b07d33afee33f0a605c43b846e507ba952b1cdb6b6811e3269",
+    "terraform/api/tests/research-consent-migration.tftest.hcl": "c0f0310fd9364211b2a85f4e9aa5dc30bef1850d8b8f04dcca7946807a3ef371",
+    "terraform/campaign-processing/main.tf": "1e5907055e5f3df26936e560e0e91ec9512348057edb06e57fa3b70694773c83",
+    "terraform/campaign-processing/privacy-artifacts.tf": "faa4e73a989225948018e118209f5607810c05754862821548ac8941bf47c8ab",
+    "terraform/campaign-processing/tests/privacy.tftest.hcl": "91ea0d20e5a8d28ed0ef989ff400e972b99fa8c15941c8d896ed9130a6c2f34f"
+  },
+  "liveQualified": false,
+  "inventoryApproved": false,
+  "limitations": [
+    "IAM and remote-state inputs are synthetic.",
+    "No customer-data inventory or operator apply.",
+    "No deployed route/alias verification, customer-device result, cleanup or restore acceptance.",
+    "Modern paid/trial/complimentary service availability requires its own qualification before cutover."
+  ]
+}

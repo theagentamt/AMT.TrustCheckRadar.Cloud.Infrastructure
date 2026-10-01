@@ -45,7 +45,7 @@ data "aws_iam_policy_document" "github_assume_role" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:ref"
-      values   = ["refs/heads/main"]
+      values   = each.key == "dev" ? ["refs/heads/main", "refs/heads/release-V01"] : ["refs/heads/main"]
     }
   }
 }
@@ -419,7 +419,7 @@ data "aws_iam_policy_document" "lambda_publish_assume_role" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:ref"
-      values   = ["refs/heads/main"]
+      values   = each.key == "dev" ? ["refs/heads/main", "refs/heads/release-V01"] : ["refs/heads/main"]
     }
   }
 }
