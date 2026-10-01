@@ -37,6 +37,15 @@ resource "aws_iam_role_policy" "consumer" {
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*"] } } },
       { Sid = "AtomicAuthorityMutations", Effect = "Allow", Action = ["dynamodb:PutItem", "dynamodb:UpdateItem"], Resource = local.authority_arn,
       Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*#*"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } },
+      { Sid = "MessageProviderBudget", Effect = "Allow", Action = ["dynamodb:UpdateItem"], Resource = local.authority_arn,
+        Condition = {
+          "ForAllValues:StringEquals" = {
+            "dynamodb:LeadingKeys" = ["V1#CONTROL"]
+            "dynamodb:Attributes"  = ["PK", "SK", "recordType", "revision", "windowStart", "attempts", "failures"]
+          }
+          "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] }
+        }
+      },
       { Sid = "ExistingHmacKeyRing", Effect = "Allow", Action = "secretsmanager:GetSecretValue", Resource = var.deployment.authority_hmac_secret_arn,
       Condition = { StringEquals = { "secretsmanager:VersionStage" = "AWSCURRENT" } } },
       { Sid = "OnePrivateEvaluatorAlias", Effect = "Allow", Action = "lambda:InvokeFunction", Resource = local.evaluator_alias_arn },
@@ -87,8 +96,8 @@ resource "aws_lambda_function" "runtime" {
       MESSAGE_AI_POLICY_VERSION         = "message-ai-2026-09-21-v1"
       MESSAGE_AI_POLICY_APPROVAL_SHA256 = "d6e9fff12225540bef9ba7833cce457cca4b9c791af3b49dd8a4f1601d204349"
       }, each.key == "consumer" ? {
-      MESSAGE_CONSUMER_ENABLED       = "false"
-      AUTHORITY_ENABLED              = "false"
+      MESSAGE_CONSUMER_ENABLED       = tostring(var.activate_rules_engineering)
+      AUTHORITY_ENABLED              = tostring(var.activate_rules_engineering)
       AUTHORITY_TABLE_NAME           = split("/", local.authority_arn)[1]
       USERS_TABLE_NAME               = split("/", var.deployment.users_table_arn)[1]
       DEVICE_BINDINGS_TABLE_NAME     = split("/", var.deployment.devices_table_arn)[1]
@@ -98,14 +107,28 @@ resource "aws_lambda_function" "runtime" {
       COGNITO_REQUIRED_SCOPE         = "aws.cognito.signin.user.admin"
       AUTHORITY_HMAC_SECRET_ARN      = var.deployment.authority_hmac_secret_arn
       AUTHORITY_POLICY_VERSION       = "owner-2026-09-20-v1"
+      DEV_SUBJECT_ALLOWLIST_JSON     = jsonencode(sort(tolist(var.engineering_subjects)))
       MESSAGE_EVALUATOR_FUNCTION_ARN = local.evaluator_alias_arn
-      MESSAGE_PROVIDER_CIRCUIT_OPEN  = "true"
+      MESSAGE_PROVIDER_CIRCUIT_OPEN  = tostring(!var.activate_rules_engineering)
       } : {
-      MESSAGE_EVALUATOR_ENABLED   = "false"
+      MESSAGE_EVALUATOR_ENABLED   = tostring(var.activate_rules_engineering)
       MESSAGE_PROPOSER_ENABLED    = "false"
       MESSAGE_AI_QUALIFIED        = "false"
       URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn
-    })
+      }, each.key == "consumer" && var.authority_configuration != null ? {
+      OPERATION_VALIDITY_SECONDS = tostring(var.authority_configuration.operation_validity_seconds)
+      WORKER_SETTLEMENT_SECONDS  = tostring(var.authority_configuration.worker_settlement_seconds)
+      RECONCILIATION_SECONDS     = tostring(var.authority_configuration.reconciliation_seconds)
+      RECEIPT_RETENTION_SECONDS  = "604800"
+      COUNTER_RETENTION_SECONDS  = tostring(var.authority_configuration.counter_retention_seconds)
+      ATTEMPT_WINDOW_SECONDS     = "60"
+      ATTEMPTS_PER_WINDOW        = "20"
+      MAX_INFLIGHT               = "2"
+      } : {}, each.key == "consumer" && var.provider_budget != null ? {
+      MESSAGE_PROVIDER_WINDOW_SECONDS      = tostring(var.provider_budget.window_seconds)
+      MESSAGE_PROVIDER_ATTEMPTS_PER_WINDOW = tostring(var.provider_budget.max_attempts_per_window)
+      MESSAGE_PROVIDER_FAILURES_PER_WINDOW = tostring(var.provider_budget.max_failures_per_window)
+    } : {})
   }
   depends_on = [aws_iam_role_policy.consumer, aws_iam_role_policy.evaluator]
   tags       = var.tags

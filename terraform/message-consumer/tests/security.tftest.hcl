@@ -18,7 +18,7 @@ variables {
 run "disabled_creates_no_runtime" {
   command = plan
   assert {
-    condition     = length(aws_lambda_function.runtime) == 0 && length(aws_iam_role.runtime) == 0 && length(aws_iam_role_policy.consumer) == 0 && length(aws_iam_role_policy.evaluator) == 0 && length(aws_cloudwatch_metric_alarm.runtime) == 0 && output.candidate_contract.consumer_endpoint == null
+    condition     = length(aws_lambda_function.runtime) == 0 && length(aws_iam_role.runtime) == 0 && length(aws_iam_role_policy.consumer) == 0 && length(aws_iam_role_policy.evaluator) == 0 && length(aws_cloudwatch_metric_alarm.runtime) == 0 && length(output.candidate_contract.consumer_routes) == 0
     error_message = "Default configuration must create nothing and advertise no endpoint."
   }
 }
@@ -97,7 +97,17 @@ run "candidate_is_isolated_and_inactive" {
     error_message = "Native runtime alarms must use bounded function dimensions and the existing confirmed support alert path."
   }
   assert {
-    condition     = jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"] == ["TransactWriteItems"] && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAllValues:StringLike"]["dynamodb:LeadingKeys"] == ["V1#*#*"] && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Resource == var.deployment.authority_hmac_secret_arn && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition.StringEquals["secretsmanager:VersionStage"] == "AWSCURRENT" && jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[5].Resource == aws_lambda_alias.runtime["evaluator"].arn
+    condition = (
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"] == ["TransactWriteItems"] &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[3].Condition["ForAllValues:StringLike"]["dynamodb:LeadingKeys"] == ["V1#*#*"] &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Action == ["dynamodb:UpdateItem"] &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition["ForAllValues:StringEquals"]["dynamodb:LeadingKeys"] == ["V1#CONTROL"] &&
+      toset(jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition["ForAllValues:StringEquals"]["dynamodb:Attributes"]) == toset(["PK", "SK", "recordType", "revision", "windowStart", "attempts", "failures"]) &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"] == ["TransactWriteItems"] &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[5].Resource == var.deployment.authority_hmac_secret_arn &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[5].Condition.StringEquals["secretsmanager:VersionStage"] == "AWSCURRENT" &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[6].Resource == aws_lambda_alias.runtime["evaluator"].arn
+    )
     error_message = "Consumer must reuse the existing fenced ledger/HMAC and invoke only the private evaluator alias."
   }
   assert {
@@ -118,7 +128,7 @@ run "candidate_is_isolated_and_inactive" {
     error_message = "Evaluator must have no authority/storage/secret access and only the exact private URL-assessment invocation grant."
   }
   assert {
-    condition     = alltrue([for f in aws_lambda_function_event_invoke_config.no_async_retries : f.maximum_retry_attempts == 0]) && output.candidate_contract.authority_reused && !output.candidate_contract.secret_value_in_state && output.candidate_contract.consumer_endpoint == null
+    condition     = alltrue([for f in aws_lambda_function_event_invoke_config.no_async_retries : f.maximum_retry_attempts == 0]) && output.candidate_contract.authority_reused && !output.candidate_contract.secret_value_in_state && length(output.candidate_contract.consumer_routes) == 0
     error_message = "Candidate must not add automatic retries, new authority, secret values or public endpoints."
   }
 }
