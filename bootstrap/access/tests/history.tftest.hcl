@@ -97,3 +97,23 @@ run "history_monitoring_permissions_are_environment_scoped" {
     error_message = "History monitoring deployment must not grant cross-environment or account-wide write access."
   }
 }
+
+run "environment_monitoring_permissions_cover_only_matching_resources" {
+  command = plan
+  assert {
+    condition = alltrue([for environment, document in data.aws_iam_policy_document.github_deploy :
+      length([for statement in document.statement : statement if statement.sid == "ManageEnvironmentObservability"]) == 1 &&
+      one([for statement in document.statement : statement if statement.sid == "ManageEnvironmentObservability"]).effect == "Allow" &&
+      toset(one([for statement in document.statement : statement if statement.sid == "ManageEnvironmentObservability"]).resources) == toset([
+        "arn:aws:cloudwatch:us-east-1:107827791950:alarm:trustcheckradar-${environment}-*",
+        "arn:aws:cloudwatch::107827791950:dashboard/trustcheckradar-${environment}-*",
+      ]) &&
+      toset(one([for statement in document.statement : statement if statement.sid == "ManageEnvironmentObservability"]).actions) == toset([
+        "cloudwatch:DeleteAlarms", "cloudwatch:DeleteDashboards", "cloudwatch:GetDashboard",
+        "cloudwatch:ListTagsForResource", "cloudwatch:PutDashboard", "cloudwatch:PutMetricAlarm",
+        "cloudwatch:TagResource", "cloudwatch:UntagResource",
+      ])
+    ])
+    error_message = "Environment monitoring deployment must cover all same-environment alarms and dashboards without account-wide resources."
+  }
+}
