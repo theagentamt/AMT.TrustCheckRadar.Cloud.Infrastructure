@@ -285,25 +285,6 @@ data "aws_iam_policy_document" "github_deploy" {
   }
 
   statement {
-    sid    = "ManageEnvironmentObservability"
-    effect = "Allow"
-    actions = [
-      "cloudwatch:DeleteAlarms",
-      "cloudwatch:DeleteDashboards",
-      "cloudwatch:GetDashboard",
-      "cloudwatch:ListTagsForResource",
-      "cloudwatch:PutDashboard",
-      "cloudwatch:PutMetricAlarm",
-      "cloudwatch:TagResource",
-      "cloudwatch:UntagResource",
-    ]
-    resources = [
-      "arn:aws:cloudwatch:${var.aws_region}:${data.aws_caller_identity.current.account_id}:alarm:${var.project_name}-${each.key}-*",
-      "arn:aws:cloudwatch::${data.aws_caller_identity.current.account_id}:dashboard/${var.project_name}-${each.key}-*",
-    ]
-  }
-
-  statement {
     sid    = "ReadCampaignObservability"
     effect = "Allow"
     actions = [
