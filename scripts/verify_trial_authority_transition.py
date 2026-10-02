@@ -16,6 +16,12 @@ ACCOUNT = "107827791950"
 REGION = "us-east-1"
 PREFIX = "trustcheckradar-dev"
 BUCKET = f"{PREFIX}-{ACCOUNT}-artifacts"
+OPERATOR_ROLE = f"arn:aws:iam::{ACCOUNT}:role/{PREFIX}-complimentary-operator"
+OPERATOR_ASSUMER = (
+    f"arn:aws:iam::{ACCOUNT}:role/aws-reserved/sso.amazonaws.com/"
+    "AWSReservedSSO_AdministratorAccess_6659317f1273c022"
+)
+OPERATOR_APPROVAL = "SECUR4ALL-232 owner-approved operator control and one-year audit retention"
 FUNCTIONS = {"consumer", "entitlements", "recovery", "deletion"}
 TRANSITION_ADDRESSES = {
     *(f'aws_lambda_function.runtime["{name}"]' for name in FUNCTIONS),
@@ -120,10 +126,14 @@ def _expected_environment(name, variables, active, secret_arn):
     if name == "consumer":
         authority_environment["URL_ASSESSMENT_FUNCTION_ARN"] = variables["deployment"]["assessment_alias_arn"]
     else:
+        operator = variables.get("complimentary_operator") or {}
+        operator_active = operator.get("active") is True
         authority_environment.update({
-            "COMPLIMENTARY_OPERATOR_ENABLED": "false",
+            "COMPLIMENTARY_OPERATOR_ENABLED": str(operator_active).lower(),
             "COMPLIMENTARY_AUDIT_RETENTION_SECONDS": "31536000",
-            "COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON": "[]",
+            "COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON": json.dumps(
+                [OPERATOR_ROLE] if operator_active else [], separators=(",", ":")
+            ),
         })
     return authority_environment
 
@@ -169,6 +179,13 @@ def review(plan, revision, mode):
         raise ValueError("Transition must reuse the reviewed Dev API.")
     if variables.get("alert_topic_arn") != f"arn:aws:sns:{REGION}:{ACCOUNT}:{PREFIX}-url-resolver-alerts":
         raise ValueError("Transition must retain the confirmed Dev alert topic.")
+    if variables.get("complimentary_operator") != {
+        "active": True,
+        "trusted_assumer_arn": OPERATOR_ASSUMER,
+        "api_stage_name": "$default",
+        "approval_reference": OPERATOR_APPROVAL,
+    }:
+        raise ValueError("Transition must preserve the reviewed active complimentary operator.")
     if variables.get("deletion_stream_arn") != (
         f"arn:aws:dynamodb:{REGION}:{ACCOUNT}:table/{PREFIX}-deletion-ledger/stream/2026-09-06T23:20:47.091"
     ):
@@ -259,6 +276,9 @@ def review(plan, revision, mode):
         "provisioned": True, "consumer_enabled": False, "recovery_enabled": active,
         "access_enabled": active, "deletion_enabled": True, "trial_activation_enabled": active,
         "access_only_engineering": False, "trial_only_engineering": active,
+        "complimentary_operator_provisioned": True, "complimentary_operator_active": True,
+        "complimentary_operator_role_arn": OPERATOR_ROLE,
+        "complimentary_operator_route": "POST /v1/operator/complimentary-access",
         "general_customer_access": False, "engineering_subject_count": len(subjects),
         "secret_value_in_state": False,
     }
