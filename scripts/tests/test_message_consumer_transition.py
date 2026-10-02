@@ -147,6 +147,21 @@ class MessageConsumerTransitionTests(unittest.TestCase):
         self.assertEqual(result[1], RELEASE)
         self.assertEqual(result[3:], (4, 1))
 
+    def test_exact_terraform_cli_boolean_literal_is_accepted(self):
+        plan = fixture("engineering")
+        plan["variables"]["activate_rules_engineering"]["value"] = "true"
+        self.assertEqual(
+            transition.review(plan, REVISION, "engineering")[3:],
+            (4, 1),
+        )
+
+    def test_noncanonical_terraform_cli_boolean_is_rejected(self):
+        for value in ("TRUE", "1", 1, None):
+            plan = fixture("engineering")
+            plan["variables"]["activate_rules_engineering"]["value"] = value
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                transition.review(plan, REVISION, "engineering")
+
     def test_wrong_subject_budget_and_ai_configuration_are_rejected(self):
         two_subjects = fixture("engineering")
         two_subjects["variables"]["engineering_subjects"]["value"].append(

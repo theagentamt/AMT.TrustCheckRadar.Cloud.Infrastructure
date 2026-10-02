@@ -36,6 +36,15 @@ def _variables(plan):
     return {key: value.get("value") for key, value in plan.get("variables", {}).items()}
 
 
+def _terraform_bool(value):
+    """Normalize only Terraform's typed boolean and exact CLI boolean literals."""
+    if value is True or value == "true":
+        return True
+    if value is False or value == "false":
+        return False
+    raise ValueError("Invalid Terraform boolean value.")
+
+
 def _decode_hash(value):
     try:
         decoded = base64.b64decode(value, validate=True)
@@ -129,7 +138,7 @@ def review(plan, revision, mode):
         or variables.get("aws_region") != REGION
         or variables.get("project_name") != PROJECT
         or variables.get("enabled") is not True
-        or variables.get("activate_rules_engineering") is not active
+        or _terraform_bool(variables.get("activate_rules_engineering")) is not active
     ):
         raise ValueError("Transition must target only the selected Dev message mode.")
     if active:
