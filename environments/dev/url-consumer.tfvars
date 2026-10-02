@@ -123,5 +123,5 @@ complimentary_operator = {
   active              = true
   trusted_assumer_arn = "arn:aws:iam::107827791950:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_6659317f1273c022"
   api_stage_name      = "$default"
-  approval_reference = "SECUR4ALL-232 owner-approved operator control and one-year audit retention"
+  approval_reference  = "SECUR4ALL-232 owner-approved operator control and one-year audit retention"
 }
