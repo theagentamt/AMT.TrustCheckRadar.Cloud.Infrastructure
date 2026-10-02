@@ -72,13 +72,28 @@ variable "activate_access_engineering" {
   default     = false
   validation {
     condition = !var.activate_access_engineering || (
-      !var.activate_engineering && var.enabled && var.environment == "dev" &&
+      !var.activate_engineering && !var.activate_trial_engineering && var.enabled && var.environment == "dev" &&
       length(var.engineering_subjects) > 0 && var.authority_configuration != null &&
       var.api_gateway != null && var.alert_topic_arn != null && var.deletion_stream_arn != "" &&
       try(contains(keys(var.deployment.artifacts), "deletion"), false) &&
       length(trimspace(var.access_qualification_reference)) > 0
     )
     error_message = "Access-only qualification requires exact subjects, policy, authenticated routing, alerts, deletion/expiry cleanup, a recorded readiness reference and full engineering mode off."
+  }
+}
+variable "activate_trial_engineering" {
+  description = "Restricted Dev access snapshots and explicit trial activation only; URL execution remains disabled."
+  type        = bool
+  default     = false
+  validation {
+    condition = !var.activate_trial_engineering || (
+      !var.activate_engineering && !var.activate_access_engineering &&
+      var.enabled && var.environment == "dev" && length(var.engineering_subjects) == 1 &&
+      var.authority_configuration != null && var.api_gateway != null && var.alert_topic_arn != null &&
+      var.deletion_stream_arn != "" && try(contains(keys(var.deployment.artifacts), "deletion"), false) &&
+      length(trimspace(var.access_qualification_reference)) > 0
+    )
+    error_message = "Trial-only qualification requires one exact subject, policy, authenticated routing, alerts, deletion/expiry cleanup, a recorded readiness reference and all URL/full modes off."
   }
 }
 variable "access_qualification_reference" {
@@ -91,7 +106,7 @@ variable "access_qualification_reference" {
   }
 }
 locals {
-  authority_engineering_active = var.activate_engineering || var.activate_access_engineering
+  authority_engineering_active = var.activate_engineering || var.activate_access_engineering || var.activate_trial_engineering
 }
 locals {
   routes = var.enabled && var.api_gateway != null ? {

@@ -5,8 +5,9 @@ output "candidate_contract" {
     recovery_enabled          = local.authority_engineering_active
     access_enabled            = local.authority_engineering_active
     deletion_enabled          = local.authority_deletion_active
-    trial_activation_enabled  = var.activate_engineering
+    trial_activation_enabled  = var.activate_engineering || var.activate_trial_engineering
     access_only_engineering   = var.activate_access_engineering
+    trial_only_engineering    = var.activate_trial_engineering
     consumer_endpoint         = var.api_gateway == null ? null : "https://${var.api_gateway.api_id}.execute-api.${var.aws_region}.amazonaws.com/v1/url-checks"
     general_customer_access   = false
     engineering_subject_count = length(var.engineering_subjects)

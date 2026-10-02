@@ -155,6 +155,8 @@ run "access_only_keeps_providers_and_trial_closed" {
     condition = (
       aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
       aws_lambda_function.runtime["consumer"].environment[0].variables.AUTHORITY_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == "[]" &&
       aws_lambda_function.runtime["consumer"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "false" &&
       aws_lambda_function.runtime["entitlements"].environment[0].variables.CONSUMER_ENABLED == "false" &&
       aws_lambda_function.runtime["entitlements"].environment[0].variables.AUTHORITY_ENABLED == "true" &&
@@ -187,6 +189,48 @@ run "access_only_and_full_modes_cannot_overlap" {
     access_qualification_reference = "synthetic test evidence"
   }
   expect_failures = [var.activate_access_engineering]
+}
+
+run "trial_only_requires_recorded_readiness_and_one_subject" {
+  command = plan
+  variables { activate_trial_engineering = true }
+  expect_failures = [var.activate_trial_engineering]
+}
+
+run "trial_only_enables_entitlements_without_url_execution" {
+  command = apply
+  variables {
+    activate_trial_engineering     = true
+    engineering_subjects           = ["01997e3a-0000-7000-8000-000000000001"]
+    access_qualification_reference = "SECUR4ALL-230 reviewed synthetic Dev qualification"
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.AUTHORITY_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == "[]" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.AUTHORITY_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["01997e3a-0000-7000-8000-000000000001"]) &&
+      output.candidate_contract.access_enabled && output.candidate_contract.trial_activation_enabled &&
+      output.candidate_contract.trial_only_engineering && !output.candidate_contract.consumer_enabled &&
+      !output.candidate_contract.general_customer_access
+    )
+    error_message = "Trial-only mode must enable one-subject access and trial activation while URL execution remains closed."
+  }
+}
+
+run "trial_only_cannot_overlap_other_authority_modes" {
+  command = plan
+  variables {
+    activate_access_engineering    = true
+    activate_trial_engineering     = true
+    engineering_subjects           = ["01997e3a-0000-7000-8000-000000000001"]
+    access_qualification_reference = "synthetic test evidence"
+  }
+  expect_failures = [var.activate_access_engineering, var.activate_trial_engineering]
 }
 
 run "deletion_only_exact_subjects_keep_other_capabilities_closed" {
@@ -359,8 +403,8 @@ run "deletion_only_rejects_missing_alerting" {
   expect_failures = [var.deletion_activation]
 }
 
-run "deletion_only_rejects_collides_with_activate_engineering" {
-  command = plan
+run "deletion_activation_unions_existing_and_full_engineering_subjects" {
+  command = apply
   variables {
     deletion_activation = {
       source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
@@ -373,11 +417,14 @@ run "deletion_only_rejects_collides_with_activate_engineering" {
     engineering_subjects           = ["00000000-0000-4000-8000-000000000001"]
     access_qualification_reference = "synthetic qualification evidence"
   }
-  expect_failures = [var.deletion_activation]
+  assert {
+    condition     = aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002"])
+    error_message = "Existing deletion coverage and engineering subjects must both remain admitted."
+  }
 }
 
-run "deletion_only_rejects_collides_with_activate_access_engineering" {
-  command = plan
+run "deletion_activation_unions_existing_and_trial_engineering_subjects" {
+  command = apply
   variables {
     deletion_activation = {
       source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
@@ -386,9 +433,12 @@ run "deletion_only_rejects_collides_with_activate_access_engineering" {
       runtime_reference     = "synthetic runtime evidence"
       permissions_reference = "synthetic IAM evidence"
     }
-    activate_access_engineering    = true
-    engineering_subjects           = ["00000000-0000-4000-8000-000000000001"]
+    activate_trial_engineering     = true
+    engineering_subjects           = ["01997e3a-0000-7000-8000-000000000001"]
     access_qualification_reference = "synthetic qualification evidence"
   }
-  expect_failures = [var.deletion_activation]
+  assert {
+    condition     = aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002", "01997e3a-0000-7000-8000-000000000001"])
+    error_message = "Trial qualification must preserve the existing deletion subjects and add its one exact subject."
+  }
 }

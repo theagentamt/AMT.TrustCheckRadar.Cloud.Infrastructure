@@ -68,6 +68,16 @@ aggregate provider budget. It closes the circuit only for candidate.1. Candidate
 and candidate.3 remain unavailable because AI flags stay false and evaluator IAM
 continues to deny every Secrets Manager action.
 
+The first connected SECUR4ALL-230 qualification narrows this further to exactly
+one synthetic subject. Dispatch the registered workflow with
+`deployment_scope=message-consumer-engineering`. The subject comes from the
+protected Dev environment secret `MESSAGE_ENGINEERING_SUBJECTS_JSON`; it is not
+committed or printed. The transition verifier permits only coordinated updates to
+the two immutable runtimes and their `live` aliases, requires the exact reviewed
+plan digest before apply, and suppresses Terraform plan/apply output that could
+contain the subject. Use `deployment_scope=message-consumer` to return to the
+checked-in inactive configuration.
+
 The route resources do not replace `/analysis`, add a Lambda URL, schedule work,
 or change URL-consumer IAM. The legacy endpoint remains retired. Authority and
 provider activation, operational outcome reporting, qualified AI, Android gating
@@ -162,11 +172,13 @@ mocked applies create no AWS resources and are not a deployment report.
 For the Dev installation, dispatch **Deploy infrastructure** from the exact
 reviewed `main` revision with `environment=dev`,
 `deployment_scope=message-consumer`, and `execution_mode=plan`. Confirm the summary
-contains `scope=inactive-dev-message-installation`, 25 creates and the expected
-immutable Lambda release. Then dispatch the same revision with
+contains the bounded transition scope and the expected immutable Lambda release.
+The initial installation produced 25 creates; later inactive plans are no-op or
+coordinated runtime/alias updates. Then dispatch the same revision with
 `execution_mode=apply` and its exact `reviewedPlanDigest`. The workflow applies
-only that saved plan, verifies the inactive output contract, and requires a
-zero-drift follow-up plan. A changed revision or state requires a new plan review.
+only that saved plan, verifies the selected inactive or one-subject engineering
+contract, and requires a zero-drift follow-up plan. A changed revision or state
+requires a new plan review.
 
 The 2026-09-21 proposer handoff passed `terraform fmt -check`, `terraform validate`
 and all 10 mocked runs, including the explicit disabled-provider/no-config
