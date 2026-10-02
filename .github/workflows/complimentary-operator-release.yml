@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       execution_mode:
-        description: Plan first; apply only the exact reviewed plan
+        description: Plan first; apply only the exact reviewed plan; verify checks deployed state without changes
         type: choice
-        options: [plan, apply]
+        options: [plan, apply, verify]
         default: plan
         required: true
       expected_revision:
@@ -59,6 +59,7 @@ jobs:
           [[ "$AWS_REGION" == us-east-1 ]]
           [[ "$TF_STATE_BUCKET" == amt-trustcheckradar-107827791950-tfstate ]]
           [[ "$TF_STATE_KEY_PREFIX" == trustcheckradar ]]
+          [[ "$EXECUTION_MODE" =~ ^(plan|apply|verify)$ ]]
           if [[ "$EXECUTION_MODE" == apply ]]; then
             [[ "$REVIEWED_PLAN_DIGEST" =~ ^[0-9a-f]{64}$ ]]
           fi
@@ -77,6 +78,7 @@ jobs:
           role-session-name: complimentary-operator-${{ github.run_id }}
 
       - name: Plan only the Dev authority stack
+        if: inputs.execution_mode != 'verify'
         run: |
           set -euo pipefail
           bash scripts/terraform.sh init dev url-consumer
@@ -93,6 +95,7 @@ jobs:
             > "$RUNNER_TEMP/complimentary-operator-plan.json"
 
       - name: Verify exact role, route, artifact and runtime transition
+        if: inputs.execution_mode != 'verify'
         run: |
           set -euo pipefail
           args=(--revision "$EXPECTED_REVISION" --lambda-release "$LAMBDA_RELEASE")
@@ -114,8 +117,12 @@ jobs:
         if: inputs.execution_mode == 'apply'
         run: terraform -chdir=terraform/url-consumer apply -input=false "$RUNNER_TEMP/complimentary-operator.tfplan"
 
+      - name: Initialize deployed-state verification
+        if: inputs.execution_mode == 'verify'
+        run: bash scripts/terraform.sh init dev url-consumer
+
       - name: Verify deployed output and exact route authorization
-        if: inputs.execution_mode == 'apply'
+        if: inputs.execution_mode == 'apply' || inputs.execution_mode == 'verify'
         run: |
           set -euo pipefail
           terraform -chdir=terraform/url-consumer output -json candidate_contract \
@@ -135,8 +142,8 @@ jobs:
             ($routes | length) == 1 and $routes[0].AuthorizationType == "AWS_IAM"
           ' "$RUNNER_TEMP/complimentary-operator-routes.json" >/dev/null
 
-      - name: Check drift after apply
-        if: inputs.execution_mode == 'apply'
+      - name: Check drift after apply or during verification
+        if: inputs.execution_mode == 'apply' || inputs.execution_mode == 'verify'
         run: |
           terraform -chdir=terraform/url-consumer plan \
             -input=false -var-file=../../environments/dev/url-consumer.tfvars \
