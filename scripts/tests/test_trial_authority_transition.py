@@ -119,6 +119,20 @@ class TrialAuthorityTransitionTests(unittest.TestCase):
         self.assertEqual(transition.review(fixture("trial"), REVISION, "trial")[3], 1)
         self.assertEqual(transition.review(fixture("inactive"), REVISION, "inactive")[3], 0)
 
+    def test_exact_terraform_cli_boolean_literals_are_accepted(self):
+        plan = fixture("trial")
+        plan["variables"]["activate_engineering"]["value"] = "false"
+        plan["variables"]["activate_access_engineering"]["value"] = "false"
+        plan["variables"]["activate_trial_engineering"]["value"] = "true"
+        self.assertEqual(transition.review(plan, REVISION, "trial")[3], 1)
+
+    def test_noncanonical_terraform_cli_boolean_is_rejected(self):
+        for value in ("TRUE", "1", 1, None):
+            plan = fixture("trial")
+            plan["variables"]["activate_trial_engineering"]["value"] = value
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                transition.review(plan, REVISION, "trial")
+
     def test_invalid_subject_or_trial_gate_is_rejected(self):
         invalid = fixture()
         invalid["variables"]["engineering_subjects"]["value"] = ["not-a-uuid"]
