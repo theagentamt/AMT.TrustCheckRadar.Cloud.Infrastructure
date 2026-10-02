@@ -411,7 +411,7 @@ jobs:
             -input=false \
             "${args[@]}" \
             -out="$RUNNER_TEMP/message-consumer.tfplan" \
-            > "$RUNNER_TEMP/message-consumer-plan.log"
+            > "$RUNNER_TEMP/message-consumer-plan.log" 2>&1
           terraform -chdir=terraform/message-consumer show -json \
             "$RUNNER_TEMP/message-consumer.tfplan" > "$RUNNER_TEMP/message-consumer-plan.json"
 
@@ -441,7 +441,7 @@ jobs:
         if: inputs.execution_mode == 'apply'
         run: |
           terraform -chdir=terraform/message-consumer apply -input=false "$RUNNER_TEMP/message-consumer.tfplan" \
-            > "$RUNNER_TEMP/message-consumer-apply.log"
+            > "$RUNNER_TEMP/message-consumer-apply.log" 2>&1
 
       - name: Verify deployed contract
         if: inputs.execution_mode == 'apply'
@@ -478,7 +478,7 @@ jobs:
             -input=false \
             "${args[@]}" \
             -detailed-exitcode \
-            > "$RUNNER_TEMP/message-consumer-drift.log"
+            > "$RUNNER_TEMP/message-consumer-drift.log" 2>&1
 
       - name: Remove temporary plan and projections
         if: always()
