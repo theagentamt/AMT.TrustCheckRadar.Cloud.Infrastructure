@@ -48,6 +48,12 @@ def fixture(mode="trial"):
         "activate_trial_engineering": active,
         "engineering_subjects": [SUBJECT] if active else [],
         "access_qualification_reference": "SECUR4ALL-230 reviewed synthetic Dev qualification" if active else "",
+        "complimentary_operator": {
+            "active": True,
+            "trusted_assumer_arn": transition.OPERATOR_ASSUMER,
+            "api_stage_name": "$default",
+            "approval_reference": transition.OPERATOR_APPROVAL,
+        },
         "authority_configuration": {
             "operation_validity_seconds": 300,
             "worker_settlement_seconds": 60,
@@ -103,6 +109,9 @@ def fixture(mode="trial"):
         "provisioned": True, "consumer_enabled": False, "recovery_enabled": active,
         "access_enabled": active, "deletion_enabled": True, "trial_activation_enabled": active,
         "access_only_engineering": False, "trial_only_engineering": active,
+        "complimentary_operator_provisioned": True, "complimentary_operator_active": True,
+        "complimentary_operator_role_arn": transition.OPERATOR_ROLE,
+        "complimentary_operator_route": "POST /v1/operator/complimentary-access",
         "general_customer_access": False, "engineering_subject_count": 1 if active else 0,
         "secret_value_in_state": False,
     }
@@ -146,6 +155,29 @@ class TrialAuthorityTransitionTests(unittest.TestCase):
         consumer["change"]["after"]["environment"][0]["variables"]["TRIAL_AUTHORITY_RETENTION_APPROVED"] = "true"
         consumer["change"]["after"]["environment"][0]["variables"]["DEV_SUBJECT_ALLOWLIST_JSON"] = f'["{SUBJECT}"]'
         for plan in (invalid, wrong_gate, consumer_open):
+            with self.subTest(), self.assertRaises(ValueError):
+                transition.review(plan, REVISION, "trial")
+
+    def test_complimentary_operator_must_remain_exact_and_active(self):
+        disabled = fixture()
+        disabled["variables"]["complimentary_operator"]["value"]["active"] = False
+        wrong_assumer = fixture()
+        wrong_assumer["variables"]["complimentary_operator"]["value"]["trusted_assumer_arn"] = (
+            f"arn:aws:iam::{transition.ACCOUNT}:role/unreviewed"
+        )
+        wrong_environment = fixture()
+        entitlements = next(
+            item for item in wrong_environment["resource_changes"]
+            if item["address"] == 'aws_lambda_function.runtime["entitlements"]'
+        )
+        entitlements["change"]["after"]["environment"][0]["variables"][
+            "COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON"
+        ] = "[]"
+        missing_contract = fixture()
+        missing_contract["output_changes"]["candidate_contract"]["after"][
+            "complimentary_operator_active"
+        ] = False
+        for plan in (disabled, wrong_assumer, wrong_environment, missing_contract):
             with self.subTest(), self.assertRaises(ValueError):
                 transition.review(plan, REVISION, "trial")
 
