@@ -181,6 +181,29 @@ class TrialAuthorityTransitionTests(unittest.TestCase):
             with self.subTest(), self.assertRaises(ValueError):
                 transition.review(plan, REVISION, "trial")
 
+    def test_inactive_trial_preserves_entitlements_for_complimentary_operator(self):
+        plan = fixture("inactive")
+        entitlements = next(
+            item for item in plan["resource_changes"]
+            if item["address"] == 'aws_lambda_function.runtime["entitlements"]'
+        )
+        environment = entitlements["change"]["after"]["environment"][0]["variables"]
+        self.assertEqual("true", environment["AUTHORITY_ENABLED"])
+        self.assertEqual("true", environment["V1_ENTITLEMENTS_ENABLED"])
+        self.assertEqual("false", environment["TRIAL_AUTHORITY_RETENTION_APPROVED"])
+        transition.review(plan, REVISION, "inactive")
+
+    def test_trial_mode_does_not_enable_url_consumer_authority(self):
+        plan = fixture("trial")
+        consumer = next(
+            item for item in plan["resource_changes"]
+            if item["address"] == 'aws_lambda_function.runtime["consumer"]'
+        )
+        environment = consumer["change"]["after"]["environment"][0]["variables"]
+        self.assertEqual("false", environment["AUTHORITY_ENABLED"])
+        self.assertEqual("false", environment["V1_ENTITLEMENTS_ENABLED"])
+        transition.review(plan, REVISION, "trial")
+
     def test_unexpected_or_destructive_change_is_rejected(self):
         unexpected = fixture()
         unexpected["resource_changes"].append({"mode": "managed", "address": "aws_iam_role.unreviewed", "change": {"actions": ["update"], "after": {}}})

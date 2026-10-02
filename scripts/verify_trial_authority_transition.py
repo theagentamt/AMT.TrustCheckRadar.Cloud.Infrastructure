@@ -83,6 +83,9 @@ def _review_artifacts(variables):
 
 def _expected_environment(name, variables, active, secret_arn):
     authority = variables["authority_configuration"]
+    operator = variables.get("complimentary_operator") or {}
+    operator_active = name == "entitlements" and operator.get("active") is True
+    entitlements_active = name == "entitlements" and (active or operator_active)
     common = {
         "STAGE": "dev",
         "AUTHORITY_TABLE_NAME": f"{PREFIX}-purchase-entitlements",
@@ -102,8 +105,8 @@ def _expected_environment(name, variables, active, secret_arn):
         }
     authority_environment = common | {
         "CONSUMER_ENABLED": "false",
-        "AUTHORITY_ENABLED": str(active and name == "entitlements").lower(),
-        "V1_ENTITLEMENTS_ENABLED": str(active and name == "entitlements").lower(),
+        "AUTHORITY_ENABLED": str(entitlements_active).lower(),
+        "V1_ENTITLEMENTS_ENABLED": str(entitlements_active).lower(),
         "TRIAL_AUTHORITY_RETENTION_APPROVED": str(active and name == "entitlements").lower(),
         "USERS_TABLE_NAME": f"{PREFIX}-users",
         "DEVICE_BINDINGS_TABLE_NAME": f"{PREFIX}-device-bindings",
@@ -126,8 +129,6 @@ def _expected_environment(name, variables, active, secret_arn):
     if name == "consumer":
         authority_environment["URL_ASSESSMENT_FUNCTION_ARN"] = variables["deployment"]["assessment_alias_arn"]
     else:
-        operator = variables.get("complimentary_operator") or {}
-        operator_active = operator.get("active") is True
         authority_environment.update({
             "COMPLIMENTARY_OPERATOR_ENABLED": str(operator_active).lower(),
             "COMPLIMENTARY_AUDIT_RETENTION_SECONDS": "31536000",
