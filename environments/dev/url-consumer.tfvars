@@ -104,17 +104,24 @@ consumer_artifact_override = {
   }
 }
 
-# SEC233: reviewed freshness reader/consumer package; activation unchanged.
+# SECUR4ALL-232: reviewed complimentary operator package and exact CI/CD publication.
 entitlements_artifact_override = {
-  "source_sha" : "27ba230f6a96fe5bf1c96719903c3c7016765bbb",
+  "source_sha" : "513e05b5533ccb539f5f9135ada9f2440a24568f",
   "baseline_source_sha" : "39cce61623794a123e61d25f5248b0c081eccf4a",
   "baseline_source_hash" : "xFuy0ylGhHpfHsJBEFZsYcxhpdish1Qx4a5UcF0ZOhM=",
   "baseline_object_version" : "4v213SSYD50qrijRyBRDNW54IcRTww92",
-  "provenance_reference" : "docs/evidence/sec233-freshness-artifact-publication.json",
+  "provenance_reference" : "docs/evidence/sec232-complimentary-operator-publication.json",
   "artifact" : {
     "bucket" : "trustcheckradar-dev-107827791950-artifacts",
-    "key" : "releases/27ba230f6a96fe5bf1c96719903c3c7016765bbb/v1_entitlements.zip",
-    "object_version" : "U.fHrmz1X9R7_nIChPBathu3qLrhKeUA",
-    "source_hash" : "pkYk7X7Pj1b9atbCqSusGMfObvmIM2bCKpqneUeQiw0="
+    "key" : "releases/513e05b5533ccb539f5f9135ada9f2440a24568f/v1_entitlements.zip",
+    "object_version" : "E8Oh0n3PO.ueeu3QF.T.Cw5TnfnJSl9Z",
+    "source_hash" : "ob0zVqvTtShDvR2Qq0V3y4GTAZcOjv7dyKpQQ7sne2o="
   }
+}
+
+complimentary_operator = {
+  active              = true
+  trusted_assumer_arn = "arn:aws:iam::107827791950:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_6659317f1273c022"
+  api_stage_name      = "$default"
+  approval_reference = "SECUR4ALL-232 owner-approved operator control and one-year audit retention"
 }

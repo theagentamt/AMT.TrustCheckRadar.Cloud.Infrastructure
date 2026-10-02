@@ -1,0 +1,152 @@
+name: Release Dev complimentary operator
+
+on:
+  workflow_dispatch:
+    inputs:
+      execution_mode:
+        description: Plan first; apply only the exact reviewed plan
+        type: choice
+        options: [plan, apply]
+        default: plan
+        required: true
+      expected_revision:
+        description: Full infrastructure main commit SHA
+        type: string
+        required: true
+      lambda_release:
+        description: Full Lambda main commit SHA containing the published v1_entitlements artifact
+        type: string
+        required: true
+      reviewed_plan_digest:
+        description: Exact digest emitted by a successful plan; required for apply
+        type: string
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: dev
+    env:
+      TF_IN_AUTOMATION: 'true'
+      TF_INPUT: 'false'
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      LAMBDA_RELEASE: ${{ inputs.lambda_release }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+      REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
+
+    steps:
+      - name: Check out reviewed infrastructure
+        uses: actions/checkout@v7.0.1
+
+      - name: Validate exact release selection
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_REVISION" =~ ^[0-9a-f]{40}$ && "$EXPECTED_REVISION" == "$GITHUB_SHA" ]]
+          [[ "$LAMBDA_RELEASE" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$AWS_REGION" == us-east-1 ]]
+          [[ "$TF_STATE_BUCKET" == amt-trustcheckradar-107827791950-tfstate ]]
+          [[ "$TF_STATE_KEY_PREFIX" == trustcheckradar ]]
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            [[ "$REVIEWED_PLAN_DIGEST" =~ ^[0-9a-f]{64}$ ]]
+          fi
+
+      - name: Install Python and Terraform
+        uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+
+      - name: Configure short-lived Dev credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          allowed-account-ids: '107827791950'
+          role-session-name: complimentary-operator-${{ github.run_id }}
+
+      - name: Plan only the Dev authority stack
+        run: |
+          set -euo pipefail
+          bash scripts/terraform.sh init dev url-consumer
+          if ! terraform -chdir=terraform/url-consumer plan \
+            -input=false \
+            -var-file=../../environments/dev/url-consumer.tfvars \
+            -out="$RUNNER_TEMP/complimentary-operator.tfplan" \
+            > "$RUNNER_TEMP/complimentary-operator-plan.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/complimentary-operator-plan.log"
+            exit 1
+          fi
+          terraform -chdir=terraform/url-consumer show -json \
+            "$RUNNER_TEMP/complimentary-operator.tfplan" \
+            > "$RUNNER_TEMP/complimentary-operator-plan.json"
+
+      - name: Verify exact role, route, artifact and runtime transition
+        run: |
+          set -euo pipefail
+          args=(--revision "$EXPECTED_REVISION" --lambda-release "$LAMBDA_RELEASE")
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            args+=(--apply --expected-digest "$REVIEWED_PLAN_DIGEST")
+          fi
+          python3 scripts/verify_complimentary_operator_transition.py \
+            "$RUNNER_TEMP/complimentary-operator-plan.json" "${args[@]}" \
+            | tee "$RUNNER_TEMP/complimentary-operator-review.json"
+          {
+            echo '### Dev complimentary-access operator transition'
+            echo '```json'
+            cat "$RUNNER_TEMP/complimentary-operator-review.json"
+            echo '```'
+            echo 'One AWS_IAM route and one exact invoke role are introduced. Mobile gates and URL execution remain closed.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Apply the verified saved plan
+        if: inputs.execution_mode == 'apply'
+        run: terraform -chdir=terraform/url-consumer apply -input=false "$RUNNER_TEMP/complimentary-operator.tfplan"
+
+      - name: Verify deployed output and exact route authorization
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          terraform -chdir=terraform/url-consumer output -json candidate_contract \
+            > "$RUNNER_TEMP/complimentary-operator-contract.json"
+          jq -e '
+            .complimentary_operator_provisioned == true and
+            .complimentary_operator_active == true and
+            .complimentary_operator_role_arn == "arn:aws:iam::107827791950:role/trustcheckradar-dev-complimentary-operator" and
+            .complimentary_operator_route == "POST /v1/operator/complimentary-access" and
+            .consumer_enabled == false and .trial_activation_enabled == false and
+            .general_customer_access == false and .secret_value_in_state == false
+          ' "$RUNNER_TEMP/complimentary-operator-contract.json" >/dev/null
+          route_id="$(aws apigatewayv2 get-routes --api-id icuak34th9 \
+            --query 'Items[?RouteKey==`POST /v1/operator/complimentary-access`].RouteId | [0]' --output text)"
+          [[ -n "$route_id" && "$route_id" != None ]]
+          [[ "$(aws apigatewayv2 get-route --api-id icuak34th9 --route-id "$route_id" --query AuthorizationType --output text)" == AWS_IAM ]]
+
+      - name: Check drift after apply
+        if: inputs.execution_mode == 'apply'
+        run: |
+          terraform -chdir=terraform/url-consumer plan \
+            -input=false -var-file=../../environments/dev/url-consumer.tfvars \
+            -detailed-exitcode > "$RUNNER_TEMP/complimentary-operator-drift.log" 2>&1
+
+      - name: Remove temporary plans and projections
+        if: always()
+        run: |
+          rm -f \
+            "$RUNNER_TEMP/complimentary-operator.tfplan" \
+            "$RUNNER_TEMP/complimentary-operator-plan.log" \
+            "$RUNNER_TEMP/complimentary-operator-plan.json" \
+            "$RUNNER_TEMP/complimentary-operator-review.json" \
+            "$RUNNER_TEMP/complimentary-operator-contract.json" \
+            "$RUNNER_TEMP/complimentary-operator-drift.log"

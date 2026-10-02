@@ -119,6 +119,12 @@ def _expected_environment(name, variables, active, secret_arn):
     }
     if name == "consumer":
         authority_environment["URL_ASSESSMENT_FUNCTION_ARN"] = variables["deployment"]["assessment_alias_arn"]
+    else:
+        authority_environment.update({
+            "COMPLIMENTARY_OPERATOR_ENABLED": "false",
+            "COMPLIMENTARY_AUDIT_RETENTION_SECONDS": "31536000",
+            "COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON": "[]",
+        })
     return authority_environment
 
 
