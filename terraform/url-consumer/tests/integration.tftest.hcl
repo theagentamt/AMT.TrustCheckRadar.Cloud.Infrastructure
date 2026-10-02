@@ -70,6 +70,10 @@ run "routes_and_cleanup_default_inactive" {
     error_message = "Every V1 route must require the configured access-token JWT scope."
   }
   assert {
+    condition     = length(aws_iam_role.complimentary_operator) == 0 && length(aws_apigatewayv2_route.complimentary_operator) == 0 && length(aws_lambda_permission.complimentary_operator) == 0 && !output.candidate_contract.complimentary_operator_provisioned
+    error_message = "The operator role and route must be absent unless explicitly configured."
+  }
+  assert {
     condition     = alltrue([for p in aws_lambda_permission.v1 : p.qualifier == "live" && p.source_account == "107827791950" && startswith(p.source_arn, "arn:aws:execute-api:us-east-1:107827791950:abcdefghij/*/") && !endswith(p.source_arn, "/*")])
     error_message = "Gateway invoke permission must bind same-account API, alias, method and path."
   }
@@ -81,6 +85,100 @@ run "routes_and_cleanup_default_inactive" {
     condition     = anytrue([for statement in jsondecode(aws_iam_role_policy.deletion[0].policy).Statement : statement.Effect == "Deny" && try(contains(statement.Action, "lambda:InvokeFunction"), false)]) && aws_lambda_function.runtime["deletion"].timeout == 30 && aws_lambda_function.runtime["deletion"].reserved_concurrent_executions == 1
     error_message = "Deletion must be bounded and cannot call providers."
   }
+}
+
+run "complimentary_operator_is_one_iam_route_with_no_data_permissions" {
+  command = apply
+  variables {
+    complimentary_operator = {
+      active              = true
+      trusted_assumer_arn = "arn:aws:iam::107827791950:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_6659317f1273c022"
+      api_stage_name      = "$default"
+      approval_reference  = "SECUR4ALL-232 owner-approved operator control"
+    }
+  }
+  assert {
+    condition = (
+      aws_apigatewayv2_route.complimentary_operator[0].route_key == "POST /v1/operator/complimentary-access" &&
+      aws_apigatewayv2_route.complimentary_operator[0].authorization_type == "AWS_IAM" &&
+      aws_lambda_permission.complimentary_operator[0].qualifier == "live" &&
+      aws_lambda_permission.complimentary_operator[0].source_account == "107827791950" &&
+      aws_lambda_permission.complimentary_operator[0].source_arn == "arn:aws:execute-api:us-east-1:107827791950:abcdefghij/$default/POST/v1/operator/complimentary-access"
+    )
+    error_message = "The operator path must use one exact same-account AWS_IAM API route and live alias permission."
+  }
+  assert {
+    condition = (
+      length(jsondecode(aws_iam_role_policy.complimentary_operator[0].policy).Statement) == 1 &&
+      jsondecode(aws_iam_role_policy.complimentary_operator[0].policy).Statement[0].Action == "execute-api:Invoke" &&
+      jsondecode(aws_iam_role_policy.complimentary_operator[0].policy).Statement[0].Resource == "arn:aws:execute-api:us-east-1:107827791950:abcdefghij/$default/POST/v1/operator/complimentary-access" &&
+      !strcontains(aws_iam_role_policy.complimentary_operator[0].policy, "dynamodb") &&
+      !strcontains(aws_iam_role_policy.complimentary_operator[0].policy, "secretsmanager") &&
+      !strcontains(aws_iam_role_policy.complimentary_operator[0].policy, "lambda:InvokeFunction")
+    )
+    error_message = "The operator role may invoke only the exact API route and must receive no data, secret or direct Lambda permissions."
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.AUTHORITY_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.COMPLIMENTARY_OPERATOR_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.COMPLIMENTARY_AUDIT_RETENTION_SECONDS == "31536000" &&
+      jsondecode(aws_lambda_function.runtime["entitlements"].environment[0].variables.COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON) == ["arn:aws:iam::107827791950:role/trustcheckradar-dev-complimentary-operator"] &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
+      output.candidate_contract.complimentary_operator_active &&
+      !output.candidate_contract.general_customer_access
+    )
+    error_message = "Operator activation must enable only the entitlement writer with exact role and retention while customer URL execution stays closed."
+  }
+}
+
+run "complimentary_operator_can_be_provisioned_closed" {
+  command = apply
+  variables {
+    complimentary_operator = {
+      active              = false
+      trusted_assumer_arn = "arn:aws:iam::107827791950:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_6659317f1273c022"
+      api_stage_name      = "$default"
+      approval_reference  = "SECUR4ALL-232 rollback configuration"
+    }
+  }
+  assert {
+    condition = (
+      output.candidate_contract.complimentary_operator_provisioned &&
+      !output.candidate_contract.complimentary_operator_active &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.COMPLIMENTARY_OPERATOR_ENABLED == "false" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "false" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON == "[]"
+    )
+    error_message = "Rollback must preserve the role/route while failing closed before authority access."
+  }
+}
+
+run "complimentary_operator_rejects_cross_account_principal" {
+  command = plan
+  variables {
+    complimentary_operator = {
+      active              = true
+      trusted_assumer_arn = "arn:aws:iam::999999999999:role/Admin"
+      api_stage_name      = "$default"
+      approval_reference  = "SECUR4ALL-232 invalid fixture"
+    }
+  }
+  expect_failures = [var.complimentary_operator]
+}
+
+run "complimentary_operator_rejects_wildcard_principal" {
+  command = plan
+  variables {
+    complimentary_operator = {
+      active              = true
+      trusted_assumer_arn = "arn:aws:iam::107827791950:role/*"
+      api_stage_name      = "$default"
+      approval_reference  = "SECUR4ALL-232 invalid fixture"
+    }
+  }
+  expect_failures = [var.complimentary_operator]
 }
 run "inventory_markers_are_not_mutable" {
   command = apply

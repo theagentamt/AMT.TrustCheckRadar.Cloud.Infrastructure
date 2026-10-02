@@ -107,6 +107,7 @@ variable "access_qualification_reference" {
 }
 locals {
   authority_engineering_active = var.activate_engineering || var.activate_access_engineering || var.activate_trial_engineering
+  entitlements_service_active  = local.authority_engineering_active || local.complimentary_operator_active
 }
 locals {
   routes = var.enabled && var.api_gateway != null ? {

@@ -111,8 +111,8 @@ resource "aws_lambda_function" "runtime" {
       AUTHORITY_TABLE_NAME = split("/", local.authority_arn)[1]
       }, contains(["consumer", "entitlements"], each.key) ? {
       CONSUMER_ENABLED                   = tostring(var.activate_engineering)
-      AUTHORITY_ENABLED                  = tostring(each.key == "entitlements" ? local.authority_engineering_active : var.activate_engineering)
-      V1_ENTITLEMENTS_ENABLED            = tostring(each.key == "entitlements" ? local.authority_engineering_active : var.activate_engineering)
+      AUTHORITY_ENABLED                  = tostring(each.key == "entitlements" ? local.entitlements_service_active : var.activate_engineering)
+      V1_ENTITLEMENTS_ENABLED            = tostring(each.key == "entitlements" ? local.entitlements_service_active : var.activate_engineering)
       TRIAL_AUTHORITY_RETENTION_APPROVED = tostring(each.key == "entitlements" ? (var.activate_engineering || var.activate_trial_engineering) : var.activate_engineering)
       USERS_TABLE_NAME                   = split("/", var.deployment.users_table_arn)[1]
       DEVICE_BINDINGS_TABLE_NAME         = split("/", var.deployment.devices_table_arn)[1]
@@ -141,6 +141,10 @@ resource "aws_lambda_function" "runtime" {
       ATTEMPT_WINDOW_SECONDS     = "60"
       ATTEMPTS_PER_WINDOW        = "20"
       MAX_INFLIGHT               = "2"
+      } : {}, each.key == "entitlements" ? {
+      COMPLIMENTARY_OPERATOR_ENABLED             = tostring(local.complimentary_operator_active)
+      COMPLIMENTARY_AUDIT_RETENTION_SECONDS      = "31536000"
+      COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON = jsonencode(local.complimentary_operator_active ? [local.complimentary_operator_role_arn] : [])
     } : {}, each.key == "consumer" ? { URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn } : {})
   }
   depends_on = [aws_iam_role_policy.consumer, aws_iam_role_policy.recovery, aws_iam_role_policy.entitlements, aws_iam_role_policy.deletion]
