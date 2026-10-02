@@ -48,8 +48,8 @@ State is isolated at `trustcheckradar/dev/message-consumer.tfstate`. The provide
 is restricted to Dev account 107827791950. Inputs are exact environment-scoped
 same-account dependencies. UAT/production provisioning is rejected. CI validates
 this root, and the automatic environment deployment excludes it. Installation is
-available only through the manually dispatched, main-only
-`message-consumer-release.yml` workflow.
+available only through the manually dispatched, main-only **Deploy infrastructure**
+workflow with `deployment_scope=message-consumer`.
 
 Before provisioning, pin the reviewed Lambda artifact pair, validate the actual
 Android contract against handler responses, supply the exact existing Dev API and
@@ -159,8 +159,9 @@ inactive runtimes, authority/evaluator isolation, immutable coordinated packages
 wrong environment/account rejection and absent public endpoint output. These
 mocked applies create no AWS resources and are not a deployment report.
 
-For the Dev installation, dispatch **Install inactive Dev message consumer** from
-the exact reviewed `main` revision with `execution_mode=plan`. Confirm the summary
+For the Dev installation, dispatch **Deploy infrastructure** from the exact
+reviewed `main` revision with `environment=dev`,
+`deployment_scope=message-consumer`, and `execution_mode=plan`. Confirm the summary
 contains `scope=inactive-dev-message-installation`, 25 creates and the expected
 immutable Lambda release. Then dispatch the same revision with
 `execution_mode=apply` and its exact `reviewedPlanDigest`. The workflow applies
