@@ -16,7 +16,7 @@ ACCOUNT = "107827791950"
 REGION = "us-east-1"
 PREFIX = "trustcheckradar-dev"
 BUCKET = f"{PREFIX}-{ACCOUNT}-artifacts"
-FUNCTIONS = {"entitlements", "recovery", "deletion"}
+FUNCTIONS = {"consumer", "entitlements", "recovery", "deletion"}
 TRANSITION_ADDRESSES = {
     *(f'aws_lambda_function.runtime["{name}"]' for name in FUNCTIONS),
     *(f'aws_lambda_alias.runtime["{name}"]' for name in FUNCTIONS),
@@ -46,6 +46,7 @@ def _review_artifacts(variables):
     artifacts = {name: _artifact(variables, name) for name in FUNCTIONS}
     for name, artifact in artifacts.items():
         expected_file = {
+            "consumer": "url_consumer.zip",
             "entitlements": "v1_entitlements.zip",
             "recovery": "url_lease_recovery.zip",
             "deletion": "v1_authority_deletion.zip",
@@ -84,11 +85,11 @@ def _expected_environment(name, variables, active, secret_arn):
             "AUTHORITY_HMAC_SECRET_ARN": secret_arn,
             "DELETION_RECEIPT_RETENTION_SECONDS": "10368000",
         }
-    return common | {
+    authority_environment = common | {
         "CONSUMER_ENABLED": "false",
-        "AUTHORITY_ENABLED": str(active).lower(),
-        "V1_ENTITLEMENTS_ENABLED": str(active).lower(),
-        "TRIAL_AUTHORITY_RETENTION_APPROVED": str(active).lower(),
+        "AUTHORITY_ENABLED": str(active and name == "entitlements").lower(),
+        "V1_ENTITLEMENTS_ENABLED": str(active and name == "entitlements").lower(),
+        "TRIAL_AUTHORITY_RETENTION_APPROVED": str(active and name == "entitlements").lower(),
         "USERS_TABLE_NAME": f"{PREFIX}-users",
         "DEVICE_BINDINGS_TABLE_NAME": f"{PREFIX}-device-bindings",
         "DELETION_LEDGER_TABLE_NAME": f"{PREFIX}-deletion-ledger",
@@ -97,7 +98,7 @@ def _expected_environment(name, variables, active, secret_arn):
         "COGNITO_REQUIRED_SCOPE": "aws.cognito.signin.user.admin",
         "AUTHORITY_HMAC_SECRET_ARN": secret_arn,
         "AUTHORITY_POLICY_VERSION": "owner-2026-09-20-v1",
-        "DEV_SUBJECT_ALLOWLIST_JSON": json.dumps(sorted(variables.get("engineering_subjects") or []), separators=(",", ":")),
+        "DEV_SUBJECT_ALLOWLIST_JSON": json.dumps(sorted(variables.get("engineering_subjects") or []) if name == "entitlements" else [], separators=(",", ":")),
         "OPERATION_VALIDITY_SECONDS": str(authority["operation_validity_seconds"]),
         "WORKER_SETTLEMENT_SECONDS": str(authority["worker_settlement_seconds"]),
         "RECONCILIATION_SECONDS": str(authority["reconciliation_seconds"]),
@@ -107,6 +108,9 @@ def _expected_environment(name, variables, active, secret_arn):
         "ATTEMPTS_PER_WINDOW": "20",
         "MAX_INFLIGHT": "2",
     }
+    if name == "consumer":
+        authority_environment["URL_ASSESSMENT_FUNCTION_ARN"] = variables["deployment"]["assessment_alias_arn"]
+    return authority_environment
 
 
 def review(plan, revision, mode):
@@ -189,6 +193,7 @@ def review(plan, revision, mode):
             raise ValueError(f"Transition may update only the reviewed resource: {address}.")
 
     expected_runtime = {
+        "consumer": ("url-consumer", 29, 2, "app.lambda_handler"),
         "entitlements": ("v1-entitlements", 10, 2, "v1_entitlements.app.lambda_handler"),
         "recovery": ("url-lease-recovery", 15, 1, "app.lambda_handler"),
         "deletion": ("v1-authority-deletion", 30, 1, "v1_authority_deletion.app.lambda_handler"),

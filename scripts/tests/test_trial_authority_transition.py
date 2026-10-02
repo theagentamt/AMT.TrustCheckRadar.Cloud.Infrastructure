@@ -29,6 +29,7 @@ def artifact(name, filename):
 
 
 ARTIFACTS = {
+    "consumer": artifact("consumer", "url_consumer.zip"),
     "entitlements": artifact("entitlements", "v1_entitlements.zip"),
     "recovery": artifact("recovery", "url_lease_recovery.zip"),
     "deletion": artifact("deletion", "v1_authority_deletion.zip"),
@@ -80,6 +81,7 @@ def fixture(mode="trial"):
     changes = []
     for name in transition.FUNCTIONS:
         suffix, timeout, concurrency, handler = {
+            "consumer": ("url-consumer", 29, 2, "app.lambda_handler"),
             "entitlements": ("v1-entitlements", 10, 2, "v1_entitlements.app.lambda_handler"),
             "recovery": ("url-lease-recovery", 15, 1, "app.lambda_handler"),
             "deletion": ("v1-authority-deletion", 30, 1, "v1_authority_deletion.app.lambda_handler"),
@@ -122,7 +124,14 @@ class TrialAuthorityTransitionTests(unittest.TestCase):
         invalid["variables"]["engineering_subjects"]["value"] = ["not-a-uuid"]
         wrong_gate = fixture()
         wrong_gate["variables"]["activate_engineering"]["value"] = True
-        for plan in (invalid, wrong_gate):
+        consumer_open = fixture()
+        consumer = next(
+            item for item in consumer_open["resource_changes"]
+            if item["address"] == 'aws_lambda_function.runtime["consumer"]'
+        )
+        consumer["change"]["after"]["environment"][0]["variables"]["TRIAL_AUTHORITY_RETENTION_APPROVED"] = "true"
+        consumer["change"]["after"]["environment"][0]["variables"]["DEV_SUBJECT_ALLOWLIST_JSON"] = f'["{SUBJECT}"]'
+        for plan in (invalid, wrong_gate, consumer_open):
             with self.subTest(), self.assertRaises(ValueError):
                 transition.review(plan, REVISION, "trial")
 
