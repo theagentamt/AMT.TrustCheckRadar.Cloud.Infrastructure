@@ -21,6 +21,7 @@ jobs:
       AWS_REGION: ${{ vars.AWS_REGION }}
       AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
       EXPECTED_ACCOUNT_ID: "107827791950"
+      EXPECTED_AWS_REGION: us-east-1
       PROJECT_NAME: trustcheckradar
       DEPLOY_ENV: dev
 
@@ -41,6 +42,7 @@ jobs:
           set -euo pipefail
           expected_role="arn:aws:iam::${EXPECTED_ACCOUNT_ID}:role/${PROJECT_NAME}-${DEPLOY_ENV}-github-deploy"
           [[ "$AWS_ROLE_ARN" == "$expected_role" ]]
+          [[ "$AWS_REGION" == "$EXPECTED_AWS_REGION" ]]
           [[ "$(aws sts get-caller-identity --query Account --output text)" == "$EXPECTED_ACCOUNT_ID" ]]
 
       - name: Build exact bounded policies
@@ -49,7 +51,9 @@ jobs:
           python3 scripts/build_dev_deploy_access.py \
             --observability-policy-output "$RUNNER_TEMP/observability-policy.json" \
             --account-policy-output "$RUNNER_TEMP/account-policy.json" \
-            --account-id "$EXPECTED_ACCOUNT_ID" --region "$AWS_REGION"
+            --authority-policy-output "$RUNNER_TEMP/authority-policy.json" \
+            --account-id "$EXPECTED_ACCOUNT_ID" --region "$EXPECTED_AWS_REGION" \
+            --project "$PROJECT_NAME" --environment "$DEPLOY_ENV"
 
       - name: Sync exact inline policy documents
         run: |
@@ -61,24 +65,31 @@ jobs:
           aws iam put-role-policy --role-name "$role_name" \
             --policy-name manage-account-deletion-reconciliation \
             --policy-document "file://$RUNNER_TEMP/account-policy.json"
+          aws iam put-role-policy --role-name "$role_name" \
+            --policy-name manage-v1-authority-maintenance \
+            --policy-document "file://$RUNNER_TEMP/authority-policy.json"
 
       - name: Verify required reads
         run: |
           set -euo pipefail
           alarm_arn="arn:aws:cloudwatch:${AWS_REGION}:${EXPECTED_ACCOUNT_ID}:alarm:${PROJECT_NAME}-${DEPLOY_ENV}-account-data-api-errors"
           rule_name="${PROJECT_NAME}-${DEPLOY_ENV}-account-deletion-reconcile"
+          recovery_rule_name="${PROJECT_NAME}-${DEPLOY_ENV}-url-lease-recovery"
+          authority_deletion_rule_name="${PROJECT_NAME}-${DEPLOY_ENV}-v1-authority-deletion"
           verified=false
           for _ in {1..12}; do
             if aws cloudwatch list-tags-for-resource --resource-arn "$alarm_arn" >/dev/null 2>&1 && \
-               aws events describe-rule --name "$rule_name" >/dev/null 2>&1; then
+               aws events describe-rule --name "$rule_name" >/dev/null 2>&1 && \
+               aws events describe-rule --name "$recovery_rule_name" >/dev/null 2>&1 && \
+               aws events describe-rule --name "$authority_deletion_rule_name" >/dev/null 2>&1; then
               verified=true
               break
             fi
             sleep 5
           done
           [[ "$verified" == true ]]
-          echo "Dev deploy-role observability and account-reconciliation reads verified." >> "$GITHUB_STEP_SUMMARY"
+          echo "Dev deploy-role observability, account-reconciliation and V1 authority-maintenance reads verified." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Remove generated policy files
         if: always()
-        run: rm -f "$RUNNER_TEMP/observability-policy.json" "$RUNNER_TEMP/account-policy.json"
+        run: rm -f "$RUNNER_TEMP/observability-policy.json" "$RUNNER_TEMP/account-policy.json" "$RUNNER_TEMP/authority-policy.json"
