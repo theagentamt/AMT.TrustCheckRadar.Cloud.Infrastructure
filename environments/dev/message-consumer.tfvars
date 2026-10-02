@@ -17,15 +17,15 @@ deployment = {
   artifacts = {
     consumer = {
       bucket         = "trustcheckradar-dev-107827791950-artifacts"
-      key            = "releases/662fbf47e9e392468b6d24ff7dc69206fb09a864/message_consumer.zip"
-      object_version = "gJfrIspOD0M7Ud.MiRROm9199iA4EbK5"
-      source_hash    = "+tXpXkRzFMuubI1uVG+kIVe6djVRbySZa7i4BAX1Jd8="
+      key            = "releases/686637e3d48e05f9f5adedee83ab0f35ce4e2fa3/message_consumer.zip"
+      object_version = "Hza0iu1t5ipHr43_gpmZTBvC7dvxuEqQ"
+      source_hash    = "5+NU13dA727zmlwU37ZEivocQzoUpgO2GJ3ZJe4Cgkg="
     }
     evaluator = {
       bucket         = "trustcheckradar-dev-107827791950-artifacts"
-      key            = "releases/662fbf47e9e392468b6d24ff7dc69206fb09a864/message_evaluator.zip"
-      object_version = "RTX2jkRXzUn88svNyvnzM4ksz7WOAJE9"
-      source_hash    = "ivz7yHpaTI6Kk91zfI7ujfSK2u6BWRT0iWOU7oUZeo8="
+      key            = "releases/686637e3d48e05f9f5adedee83ab0f35ce4e2fa3/message_evaluator.zip"
+      object_version = "dPcPImog8i.zLZGpwFptTqOwGXx9ECoc"
+      source_hash    = "b4QrkkFrndq4kmlMSO+7crginia4qqzR5dTwcJGyEyU="
     }
   }
   users_table_arn           = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-users"
