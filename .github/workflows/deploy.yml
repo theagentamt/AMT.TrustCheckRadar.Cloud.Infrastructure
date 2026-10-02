@@ -26,6 +26,7 @@ on:
           - campaign-data
           - history-data
           - history-processing
+          - message-consumer
           - research-plan-campaign-processing
           - research-plan-api
           - research-migrate-campaign-processing
@@ -57,7 +58,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main' && !startsWith(inputs.deployment_scope, 'research-')
+    if: github.ref == 'refs/heads/main' && inputs.deployment_scope != 'message-consumer' && !startsWith(inputs.deployment_scope, 'research-')
     name: Deploy ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -336,6 +337,124 @@ jobs:
               fi
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+  message-consumer:
+    name: Inactive Dev message installation
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.environment == 'dev' && inputs.deployment_scope == 'message-consumer'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: dev
+    env:
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Install Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Verify release selection
+        run: |
+          set -euo pipefail
+          test "$GITHUB_SHA" = "$EXPECTED_REVISION"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
+          test "$AWS_REGION" = us-east-1
+          test "$TF_STATE_BUCKET" = amt-trustcheckradar-107827791950-tfstate
+          test "$TF_STATE_KEY_PREFIX" = trustcheckradar
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            test -n "$REVIEWED_PLAN_DIGEST"
+          fi
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          allowed-account-ids: "107827791950"
+          role-session-name: message-install-${{ github.run_id }}
+
+      - name: Plan only the independent message-consumer state
+        run: |
+          set -euo pipefail
+          bash scripts/terraform.sh init dev message-consumer
+          terraform -chdir=terraform/message-consumer plan \
+            -input=false \
+            -var-file=../../environments/dev/message-consumer.tfvars \
+            -out="$RUNNER_TEMP/message-consumer.tfplan"
+          terraform -chdir=terraform/message-consumer show -json \
+            "$RUNNER_TEMP/message-consumer.tfplan" > "$RUNNER_TEMP/message-consumer-plan.json"
+
+      - name: Verify inactive scope, immutable artifacts and reviewed plan
+        run: |
+          set -euo pipefail
+          args=(--revision "$EXPECTED_REVISION")
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            args+=(--apply --expected-digest "$REVIEWED_PLAN_DIGEST")
+          fi
+          python3 scripts/verify_message_consumer_release.py \
+            "$RUNNER_TEMP/message-consumer-plan.json" "${args[@]}" \
+            | tee "$RUNNER_TEMP/message-consumer-review.json"
+          {
+            echo "### Inactive Dev message installation review"
+            echo '```json'
+            cat "$RUNNER_TEMP/message-consumer-review.json"
+            echo '```'
+            echo "The consumer, evaluator, provider circuit and AI remain disabled. The subject allowlist is empty."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Apply the verified saved plan
+        if: inputs.execution_mode == 'apply'
+        run: terraform -chdir=terraform/message-consumer apply -input=false "$RUNNER_TEMP/message-consumer.tfplan"
+
+      - name: Verify inactive deployed contract
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          terraform -chdir=terraform/message-consumer output -json candidate_contract > "$RUNNER_TEMP/candidate-contract.json"
+          jq -e '
+            .provisioned == true and
+            .consumer_enabled == false and
+            .evaluator_enabled == false and
+            .model_enabled == false and
+            .ai_enabled == false and
+            .ai_qualified == false and
+            .engineering_subject_count == 0 and
+            .provider_circuit_open == true and
+            .secret_value_in_state == false
+          ' "$RUNNER_TEMP/candidate-contract.json" >/dev/null
+
+      - name: Check drift after apply
+        if: inputs.execution_mode == 'apply'
+        run: |
+          terraform -chdir=terraform/message-consumer plan \
+            -input=false \
+            -var-file=../../environments/dev/message-consumer.tfvars \
+            -detailed-exitcode
+
+      - name: Remove temporary plan and projections
+        if: always()
+        run: |
+          rm -f \
+            "$RUNNER_TEMP/message-consumer.tfplan" \
+            "$RUNNER_TEMP/message-consumer-plan.json" \
+            "$RUNNER_TEMP/message-consumer-review.json" \
+            "$RUNNER_TEMP/candidate-contract.json"
 
   research-plan:
     name: Dev research migration
