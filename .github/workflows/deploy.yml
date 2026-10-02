@@ -413,11 +413,14 @@ jobs:
               '-var=access_qualification_reference=SECUR4ALL-230 reviewed synthetic Dev qualification'
             )
           fi
-          terraform -chdir=terraform/url-consumer plan \
+          if ! terraform -chdir=terraform/url-consumer plan \
             -input=false \
             "${args[@]}" \
             -out="$RUNNER_TEMP/trial-authority.tfplan" \
-            > "$RUNNER_TEMP/trial-authority-plan.log" 2>&1
+            > "$RUNNER_TEMP/trial-authority-plan.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/trial-authority-plan.log"
+            exit 1
+          fi
           terraform -chdir=terraform/url-consumer show -json \
             "$RUNNER_TEMP/trial-authority.tfplan" > "$RUNNER_TEMP/trial-authority-plan.json"
 
@@ -574,11 +577,14 @@ jobs:
               "-var=engineering_subjects=$ENGINEERING_SUBJECTS_JSON"
             )
           fi
-          terraform -chdir=terraform/message-consumer plan \
+          if ! terraform -chdir=terraform/message-consumer plan \
             -input=false \
             "${args[@]}" \
             -out="$RUNNER_TEMP/message-consumer.tfplan" \
-            > "$RUNNER_TEMP/message-consumer-plan.log" 2>&1
+            > "$RUNNER_TEMP/message-consumer-plan.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/message-consumer-plan.log"
+            exit 1
+          fi
           terraform -chdir=terraform/message-consumer show -json \
             "$RUNNER_TEMP/message-consumer.tfplan" > "$RUNNER_TEMP/message-consumer-plan.json"
 
