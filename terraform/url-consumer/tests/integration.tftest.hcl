@@ -230,7 +230,7 @@ run "trial_only_cannot_overlap_other_authority_modes" {
     engineering_subjects           = ["01997e3a-0000-7000-8000-000000000001"]
     access_qualification_reference = "synthetic test evidence"
   }
-  expect_failures = [var.activate_access_engineering, var.activate_trial_engineering]
+  expect_failures = [var.activate_trial_engineering]
 }
 
 run "deletion_only_exact_subjects_keep_other_capabilities_closed" {

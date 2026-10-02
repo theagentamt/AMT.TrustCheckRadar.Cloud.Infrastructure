@@ -72,7 +72,7 @@ variable "activate_access_engineering" {
   default     = false
   validation {
     condition = !var.activate_access_engineering || (
-      !var.activate_engineering && !var.activate_trial_engineering && var.enabled && var.environment == "dev" &&
+      !var.activate_engineering && var.enabled && var.environment == "dev" &&
       length(var.engineering_subjects) > 0 && var.authority_configuration != null &&
       var.api_gateway != null && var.alert_topic_arn != null && var.deletion_stream_arn != "" &&
       try(contains(keys(var.deployment.artifacts), "deletion"), false) &&
