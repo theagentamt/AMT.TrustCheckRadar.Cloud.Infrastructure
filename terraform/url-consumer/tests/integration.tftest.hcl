@@ -155,6 +155,8 @@ run "access_only_keeps_providers_and_trial_closed" {
     condition = (
       aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
       aws_lambda_function.runtime["consumer"].environment[0].variables.AUTHORITY_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == "[]" &&
       aws_lambda_function.runtime["consumer"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "false" &&
       aws_lambda_function.runtime["entitlements"].environment[0].variables.CONSUMER_ENABLED == "false" &&
       aws_lambda_function.runtime["entitlements"].environment[0].variables.AUTHORITY_ENABLED == "true" &&
@@ -198,14 +200,16 @@ run "trial_only_requires_recorded_readiness_and_one_subject" {
 run "trial_only_enables_entitlements_without_url_execution" {
   command = apply
   variables {
-    activate_trial_engineering    = true
-    engineering_subjects          = ["01997e3a-0000-7000-8000-000000000001"]
+    activate_trial_engineering     = true
+    engineering_subjects           = ["01997e3a-0000-7000-8000-000000000001"]
     access_qualification_reference = "SECUR4ALL-230 reviewed synthetic Dev qualification"
   }
   assert {
     condition = (
       aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
       aws_lambda_function.runtime["consumer"].environment[0].variables.AUTHORITY_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == "[]" &&
       aws_lambda_function.runtime["entitlements"].environment[0].variables.AUTHORITY_ENABLED == "true" &&
       aws_lambda_function.runtime["entitlements"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "true" &&
       aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "true" &&

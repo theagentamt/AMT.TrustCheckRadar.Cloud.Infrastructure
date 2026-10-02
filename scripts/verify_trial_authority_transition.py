@@ -150,8 +150,30 @@ def review(plan, revision, mode):
         raise ValueError("Transition must reuse the reviewed Dev API.")
     if variables.get("alert_topic_arn") != f"arn:aws:sns:{REGION}:{ACCOUNT}:{PREFIX}-url-resolver-alerts":
         raise ValueError("Transition must retain the confirmed Dev alert topic.")
+    if variables.get("deletion_stream_arn") != (
+        f"arn:aws:dynamodb:{REGION}:{ACCOUNT}:table/{PREFIX}-deletion-ledger/stream/2026-09-06T23:20:47.091"
+    ):
+        raise ValueError("Transition must retain the reviewed Dev deletion stream.")
+    deployment = variables.get("deployment") or {}
+    exact_dependencies = {
+        "users_table_arn": f"arn:aws:dynamodb:{REGION}:{ACCOUNT}:table/{PREFIX}-users",
+        "devices_table_arn": f"arn:aws:dynamodb:{REGION}:{ACCOUNT}:table/{PREFIX}-device-bindings",
+        "deletion_table_arn": f"arn:aws:dynamodb:{REGION}:{ACCOUNT}:table/{PREFIX}-deletion-ledger",
+        "authority_table_arn": f"arn:aws:dynamodb:{REGION}:{ACCOUNT}:table/{PREFIX}-purchase-entitlements",
+        "assessment_alias_arn": f"arn:aws:lambda:{REGION}:{ACCOUNT}:function:{PREFIX}-url-assessment:live",
+        "cognito_issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzN0wUSdQ",
+        "cognito_app_client_id": "5kvl9a8jo4fr1qqnci27tdabk4",
+    }
+    if any(deployment.get(key) != value for key, value in exact_dependencies.items()):
+        raise ValueError("Transition must retain the exact reviewed Dev authority dependencies.")
     deletion = variables.get("deletion_activation") or {}
-    if deletion.get("source_sha") != "9123459a5c2bc9503d56235b2cb1f1e162c00da1" or not deletion.get("subjects"):
+    if (
+        deletion.get("source_sha") != "9123459a5c2bc9503d56235b2cb1f1e162c00da1"
+        or set(deletion.get("subjects") or []) != {"c4685448-1021-7014-8ef4-b326afee90ae"}
+        or deletion.get("inventory_reference") != "docs/evidence/live-account-deletion-2026-09-26/account-qualified-manifest.json"
+        or deletion.get("runtime_reference") != "docs/evidence/live-account-deletion-2026-09-26/all-component-runtime.json"
+        or deletion.get("permissions_reference") != "docs/evidence/live-account-deletion-2026-09-26/account-writer-binding-review.md"
+    ):
         raise ValueError("Existing reviewed deletion qualification must remain active.")
     artifacts = _review_artifacts(variables)
 
