@@ -47,8 +47,10 @@ deployment = {
 }
 
 # Approved retention; exact temporary subjects are supplied only by a local test override.
-activate_engineering = false
-engineering_subjects = []
+activate_engineering        = false
+activate_access_engineering = false
+activate_trial_engineering  = false
+engineering_subjects        = []
 authority_configuration = {
   operation_validity_seconds = 300
   worker_settlement_seconds  = 60

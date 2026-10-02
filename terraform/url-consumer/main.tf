@@ -113,7 +113,7 @@ resource "aws_lambda_function" "runtime" {
       CONSUMER_ENABLED                   = tostring(var.activate_engineering)
       AUTHORITY_ENABLED                  = tostring(each.key == "entitlements" ? local.authority_engineering_active : var.activate_engineering)
       V1_ENTITLEMENTS_ENABLED            = tostring(each.key == "entitlements" ? local.authority_engineering_active : var.activate_engineering)
-      TRIAL_AUTHORITY_RETENTION_APPROVED = tostring(!var.activate_access_engineering)
+      TRIAL_AUTHORITY_RETENTION_APPROVED = tostring(var.activate_engineering || var.activate_trial_engineering)
       USERS_TABLE_NAME                   = split("/", var.deployment.users_table_arn)[1]
       DEVICE_BINDINGS_TABLE_NAME         = split("/", var.deployment.devices_table_arn)[1]
       DELETION_LEDGER_TABLE_NAME         = split("/", var.deployment.deletion_table_arn)[1]

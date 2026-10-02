@@ -28,6 +28,8 @@ on:
           - history-processing
           - message-consumer
           - message-consumer-engineering
+          - trial-authority
+          - trial-authority-engineering
           - research-plan-campaign-processing
           - research-plan-api
           - research-migrate-campaign-processing
@@ -59,7 +61,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main' && !startsWith(inputs.deployment_scope, 'message-consumer') && !startsWith(inputs.deployment_scope, 'research-')
+    if: github.ref == 'refs/heads/main' && !startsWith(inputs.deployment_scope, 'message-consumer') && !startsWith(inputs.deployment_scope, 'trial-authority') && !startsWith(inputs.deployment_scope, 'research-')
     name: Deploy ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -339,6 +341,168 @@ jobs:
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
+  trial-authority:
+    name: Bounded Dev trial-authority transition
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.environment == 'dev' && startsWith(inputs.deployment_scope, 'trial-authority')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: dev
+    env:
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Install Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Verify release selection
+        env:
+          ENGINEERING_SUBJECTS_JSON: ${{ secrets.MESSAGE_ENGINEERING_SUBJECTS_JSON }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_SHA" = "$EXPECTED_REVISION"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
+          test "$AWS_REGION" = us-east-1
+          test "$TF_STATE_BUCKET" = amt-trustcheckradar-107827791950-tfstate
+          test "$TF_STATE_KEY_PREFIX" = trustcheckradar
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            test -n "$REVIEWED_PLAN_DIGEST"
+          fi
+          if [[ "${{ inputs.deployment_scope }}" == trial-authority-engineering ]]; then
+            test -n "$ENGINEERING_SUBJECTS_JSON"
+            jq -e 'type == "array" and length == 1 and all(.[]; type == "string" and test("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"))' \
+              <<< "$ENGINEERING_SUBJECTS_JSON" >/dev/null
+          fi
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          allowed-account-ids: "107827791950"
+          role-session-name: trial-authority-${{ github.run_id }}
+
+      - name: Plan only the current-authority state
+        env:
+          ENGINEERING_SUBJECTS_JSON: ${{ secrets.MESSAGE_ENGINEERING_SUBJECTS_JSON }}
+        run: |
+          set -euo pipefail
+          bash scripts/terraform.sh init dev url-consumer
+          args=(-var-file=../../environments/dev/url-consumer.tfvars)
+          if [[ "${{ inputs.deployment_scope }}" == trial-authority-engineering ]]; then
+            args+=(
+              -var=activate_trial_engineering=true
+              "-var=engineering_subjects=$ENGINEERING_SUBJECTS_JSON"
+              '-var=access_qualification_reference=SECUR4ALL-230 reviewed synthetic Dev qualification'
+            )
+          fi
+          terraform -chdir=terraform/url-consumer plan \
+            -input=false \
+            "${args[@]}" \
+            -out="$RUNNER_TEMP/trial-authority.tfplan" \
+            > "$RUNNER_TEMP/trial-authority-plan.log" 2>&1
+          terraform -chdir=terraform/url-consumer show -json \
+            "$RUNNER_TEMP/trial-authority.tfplan" > "$RUNNER_TEMP/trial-authority-plan.json"
+
+      - name: Verify bounded trial scope, artifacts and reviewed plan
+        run: |
+          set -euo pipefail
+          mode=inactive
+          if [[ "${{ inputs.deployment_scope }}" == trial-authority-engineering ]]; then
+            mode=trial
+          fi
+          args=(--revision "$EXPECTED_REVISION" --mode "$mode")
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            args+=(--apply --expected-digest "$REVIEWED_PLAN_DIGEST")
+          fi
+          python3 scripts/verify_trial_authority_transition.py \
+            "$RUNNER_TEMP/trial-authority-plan.json" "${args[@]}" \
+            | tee "$RUNNER_TEMP/trial-authority-review.json"
+          {
+            echo "### Bounded Dev trial-authority transition review"
+            echo '```json'
+            cat "$RUNNER_TEMP/trial-authority-review.json"
+            echo '```'
+            echo "URL execution remains disabled. Engineering mode permits trial activation for exactly one secret-backed synthetic subject."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Apply the verified saved plan
+        if: inputs.execution_mode == 'apply'
+        run: |
+          terraform -chdir=terraform/url-consumer apply -input=false "$RUNNER_TEMP/trial-authority.tfplan" \
+            > "$RUNNER_TEMP/trial-authority-apply.log" 2>&1
+
+      - name: Verify deployed contract
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          terraform -chdir=terraform/url-consumer output -json candidate_contract > "$RUNNER_TEMP/trial-authority-contract.json"
+          if [[ "${{ inputs.deployment_scope }}" == trial-authority-engineering ]]; then
+            jq -e '
+              .provisioned == true and .consumer_enabled == false and .recovery_enabled == true and
+              .access_enabled == true and .deletion_enabled == true and .trial_activation_enabled == true and
+              .access_only_engineering == false and .trial_only_engineering == true and
+              .engineering_subject_count == 1 and .general_customer_access == false and
+              .secret_value_in_state == false
+            ' "$RUNNER_TEMP/trial-authority-contract.json" >/dev/null
+          else
+            jq -e '
+              .provisioned == true and .consumer_enabled == false and .recovery_enabled == false and
+              .access_enabled == false and .deletion_enabled == true and .trial_activation_enabled == false and
+              .access_only_engineering == false and .trial_only_engineering == false and
+              .engineering_subject_count == 0 and .general_customer_access == false and
+              .secret_value_in_state == false
+            ' "$RUNNER_TEMP/trial-authority-contract.json" >/dev/null
+          fi
+
+      - name: Check drift after apply
+        if: inputs.execution_mode == 'apply'
+        env:
+          ENGINEERING_SUBJECTS_JSON: ${{ secrets.MESSAGE_ENGINEERING_SUBJECTS_JSON }}
+        run: |
+          args=(-var-file=../../environments/dev/url-consumer.tfvars)
+          if [[ "${{ inputs.deployment_scope }}" == trial-authority-engineering ]]; then
+            args+=(
+              -var=activate_trial_engineering=true
+              "-var=engineering_subjects=$ENGINEERING_SUBJECTS_JSON"
+              '-var=access_qualification_reference=SECUR4ALL-230 reviewed synthetic Dev qualification'
+            )
+          fi
+          terraform -chdir=terraform/url-consumer plan \
+            -input=false \
+            "${args[@]}" \
+            -detailed-exitcode \
+            > "$RUNNER_TEMP/trial-authority-drift.log" 2>&1
+
+      - name: Remove temporary plan and projections
+        if: always()
+        run: |
+          rm -f \
+            "$RUNNER_TEMP/trial-authority.tfplan" \
+            "$RUNNER_TEMP/trial-authority-plan.json" \
+            "$RUNNER_TEMP/trial-authority-plan.log" \
+            "$RUNNER_TEMP/trial-authority-apply.log" \
+            "$RUNNER_TEMP/trial-authority-drift.log" \
+            "$RUNNER_TEMP/trial-authority-review.json" \
+            "$RUNNER_TEMP/trial-authority-contract.json"
+
   message-consumer:
     name: Bounded Dev message transition
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.environment == 'dev' && startsWith(inputs.deployment_scope, 'message-consumer')
@@ -354,7 +518,6 @@ jobs:
       EXECUTION_MODE: ${{ inputs.execution_mode }}
       EXPECTED_REVISION: ${{ inputs.expected_revision }}
       REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
-      ENGINEERING_SUBJECTS_JSON: ${{ secrets.MESSAGE_ENGINEERING_SUBJECTS_JSON }}
 
     steps:
       - name: Check out repository
@@ -366,6 +529,8 @@ jobs:
           python-version: "3.14"
 
       - name: Verify release selection
+        env:
+          ENGINEERING_SUBJECTS_JSON: ${{ secrets.MESSAGE_ENGINEERING_SUBJECTS_JSON }}
         run: |
           set -euo pipefail
           test "$GITHUB_SHA" = "$EXPECTED_REVISION"
@@ -378,7 +543,7 @@ jobs:
           fi
           if [[ "${{ inputs.deployment_scope }}" == message-consumer-engineering ]]; then
             test -n "$ENGINEERING_SUBJECTS_JSON"
-            jq -e 'type == "array" and length == 1 and all(.[]; type == "string" and test("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"))' \
+            jq -e 'type == "array" and length == 1 and all(.[]; type == "string" and test("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"))' \
               <<< "$ENGINEERING_SUBJECTS_JSON" >/dev/null
           fi
 
@@ -397,6 +562,8 @@ jobs:
           role-session-name: message-install-${{ github.run_id }}
 
       - name: Plan only the independent message-consumer state
+        env:
+          ENGINEERING_SUBJECTS_JSON: ${{ secrets.MESSAGE_ENGINEERING_SUBJECTS_JSON }}
         run: |
           set -euo pipefail
           bash scripts/terraform.sh init dev message-consumer
@@ -466,6 +633,8 @@ jobs:
 
       - name: Check drift after apply
         if: inputs.execution_mode == 'apply'
+        env:
+          ENGINEERING_SUBJECTS_JSON: ${{ secrets.MESSAGE_ENGINEERING_SUBJECTS_JSON }}
         run: |
           args=(-var-file=../../environments/dev/message-consumer.tfvars)
           if [[ "${{ inputs.deployment_scope }}" == message-consumer-engineering ]]; then

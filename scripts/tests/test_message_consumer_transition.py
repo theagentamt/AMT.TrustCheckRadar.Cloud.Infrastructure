@@ -14,7 +14,7 @@ transition = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(transition)
 REVISION = "b" * 40
 RELEASE = "a" * 40
-SUBJECT = "11111111-1111-4111-8111-111111111111"
+SUBJECT = "01997e3a-0000-7000-8000-000000000001"
 
 
 def artifact(name, contents):

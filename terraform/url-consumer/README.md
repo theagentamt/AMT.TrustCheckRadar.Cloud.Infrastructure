@@ -100,3 +100,19 @@ committed environment files remain closed. Play handoff remains separately close
 and this change adds no Play activation switch. No grant, trial, inventory marker,
 device binding, provider request or test purchase is created by the default mode.
 See [test-account readiness](../../docs/PLAY-TEST-ACCOUNT-READINESS-2026-09-22.md).
+
+## Restricted trial-authority engineering mode
+
+`activate_trial_engineering` is the SECUR4ALL-230 qualification mode. It enables
+the existing access snapshot, explicit seven-day/ten-check trial activation,
+lease recovery and deletion controls for exactly one synthetic Dev subject. URL
+consumer execution remains disabled, so this mode cannot call Web Risk or any
+other reputation provider. It cannot coexist with full or access-only engineering.
+
+Use only the `trial-authority-engineering` GitHub Actions scope from `main`. The
+workflow reads the subject from the protected Dev environment secret, creates a
+saved plan, rejects creates/deletes and unrelated updates, verifies immutable
+runtime artifacts, and emits a digest. Applying requires that exact digest at the
+same revision. `trial-authority` is the rollback scope; it restores the authority
+gates to their committed inactive values while retaining the previously reviewed
+deletion-only subject and cleanup path.

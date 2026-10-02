@@ -9,6 +9,7 @@ import re
 import subprocess
 import tempfile
 from pathlib import Path
+from uuid import UUID
 
 
 ACCOUNT = "107827791950"
@@ -22,7 +23,13 @@ TRANSITION_ADDRESSES = {
     'aws_lambda_function.runtime["consumer"]',
     'aws_lambda_function.runtime["evaluator"]',
 }
-UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+
+
+def _canonical_uuid(value):
+    try:
+        return isinstance(value, str) and str(UUID(value)) == value
+    except (AttributeError, ValueError):
+        return False
 
 
 def _variables(plan):
@@ -126,7 +133,7 @@ def review(plan, revision, mode):
     ):
         raise ValueError("Transition must target only the selected Dev message mode.")
     if active:
-        if len(subjects) != 1 or not UUID.fullmatch(subjects[0]):
+        if len(subjects) != 1 or not _canonical_uuid(subjects[0]):
             raise ValueError("Engineering activation requires exactly one synthetic Cognito UUID subject.")
     elif subjects:
         raise ValueError("Inactive mode requires an empty subject allowlist.")
