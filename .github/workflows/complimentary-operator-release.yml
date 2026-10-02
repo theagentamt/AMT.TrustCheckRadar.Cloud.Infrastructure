@@ -128,10 +128,12 @@ jobs:
             .consumer_enabled == false and .trial_activation_enabled == false and
             .general_customer_access == false and .secret_value_in_state == false
           ' "$RUNNER_TEMP/complimentary-operator-contract.json" >/dev/null
-          route_id="$(aws apigatewayv2 get-routes --api-id icuak34th9 \
-            --query 'Items[?RouteKey==`POST /v1/operator/complimentary-access`].RouteId | [0]' --output text)"
-          [[ -n "$route_id" && "$route_id" != None ]]
-          [[ "$(aws apigatewayv2 get-route --api-id icuak34th9 --route-id "$route_id" --query AuthorizationType --output text)" == AWS_IAM ]]
+          aws apigatewayv2 get-routes --api-id icuak34th9 --output json \
+            > "$RUNNER_TEMP/complimentary-operator-routes.json"
+          jq -e '
+            [.Items[] | select(.RouteKey == "POST /v1/operator/complimentary-access")] as $routes |
+            ($routes | length) == 1 and $routes[0].AuthorizationType == "AWS_IAM"
+          ' "$RUNNER_TEMP/complimentary-operator-routes.json" >/dev/null
 
       - name: Check drift after apply
         if: inputs.execution_mode == 'apply'
@@ -149,4 +151,5 @@ jobs:
             "$RUNNER_TEMP/complimentary-operator-plan.json" \
             "$RUNNER_TEMP/complimentary-operator-review.json" \
             "$RUNNER_TEMP/complimentary-operator-contract.json" \
+            "$RUNNER_TEMP/complimentary-operator-routes.json" \
             "$RUNNER_TEMP/complimentary-operator-drift.log"
