@@ -4,7 +4,8 @@ SECUR4ALL-242 supplies the isolated infrastructure dependency for ATCR-120 and
 SECUR4ALL-190/228/229/230. This root can provision the inactive Dev runtimes and
 the three authenticated message routes without activating message processing.
 Provisioning, rules-only engineering qualification and later qualified AI are
-separate gates. All checked-in environment files remain disabled.
+separate gates. The checked-in Dev configuration installs the candidate while
+all execution gates remain disabled; UAT and production remain disabled.
 
 ## Runtime and trust boundaries
 
@@ -46,11 +47,16 @@ separate gates. All checked-in environment files remain disabled.
 State is isolated at `trustcheckradar/dev/message-consumer.tfstate`. The provider
 is restricted to Dev account 107827791950. Inputs are exact environment-scoped
 same-account dependencies. UAT/production provisioning is rejected. CI validates
-this root, and the automatic deployment workflow explicitly excludes it.
+this root, and the automatic environment deployment excludes it. Installation is
+available only through the manually dispatched, main-only
+`message-consumer-release.yml` workflow.
 
 Before provisioning, pin the reviewed Lambda artifact pair, validate the actual
 Android contract against handler responses, supply the exact existing Dev API and
-shared JWT authorizer, and review a saved manual Dev plan. Provisioning creates
+shared JWT authorizer, and review the workflow's saved Dev plan. Applying requires
+the exact plan digest emitted for the same full `main` revision. The verifier
+downloads both exact S3 object versions and checks their SHA-256 values before it
+permits an apply. Provisioning creates
 only `POST /v1/message-checks/prepare`, `POST /v1/message-checks`, and
 `POST /v1/message-checks/reconcile`; every route requires the existing Cognito JWT
 scope and invokes the pinned `message-consumer:live` alias. Disabled handlers
@@ -152,6 +158,14 @@ for local validation with the mocked AWS provider. Tests cover no-op defaults,
 inactive runtimes, authority/evaluator isolation, immutable coordinated packages,
 wrong environment/account rejection and absent public endpoint output. These
 mocked applies create no AWS resources and are not a deployment report.
+
+For the Dev installation, dispatch **Install inactive Dev message consumer** from
+the exact reviewed `main` revision with `execution_mode=plan`. Confirm the summary
+contains `scope=inactive-dev-message-installation`, 25 creates and the expected
+immutable Lambda release. Then dispatch the same revision with
+`execution_mode=apply` and its exact `reviewedPlanDigest`. The workflow applies
+only that saved plan, verifies the inactive output contract, and requires a
+zero-drift follow-up plan. A changed revision or state requires a new plan review.
 
 The 2026-09-21 proposer handoff passed `terraform fmt -check`, `terraform validate`
 and all 10 mocked runs, including the explicit disabled-provider/no-config
