@@ -99,3 +99,37 @@ class GovernedHistoryPlanTests(unittest.TestCase):
         self.assertEqual(v.review(plan, REVISION, 'reader', 'both')['resourceChanges'], 0)
         resource(plan, 'aws_lambda_alias.')['function_version'] = '1'; sync(plan)
         with self.assertRaises(ValueError): v.review(plan, REVISION, 'reader', 'both')
+
+
+class ComputedDriftTests(unittest.TestCase):
+    def fixture(self):
+        p = fixture('index', 'active')
+        before = {'id': 'us-east-1_wzN0wUSdQ', 'name': v.PREFIX + '-user-pool',
+                  'arn': f'arn:aws:cognito-idp:us-east-1:{v.ACCOUNT}:userpool/us-east-1_wzN0wUSdQ',
+                  'estimated_number_of_users': 3, 'deletion_protection': 'ACTIVE'}
+        after = dict(before, estimated_number_of_users=4)
+        p['resource_drift'] = [{'address': 'aws_cognito_user_pool.main', 'provider_name': 'registry.terraform.io/hashicorp/aws',
+            'mode': 'managed', 'change': {'actions': ['update'], 'before': before, 'after': after}}]
+        item = {'address': 'aws_cognito_user_pool.main', 'mode': 'managed',
+            'change': {'actions': ['no-op'], 'before': after, 'after': after}}
+        p['resource_changes'].append(item)
+        p['planned_values']['root_module']['resources'].append({'address': item['address'], 'mode': 'managed', 'values': after})
+        return p
+
+    def test_exact_computed_count_drift_requires_no_pool_mutation(self):
+        p=self.fixture()
+        self.assertEqual(v.review(p,REVISION,'index','active')['resourceChanges'],1)
+        for altered in ('field','account','id','name','provider','count','action','missing_noop','mutating_plan','reader'):
+            bad=copy.deepcopy(p)
+            drift=bad['resource_drift'][0]
+            if altered=='field': drift['change']['after']['deletion_protection']='INACTIVE'
+            if altered=='account': drift['change']['after']['arn']='arn:aws:cognito-idp:us-east-1:999999999999:userpool/us-east-1_wzN0wUSdQ'
+            if altered=='id': drift['change']['after']['id']='us-east-1_Other'
+            if altered=='name': drift['change']['after']['name']='other-pool'
+            if altered=='provider': drift['provider_name']='other-provider'
+            if altered=='count': drift['change']['after']['estimated_number_of_users']=True
+            if altered=='action': drift['change']['actions']=['delete']
+            if altered=='missing_noop': bad['resource_changes'].pop()
+            if altered=='mutating_plan': bad['resource_changes'][-1]['change']['actions']=['update']
+            with self.subTest(altered=altered),self.assertRaises(ValueError):
+                v.review(bad,REVISION,'reader' if altered=='reader' else 'index','active')

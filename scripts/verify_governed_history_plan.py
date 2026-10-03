@@ -160,12 +160,35 @@ def reader_policy(d, subjects, partitions):
     return policy
 
 
+def verify_drift(plan, scope):
+    for item in plan.get('resource_drift', []):
+        if item.get('mode') != 'managed' or item.get('change', {}).get('actions') == ['no-op']:
+            continue
+        change = item.get('change') or {}
+        before, after = change.get('before'), change.get('after')
+        # Cognito's estimated count is computed telemetry, not a pool setting.
+        # Require the exact Dev pool and a no-op resource plan; all other drift
+        # (including any additional field) remains fail-closed.
+        harmless = (scope == 'index' and item.get('address') == 'aws_cognito_user_pool.main'
+            and item.get('provider_name') == 'registry.terraform.io/hashicorp/aws'
+            and change.get('actions') == ['update'] and isinstance(before, dict) and isinstance(after, dict)
+            and changed_fields(before, after) == {'estimated_number_of_users'}
+            and all(type(v.get('estimated_number_of_users')) is int and v['estimated_number_of_users'] >= 0 for v in (before, after))
+            and after.get('id') == 'us-east-1_wzN0wUSdQ'
+            and after.get('name') == PREFIX + '-user-pool'
+            and after.get('arn') == f'arn:aws:cognito-idp:us-east-1:{ACCOUNT}:userpool/us-east-1_wzN0wUSdQ'
+            and any(v.get('address') == item['address'] and v.get('mode') == 'managed'
+                    and v.get('change', {}).get('actions') == ['no-op']
+                    and v['change'].get('after') == after for v in plan.get('resource_changes', [])))
+        require(harmless, 'Unreviewed live drift must be reconciled first.')
+
+
 def review(plan, revision, scope, mode):
     require(re.fullmatch('[0-9a-f]{40}', revision or ''), 'Full reviewed main revision required.')
     require(plan.get('complete') is True and not plan.get('errored') and plan.get('terraform_version') == '1.12.1', 'Successful pinned Terraform plan required.')
     variables = {k: v.get('value') for k, v in plan.get('variables', {}).items()}
     require(variables.get('environment') == 'dev' and variables.get('aws_region') == 'us-east-1' and variables.get('project_name') == 'trustcheckradar', 'Only TrustCheckRadar Dev is allowed.')
-    require(not any(item.get('mode') == 'managed' and item.get('change', {}).get('actions') != ['no-op'] for item in plan.get('resource_drift', [])), 'Unreviewed live drift must be reconciled first.')
+    verify_drift(plan, scope)
     changes = [v for v in plan.get('resource_changes', []) if v.get('mode') == 'managed' and v.get('change', {}).get('actions') != ['no-op']]
     all_managed = [v for v in plan.get('resource_changes', []) if v.get('mode') == 'managed']
     planned = {v['address']: v for v in plan.get('planned_values', {}).get('root_module', {}).get('resources', []) if v.get('mode') == 'managed'}
