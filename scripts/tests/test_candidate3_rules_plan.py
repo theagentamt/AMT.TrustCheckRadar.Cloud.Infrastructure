@@ -26,7 +26,7 @@ def fixture(mode='rules-only'):
             if name == 'consumer': env.update(GOVERNED_HISTORY_SETTLEMENT_ENABLED=str(mode == 'rules-only-history').lower(), MESSAGE_PROVIDER_CIRCUIT_OPEN='true')
         else: after['function_version'] = '7'
     import json
-    plan['resource_changes'].append({'address': 'aws_iam_role_policy.evaluator[0]', 'mode': 'managed', 'change': {'actions': ['update'], 'before': {}, 'after': {'role': 'trustcheckradar-dev-message-evaluator-execution', 'policy': json.dumps(v.evaluator_policy(vars['deployment'], active))}}})
+    plan['resource_changes'].append({'address': 'aws_iam_role_policy.evaluator[0]', 'mode': 'managed', 'change': {'actions': ['update'], 'before': {}, 'after': {'name': 'private-message-evaluation-only', 'role': 'trustcheckradar-dev-message-evaluator-execution', 'policy': json.dumps(v.evaluator_policy(vars['deployment'], active))}}})
     output = plan['output_changes']['candidate_contract']['after']
     output.update(candidate3_rules_only_enabled=active, governed_history_settlement_enabled=mode == 'rules-only-history', provider_circuit_open=True)
     return sync(plan)

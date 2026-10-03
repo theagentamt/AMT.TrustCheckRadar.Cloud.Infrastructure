@@ -136,9 +136,13 @@ all unexecuted scoped Dev activation and Android emulator acceptance. Existing
 [ATCR62](https://andmorethings.youtrack.cloud/issue/ATCR-62) retain later release
 qualification. Physical testing remains in ATCR148 and is not requested now.
 
-Use only approved disposable adult Dev account/device binding and its explicitly
-activated 7-day/10-completed-check trial. Do not invent account identifiers or
-create/delete accounts from these instructions. Exact qualified contract fixtures
+Use only an approved adult synthetic Dev account/device binding. The current
+SEC340 fixture is an existing dedicated reusable account with its existing
+7-day/10-completed-check trial. Use the runner
+`--fixture-mode dedicated_reusable`; never activate/reset its trial or delete
+this account. New minimized receipts keep their original seven-day deadlines.
+A disposable fixture requires separate explicit creation/deletion authority and
+its corresponding runner mode. Do not invent identifiers from these instructions. Exact qualified contract fixtures
 come from Lambda `contracts/message-consumer/1.0.0-candidate.3` and
 `contracts/governed-history/1.0.0-candidate.1`. Android ATCR163 must first consume
 the governed schema; legacy score History cannot qualify this journey.
@@ -205,3 +209,49 @@ maintenance. All packages, routes, IAM, existing deletion scope, operator access
 and background controls must remain unchanged; live drift fails closed. Plan,
 exact-digest approval, apply and readback remain separate. Roll back with this
 scope's `inactive` mode, preserving any already-created trial eligibility record.
+
+
+## SEC340 first-read provider normalization
+
+Index apply `37141414785`, access-only apply `37142537394`, inactive reader
+apply `37143161640`, and rules-only message/settlement apply `37143163547`
+succeeded through reviewed Dev CI/CD at infrastructure main
+`ff4b05c542bbec9c8d81f623b9fe3d3dbd276cda`. Each passed configuration
+readback and zero drift at its apply stage. These are installation/configuration
+checks; no live analysis or Android restart journey is qualified by them.
+The installed reader and message ZIPs use qualified Lambda main
+`6d9ae503b7d4e36a16a4cfc6bee2c939b988c723`, main CI `37142525442`, and
+immutable publication `37142703658`. Exact S3 versions/checksums remain the
+workflow deployment inputs, with independent S3 HEAD verification.
+
+Subsequent reader activation plan `37143266035` and message rollback plan
+`37143461315` failed closed before apply. Private read-only diagnostics identified
+only initial AWS provider collection normalization and the IAM role's computed
+view of a separately managed inline policy. No raw plans, account identifiers,
+environments, or policy subjects belong in public evidence.
+
+The reader verifier accepts only the observed null-to-empty request maps on the
+exact existing API integration/routes, tags on the exact reader log group/role/
+function, and empty function layers. Each drift entry must bind the exact current
+managed resource. Only the reader function may also undergo its independently
+validated activation update; other normalization resources stay no-op. The full
+reader inventory still checks exact runtime/source, routes, trust, permissions,
+limits, and account/device gates. Reverse, nonempty or additional field drift
+remains rejected.
+
+For reader and evaluator roles, the computed inline-policy view must contain
+exactly the single owned policy and match the separately managed policy's current
+`before` JSON. The previous view may contain no policy or only that same owned
+current/target policy. Unexpected grants, names, role trust, current-policy drift,
+other roles and provider identities remain rejected. The desired reader/evaluator
+policy is validated separately, including the evaluator's exact policy name.
+Observed normalized drift stays in the authoritative reviewed-plan digest; only
+the already-validated evaluator view is removed from the legacy compatibility
+verifier's temporary copy.
+
+Regenerate all affected CI/CD plans at the new reviewed main revision. Existing
+approvals are not approvals for new digests. Reader access remains disabled until
+its new exact list/detail plan is approved and its positive readback succeeds.
+The dedicated fixture currently retains its original trial balance; no trial
+activation/reset, account creation/deletion, provider request, UAT or Production
+change has occurred in this qualification increment.

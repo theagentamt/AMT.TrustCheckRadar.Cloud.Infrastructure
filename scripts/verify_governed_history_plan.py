@@ -160,6 +160,56 @@ def reader_policy(d, subjects, partitions):
     return policy
 
 
+def owned_inline_policy_readback(before, after, policy_change):
+    """A role's computed policy view may lag its separately managed policy."""
+    try:
+        current, target = policy_change['before'], policy_change['after']
+        name = current['name']
+        require(target['name'] == name, 'Owned policy name changed.')
+        def policy(entry):
+            require(type(entry) is dict and set(entry) == {'name', 'policy'} and entry['name'] == name, 'Unexpected inline grant.')
+            return json.loads(entry['policy'])
+        require(type(after) is list and len(after) == 1 and policy(after[0]) == json.loads(current['policy']), 'Inline view differs from current managed policy.')
+        require(type(before) is list and (not before or len(before) == 1 and policy(before[0]) in [json.loads(current['policy']), json.loads(target['policy'])]), 'Previous inline view is not a known managed policy.')
+        return True
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
+def reader_computed_drift(plan, item):
+    """Accept only observed first-read empty collections and owned policy views."""
+    try:
+        address = item['address']
+        empty_fields = {
+            'aws_apigatewayv2_integration.history[0]': {'request_parameters': {}, 'request_templates': {}},
+            'aws_apigatewayv2_route.history["list"]': {'request_models': {}},
+            'aws_apigatewayv2_route.history["detail"]': {'request_models': {}},
+            'aws_cloudwatch_log_group.runtime["reader"]': {'tags': {}},
+            'aws_iam_role.runtime["reader"]': {'tags': {}},
+            'aws_lambda_function.runtime["reader"]': {'layers': [], 'tags': {}},
+        }
+        require(address in empty_fields and item.get('provider_name') == 'registry.terraform.io/hashicorp/aws', 'Not a known reader readback.')
+        change = item['change']; before, after = change['before'], change['after']
+        require(change['actions'] == ['update'] and type(before) is dict and type(after) is dict, 'Invalid readback shape.')
+        counterparts = [v for v in plan['resource_changes'] if v.get('mode') == 'managed' and v['address'] == address]
+        require(len(counterparts) == 1, 'Exact managed counterpart required.')
+        counterpart = counterparts[0]['change']
+        require(counterpart['before'] == after and (counterpart['actions'] == ['no-op'] and counterpart['after'] == after or address == 'aws_lambda_function.runtime["reader"]' and counterpart['actions'] == ['update']), 'Readback must bind the current resource; only reader activation may update it.')
+        fields = changed_fields(before, after)
+        allowed = set(empty_fields[address]) | ({'inline_policy'} if address == 'aws_iam_role.runtime["reader"]' else set())
+        require(fields and fields <= allowed, 'Substantive drift is forbidden.')
+        for field in fields - {'inline_policy'}:
+            require(before[field] is None and after[field] == empty_fields[address][field], 'Only null-to-empty readback is permitted.')
+        if 'inline_policy' in fields:
+            policies = [v for v in plan['resource_changes'] if v.get('mode') == 'managed' and v['address'] == 'aws_iam_role_policy.reader[0]']
+            require(len(policies) == 1 and owned_inline_policy_readback(before['inline_policy'], after['inline_policy'], policies[0]['change']), 'Only the exact separately managed reader policy view is permitted.')
+        # The complete reader inventory below verifies all identities, trust,
+        # source pins, routes, policy contents, environments and runtime limits.
+        return True
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
 def verify_drift(plan, scope):
     for item in plan.get('resource_drift', []):
         if item.get('mode') != 'managed' or item.get('change', {}).get('actions') == ['no-op']:
@@ -180,7 +230,7 @@ def verify_drift(plan, scope):
             and any(v.get('address') == item['address'] and v.get('mode') == 'managed'
                     and v.get('change', {}).get('actions') == ['no-op']
                     and v['change'].get('after') == after for v in plan.get('resource_changes', [])))
-        require(harmless, 'Unreviewed live drift must be reconciled first.')
+        require(harmless or scope == 'reader' and reader_computed_drift(plan, item), 'Unreviewed live drift must be reconciled first.')
 
 
 def review(plan, revision, scope, mode):
