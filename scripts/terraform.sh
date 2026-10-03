@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "Usage: $0 <init|plan|apply|output> <dev|uat|prod> <foundation|history-data|history-processing|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows|url-resolver|url-assessment|url-consumer|message-consumer|recovery-consumer|result-feedback|play-verification|play-lifecycle> [artifact-release]" >&2
+  echo "Usage: $0 <init|plan|apply|output> <dev|uat|prod> <foundation|history-data|history-processing|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows|url-resolver|url-assessment|url-consumer|message-consumer|governed-history|recovery-consumer|result-feedback|play-verification|play-lifecycle> [artifact-release]" >&2
   exit 2
 }
 
@@ -24,9 +24,14 @@ case "$environment" in
 esac
 
 case "$stack" in
-  foundation|history-data|history-processing|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows|url-resolver|url-assessment|url-consumer|message-consumer|recovery-consumer|result-feedback|play-verification|play-lifecycle) ;;
+  foundation|history-data|history-processing|campaign-data|api|campaign-processing|campaign-api|edge|identity-workflows|url-resolver|url-assessment|url-consumer|message-consumer|governed-history|recovery-consumer|result-feedback|play-verification|play-lifecycle) ;;
   *) usage ;;
 esac
+
+if [[ "$stack" == "governed-history" && "$operation" == "apply" ]]; then
+  echo "Use the reviewed main-only governed History Dev workflow and exact plan digest for apply." >&2
+  exit 2
+fi
 
 : "${TF_STATE_BUCKET:?Set TF_STATE_BUCKET to the remote state S3 bucket name}"
 aws_region=${AWS_REGION:-us-east-1}

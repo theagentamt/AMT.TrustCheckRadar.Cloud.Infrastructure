@@ -83,6 +83,7 @@ def _expected_environment(name, variables, active):
         "MESSAGE_POLICY_VERSION": "message-rules-2026-09-20-v1",
         "MESSAGE_POLICY_APPROVAL_SHA256": "0367140fbdbaef36dd59ba81030f3e35e04e78dbbed4129277c9cb0758971a80",
         "MESSAGE_AI_ENABLED": "false",
+        "MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED": "false",
         "MESSAGE_AI_POLICY_VERSION": "message-ai-2026-09-21-v1",
         "MESSAGE_AI_POLICY_APPROVAL_SHA256": "d6e9fff12225540bef9ba7833cce457cca4b9c791af3b49dd8a4f1601d204349",
     }
@@ -95,6 +96,7 @@ def _expected_environment(name, variables, active):
         }
     return common | {
         "MESSAGE_CONSUMER_ENABLED": str(active).lower(),
+        "GOVERNED_HISTORY_SETTLEMENT_ENABLED": "false",
         "AUTHORITY_ENABLED": str(active).lower(),
         "AUTHORITY_TABLE_NAME": f"{PREFIX}-purchase-entitlements",
         "USERS_TABLE_NAME": f"{PREFIX}-users",
@@ -131,6 +133,8 @@ def review(plan, revision, mode):
         raise ValueError("Only a complete, successful plan can be reviewed.")
 
     variables = _variables(plan)
+    if any(_terraform_bool(variables.get(key, False)) for key in ("candidate3_rules_only_enabled", "governed_history_settlement_enabled")):
+        raise ValueError("This candidate.1 workflow cannot activate candidate.3 or governed History.")
     active = mode == "engineering"
     subjects = sorted(variables.get("engineering_subjects") or [])
     if (

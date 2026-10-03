@@ -129,6 +129,13 @@ jobs:
           terraform validate
           terraform test
 
+      - name: Validate governed results History
+        working-directory: terraform/governed-history
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
       - name: Validate V1 recovery consumer candidate
         working-directory: terraform/recovery-consumer
         run: |

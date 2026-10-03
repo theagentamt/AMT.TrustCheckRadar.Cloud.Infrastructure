@@ -71,6 +71,8 @@ def review(plan, revision):
         raise ValueError("Only a complete, successful plan can be installed.")
 
     variables = _variables(plan)
+    if any(variables.get(key, False) is not False for key in ("candidate3_rules_only_enabled", "governed_history_settlement_enabled")):
+        raise ValueError("This candidate.1 workflow cannot activate candidate.3 or governed History.")
     expected_identity = ("dev", REGION, PROJECT, True, False, [])
     actual_identity = (
         variables.get("environment"),
@@ -150,6 +152,7 @@ def review(plan, revision):
         environment = function.get("environment", [{}])[0].get("variables", {})
         common_gates = {
             "MESSAGE_AI_ENABLED": "false",
+            "MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED": "false",
             "MESSAGE_AI_POLICY_VERSION": "message-ai-2026-09-21-v1",
         }
         if any(environment.get(key) != value for key, value in common_gates.items()):
@@ -157,6 +160,7 @@ def review(plan, revision):
         if name == "consumer":
             expected_gates = {
                 "MESSAGE_CONSUMER_ENABLED": "false",
+                "GOVERNED_HISTORY_SETTLEMENT_ENABLED": "false",
                 "AUTHORITY_ENABLED": "false",
                 "MESSAGE_PROVIDER_CIRCUIT_OPEN": "true",
                 "DEV_SUBJECT_ALLOWLIST_JSON": "[]",

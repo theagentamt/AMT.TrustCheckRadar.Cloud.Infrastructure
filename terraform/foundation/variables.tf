@@ -224,3 +224,13 @@ variable "campaign_intelligence_enabled" {
   type        = bool
   default     = false
 }
+
+variable "governed_history_index_enabled" {
+  description = "Add only the sparse seven-day receipt History index, independently of all runtime gates."
+  type        = bool
+  default     = false
+  validation {
+    condition     = !var.governed_history_index_enabled || (var.environment == "dev" && var.project_name == "trustcheckradar" && var.aws_region == "us-east-1")
+    error_message = "The governed History index is qualified for TrustCheckRadar Dev only."
+  }
+}

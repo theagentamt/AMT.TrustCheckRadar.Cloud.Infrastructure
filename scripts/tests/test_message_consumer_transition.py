@@ -134,6 +134,15 @@ def fixture(mode="inactive", changes=True):
 
 
 class MessageConsumerTransitionTests(unittest.TestCase):
+    def test_existing_workflow_rejects_new_history_or_candidate3_activation(self):
+        for gate in ("candidate3_rules_only_enabled", "governed_history_settlement_enabled"):
+            for value in (True, "true", 1, None):
+                with self.subTest(gate=gate, value=value):
+                    plan = fixture()
+                    plan["variables"][gate] = {"value": value}
+                    with self.assertRaises(ValueError):
+                        transition.review(plan, REVISION, "inactive")
+
     def test_exact_inactive_update_and_noop_are_accepted(self):
         for changes in (True, False):
             with self.subTest(changes=changes):

@@ -64,12 +64,14 @@ def fixture():
             name = address.split('"')[1]
             environment = {
                 "MESSAGE_AI_ENABLED": "false",
+                "MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED": "false",
                 "MESSAGE_AI_POLICY_VERSION": "message-ai-2026-09-21-v1",
             }
             if name == "consumer":
                 environment.update(
                     {
                         "MESSAGE_CONSUMER_ENABLED": "false",
+                        "GOVERNED_HISTORY_SETTLEMENT_ENABLED": "false",
                         "AUTHORITY_ENABLED": "false",
                         "MESSAGE_PROVIDER_CIRCUIT_OPEN": "true",
                         "DEV_SUBJECT_ALLOWLIST_JSON": "[]",
@@ -126,6 +128,15 @@ def fixture():
 
 
 class MessageConsumerReleaseTests(unittest.TestCase):
+    def test_existing_workflow_rejects_new_history_or_candidate3_activation(self):
+        for gate in ("candidate3_rules_only_enabled", "governed_history_settlement_enabled"):
+            for value in (True, "true", 1, None):
+                with self.subTest(gate=gate, value=value):
+                    plan = fixture()
+                    plan["variables"][gate] = {"value": value}
+                    with self.assertRaises(ValueError):
+                        release.review(plan, REVISION)
+
     def test_exact_inactive_installation_and_digest_are_accepted(self):
         plan = fixture()
         artifacts, lambda_release, digest = release.review(plan, REVISION)
