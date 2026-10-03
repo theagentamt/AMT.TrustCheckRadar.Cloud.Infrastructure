@@ -11,7 +11,7 @@ from verify_governed_history_plan import require
 
 
 def validate_mode(scope, mode):
-    modes = {'index': {'active', 'inactive'}, 'reader': {'inactive', 'list', 'detail', 'both'}, 'message': {'inactive', 'rules-only', 'rules-only-history'}}
+    modes = {'index': {'active', 'inactive'}, 'reader': {'inactive', 'list', 'detail', 'both'}, 'message': {'inactive', 'rules-only', 'rules-only-history'}, 'access': {'inactive', 'trial'}}
     require(scope in modes and mode in modes[scope], 'Scope and mode combination is invalid.')
 
 
@@ -20,6 +20,9 @@ def build(scope, mode, deployment, subjects, index_ready, partitions=None):
     if scope == 'index':
         require(mode in {'active', 'inactive'}, 'Unknown index mode.')
         return {'governed_history_index_enabled': mode == 'active'}
+    if scope == 'access':
+        require(type(subjects) is list and len(subjects) == int(mode == 'trial') and all(isinstance(s, str) and re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', s) for s in subjects), 'Access-only qualification requires one exact subject; inactive requires none.')
+        return {'governed_trial_subjects': subjects}
     require(type(deployment) is dict and deployment, 'Reviewed immutable deployment coordinates are required.')
     partitions = partitions or []
     require(type(subjects) is list, 'Subjects must be a JSON list.')

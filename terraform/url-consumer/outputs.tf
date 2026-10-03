@@ -3,9 +3,11 @@ output "candidate_contract" {
     provisioned                        = var.enabled
     consumer_enabled                   = var.activate_engineering
     recovery_enabled                   = local.authority_engineering_active
-    access_enabled                     = local.authority_engineering_active
+    access_enabled                     = local.authority_engineering_active || length(var.governed_trial_subjects) > 0
     deletion_enabled                   = local.authority_deletion_active
-    trial_activation_enabled           = var.activate_engineering || var.activate_trial_engineering
+    trial_activation_enabled           = var.activate_engineering || var.activate_trial_engineering || length(var.governed_trial_subjects) > 0
+    governed_trial_only_engineering    = length(var.governed_trial_subjects) > 0
+    governed_trial_subject_count       = length(var.governed_trial_subjects)
     access_only_engineering            = var.activate_access_engineering
     trial_only_engineering             = var.activate_trial_engineering
     complimentary_operator_provisioned = local.complimentary_operator_provisioned

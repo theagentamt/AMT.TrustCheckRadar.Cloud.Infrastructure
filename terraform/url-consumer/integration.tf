@@ -107,7 +107,23 @@ variable "access_qualification_reference" {
 }
 locals {
   authority_engineering_active = var.activate_engineering || var.activate_access_engineering || var.activate_trial_engineering
-  entitlements_service_active  = local.authority_engineering_active || local.complimentary_operator_active
+  entitlements_service_active  = local.authority_engineering_active || local.complimentary_operator_active || length(var.governed_trial_subjects) > 0
+}
+
+variable "governed_trial_subjects" {
+  description = "SEC340: one synthetic Dev subject for access/trial only, independent of deletion and lease maintenance. Empty disables this mode."
+  type        = set(string)
+  default     = []
+  validation {
+    condition = length(var.governed_trial_subjects) == 0 || (
+      length(var.governed_trial_subjects) == 1 && var.enabled && var.environment == "dev" &&
+      !local.authority_engineering_active && length(var.engineering_subjects) == 0 &&
+      var.authority_configuration != null && var.api_gateway != null &&
+      var.deletion_activation != null && var.alert_topic_arn != null &&
+      alltrue([for subject in var.governed_trial_subjects : can(regex("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", subject))])
+    )
+    error_message = "Governed qualification requires one exact Dev subject, existing cleanup/alerts and policy; other engineering modes must remain disabled."
+  }
 }
 locals {
   routes = var.enabled && var.api_gateway != null ? {

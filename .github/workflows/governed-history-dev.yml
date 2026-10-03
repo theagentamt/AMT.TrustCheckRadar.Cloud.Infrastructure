@@ -6,12 +6,12 @@ on:
       scope:
         description: Independently reviewed Dev state
         type: choice
-        options: [index, reader, message]
+        options: [index, reader, message, access]
         required: true
       mode:
-        description: index active/inactive; reader inactive/list/detail/both; message inactive/rules-only/rules-only-history
+        description: index active/inactive; reader inactive/list/detail/both; message inactive/rules-only/rules-only-history; access inactive/trial
         type: choice
-        options: [inactive, active, list, detail, both, rules-only, rules-only-history]
+        options: [inactive, active, list, detail, both, rules-only, rules-only-history, trial]
         required: true
         default: inactive
       execution_mode:
@@ -76,6 +76,7 @@ jobs:
             index) echo 'HISTORY_STACK=foundation' >> "$GITHUB_ENV" ;;
             reader) echo 'HISTORY_STACK=governed-history' >> "$GITHUB_ENV" ;;
             message) echo 'HISTORY_STACK=message-consumer' >> "$GITHUB_ENV" ;;
+            access) echo 'HISTORY_STACK=url-consumer' >> "$GITHUB_ENV" ;;
             *) exit 1 ;;
           esac
       - name: Install Terraform
@@ -122,7 +123,9 @@ jobs:
           if [[ "$EXECUTION_MODE" == apply ]]; then
             args+=(--expected-digest "$REVIEWED_PLAN_DIGEST")
           fi
-          if [[ "$HISTORY_SCOPE" == message ]]; then
+          if [[ "$HISTORY_SCOPE" == access ]]; then
+            python3 scripts/verify_governed_trial_plan.py "$RUNNER_TEMP/governed-history-plan.json" "${args[@]}" > "$RUNNER_TEMP/governed-history-review.json"
+          elif [[ "$HISTORY_SCOPE" == message ]]; then
             python3 scripts/verify_candidate3_rules_plan.py "$RUNNER_TEMP/governed-history-plan.json" "${args[@]}" > "$RUNNER_TEMP/governed-history-review.json"
           else
             python3 scripts/verify_governed_history_plan.py "$RUNNER_TEMP/governed-history-plan.json" --scope "$HISTORY_SCOPE" "${args[@]}" > "$RUNNER_TEMP/governed-history-review.json"
@@ -132,9 +135,10 @@ jobs:
           sys.path.insert(0, 'scripts')
           from verify_message_consumer_transition import verify_artifacts
           plan = json.load(open(os.environ['RUNNER_TEMP'] + '/governed-history-plan.json'))
-          if os.environ['HISTORY_SCOPE'] != 'index':
+          if os.environ['HISTORY_SCOPE'] not in {'index', 'access'}:
               verify_artifacts(plan['variables']['deployment']['value']['artifacts'])
           PY
+          cat "$RUNNER_TEMP/governed-history-review.json"
           cat "$RUNNER_TEMP/governed-history-review.json" >> "$GITHUB_STEP_SUMMARY"
       - name: Apply only the reviewed saved plan
         if: inputs.execution_mode == 'apply'
@@ -151,7 +155,11 @@ jobs:
         if: inputs.execution_mode == 'apply'
         run: |
           set -euo pipefail
-          python3 scripts/verify_governed_history_readback.py "$RUNNER_TEMP/governed-history-plan.json" --scope "$HISTORY_SCOPE" --mode "$HISTORY_MODE" >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$HISTORY_SCOPE" == access ]]; then
+            python3 scripts/verify_governed_trial_plan.py "$RUNNER_TEMP/governed-history-plan.json" --revision "$EXPECTED_REVISION" --mode "$HISTORY_MODE" --expected-digest "$REVIEWED_PLAN_DIGEST" --readback >> "$GITHUB_STEP_SUMMARY"
+          else
+            python3 scripts/verify_governed_history_readback.py "$RUNNER_TEMP/governed-history-plan.json" --scope "$HISTORY_SCOPE" --mode "$HISTORY_MODE" >> "$GITHUB_STEP_SUMMARY"
+          fi
           set +e
           terraform -chdir="terraform/$HISTORY_STACK" plan -input=false -detailed-exitcode \
             -var-file="../../environments/dev/$HISTORY_STACK.tfvars" \
