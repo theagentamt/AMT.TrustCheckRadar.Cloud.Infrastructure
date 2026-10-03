@@ -86,8 +86,13 @@ prove the normal signed-in UI, Amplify authentication and device-store journey.
 ## Still pending
 
 The distinct Android normal-app submission-to-History, restart and reopen
-journey is not yet run. It remains retained Dev acceptance; a Dev-only normal-app
-harness is being prepared. Mock/UI fixture tests and the connected reader/cache
+journey is not yet run. Its early upgrade-only emulator preflight stopped before
+submission: Amplify is signed out, and the saved local binding does not match the
+dedicated fixture. Temporary hash-only inputs/reports were removed; no binding
+registration, trial activation, reset or analysis occurred. The safe next setup
+action is under read-only review. A fixture binding replacement would require
+explicit authorization. This remains retained Dev acceptance. Mock/UI fixture
+tests and the connected reader/cache
 component run cannot substitute for this assembled journey.
 
 The scoped gates are currently enabled for this dedicated account only. All
