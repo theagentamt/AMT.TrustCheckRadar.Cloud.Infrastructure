@@ -69,8 +69,10 @@ The reviewed correction requires stable records/order/generations and monotonic
 server time while permitting a fresh bounded opaque cursor. Its 311-task local
 gate and independent review passed. Published commit
 `42a6a566f82995ae1f4e95ae17088a286cf95791` has exactly the reviewed
-`5a018a568e79b3e56fdbfe9320668129c1c0aeb1` source tree and is in Android PR67,
-which targets `release-V01`. No Android main/CI change occurred.
+`5a018a568e79b3e56fdbfe9320668129c1c0aeb1` source tree. Final documentation-only review head
+`a225287f6fe3d2c29d2edf041f08a23da422a5fc` was integrated through Android PR67
+into `release-V01` at `fffe7a0edce4ae66954a35ebadd0ba085dea1274`.
+No Android main/CI change occurred.
 
 The second attempt passed two pages, four details and one retry within seven
 GETs. A separate, credential-free instrumentation process reopened all four
