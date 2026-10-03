@@ -768,7 +768,7 @@ jobs:
             -var-file="../../environments/dev/$STACK.tfvars" -detailed-exitcode > "$RUNNER_TEMP/research-drift.log" 2>&1
           echo "Post-apply plan: no drift." >> "$GITHUB_STEP_SUMMARY"
       - name: Publish minimized plan evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: research-plan-${{ github.run_id }}
           path: ${{ runner.temp }}/research-review.json
