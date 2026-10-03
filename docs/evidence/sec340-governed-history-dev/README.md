@@ -56,12 +56,39 @@ all 21 sampled unrelated Dev configurations; only the two intended message
 runtimes changed from the pre-message baseline. The separately provisioned and
 activated reader was verified through its own CI/CD readback.
 
+## Passed Android reader/cache component qualification
+
+`android-reader.json` records the two bounded live Dev attempts on API35.
+The first attempt made exactly seven GETs: two decoded pages, four decoded
+details and the decoded retry response before its cursor assertion. It
+validated all four strict result/detail records, then stopped before cache write because the test incorrectly required
+opaque cursor byte stability. Failure cleanup removed private inputs and test
+storage. This is retained as a failed test attempt, not a backend defect or pass.
+
+The reviewed correction requires stable records/order/generations and monotonic
+server time while permitting a fresh bounded opaque cursor. Its 311-task local
+gate and independent review passed. Published commit
+`42a6a566f82995ae1f4e95ae17088a286cf95791` has exactly the reviewed
+`5a018a568e79b3e56fdbfe9320668129c1c0aeb1` source tree and is in Android PR67,
+which targets `release-V01`. No Android main/CI change occurred.
+
+The second attempt passed two pages, four details and one retry within seven
+GETs. A separate, credential-free instrumentation process reopened all four
+records from the product AndroidKeystore-encrypted Room cache; PID inequality
+verified separate processes, with no PID retained in evidence. Device test input,
+DB, key, marker and report plus host input were removed. Both attempts totaled 14 GETs and made no
+submission or account/device mutation; a fresh exact authority audit still
+reported used/reserved/remaining 3/0/7.
+
+This proves the production reader/strict decoder/cache components. It does not
+prove the normal signed-in UI, Amplify authentication and device-store journey.
+
 ## Still pending
 
-Android connected retained-result list/detail, encrypted cache, app-process
-restart and reopen are pending a separately reviewed GET-only instrumentation
-harness. Mock/emulator fixture tests are not live backend/mobile evidence.
-The distinct Android submission-to-History journey is also not yet run.
+The distinct Android normal-app submission-to-History, restart and reopen
+journey is not yet run. It remains retained Dev acceptance; a Dev-only normal-app
+harness is being prepared. Mock/UI fixture tests and the connected reader/cache
+component run cannot substitute for this assembled journey.
 
 The scoped gates are currently enabled for this dedicated account only. All
 three inactive rollback plans are prepared at the reviewed infrastructure revision;
