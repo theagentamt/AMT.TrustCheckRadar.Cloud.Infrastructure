@@ -126,6 +126,11 @@ jobs:
             -var-file="../../environments/$DEPLOY_ENV/foundation.tfvars" \
             -out=foundation.tfplan
 
+      - name: Reject governed History index changes in ordinary deployment
+        run: |
+          terraform -chdir=terraform/foundation show -json foundation.tfplan > "$RUNNER_TEMP/foundation-plan.json"
+          python3 scripts/reject_ordinary_governed_index_transition.py "$RUNNER_TEMP/foundation-plan.json"
+
       - name: Apply foundation
         if: env.EXECUTION_MODE == 'apply'
         run: terraform -chdir=terraform/foundation apply -auto-approve foundation.tfplan

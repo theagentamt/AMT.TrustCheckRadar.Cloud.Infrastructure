@@ -405,6 +405,24 @@ resource "aws_dynamodb_table" "purchase_entitlements" {
     projection_type = "ALL"
   }
 
+  dynamic "attribute" {
+    for_each = var.governed_history_index_enabled ? toset(["GSI2PK", "GSI2SK"]) : toset([])
+    content {
+      name = attribute.value
+      type = "S"
+    }
+  }
+  dynamic "global_secondary_index" {
+    for_each = var.governed_history_index_enabled ? [true] : []
+    content {
+      name               = "GSI2"
+      hash_key           = "GSI2PK"
+      range_key          = "GSI2SK"
+      projection_type    = "INCLUDE"
+      non_key_attributes = ["recordType", "state", "governedHistory", "expiresAt"]
+    }
+  }
+
   ttl {
     attribute_name = "expiresAt"
     enabled        = true

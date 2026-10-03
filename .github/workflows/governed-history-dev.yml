@@ -1,0 +1,165 @@
+name: Governed History Dev transition
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Independently reviewed Dev state
+        type: choice
+        options: [index, reader, message]
+        required: true
+      mode:
+        description: index active/inactive; reader inactive/list/detail/both; message inactive/rules-only/rules-only-history
+        type: choice
+        options: [inactive, active, list, detail, both, rules-only, rules-only-history]
+        required: true
+        default: inactive
+      execution_mode:
+        description: Plan first; apply requires its exact reviewed digest
+        type: choice
+        options: [plan, apply]
+        required: true
+        default: plan
+      expected_revision:
+        description: Exact reviewed main infrastructure commit
+        type: string
+        required: true
+      reviewed_plan_digest:
+        description: Required for apply; digest from the same revision/scope/mode
+        type: string
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+jobs:
+  transition:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: dev
+    env:
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
+      AWS_REGION: us-east-1
+      HISTORY_SCOPE: ${{ inputs.scope }}
+      HISTORY_MODE: ${{ inputs.mode }}
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+    steps:
+      - name: Check out reviewed main source
+        uses: actions/checkout@v7.0.1
+      - name: Install Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+      - name: Validate exact source and state selection
+        run: |
+          set -euo pipefail
+          test "$GITHUB_SHA" = "$EXPECTED_REVISION"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
+          [[ "$EXPECTED_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          test "$TF_STATE_BUCKET" = amt-trustcheckradar-107827791950-tfstate
+          test "$TF_STATE_KEY_PREFIX" = trustcheckradar
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            [[ "$REVIEWED_PLAN_DIGEST" =~ ^[0-9a-f]{64}$ ]]
+          fi
+          case "$HISTORY_SCOPE" in
+            index) echo 'HISTORY_STACK=foundation' >> "$GITHUB_ENV" ;;
+            reader) echo 'HISTORY_STACK=governed-history' >> "$GITHUB_ENV" ;;
+            message) echo 'HISTORY_STACK=message-consumer' >> "$GITHUB_ENV" ;;
+            *) exit 1 ;;
+          esac
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+      - name: Configure Dev credentials only
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          allowed-account-ids: "107827791950"
+          role-session-name: governed-history-${{ github.run_id }}
+      - name: Prepare reviewed coordinates and bounded subject selection
+        env:
+          READER_DEPLOYMENT_JSON: ${{ vars.GOVERNED_HISTORY_DEPLOYMENT_JSON }}
+          MESSAGE_DEPLOYMENT_JSON: ${{ vars.MESSAGE_CANDIDATE3_DEPLOYMENT_JSON }}
+          ENGINEERING_SUBJECTS_JSON: ${{ secrets.GOVERNED_HISTORY_ENGINEERING_SUBJECTS_JSON }}
+        run: |
+          set -euo pipefail
+          if [[ "$HISTORY_SCOPE" == reader ]]; then
+            export PINNED_DEPLOYMENT_JSON="$READER_DEPLOYMENT_JSON"
+          elif [[ "$HISTORY_SCOPE" == message ]]; then
+            export PINNED_DEPLOYMENT_JSON="$MESSAGE_DEPLOYMENT_JSON"
+          fi
+          python3 scripts/prepare_governed_history_configuration.py
+      - name: Generate the isolated saved plan
+        run: |
+          set -euo pipefail
+          bash scripts/terraform.sh init dev "$HISTORY_STACK"
+          if ! terraform -chdir="terraform/$HISTORY_STACK" plan -input=false \
+            -var-file="../../environments/dev/$HISTORY_STACK.tfvars" \
+            -var-file="$RUNNER_TEMP/governed-history.tfvars.json" \
+            -out="$RUNNER_TEMP/governed-history.tfplan" > "$RUNNER_TEMP/governed-history-plan.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/governed-history-plan.log"
+            exit 1
+          fi
+          terraform -chdir="terraform/$HISTORY_STACK" show -json "$RUNNER_TEMP/governed-history.tfplan" > "$RUNNER_TEMP/governed-history-plan.json"
+      - name: Verify scope, source, artifacts and exact plan digest
+        run: |
+          set -euo pipefail
+          args=(--revision "$EXPECTED_REVISION" --mode "$HISTORY_MODE")
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            args+=(--expected-digest "$REVIEWED_PLAN_DIGEST")
+          fi
+          if [[ "$HISTORY_SCOPE" == message ]]; then
+            python3 scripts/verify_candidate3_rules_plan.py "$RUNNER_TEMP/governed-history-plan.json" "${args[@]}" > "$RUNNER_TEMP/governed-history-review.json"
+          else
+            python3 scripts/verify_governed_history_plan.py "$RUNNER_TEMP/governed-history-plan.json" --scope "$HISTORY_SCOPE" "${args[@]}" > "$RUNNER_TEMP/governed-history-review.json"
+          fi
+          python3 - <<'PY'
+          import json, os, sys
+          sys.path.insert(0, 'scripts')
+          from verify_message_consumer_transition import verify_artifacts
+          plan = json.load(open(os.environ['RUNNER_TEMP'] + '/governed-history-plan.json'))
+          if os.environ['HISTORY_SCOPE'] != 'index':
+              verify_artifacts(plan['variables']['deployment']['value']['artifacts'])
+          PY
+          cat "$RUNNER_TEMP/governed-history-review.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Apply only the reviewed saved plan
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          if [[ "$HISTORY_SCOPE" == reader ]]; then
+            python3 scripts/verify_governed_history_readback.py --preflight --scope reader --mode "$HISTORY_MODE" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if ! terraform -chdir="terraform/$HISTORY_STACK" apply -input=false "$RUNNER_TEMP/governed-history.tfplan" > "$RUNNER_TEMP/governed-history-apply.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/governed-history-apply.log"
+            exit 1
+          fi
+      - name: Verify configuration readback and no drift
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_governed_history_readback.py "$RUNNER_TEMP/governed-history-plan.json" --scope "$HISTORY_SCOPE" --mode "$HISTORY_MODE" >> "$GITHUB_STEP_SUMMARY"
+          set +e
+          terraform -chdir="terraform/$HISTORY_STACK" plan -input=false -detailed-exitcode \
+            -var-file="../../environments/dev/$HISTORY_STACK.tfvars" \
+            -var-file="$RUNNER_TEMP/governed-history.tfvars.json" > "$RUNNER_TEMP/governed-history-drift.log" 2>&1
+          status=$?
+          set -e
+          if [[ "$status" != 0 ]]; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/governed-history-drift.log"
+            exit 1
+          fi
+          echo 'Configuration readback and zero drift verified; this is not behavioral qualification.' >> "$GITHUB_STEP_SUMMARY"
