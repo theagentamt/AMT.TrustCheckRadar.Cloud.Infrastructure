@@ -6,7 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 from verify_message_consumer_transition import review as review_legacy, _expected_environment, TRANSITION_ADDRESSES, ACCOUNT, REGION, PREFIX
-from verify_governed_history_plan import require, flag
+from verify_governed_history_plan import require, flag, changed_fields, owned_inline_policy_readback
 
 
 def evaluator_policy(deployment, active):
@@ -16,6 +16,26 @@ def evaluator_policy(deployment, active):
         {'Sid': 'NoConsumerStorageSecretsOrRoleChaining', 'Effect': 'Deny', 'Action': ['dynamodb:*', 'secretsmanager:*', 's3:*', 'ssm:*', 'sts:AssumeRole'], 'Resource': '*'},
     ]}
 
+def evaluator_computed_drift(plan, item):
+    """Bind only the evaluator role's computed view to its owned policy."""
+    try:
+        address = 'aws_iam_role.runtime["evaluator"]'
+        require(item.get('address') == address and item.get('provider_name') == 'registry.terraform.io/hashicorp/aws', 'Unexpected role readback.')
+        change = item['change']; before, after = change['before'], change['after']
+        require(change['actions'] == ['update'] and type(before) is dict and type(after) is dict and changed_fields(before, after) == {'inline_policy'}, 'Only the computed inline view may differ.')
+        require(after['name'] == PREFIX + '-message-evaluator-execution' and after['arn'] == f'arn:aws:iam::{ACCOUNT}:role/{PREFIX}-message-evaluator-execution', 'Wrong evaluator role.')
+        require(json.loads(after['assume_role_policy']) == {'Version': '2012-10-17', 'Statement': [{'Effect': 'Allow', 'Action': 'sts:AssumeRole', 'Principal': {'Service': 'lambda.amazonaws.com'}}]}, 'Unexpected evaluator trust.')
+        counterparts = [v for v in plan['resource_changes'] if v.get('mode') == 'managed' and v['address'] == address]
+        require(len(counterparts) == 1, 'Exact evaluator counterpart required.')
+        current = counterparts[0]['change']
+        require(current['actions'] == ['no-op'] and current['before'] == after and current['after'] == after, 'Evaluator role must be a no-op current readback.')
+        policies = [v for v in plan['resource_changes'] if v.get('mode') == 'managed' and v['address'] == 'aws_iam_role_policy.evaluator[0]']
+        require(len(policies) == 1 and owned_inline_policy_readback(before['inline_policy'], after['inline_policy'], policies[0]['change']), 'Computed inline view differs from its owned policy.')
+        return True
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
 def review(plan, revision, mode):
     require(mode in {'inactive', 'rules-only', 'rules-only-history'}, 'Unknown candidate.3 mode.')
     require(plan.get('terraform_version') == '1.12.1', 'Pinned Terraform version required.')
@@ -23,7 +43,7 @@ def review(plan, revision, mode):
     history = mode == 'rules-only-history'
     variables = {k: v.get('value') for k, v in plan.get('variables', {}).items()}
     require(flag(variables, 'candidate3_rules_only_enabled') is active and flag(variables, 'governed_history_settlement_enabled') is history and flag(variables, 'activate_rules_engineering') is active, 'Candidate.3 activation gates do not match the selected mode.')
-    require(not any(v.get('mode') == 'managed' and v.get('change', {}).get('actions') != ['no-op'] for v in plan.get('resource_drift', [])), 'Resolve unreviewed managed drift before transition.')
+    require(all(v.get('mode') != 'managed' or v.get('change', {}).get('actions') == ['no-op'] or evaluator_computed_drift(plan, v) for v in plan.get('resource_drift', [])), 'Resolve unreviewed managed drift before transition.')
     managed = {v['address']: v for v in plan.get('resource_changes', []) if v.get('mode') == 'managed'}
     allowed = TRANSITION_ADDRESSES | {'aws_iam_role_policy.evaluator[0]'}
     changed = [v for v in managed.values() if v['change']['actions'] != ['no-op']]
@@ -32,6 +52,7 @@ def review(plan, revision, mode):
     planned = {v['address']: v.get('values') for v in plan.get('planned_values', {}).get('root_module', {}).get('resources', []) if v.get('mode') == 'managed'}
     require(set(planned) == set(managed) and all(planned[k] == v['change']['after'] for k, v in managed.items()), 'Complete consistent post-plan inventory required.')
     normalized = copy.deepcopy(plan)
+    normalized['resource_drift'] = [v for v in normalized.get('resource_drift', []) if not evaluator_computed_drift(plan, v)]
     normalized['variables']['candidate3_rules_only_enabled'] = {'value': False}
     normalized['variables']['governed_history_settlement_enabled'] = {'value': False}
     normalized['resource_changes'] = [v for v in normalized['resource_changes'] if v.get('address') in TRANSITION_ADDRESSES]
@@ -63,7 +84,7 @@ def review(plan, revision, mode):
     deployment = variables['deployment']
     policy = evaluator_policy(deployment, active)
     value = managed['aws_iam_role_policy.evaluator[0]']['change']['after']
-    require(json.loads(value.get('policy', '{}')) == policy and value.get('role') == f'{PREFIX}-message-evaluator-execution', 'Evaluator must deny URL invocation and all provider secrets in rules-only mode.')
+    require(value.get('name') == 'private-message-evaluation-only' and json.loads(value.get('policy', '{}')) == policy and value.get('role') == f'{PREFIX}-message-evaluator-execution', 'Evaluator must deny URL invocation and all provider secrets in rules-only mode.')
     output = normalized.get('output_changes', {}).get('candidate_contract', {}).get('after') or {}
     require(output.get('candidate3_rules_only_enabled') is active and output.get('governed_history_settlement_enabled') is history and output.get('provider_circuit_open') is True, 'Output activation posture does not match candidate.3.')
     output['provider_circuit_open'] = not active
