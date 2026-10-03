@@ -6,6 +6,13 @@ from prepare_governed_history_configuration import build, derive_partitions
 
 
 class ConfigurationTests(unittest.TestCase):
+    def test_access_scope_is_separate_and_has_no_deployment_or_cleanup_override(self):
+        subject = '11111111-1111-4111-8111-111111111111'
+        self.assertEqual(build('access', 'trial', {}, [subject], False), {'governed_trial_subjects': [subject]})
+        self.assertEqual(build('access', 'inactive', {}, [], False), {'governed_trial_subjects': []})
+        for args in [('access', 'both', {}, [subject], False), ('access', 'trial', {}, ['*'], False), ('access', 'trial', {}, [], False), ('access', 'inactive', {}, [subject], False)]:
+            with self.subTest(args=args), self.assertRaises(ValueError): build(*args)
+
     def test_scope_modes_do_not_leak_subjects_to_index_or_open_unrelated_gates(self):
         self.assertEqual(build('index', 'active', {}, [], False), {'governed_history_index_enabled': True})
         reader = build('reader', 'list', {'artifact': 'metadata'}, ['11111111-1111-4111-8111-111111111111'], True, ['V1#test#' + 'a' * 64])

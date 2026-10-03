@@ -194,3 +194,14 @@ other resource drift and any pool mutation are still rejected. This does not
 change Cognito or weaken the index-only apply scope. The Dev foundation source
 flag is persisted before the separate guarded apply; ordinary deployment still
 rejects index creation/removal. No GSI2 or reader is claimed deployed by this note.
+
+SEC340 access preparation uses scope `access`, mode `trial`, with the same private
+one-subject selection. It changes only that subject's entitlements admission and
+the already-approved explicit-trial gate on the existing function and live alias.
+The original trial workflow also enabled lease maintenance and expanded the
+deletion worker subject set, so it is not used for this qualification. The new
+`governed_trial_subjects` selection never enters deletion, URL execution or
+maintenance. All packages, routes, IAM, existing deletion scope, operator access
+and background controls must remain unchanged; live drift fails closed. Plan,
+exact-digest approval, apply and readback remain separate. Roll back with this
+scope's `inactive` mode, preserving any already-created trial eligibility record.

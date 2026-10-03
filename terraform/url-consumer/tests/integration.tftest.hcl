@@ -540,3 +540,41 @@ run "deletion_activation_unions_existing_and_trial_engineering_subjects" {
     error_message = "Trial qualification must preserve the existing deletion subjects and add its one exact subject."
   }
 }
+
+run "governed_trial_does_not_expand_deletion_or_maintenance" {
+  command = apply
+  variables {
+    governed_trial_subjects = ["01997e3a-0000-7000-8000-000000000001"]
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["01997e3a-0000-7000-8000-000000000001"]) &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "true" &&
+      aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000002"]) &&
+      aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
+      output.candidate_contract.governed_trial_only_engineering &&
+      !output.candidate_contract.recovery_enabled && !output.candidate_contract.general_customer_access
+    )
+    error_message = "Governed trial may admit one account to access/trial only; it must preserve deletion scope and disabled URL/recovery."
+  }
+}
+
+run "governed_trial_requires_existing_cleanup" {
+  command = plan
+  variables { governed_trial_subjects = ["01997e3a-0000-7000-8000-000000000001"] }
+  expect_failures = [var.governed_trial_subjects]
+}
+
+run "governed_trial_rejects_wildcard" {
+  command = plan
+  variables { governed_trial_subjects = ["*"] }
+  expect_failures = [var.governed_trial_subjects]
+}

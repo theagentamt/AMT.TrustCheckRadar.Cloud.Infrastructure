@@ -113,7 +113,7 @@ resource "aws_lambda_function" "runtime" {
       CONSUMER_ENABLED                   = tostring(var.activate_engineering)
       AUTHORITY_ENABLED                  = tostring(each.key == "entitlements" ? local.entitlements_service_active : var.activate_engineering)
       V1_ENTITLEMENTS_ENABLED            = tostring(each.key == "entitlements" ? local.entitlements_service_active : var.activate_engineering)
-      TRIAL_AUTHORITY_RETENTION_APPROVED = tostring(each.key == "entitlements" ? (var.activate_engineering || var.activate_trial_engineering) : var.activate_engineering)
+      TRIAL_AUTHORITY_RETENTION_APPROVED = tostring(each.key == "entitlements" ? (var.activate_engineering || var.activate_trial_engineering || length(var.governed_trial_subjects) > 0) : var.activate_engineering)
       USERS_TABLE_NAME                   = split("/", var.deployment.users_table_arn)[1]
       DEVICE_BINDINGS_TABLE_NAME         = split("/", var.deployment.devices_table_arn)[1]
       DELETION_LEDGER_TABLE_NAME         = split("/", var.deployment.deletion_table_arn)[1]
@@ -122,7 +122,7 @@ resource "aws_lambda_function" "runtime" {
       COGNITO_REQUIRED_SCOPE             = "aws.cognito.signin.user.admin"
       AUTHORITY_HMAC_SECRET_ARN          = aws_secretsmanager_secret.authority_hmac[0].arn
       AUTHORITY_POLICY_VERSION           = "owner-2026-09-20-v1"
-      DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(each.key == "entitlements" ? var.engineering_subjects : (var.activate_engineering ? var.engineering_subjects : toset([])))))
+      DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(each.key == "entitlements" ? setunion(var.engineering_subjects, var.governed_trial_subjects) : (var.activate_engineering ? var.engineering_subjects : toset([])))))
       } : each.key == "recovery" ? {
       LEASE_SWEEP_ENABLED = tostring(local.authority_engineering_active)
       } : {
