@@ -182,3 +182,15 @@ SECUR4ALL-340 owns the unperformed Dev installation and assembled emulator
 qualification; ATCR-163 owns Android History integration. Later release testing
 remains linked through SECUR4ALL-334 and ATCR-62. No physical device testing is
 required to close the source implementation stories.
+
+## SEC340 live prerequisite audit
+
+The first Dev CI/CD index plan (37136301426) was rejected before apply because
+Cognito's computed estimated user count changed from its saved state. A private
+read-only diagnostic showed only that telemetry drift and one planned authority
+GSI2/key-attribute update. The verifier now accepts only a count-only refresh for
+the exact Dev pool when its resource plan is no-op; pool configuration drift,
+other resource drift and any pool mutation are still rejected. This does not
+change Cognito or weaken the index-only apply scope. The Dev foundation source
+flag is persisted before the separate guarded apply; ordinary deployment still
+rejects index creation/removal. No GSI2 or reader is claimed deployed by this note.
