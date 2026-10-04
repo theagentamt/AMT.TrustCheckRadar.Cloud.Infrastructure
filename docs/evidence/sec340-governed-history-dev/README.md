@@ -1,13 +1,14 @@
 # SEC340 scoped Dev governed History qualification
 
-**Status: normal Android English/Spanish Dev phases passed; story In Progress.**
+**Status: retained Dev acceptance passed; owner keeps the scoped Dev setup enabled.**
 Backend, reader/cache and the completed explanation → History → real restart →
 direct reopen phases passed. Exactly two normal-app checks completed and charged
 once each; reads/reopen caused no additional evaluation or charge. Current trial
 limit/used/reserved/remaining is 10/5/0/5. Failed harness attempts remain below;
-qualification spans reviewed windows and is not one clean four-phase run. Android source integration into `release-V01` is verified. Infrastructure aggregate
-evidence integration into `main` and approved Dev rollback (or an explicit owner
-scope change) remain pending.
+qualification spans reviewed windows and is not one clean four-phase run. Android source integration into `release-V01` is verified. On October 3, 2026,
+the owner instructed “no rollback,” replacing the post-test inactive-apply
+criterion with retention of the existing dedicated-account Dev scope. Final
+tracker closure follows verified integration of this evidence into `main`.
 
 This increment qualifies candidate.3 rules-only message processing and candidate.1
 governed History for one existing dedicated reusable synthetic Dev account.
@@ -244,11 +245,14 @@ stages preserve the historical failure cause as unknown. Neither of those first 
 retained Dev acceptance; mocks and the separate reader/cache component run do
 not substitute for it.
 
-The scoped gates are currently enabled for this dedicated account only. All
-three inactive rollback plans are prepared at the reviewed infrastructure revision;
-owner approval and actual apply/readback remain pending. Do not claim rollback,
-empty admission lists, removed temporary selection or SEC340 completion until
-those actions are performed or the owner explicitly changes the retained scope.
+The scoped gates remain enabled for this dedicated account only. The owner
+instructed “no rollback” on October 3, 2026, explicitly changing the retained
+post-test scope. The three prepared inactive plans are not applied; neither
+empty admission lists nor removed temporary selection is claimed. The existing
+private CI/CD subject selection is retained for the approved scope. Any later
+disable/apply needs a fresh exact plan and separate approval; these old digests
+must not be applied after the source revision changes. This decision authorizes
+no additional account, provider, capability or environment activation.
 
 Cross-account lookup, waiting 15 minutes for
 cursor expiry and waiting seven days for physical TTL removal were not executed
@@ -381,4 +385,6 @@ partial windows; it is not rewritten as success. The phase-specific assessment
 and its exact external hashes were independently reviewed. Final platform
 locale readback verified the original Device preference. Only the byte-matched
 test reports/inputs were removed; account/domain/native/History/receipts/session
-state stayed intact. No rollback or story completion is claimed yet.
+state stayed intact. Rollback was not performed. The owner subsequently chose
+to retain the dedicated-account Dev scope; final tracker closure requires
+verified evidence integration.

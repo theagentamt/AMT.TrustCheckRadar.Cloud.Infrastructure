@@ -134,7 +134,11 @@ approved test. Disposable-account deletion requires its own authorization.
 ## Current qualification and remaining assembled acceptance
 
 [SECUR4ALL-340](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-340) retains
-the remaining Android emulator journey and exact post-test rollback acceptance.
+the assembled Dev engineering acceptance. Android EN/ES normal-app phases
+passed. On October 3, 2026, the owner instructed “no rollback”: the existing
+dedicated-account rules-only Dev scope stays enabled, replacing the post-test
+inactive-apply acceptance criterion. Evidence integration and tracker closure
+are required; no rollback, empty allowlist or removed selection is claimed.
 Backend activation and rules-only EN/ES qualification passed. Existing
 [SEC334](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-334) and
 [ATCR62](https://andmorethings.youtrack.cloud/issue/ATCR-62) retain later release
@@ -152,8 +156,9 @@ come from Lambda `contracts/message-consumer/1.0.0-candidate.3` and
 the governed schema; legacy score History cannot qualify this journey.
 
 The EN/ES backend synthetic no-link prepare/submit, same-proof reconciliation,
-retry and list/direct lookup sequence passed. The remaining Android Dev journey
-is submission through the app, History entry, app restart and direct reopen.
+retry and list/direct lookup sequence passed. The subsequent Android Dev phases
+also passed: submission through the app, History entry, real app restart and
+direct reopen in EN/ES across reviewed windows.
 A separate connected reader/decoder/cache test does not by itself prove that UI
 journey. For both completed and remaining cases, expect one logical completion,
 one settled receipt/entry and at most one check deduction, zero provider calls, original
@@ -271,7 +276,10 @@ occurred in that backend window. Subsequent Android normal-app EN/ES phases pass
 across reviewed windows, and PR68 is integrated into `release-V01` at
 `59c515f4ce83eefe999da7d798452ccbd0e6eb25`. Final trial counters are 10/5/0/5
 (limit/used/reserved/remaining); reads and reopening charged no extra check.
-All three post-test inactive applies remain pending. Existing approvals do not
-cover new plan digests; rollback
-requires its own exact-digest approval and successful readback. See the
+The owner subsequently instructed “no rollback” on October 3, 2026, so all
+three post-test inactive applies are intentionally unperformed. Existing scoped
+admission and the private CI/CD subject selection remain in place. This changes
+only the retained completion scope; it enables no additional user, capability,
+provider or environment. Future disabling requires a fresh plan at the current
+source revision, its own exact-digest approval and successful readback. See the
 [current evidence](evidence/sec340-governed-history-dev/README.md).

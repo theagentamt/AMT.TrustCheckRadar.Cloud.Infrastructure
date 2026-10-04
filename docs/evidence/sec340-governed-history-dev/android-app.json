@@ -416,11 +416,10 @@
   "originalSetupPassed": false,
   "originalSwitchUiResponseObserved": true,
   "pending": [
-    "infrastructure_aggregate_evidence_main_integration",
-    "approved_CI_CD_rollback_or_explicit_scope_change"
+    "infrastructure_aggregate_evidence_main_integration"
   ],
   "privateContentIncluded": false,
-  "qualificationStatus": "normal_en_es_phases_passed_integration_and_rollback_pending",
+  "qualificationStatus": "normal_en_es_phases_passed_owner_retained_dev_scope_integration_pending",
   "readOnlyDraftInspector": {
     "absentDraftUiTestsPassed": 1,
     "appApkSha256": "836dadd74af26ac6fd45221299dfb7add580232502c9825301438305974e55a0",
@@ -858,5 +857,17 @@
     "reviewedHeadBehindBy": 0,
     "docsOnlyAfterQualifiedRuntime": true,
     "androidMainOrCiInvoked": false
-  }
+  },
+  "ownerScopeDecision": {
+    "date": "2026-10-03",
+    "instruction": "no rollback",
+    "existingDedicatedAccountDevScopeRetained": true,
+    "postTestInactiveApplyCriterionReplaced": true,
+    "inactivePlansApplied": false,
+    "temporarySubjectSelectionRemoved": false,
+    "runtimeMutationPerformedForDecision": false,
+    "newActivationAuthorized": false,
+    "trackerClosureRequiresVerifiedEvidenceMainIntegration": true
+  },
+  "statusRecordedBeforeEvidenceMainIntegration": true
 }
