@@ -151,9 +151,20 @@ def bounded_shapes(plan, managed, function, *, post_apply=False):
             require(False, 'Unexpected retirement action')
 
 
+class ReviewRejected(ValueError):
+    """A static source-defined check label, never a plan or SDK value."""
+
+
 def require(ok, message):
     if not ok:
-        raise ValueError(message)
+        raise ReviewRejected(message)
+
+
+def safe_failure_message(error):
+    prefix = 'Analysis retirement verification rejected'
+    if isinstance(error, ReviewRejected):
+        return prefix + ': ' + str(error) + '. Inspect protected evidence locally.'
+    return prefix + '; inspect protected evidence locally.'
 
 
 def review(plan, revision, *, bounded=False, post_apply=False, catalog=None):
@@ -277,5 +288,5 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except Exception:
-        raise SystemExit('Analysis retirement verification rejected; inspect protected evidence locally.') from None
+    except Exception as error:
+        raise SystemExit(safe_failure_message(error)) from None
