@@ -1,0 +1,81 @@
+{
+  "accountIdentifiersIncluded": false,
+  "appliedManagedChanges": 1,
+  "applyRun": 37227179724,
+  "approvedPlanDigest": "d565ce50d049146ee42d7030573a242d090f709627c09162b9a3c0c2610bbbe8",
+  "authority": {
+    "allowanceChanged": false,
+    "fixtureMutation": false,
+    "freshPrivateHeadersDeleted": true,
+    "originalTrialAndHistoryPreserved": true,
+    "prePostMatched": true
+  },
+  "ciRun": 37216599710,
+  "credentialsIncluded": false,
+  "diagnosticCorrection": {
+    "additionalCloudQueries": 0,
+    "additionalHttpRequests": 0,
+    "correctedAssessmentPassed": true,
+    "rawAssertionPassed": false,
+    "reason": "API_GATEWAY_INTEGRATION_STATUS_IS_BACKEND_STATUS"
+  },
+  "environment": "dev",
+  "http": {
+    "authenticatedCode": "LEGACY_MIGRATION_REQUIRED",
+    "authenticatedStatus": 409,
+    "freshRowsAbsentAfter": true,
+    "freshRowsAbsentBefore": true,
+    "requestCount": 2,
+    "retryPerformed": false,
+    "retryable": false,
+    "unauthenticatedStatus": 401
+  },
+  "immutableArchiveVerified": true,
+  "liveRoleAndRouteInventoryVerified": true,
+  "observedLogWindow": {
+    "apiRequestCount": 2,
+    "apiStatusPairs": {
+      "401/-": 1,
+      "409/409": 1
+    },
+    "durationMs": 1742,
+    "lambdaErrorLogs": 0,
+    "lambdaInvocations": 1,
+    "providerNameSentinels": 0
+  },
+  "originalContentIncluded": false,
+  "passed": true,
+  "pendingReleaseCases": [
+    "owned positive legacy replay",
+    "cross-account/device and erased/expired replay",
+    "live multi-service fanout accounting",
+    "provider/store economics",
+    "UAT/Production promotion",
+    "reusable release runner"
+  ],
+  "physicalFollowup": "ATCR-148",
+  "planRun": 37217141723,
+  "postApplyManagedChanges": 0,
+  "postApplyRoleReadbacks": 0,
+  "postApplyStageReadbacks": 0,
+  "privateEvidenceHashes": {
+    "authority": "9b54bed6e7b5ebc1a8dc2bc39e181302c47320716f3625bb3faea8a5267e8eb1",
+    "correctedOperational": "f218738b5103e9c4dd184ec911b2fc5ae052c5fb1db0a5a129d210c0b7b3f259",
+    "http": "a4e0bde93c6a162344919864881d6bffbc309a5f49c91fb7653a1c7dd5ccd8b1",
+    "liveInventory": "27b028f1492360efae02fde7a0986bf7004ee4508809fcaaeb15320e195c1091",
+    "postPlan": "466f00bd4df6da36bf050dc0ad82cf84307ca453929b4658021c2f662b76113f",
+    "rawOperational": "8518e3ed7f15086f710d6c5a9e3b79eae58b64d91bcb491f496395dd23f817aa"
+  },
+  "providerNonDispatchEvidence": [
+    "audited immutable handler early return",
+    "IAM credential/model/dispatch denies"
+  ],
+  "releaseFollowup": "SECUR4ALL-334",
+  "schemaVersion": 1,
+  "scope": "SECUR4ALL-242 retained Dev retirement boundary",
+  "sourceRevision": "1f06b7c8338ce07f460ffbb0c16859b30877be5f",
+  "telemetryScope": [
+    "API Gateway access logs",
+    "retired-analysis Lambda logs"
+  ]
+}
