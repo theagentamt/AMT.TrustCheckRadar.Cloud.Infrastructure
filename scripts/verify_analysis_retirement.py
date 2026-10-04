@@ -108,11 +108,48 @@ def safe_drift_summary(plan):
     return {'managedDrift': rows}
 
 
+def automatic_stage_readback(plan, row):
+    """Only the service-managed deployment pointer of the unchanged Dev stage."""
+    try:
+        address = 'aws_apigatewayv2_stage.age_attestation'
+        require(row.get('address') == address and row.get('provider_name') == 'registry.terraform.io/hashicorp/aws', 'Unknown stage readback')
+        change = row['change']
+        before, after = change['before'], change['after']
+        require(change['actions'] == ['update'] and type(before) is dict and type(after) is dict and
+                changed_fields(change) == {'deployment_id'} and not unknown(change.get('after_unknown') or {}), 'Only deployment pointer readback permitted')
+        configs = {item['address']: item for item in plan.get('configuration', {}).get('root_module', {}).get('resources', [])}
+        expressions = configs.get(address, {}).get('expressions', {})
+        require(expressions.get('auto_deploy', {}).get('constant_value') is True and 'deployment_id' not in expressions and
+                'aws_apigatewayv2_api.age_attestation.id' in expressions.get('api_id', {}).get('references', []), 'Automatic stage source binding required')
+        require(all(isinstance(value.get('deployment_id'), str) and re.fullmatch('[a-z0-9]+', value['deployment_id'])
+                    for value in (before, after)), 'Known deployment pointers required')
+        counterparts = [item for item in plan['resource_changes'] if item.get('mode') == 'managed' and item.get('address') == address]
+        require(len(counterparts) == 1 and counterparts[0]['change']['actions'] == ['no-op'] and
+                counterparts[0]['change']['before'] == after and counterparts[0]['change']['after'] == after and
+                not unknown(counterparts[0]['change'].get('after_unknown') or {}), 'Stage must be an exact no-op readback')
+        apis = [item for item in plan['resource_changes'] if item.get('mode') == 'managed' and item.get('address') == 'aws_apigatewayv2_api.age_attestation']
+        require(len(apis) == 1 and apis[0].get('provider_name') == 'registry.terraform.io/hashicorp/aws', 'Exact API counterpart required')
+        api_change = apis[0]['change']
+        api = api_change['after']
+        require(api_change['actions'] == ['no-op'] and api_change['before'] == api and
+                not unknown(api_change.get('after_unknown') or {}) and
+                api['name'] == 'trustcheckradar-dev-age-attestation-api' and api['protocol_type'] == 'HTTP' and
+                re.fullmatch('[a-z0-9]+', api['id']) and after['api_id'] == api['id'], 'Unchanged Dev API required')
+        require(after['auto_deploy'] is True and after['name'] == '$default' and
+                api['arn'] == 'arn:aws:apigateway:us-east-1::/apis/' + api['id'] and
+                after['arn'] == api['arn'] + '/stages/$default', 'Automatic Dev stage identity required')
+        return True
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
 def bounded_shapes(plan, managed, function, *, post_apply=False):
     drift = safe_drift_summary(plan)
     if drift['managedDrift']:
         print(json.dumps(drift), file=sys.stderr)
-    require(not drift['managedDrift'], 'Managed drift requires review')
+    managed_drift = [row for row in plan.get('resource_drift', []) if row.get('mode') == 'managed']
+    require(len(managed_drift) <= 1 and all(automatic_stage_readback(plan, row)
+                for row in managed_drift), 'Managed drift requires review')
     configs = {row['address']: row for row in plan.get('configuration', {}).get('root_module', {}).get('resources', [])}
     function_change = function['change']
     require(function_change['actions'] in (['update'], ['no-op']) and
@@ -271,6 +308,7 @@ def review(plan, revision, *, bounded=False, post_apply=False, catalog=None):
               'managedDrift': sorted((row for row in plan.get('resource_drift', []) if row.get('mode') == 'managed'), key=lambda row: row['address'])}
     digest = hashlib.sha256(json.dumps(stable, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     return {'revision': revision, 'reviewedPlanDigest': digest, 'changes': sorted(changes, key=lambda row: row['address']),
+            'verifiedAutomaticStageReadbacks': sum(automatic_stage_readback(plan, row) for row in plan.get('resource_drift', []) if row.get('mode') == 'managed'),
             'artifact': {'bucket': bucket, 'key': after['s3_key'], 'version': version, 'source_hash': sha}}
 
 
