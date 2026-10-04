@@ -4,15 +4,21 @@ on:
   workflow_dispatch:
     inputs:
       execution_mode:
-        description: Plan only, or apply the exact owner-approved plan digest
+        description: Plan, apply the exact approved digest, or verify the applied state without mutation
         required: true
         type: choice
         default: plan
-        options: [plan, apply]
+        options: [plan, apply, verify]
       expected_revision:
         description: Exact reviewed main infrastructure commit
         required: true
         type: string
+      plan_scope:
+        description: Full retirement transition, or the single-policy initialization correction
+        required: true
+        type: choice
+        default: retirement
+        options: [retirement, runtime-kms-repair]
       reviewed_plan_digest:
         description: Exact digest required for apply
         required: false
@@ -41,6 +47,7 @@ jobs:
       TF_VAR_artifact_release: ${{ vars.ARTIFACT_RELEASE }}
       EXPECTED_REVISION: ${{ inputs.expected_revision }}
       EXECUTION_MODE: ${{ inputs.execution_mode }}
+      PLAN_SCOPE: ${{ inputs.plan_scope }}
       REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
     steps:
       - uses: actions/checkout@v7.0.1
@@ -49,7 +56,8 @@ jobs:
           test "$GITHUB_SHA" = "$EXPECTED_REVISION"
           test -n "$TF_VAR_state_bucket_name"
           test -n "$TF_VAR_state_bucket_region"
-          test "$EXECUTION_MODE" = plan || test "$EXECUTION_MODE" = apply
+          test "$EXECUTION_MODE" = plan || test "$EXECUTION_MODE" = apply || test "$EXECUTION_MODE" = verify
+          test "$PLAN_SCOPE" = retirement || test "$PLAN_SCOPE" = runtime-kms-repair
           if [[ "$EXECUTION_MODE" == apply ]]; then test -n "$REVIEWED_PLAN_DIGEST"; fi
       - uses: hashicorp/setup-terraform@v4.0.1
         with:
@@ -80,6 +88,8 @@ jobs:
         run: |
           args=(--revision "$GITHUB_SHA" --bounded-dev)
           if [[ "$EXECUTION_MODE" == apply ]]; then args+=(--apply --expected-digest "$REVIEWED_PLAN_DIGEST"); fi
+          if [[ "$EXECUTION_MODE" == verify ]]; then args+=(--post-apply); fi
+          if [[ "$PLAN_SCOPE" == runtime-kms-repair && "$EXECUTION_MODE" != verify ]]; then args+=(--runtime-kms-repair); fi
           python3 scripts/verify_analysis_retirement.py "$RUNNER_TEMP/retirement-plan.json" "${args[@]}" > "$RUNNER_TEMP/retirement-review.json"
           cat "$RUNNER_TEMP/retirement-review.json" >> "$GITHUB_STEP_SUMMARY"
       - name: Apply only the verified saved plan
