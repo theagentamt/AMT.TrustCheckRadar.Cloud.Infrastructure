@@ -143,3 +143,9 @@ exception text remains redacted. An AST regression check requires every check
 label to remain a constant string. This improves diagnosis without accepting an
 extra action, relaxing a field/policy check, changing any archive, or applying a
 plan. The rejection remains unqualified until a corrected plan passes review.
+
+The diagnostic rerun `37208699019` identifies managed drift. A diagnostic report
+now lists only source-catalog resource labels, known changed field names and
+unknown-field counts. Before/after values, unknown resource labels and unknown
+field names are never emitted. All managed drift still rejects the plan; this
+report does not authorize reconciliation or apply.

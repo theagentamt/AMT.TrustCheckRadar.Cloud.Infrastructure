@@ -72,6 +72,22 @@ class RetirementTests(unittest.TestCase):
         for error in [ValueError('private-plan-value'), RuntimeError('private-sdk-value')]:
             self.assertNotIn('private', MODULE.safe_failure_message(error))
 
+    def test_drift_diagnostics_redact_all_plan_values_and_unknown_labels(self):
+        plan = fixture()
+        plan['resource_drift'] = [
+            {'mode': 'managed', 'address': 'aws_iam_role.analysis', 'change': {
+                'before': {'inline_policy': 'private-old'}, 'after': {'inline_policy': 'private-new'}}},
+            {'mode': 'managed', 'address': 'private-resource', 'change': {
+                'before': {'private-field': 'private-old'}, 'after': {'private-field': 'private-new'}}},
+        ]
+        report = MODULE.safe_drift_summary(plan)
+        self.assertEqual(report, {'managedDrift': [
+            {'resource': 'analysis role', 'fields': ['inline_policy'], 'otherFieldCount': 0},
+            {'resource': 'other managed resource', 'fields': [], 'otherFieldCount': 1}]})
+        self.assertNotIn('private', json.dumps(report))
+        with self.assertRaises(MODULE.ReviewRejected):
+            MODULE.review(plan, REVISION, bounded=True)
+
     def test_bounded_transition_and_digest(self):
         report = MODULE.review(fixture(), REVISION, bounded=True)
         self.assertEqual(len(report['changes']), 5)
