@@ -92,13 +92,19 @@ DRIFT_LABELS = {address: address for address in ALLOWED} | {
 
 def safe_drift_summary(plan):
     """Only source-catalog labels, known field names and aggregate counts."""
+    catalog = json.loads((ROOT / 'scripts/analysis-retirement-diagnostic-catalog.json').read_text())
+    fields_catalog = DRIFT_FIELDS | set(catalog['fields'])
+    labels_catalog = set(catalog['resources'])
     rows = []
     for row in plan.get('resource_drift', []):
         if row.get('mode') != 'managed':
             continue
         fields = changed_fields(row.get('change') or {})
-        rows.append({'resource': DRIFT_LABELS.get(row.get('address'), 'other managed resource'),
-                     'fields': sorted(fields & DRIFT_FIELDS), 'otherFieldCount': len(fields - DRIFT_FIELDS)})
+        address = row.get('address') or ''
+        base = address.split('[', 1)[0]
+        label = DRIFT_LABELS.get(address, base if base in labels_catalog else 'other managed resource')
+        rows.append({'resource': label,
+                     'fields': sorted(fields & fields_catalog), 'otherFieldCount': len(fields - fields_catalog)})
     return {'managedDrift': rows}
 
 

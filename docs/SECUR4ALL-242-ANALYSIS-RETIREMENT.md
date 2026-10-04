@@ -149,3 +149,10 @@ now lists only source-catalog resource labels, known changed field names and
 unknown-field counts. Before/after values, unknown resource labels and unknown
 field names are never emitted. All managed drift still rejects the plan; this
 report does not authorize reconciliation or apply.
+
+Run `37209217873` reports one resource outside the original diagnostic labels.
+The checked-in diagnostic catalog extends labels to public API Terraform resource
+definitions and top-level attributes/blocks from the locally read locked AWS
+provider 6.65.0 schema. Instance keys and all attribute values remain redacted.
+Catalog entries control diagnostic output only; they grant no drift exception,
+deployment permission or runtime access.

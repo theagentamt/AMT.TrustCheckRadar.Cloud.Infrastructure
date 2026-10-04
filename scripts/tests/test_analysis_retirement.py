@@ -4,6 +4,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import re
 from pathlib import Path
 import unittest
 
@@ -87,6 +88,20 @@ class RetirementTests(unittest.TestCase):
         self.assertNotIn('private', json.dumps(report))
         with self.assertRaises(MODULE.ReviewRejected):
             MODULE.review(plan, REVISION, bounded=True)
+
+    def test_diagnostic_catalog_has_only_source_names_and_provider_fields(self):
+        catalog = json.loads((MODULE.ROOT / 'scripts/analysis-retirement-diagnostic-catalog.json').read_text())
+        names = set()
+        for source in (MODULE.ROOT / 'terraform/api').glob('*.tf'):
+            names.update(a + '.' + b for a, b in re.findall(r'resource "([^"]+)" "([^"]+)"', source.read_text()))
+        self.assertEqual(set(catalog['resources']), names)
+        self.assertTrue(all(re.fullmatch(r'[a-z][a-z0-9_]*', field) for field in catalog['fields']))
+        plan = {'resource_drift': [{'mode': 'managed', 'address': 'aws_apigatewayv2_stage.age_attestation["private-index"]',
+            'change': {'before': {'deployment_id': 'private-old'}, 'after': {'deployment_id': 'private-new'}}}]}
+        report = MODULE.safe_drift_summary(plan)
+        self.assertEqual(report, {'managedDrift': [{'resource': 'aws_apigatewayv2_stage.age_attestation',
+            'fields': ['deployment_id'], 'otherFieldCount': 0}]})
+        self.assertNotIn('private', json.dumps(report))
 
     def test_bounded_transition_and_digest(self):
         report = MODULE.review(fixture(), REVISION, bounded=True)
