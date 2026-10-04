@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -74,8 +75,38 @@ def runtime_policy():
     return json.dumps({'Version': '2012-10-17', 'Statement': rows})
 
 
+DRIFT_FIELDS = COMPUTED | {'inline_policy', 'estimated_number_of_users', 'environment', 'publish',
+    'policy', 'role', 'assume_role_policy', 'tags', 'tags_all', 'name', 'arn', 'id', 'unique_id',
+    'integration_uri', 'function_version', 'routing_config', 'source_arn', 'qualifier'}
+DRIFT_LABELS = {address: address for address in ALLOWED} | {
+    'aws_iam_role.analysis': 'analysis role',
+    'aws_iam_role.history_api[0]': 'legacy History role',
+    'aws_iam_role.account_data[0]': 'account data role',
+    'aws_iam_role.account_export[0]': 'account export role',
+    'aws_iam_role.support_account_deletion[0]': 'support deletion role',
+    'aws_iam_role.demographic_research[0]': 'demographic research role',
+    'aws_iam_role.campaign_participation': 'campaign participation role',
+    'aws_cognito_user_pool.main': 'Cognito pool',
+}
+
+
+def safe_drift_summary(plan):
+    """Only source-catalog labels, known field names and aggregate counts."""
+    rows = []
+    for row in plan.get('resource_drift', []):
+        if row.get('mode') != 'managed':
+            continue
+        fields = changed_fields(row.get('change') or {})
+        rows.append({'resource': DRIFT_LABELS.get(row.get('address'), 'other managed resource'),
+                     'fields': sorted(fields & DRIFT_FIELDS), 'otherFieldCount': len(fields - DRIFT_FIELDS)})
+    return {'managedDrift': rows}
+
+
 def bounded_shapes(plan, managed, function, *, post_apply=False):
-    require(not [row for row in plan.get('resource_drift', []) if row.get('mode') == 'managed'], 'Managed drift requires review')
+    drift = safe_drift_summary(plan)
+    if drift['managedDrift']:
+        print(json.dumps(drift), file=sys.stderr)
+    require(not drift['managedDrift'], 'Managed drift requires review')
     configs = {row['address']: row for row in plan.get('configuration', {}).get('root_module', {}).get('resources', [])}
     function_change = function['change']
     require(function_change['actions'] in (['update'], ['no-op']) and
