@@ -69,7 +69,7 @@ required the retired endpoint to query indexes/write History/use free quotas wer
 updated to assert permanent retirement instead.
 
 The verifier suite covers bounded before/after fields, exact policy documents,
-old unqualified permission removal, zero managed drift, qualified routing, unsafe
+old unqualified permission removal, zero substantive drift, qualified routing, unsafe
 alias weights, digest authorization and actual downloaded archive bytes. Its
 post-apply mode checks active shapes even when the plan is entirely no-op.
 Local Python 3.14 CI helper suite: **327 passed**, including **15** retirement
@@ -88,7 +88,7 @@ attempts are not acceptance passes; the corrected final suites supply the eviden
    initial transition. Only retired analysis IAM/configuration/alias/integration,
    primary invoke permission and removal of its old period-work grants may change.
    Runtime code pins/concurrency and unrelated capabilities must stay unchanged.
-   Drift, extra actions, missing old-permission removal, legacy-route activation or
+   Substantive drift, extra actions, missing old-permission removal, legacy-route activation or
    different code/configuration cause rejection. The exact versioned S3 archive
    is downloaded and its actual hash verified. Preserve only the minimized report.
 4. Independently inspect that report and plan proof. **Obtain owner approval for
@@ -98,7 +98,7 @@ attempts are not acceptance passes; the corrected final suites supply the eviden
    approved digest. It replans, compares the digest, verifies the archive and
    applies only that saved plan. No manual AWS mutation is authorized here.
 6. The workflow generates a fresh post-apply plan. `--bounded-dev --post-apply`
-   requires zero managed changes/drift, exact active read-only policies, immutable
+   requires zero managed changes/substantive drift, exact active read-only policies, immutable
    alias/integration and qualified permission, no retained analysis period-work
    access, preserved closed gates and actual Lambda CodeSha equal to the approved
    archive. This is infrastructure acceptance, not a new multi-service user check.
@@ -156,3 +156,18 @@ definitions and top-level attributes/blocks from the locally read locked AWS
 provider 6.65.0 schema. Instance keys and all attribute values remain redacted.
 Catalog entries control diagnostic output only; they grant no drift exception,
 deployment permission or runtime access.
+
+## Verified automatic-stage readback
+
+Run `37209785080` identifies the sole drift as the existing API stage's
+`deployment_id`. The locked AWS provider marks this field optional/computed;
+[AWS documents automatic stage deployments](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-stages.html).
+The verifier permits only this service-managed pointer readback for the exact
+Dev `$default` stage: all other before/after fields must match, both pointers
+must be known, the stage and Dev API counterparts must be exact no-ops, API/stage
+identities must correlate, and source must enable automatic deployment without
+an explicit deployment ID. Unknown values, changed stage settings, trust,
+permissions, routes, API identity or unrelated drift still reject. The complete
+readback remains in the reviewed digest and its count appears in the minimized
+report. Post-apply still requires zero planned resource changes and checks all
+retirement shapes. This is not a general drift exemption or a state-only apply.

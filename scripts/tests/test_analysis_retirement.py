@@ -55,6 +55,61 @@ def fixture():
 
 
 class RetirementTests(unittest.TestCase):
+    def stage_readback_plan(self):
+        plan = fixture()
+        api = {'id': 'example1234', 'name': 'trustcheckradar-dev-age-attestation-api',
+               'protocol_type': 'HTTP', 'arn': 'arn:aws:apigateway:us-east-1::/apis/example1234'}
+        stage = {'api_id': api['id'], 'name': '$default', 'auto_deploy': True,
+                 'deployment_id': 'new123', 'arn': api['arn'] + '/stages/$default',
+                 'default_route_settings': [{'throttling_rate_limit': 10}]}
+        for address, value in [('aws_apigatewayv2_api.age_attestation', api), ('aws_apigatewayv2_stage.age_attestation', stage)]:
+            plan['resource_changes'].append({'address': address, 'mode': 'managed',
+                'provider_name': 'registry.terraform.io/hashicorp/aws', 'change': {
+                    'actions': ['no-op'], 'before': copy.deepcopy(value), 'after': copy.deepcopy(value), 'after_unknown': {}}})
+        old = dict(stage, deployment_id='old123')
+        plan['resource_drift'] = [{'address': 'aws_apigatewayv2_stage.age_attestation', 'mode': 'managed',
+            'provider_name': 'registry.terraform.io/hashicorp/aws', 'change': {
+                'actions': ['update'], 'before': old, 'after': copy.deepcopy(stage), 'after_unknown': {}}}]
+        plan['configuration']['root_module']['resources'].append({'address': 'aws_apigatewayv2_stage.age_attestation',
+            'expressions': {'auto_deploy': {'constant_value': True},
+                'api_id': {'references': ['aws_apigatewayv2_api.age_attestation.id']}}})
+        return plan
+
+    def test_only_verified_service_managed_stage_pointer_readback_is_accepted(self):
+        plan = self.stage_readback_plan()
+        report = MODULE.review(plan, REVISION, bounded=True)
+        self.assertEqual(report['verifiedAutomaticStageReadbacks'], 1)
+        self.assertEqual(len(report['changes']), 5)
+        changed = copy.deepcopy(plan)
+        changed['resource_drift'][0]['change']['before']['deployment_id'] = 'other123'
+        self.assertNotEqual(report['reviewedPlanDigest'], MODULE.review(changed, REVISION, bounded=True)['reviewedPlanDigest'])
+
+    def test_stage_readback_rejects_configuration_identity_and_unbound_drift(self):
+        mutations = [
+            lambda p: p['resource_drift'][0].__setitem__('provider_name', 'other'),
+            lambda p: p['resource_drift'][0].__setitem__('address', 'aws_apigatewayv2_stage.other'),
+            lambda p: p['resource_drift'][0]['change'].__setitem__('actions', ['delete']),
+            lambda p: p['resource_drift'][0]['change']['after'].__setitem__('auto_deploy', False),
+            lambda p: p['resource_drift'][0]['change']['after'].__setitem__('name', 'prod'),
+            lambda p: p['resource_drift'][0]['change']['after'].__setitem__('deployment_id', None),
+            lambda p: p['resource_drift'][0]['change']['after'].__setitem__('default_route_settings', []),
+            lambda p: p['resource_drift'][0]['change'].__setitem__('after_unknown', {'deployment_id': True}),
+            lambda p: p['resource_changes'][-1]['change'].__setitem__('actions', ['update']),
+            lambda p: p['resource_changes'][-1]['change']['after_unknown'].__setitem__('api_id', True),
+            lambda p: p['resource_changes'][-2]['change'].__setitem__('actions', ['update']),
+            lambda p: p['resource_changes'][-2]['change']['after'].__setitem__('name', 'production-api'),
+            lambda p: p['resource_changes'].pop(-2),
+            lambda p: p['configuration']['root_module']['resources'].pop(),
+            lambda p: p['configuration']['root_module']['resources'][-1]['expressions'].__setitem__('deployment_id', {'constant_value': 'new123'}),
+            lambda p: p['resource_drift'].append(copy.deepcopy(p['resource_drift'][0])),
+        ]
+        for index, mutate in enumerate(mutations):
+            with self.subTest(index=index):
+                plan = self.stage_readback_plan()
+                mutate(plan)
+                with self.assertRaises(ValueError):
+                    MODULE.review(plan, REVISION, bounded=True)
+
     def rejected(self, mutate):
         plan = fixture()
         mutate(plan)
@@ -168,7 +223,7 @@ class RetirementTests(unittest.TestCase):
         self.rejected(lambda p: p['resource_changes'][4]['change'].update(actions=['create'], before=None))
 
     def test_post_apply_checks_active_shapes_even_when_noop(self):
-        plan = fixture()
+        plan = self.stage_readback_plan()
         for row in plan['resource_changes']:
             row['change']['actions'] = ['no-op']
             row['change']['before'] = copy.deepcopy(row['change']['after'])
@@ -176,7 +231,8 @@ class RetirementTests(unittest.TestCase):
         plan['resource_changes'][0]['change']['before']['code_sha256'] = SHA
         plan['resource_changes'][2]['change']['after']['function_version'] = '4'
         plan['resource_changes'][2]['change']['before']['function_version'] = '4'
-        MODULE.review(plan, REVISION, bounded=True, post_apply=True)
+        report = MODULE.review(plan, REVISION, bounded=True, post_apply=True)
+        self.assertEqual(report['verifiedAutomaticStageReadbacks'], 1)
         for mutate in [
             lambda p: p['resource_changes'][1]['change']['after'].__setitem__('policy', '{}'),
             lambda p: p['resource_changes'][2]['change']['after'].__setitem__('routing_config', [{'additional_version_weights': {'2': .1}}]),
