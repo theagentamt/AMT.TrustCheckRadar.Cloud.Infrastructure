@@ -1,0 +1,116 @@
+name: Analysis retirement Dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      execution_mode:
+        description: Plan only, or apply the exact owner-approved plan digest
+        required: true
+        type: choice
+        default: plan
+        options: [plan, apply]
+      expected_revision:
+        description: Exact reviewed main infrastructure commit
+        required: true
+        type: string
+      reviewed_plan_digest:
+        description: Exact digest required for apply
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+jobs:
+  retirement:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      AWS_REGION: us-east-1
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      TF_VAR_state_bucket_name: ${{ vars.TF_STATE_BUCKET }}
+      TF_VAR_state_bucket_region: ${{ vars.AWS_REGION }}
+      TF_VAR_state_key_prefix: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
+      TF_VAR_artifact_release: ${{ vars.ARTIFACT_RELEASE }}
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+      REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Verify reviewed revision and mode
+        run: |
+          test "$GITHUB_SHA" = "$EXPECTED_REVISION"
+          test -n "$TF_VAR_state_bucket_name"
+          test -n "$TF_VAR_state_bucket_region"
+          test "$EXECUTION_MODE" = plan || test "$EXECUTION_MODE" = apply
+          if [[ "$EXECUTION_MODE" == apply ]]; then test -n "$REVIEWED_PLAN_DIGEST"; fi
+      - uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          allowed-account-ids: "107827791950"
+          role-session-name: retirement-${{ github.run_id }}
+      - name: Generate protected API plan
+        run: |
+          umask 077
+          terraform -chdir=terraform/api init -reconfigure -input=false \
+            -backend-config="bucket=$TF_VAR_state_bucket_name" \
+            -backend-config="key=$TF_VAR_state_key_prefix/dev/api.tfstate" \
+            -backend-config="region=$TF_VAR_state_bucket_region" \
+            -backend-config="encrypt=true" -backend-config="use_lockfile=true" > "$RUNNER_TEMP/retirement-init.log" 2>&1
+          if ! terraform -chdir=terraform/api plan -input=false \
+            -var-file=../../environments/dev/api.tfvars -out="$RUNNER_TEMP/retirement.tfplan" \
+            > "$RUNNER_TEMP/retirement-plan.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/retirement-plan.log"
+            exit 1
+          fi
+          terraform -chdir=terraform/api show -json "$RUNNER_TEMP/retirement.tfplan" > "$RUNNER_TEMP/retirement-plan.json"
+      - name: Verify bounded transition and immutable archive
+        run: |
+          args=(--revision "$GITHUB_SHA" --bounded-dev)
+          if [[ "$EXECUTION_MODE" == apply ]]; then args+=(--apply --expected-digest "$REVIEWED_PLAN_DIGEST"); fi
+          python3 scripts/verify_analysis_retirement.py "$RUNNER_TEMP/retirement-plan.json" "${args[@]}" > "$RUNNER_TEMP/retirement-review.json"
+          cat "$RUNNER_TEMP/retirement-review.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Apply only the verified saved plan
+        if: inputs.execution_mode == 'apply'
+        run: |
+          if ! terraform -chdir=terraform/api apply -input=false "$RUNNER_TEMP/retirement.tfplan" > "$RUNNER_TEMP/retirement-apply.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/retirement-apply.log"
+            exit 1
+          fi
+      - name: Verify applied shapes and zero drift
+        if: inputs.execution_mode == 'apply'
+        run: |
+          if ! terraform -chdir=terraform/api plan -input=false -var-file=../../environments/dev/api.tfvars \
+            -out="$RUNNER_TEMP/retirement-post.tfplan" > "$RUNNER_TEMP/retirement-post.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/retirement-post.log"
+            exit 1
+          fi
+          terraform -chdir=terraform/api show -json "$RUNNER_TEMP/retirement-post.tfplan" > "$RUNNER_TEMP/retirement-post.json"
+          python3 scripts/verify_analysis_retirement.py "$RUNNER_TEMP/retirement-post.json" \
+            --revision "$GITHUB_SHA" --bounded-dev --post-apply > "$RUNNER_TEMP/retirement-post-review.json"
+          cat "$RUNNER_TEMP/retirement-post-review.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve minimized review
+        if: always()
+        uses: actions/upload-artifact@v7.0.0
+        with:
+          name: retirement-review
+          path: |
+            ${{ runner.temp }}/retirement-review.json
+            ${{ runner.temp }}/retirement-post-review.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Remove protected plans and logs
+        if: always()
+        run: rm -f "$RUNNER_TEMP"/retirement.tfplan "$RUNNER_TEMP"/retirement-plan.json "$RUNNER_TEMP"/retirement-{init,plan,apply,post}.log "$RUNNER_TEMP"/retirement-post.tfplan "$RUNNER_TEMP"/retirement-post.json

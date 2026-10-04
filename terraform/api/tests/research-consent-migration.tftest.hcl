@@ -7,6 +7,13 @@ mock_provider "aws" {
 }
 
 variables {
+  analysis_retirement_deployment = {
+    release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
+    object_version     = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1"
+    source_hash        = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4="
+    approval_reference = "synthetic-retirement-review"
+    promotion_approved = true
+  }
   aws_region          = "us-east-1"
   project_name        = "trustcheckradar"
   environment         = "dev"
@@ -48,8 +55,17 @@ override_data {
   values = { account_id = "107827791950" }
 }
 
-run "null_preserves_legacy_configuration" {
+run "null_preserves_other_legacy_configuration_but_analysis_stays_retired" {
   command = plan
+  variables {
+    analysis_retirement_deployment = {
+      release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
+      object_version     = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1"
+      source_hash        = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4="
+      approval_reference = "synthetic-retirement-review"
+      promotion_approved = true
+    }
+  }
   assert {
     condition     = length(aws_iam_role_policy.research_migration_boundary) == 0 && !output.research_consent_migration_contract.selected && !contains(keys(aws_lambda_function.campaign_participation.environment[0].variables), "CONSENT_INDEPENDENCE_ENABLED") && aws_lambda_function.campaign_participation.environment[0].variables.CAMPAIGN_PARTICIPATION_NOTICE_VERSION == "2026-09-07"
     error_message = "An unset migration must not retire legacy access or switch consent versions."
@@ -62,12 +78,13 @@ run "coordinated_candidate_is_pinned_and_consent_stays_closed" {
     enable_web_risk_communication     = true
     campaign_participation_lambda_env = { CONSENT_INDEPENDENCE_ENABLED = "true", CAMPAIGN_PARTICIPATION_NOTICE_VERSION = "unreviewed" }
     analysis_lambda_env               = { HISTORY_WRITES_ENABLED = "true", RECOGNITION_ENABLED = "true", COGNITO_ISSUER = "untrusted-override", HISTORY_MAX_SUMMARY_BYTES = "9999999" }
+    analysis_retirement_deployment    = null
     research_consent_migration_deployment = {
-      release_id         = "research-migration-reviewed"
+      release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       approval_reference = "synthetic-contract-review"
       promotion_approved = false
       artifacts = {
-        analysis      = { object_version = "analysis-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        analysis      = { object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1", source_hash = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=" }
         participation = { object_version = "participation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
         snapshot      = { object_version = "snapshot-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
         purchase      = { object_version = "purchase-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
@@ -76,7 +93,7 @@ run "coordinated_candidate_is_pinned_and_consent_stays_closed" {
     }
   }
   assert {
-    condition     = alltrue([for fn in [aws_lambda_function.analysis, aws_lambda_function.campaign_participation, aws_lambda_function.entitlement_snapshot, aws_lambda_function.web_risk_communication[0], aws_lambda_function.purchase_handoff] : fn.runtime == "python3.14" && startswith(fn.s3_key, "releases/research-migration-reviewed/") && fn.s3_object_version != null && fn.source_code_hash != null]) && aws_lambda_function.analysis.s3_key == "releases/research-migration-reviewed/conversation_analysis.zip"
+    condition     = alltrue([for fn in [aws_lambda_function.analysis, aws_lambda_function.campaign_participation, aws_lambda_function.entitlement_snapshot, aws_lambda_function.web_risk_communication[0], aws_lambda_function.purchase_handoff] : fn.runtime == "python3.14" && startswith(fn.s3_key, "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/") && fn.s3_object_version != null && fn.source_code_hash != null]) && aws_lambda_function.analysis.s3_key == "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/conversation_analysis.zip"
     error_message = "All legacy candidates require immutable per-artifact pins and Python 3.14."
   }
   assert {
@@ -96,7 +113,7 @@ run "coordinated_candidate_is_pinned_and_consent_stays_closed" {
     error_message = "Legacy replay/snapshot cannot charge/write and the retired direct lookup cannot use provider credentials or caches."
   }
   assert {
-    condition     = aws_lambda_function.purchase_handoff.s3_key == "releases/research-migration-reviewed/purchase_handoff.zip" && aws_lambda_function.purchase_handoff.environment[0].variables.PURCHASE_OWNERSHIP_CANDIDATE_ENABLED == "false" && aws_lambda_function.purchase_handoff.environment[0].variables.DELETION_LEDGER_TABLE_NAME == "trustcheckradar-dev-deletion-ledger" && alltrue([for st in data.aws_iam_policy_document.purchase_handoff_runtime.statement : !contains(st.actions, "dynamodb:PutItem") || anytrue([for c in st.condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])])
+    condition     = aws_lambda_function.purchase_handoff.s3_key == "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/purchase_handoff.zip" && aws_lambda_function.purchase_handoff.environment[0].variables.PURCHASE_OWNERSHIP_CANDIDATE_ENABLED == "false" && aws_lambda_function.purchase_handoff.environment[0].variables.DELETION_LEDGER_TABLE_NAME == "trustcheckradar-dev-deletion-ledger" && alltrue([for st in data.aws_iam_policy_document.purchase_handoff_runtime.statement : !contains(st.actions, "dynamodb:PutItem") || anytrue([for c in st.condition : c.variable == "dynamodb:EnclosingOperation" && toset(c.values) == toset(["TransactWriteItems"])])])
     error_message = "The revised purchase helper must ship in the same release with deletion guards and transaction-only writes; selecting it cannot approve ownership migration."
   }
 
@@ -111,12 +128,13 @@ run "missing_artifact_is_rejected" {
   command = plan
   variables {
 
+    analysis_retirement_deployment = null
     research_consent_migration_deployment = {
-      release_id         = "research-migration-reviewed"
+      release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       approval_reference = "synthetic-contract-review"
       promotion_approved = false
       artifacts = {
-        analysis      = { object_version = "analysis-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        analysis      = { object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1", source_hash = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=" }
         participation = { object_version = "participation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
         snapshot      = { object_version = "snapshot-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
 
@@ -130,8 +148,9 @@ run "unpinned_version_is_rejected" {
   command = plan
   variables {
 
+    analysis_retirement_deployment = null
     research_consent_migration_deployment = {
-      release_id         = "research-migration-reviewed"
+      release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       approval_reference = "synthetic-contract-review"
       promotion_approved = false
       artifacts = {
@@ -150,8 +169,9 @@ run "invalid_hash_is_rejected" {
   command = plan
   variables {
 
+    analysis_retirement_deployment = null
     research_consent_migration_deployment = {
-      release_id         = "research-migration-reviewed"
+      release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       approval_reference = "synthetic-contract-review"
       promotion_approved = false
       artifacts = {
@@ -170,13 +190,14 @@ run "unreviewed_consent_activation_is_rejected" {
   command = plan
   variables {
 
+    analysis_retirement_deployment = null
     research_consent_migration_deployment = {
-      release_id         = "research-migration-reviewed"
+      release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       approval_reference = "synthetic-contract-review"
       promotion_approved = false
       consent_enabled    = true
       artifacts = {
-        analysis      = { object_version = "analysis-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        analysis      = { object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1", source_hash = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=" }
         participation = { object_version = "participation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
         snapshot      = { object_version = "snapshot-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
         purchase      = { object_version = "purchase-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
@@ -190,13 +211,14 @@ run "unreviewed_consent_activation_is_rejected" {
 run "unapproved_uat_is_rejected" {
   command = plan
   variables {
-    environment = "uat"
+    environment                    = "uat"
+    analysis_retirement_deployment = null
     research_consent_migration_deployment = {
-      release_id         = "research-migration-reviewed"
+      release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       approval_reference = "synthetic-contract-review"
       promotion_approved = false
       artifacts = {
-        analysis      = { object_version = "analysis-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        analysis      = { object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1", source_hash = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=" }
         participation = { object_version = "participation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
         snapshot      = { object_version = "snapshot-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
         purchase      = { object_version = "purchase-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
@@ -221,12 +243,13 @@ run "active_history_writer_is_rejected" {
         analysis = { object_version = "analysis", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
       }
     }
+    analysis_retirement_deployment = null
     research_consent_migration_deployment = {
-      release_id         = "research-migration-reviewed"
+      release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       approval_reference = "synthetic-contract-review"
       promotion_approved = false
       artifacts = {
-        analysis      = { object_version = "analysis-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        analysis      = { object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1", source_hash = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=" }
         participation = { object_version = "participation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
         snapshot      = { object_version = "snapshot-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
         purchase      = { object_version = "purchase-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
@@ -240,14 +263,15 @@ run "active_history_writer_is_rejected" {
 run "explicitly_reviewed_consent_activation_is_separate" {
   command = plan
   variables {
+    analysis_retirement_deployment = null
     research_consent_migration_deployment = {
-      release_id                 = "research-migration-reviewed"
+      release_id                 = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       approval_reference         = "synthetic-contract-review"
       promotion_approved         = false
       consent_enabled            = true
       consent_approval_reference = "synthetic-notice-lifecycle-review"
       artifacts = {
-        analysis      = { object_version = "analysis-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        analysis      = { object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1", source_hash = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=" }
         participation = { object_version = "participation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
         snapshot      = { object_version = "snapshot-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
         purchase      = { object_version = "purchase-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
@@ -269,7 +293,7 @@ override_data {
         selected         = true
         environment      = "dev"
         account_id       = "107827791950"
-        release_id       = "research-migration-reviewed"
+        release_id       = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
         consumers_paused = true
       }
     }
@@ -311,12 +335,13 @@ override_data {
 run "active_campaign_pipeline_is_rejected" {
   command = plan
   variables {
+    analysis_retirement_deployment = null
     research_consent_migration_deployment = {
-      release_id         = "research-migration-reviewed"
+      release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       approval_reference = "synthetic-contract-review"
       promotion_approved = false
       artifacts = {
-        analysis      = { object_version = "analysis-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        analysis      = { object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1", source_hash = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=" }
         participation = { object_version = "participation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
         snapshot      = { object_version = "snapshot-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
         purchase      = { object_version = "purchase-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
@@ -330,7 +355,7 @@ run "active_campaign_pipeline_is_rejected" {
       selected         = true
       environment      = "dev"
       account_id       = "107827791950"
-      release_id       = "research-migration-reviewed"
+      release_id       = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       consumers_paused = false
     } } }
   }
@@ -340,12 +365,13 @@ run "active_campaign_pipeline_is_rejected" {
 run "different_worker_release_is_rejected" {
   command = plan
   variables {
+    analysis_retirement_deployment = null
     research_consent_migration_deployment = {
-      release_id         = "research-migration-reviewed"
+      release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       approval_reference = "synthetic-contract-review"
       promotion_approved = false
       artifacts = {
-        analysis      = { object_version = "analysis-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        analysis      = { object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1", source_hash = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=" }
         participation = { object_version = "participation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
         snapshot      = { object_version = "snapshot-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
         purchase      = { object_version = "purchase-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
@@ -369,12 +395,13 @@ run "different_worker_release_is_rejected" {
 run "foreign_worker_account_is_rejected" {
   command = plan
   variables {
+    analysis_retirement_deployment = null
     research_consent_migration_deployment = {
-      release_id         = "research-migration-reviewed"
+      release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       approval_reference = "synthetic-contract-review"
       promotion_approved = false
       artifacts = {
-        analysis      = { object_version = "analysis-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+        analysis      = { object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1", source_hash = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=" }
         participation = { object_version = "participation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
         snapshot      = { object_version = "snapshot-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
         purchase      = { object_version = "purchase-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
@@ -388,7 +415,7 @@ run "foreign_worker_account_is_rejected" {
       selected         = true
       environment      = "dev"
       account_id       = "000000000000"
-      release_id       = "research-migration-reviewed"
+      release_id       = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
       consumers_paused = true
     } } }
   }

@@ -959,12 +959,20 @@ variable "analysis_primary_path" {
   description = "Primary public path for the conversation analysis endpoint"
   type        = string
   default     = "/analysis"
+  validation {
+    condition     = var.analysis_primary_path == "/analysis"
+    error_message = "Retired analysis retains only its established POST /analysis path."
+  }
 }
 
 variable "analysis_legacy_path_enabled" {
-  description = "Whether to keep the legacy /v1/conversation-analysis route mapped to the same Lambda"
+  description = "Retired legacy route stays disabled; reopening it requires source review."
   type        = bool
-  default     = true
+  default     = false
+  validation {
+    condition     = !var.analysis_legacy_path_enabled
+    error_message = "The retired API exposes only POST /analysis; the legacy route cannot be reactivated by deployment inputs."
+  }
 }
 
 variable "cors_allow_origins" {

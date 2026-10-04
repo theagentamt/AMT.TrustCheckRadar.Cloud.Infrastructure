@@ -27,11 +27,11 @@ variables {
   analysis_lambda_env                     = { CAMPAIGN_PERIOD_WORK_ENABLED = "true", CAMPAIGN_PERIOD_ADMISSION_ENABLED = "true", CAMPAIGN_PERIOD_WORK_PIPELINE_TABLE_NAME = "other-table" }
   campaign_participation_fence_deployment = null
   research_consent_migration_deployment = {
-    release_id         = "research-migration-reviewed"
+    release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
     approval_reference = "synthetic-contract-review"
     promotion_approved = false
     artifacts = {
-      analysis      = { object_version = "analysis-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+      analysis      = { object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1", source_hash = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=" }
       participation = { object_version = "participation-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
       snapshot      = { object_version = "snapshot-version", source_hash = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=" }
       purchase      = { object_version = "purchase-version", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
@@ -156,7 +156,7 @@ override_data {
     selected         = true
     environment      = "dev"
     account_id       = "107827791950"
-    release_id       = "research-migration-reviewed"
+    release_id       = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
     consumers_paused = true
   } } }
 }

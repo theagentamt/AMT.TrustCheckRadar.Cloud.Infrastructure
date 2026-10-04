@@ -15,10 +15,10 @@ variables {
   artifact_release    = "2026.09.07-1"
 
   research_consent_migration_deployment = {
-    release_id         = "1111111111111111111111111111111111111111"
+    release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
     approval_reference = "synthetic-closed-migration", promotion_approved = false
     artifacts = {
-      analysis      = { object_version = "a", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
+      analysis      = { object_version = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1", source_hash = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4=" }
       participation = { object_version = "p", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
       snapshot      = { object_version = "s", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
       purchase      = { object_version = "b", source_hash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" }
@@ -26,7 +26,7 @@ variables {
     }
   }
   research_campaign_release_compatibility = {
-    api_release_sha      = "1111111111111111111111111111111111111111"
+    api_release_sha      = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
     consumer_release_sha = "2222222222222222222222222222222222222222"
     review_reference     = "synthetic-compatible-pair"
   }
@@ -84,7 +84,7 @@ override_data {
 run "reviewed_exact_pair_preserves_api_artifacts" {
   command = plan
   assert {
-    condition     = aws_lambda_function.analysis.s3_key == "releases/1111111111111111111111111111111111111111/conversation_analysis.zip" && aws_lambda_function.campaign_participation.environment[0].variables.CONSENT_INDEPENDENCE_ENABLED == "false"
+    condition     = aws_lambda_function.analysis.s3_key == "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/conversation_analysis.zip" && aws_lambda_function.campaign_participation.environment[0].variables.CONSENT_INDEPENDENCE_ENABLED == "false"
     error_message = "Compatibility must not repin APIs or enable consent."
   }
 }
@@ -100,12 +100,12 @@ run "reject_stale_api" {
 }
 run "reject_stale_consumer" {
   command = plan
-  variables { research_campaign_release_compatibility = { api_release_sha = "1111111111111111111111111111111111111111", consumer_release_sha = "3333333333333333333333333333333333333333", review_reference = "review" } }
+  variables { research_campaign_release_compatibility = { api_release_sha = "d98ffd65b42d54953ad83e980e58846b6fc02c5d", consumer_release_sha = "3333333333333333333333333333333333333333", review_reference = "review" } }
   expect_failures = [terraform_data.research_migration_cutover]
 }
 run "reject_missing_review" {
   command = plan
-  variables { research_campaign_release_compatibility = { api_release_sha = "1111111111111111111111111111111111111111", consumer_release_sha = "2222222222222222222222222222222222222222", review_reference = "" } }
+  variables { research_campaign_release_compatibility = { api_release_sha = "d98ffd65b42d54953ad83e980e58846b6fc02c5d", consumer_release_sha = "2222222222222222222222222222222222222222", review_reference = "" } }
   expect_failures = [var.research_campaign_release_compatibility]
 }
 run "reject_active_consumers" {
