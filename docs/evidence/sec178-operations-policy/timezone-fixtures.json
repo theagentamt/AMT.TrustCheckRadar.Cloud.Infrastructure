@@ -33,5 +33,6 @@
       "result": "pass"
     }
   ],
-  "ownerApprovalDate": "2026-10-04"
+  "ownerApprovalDate": "2026-10-04",
+  "acceptedPolicyVersion": "1.0.0-policy.1"
 }
