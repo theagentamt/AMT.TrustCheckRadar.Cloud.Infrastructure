@@ -2,7 +2,8 @@
 
 Epic [SECUR4ALL-336](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-336)
 coordinates Lambda SEC337/338, infrastructure SEC339, Android ATCR163 and assembled
-Dev qualification SEC340. This page describes source and future test execution.
+Dev qualification SEC340. This page describes the source, deployment procedure
+and current qualification status; historical pre-apply notes are identified below.
 It grants no deployment, activation, account mutation or release authority.
 
 ## Source boundary
@@ -11,7 +12,7 @@ Candidate.3 deterministic execution is independently selected with
 `MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED` on both message functions. The consumer
 still enforces authenticated adult account, active device, paid/trial/complimentary
 access and original scan allowance. AI remains disabled and unqualified; the
-provider circuit remains closed. The evaluator role explicitly denies invocation
+provider circuit is open (`MESSAGE_PROVIDER_CIRCUIT_OPEN=true`), blocking dispatch. The evaluator role explicitly denies invocation
 of the private URL-assessment alias in this mode and retains its provider-secret
 denial. Reviewed links do not trigger Google or AI: unsupported evidence produces
 an honest inconclusive, uncharged result. Candidate.1 engineering and full AI
@@ -76,7 +77,9 @@ not run on a push or PR. It publishes no raw plan, subject list or state artifac
    Configure metadata-only Dev variables `GOVERNED_HISTORY_DEPLOYMENT_JSON` and
    `MESSAGE_CANDIDATE3_DEPLOYMENT_JSON`. Secret
    `GOVERNED_HISTORY_ENGINEERING_SUBJECTS_JSON` holds exactly one authorized
-   disposable synthetic Cognito UUID. Do not put subjects in public source. The runner derives private account
+   dedicated synthetic Cognito UUID. The current fixture is an existing reusable
+   account, preserved through testing and rollback. Do not put subjects in public
+   source. The runner derives private account
    partitions from the exact existing AWSCURRENT authority key ring in memory;
    the synthetic subject and derived partitions enter its private 0600 variable
    file and Terraform state. HMAC key material is
@@ -128,10 +131,15 @@ foundation source flag so later ordinary deployment remains consistent.
 Verify readback/zero drift and remove temporary subject configuration after the
 approved test. Disposable-account deletion requires its own authorization.
 
-## Pending assembled acceptance
+## Current qualification and remaining assembled acceptance
 
 [SECUR4ALL-340](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-340) retains
-all unexecuted scoped Dev activation and Android emulator acceptance. Existing
+the assembled Dev engineering acceptance. Android EN/ES normal-app phases
+passed. On October 3, 2026, the owner instructed “no rollback”: the existing
+dedicated-account rules-only Dev scope stays enabled, replacing the post-test
+inactive-apply acceptance criterion. Evidence integration and tracker closure
+are required; no rollback, empty allowlist or removed selection is claimed.
+Backend activation and rules-only EN/ES qualification passed. Existing
 [SEC334](https://andmorethings.youtrack.cloud/issue/SECUR4ALL-334) and
 [ATCR62](https://andmorethings.youtrack.cloud/issue/ATCR-62) retain later release
 qualification. Physical testing remains in ATCR148 and is not requested now.
@@ -147,17 +155,23 @@ come from Lambda `contracts/message-consumer/1.0.0-candidate.3` and
 `contracts/governed-history/1.0.0-candidate.1`. Android ATCR163 must first consume
 the governed schema; legacy score History cannot qualify this journey.
 
-Pending test sequence: EN/ES synthetic deterministic no-link prepare/submit;
-same-proof reconciliation/retry; list History; restart emulator/app; direct
-result lookup; repeat list/detail. Expect one logical completion, one settled
-receipt/entry and at most one check deduction, zero provider calls, original
+The EN/ES backend synthetic no-link prepare/submit, same-proof reconciliation,
+retry and list/direct lookup sequence passed. The subsequent Android Dev phases
+also passed: submission through the app, History entry, real app restart and
+direct reopen in EN/ES across reviewed windows.
+A separate connected reader/decoder/cache test does not by itself prove that UI
+journey. For both completed and remaining cases, expect one logical completion,
+one settled receipt/entry and at most one check deduction, zero provider calls, original
 accounting on reopen and no retained message/URL/image. Include inconclusive and
 hostile no-charge outcomes, partial result visibility, four-key rotation paging,
 expired/stale canonical rows, cursor expiry/tamper/cross-account/device-generation
 change and expired Google evidence fixtures without calling Google. Verify
 original outcome/accounting versus the separate current presentation.
 
-No assembled runner/activation has run for this epic yet. Attach privacy-safe
+The scoped backend activation and EN/ES rules-only runner have now passed;
+[current evidence](evidence/sec340-governed-history-dev/README.md) records exact
+source, apply runs and counters. Android acceptance and rollback status are
+tracked there independently. Attach privacy-safe
 status/count evidence, exact commits/packages/contracts/flags, rollback readback
 and test results to SEC340. Never call local fixtures live qualification, a
 configuration readback a behavioral test, or Android emulator evidence physical
@@ -171,7 +185,7 @@ provisioning may lack the role/alias policy. Active preflight and post-apply
 readback require the exact policies. These configuration checks do not replace
 SECUR4ALL-340's JWT and cross-account behavioral qualification.
 
-## Source qualification (before deployment)
+## Historical source qualification before deployment
 
 Local infrastructure validation passed 297 helper tests, 14 foundation mock
 Terraform tests, 16 message mock tests and eight reader mock tests. Terraform
@@ -182,12 +196,13 @@ syntax, formatting and diff checks passed. Independent review covered the
 Lambda source and infrastructure permission/activation boundaries. Source
 publication, main CI and future exact artifact selection are separate evidence.
 
-SECUR4ALL-340 owns the unperformed Dev installation and assembled emulator
-qualification; ATCR-163 owns Android History integration. Later release testing
+At this pre-apply stage, SECUR4ALL-340 owned Dev installation and assembled
+emulator qualification. Installation and backend qualification have since
+passed; ATCR-163 owns Android History integration and its remaining acceptance. Later release testing
 remains linked through SECUR4ALL-334 and ATCR-62. No physical device testing is
 required to close the source implementation stories.
 
-## SEC340 live prerequisite audit
+## Historical SEC340 prerequisite audit before apply
 
 The first Dev CI/CD index plan (37136301426) was rejected before apply because
 Cognito's computed estimated user count changed from its saved state. A private
@@ -197,7 +212,8 @@ the exact Dev pool when its resource plan is no-op; pool configuration drift,
 other resource drift and any pool mutation are still rejected. This does not
 change Cognito or weaken the index-only apply scope. The Dev foundation source
 flag is persisted before the separate guarded apply; ordinary deployment still
-rejects index creation/removal. No GSI2 or reader is claimed deployed by this note.
+rejects index creation/removal. This pre-apply note was not deployment evidence. Later approved runs created
+the index and installed/activated the scoped reader as recorded in current evidence.
 
 SEC340 access preparation uses scope `access`, mode `trial`, with the same private
 one-subject selection. It changes only that subject's entitlements admission and
@@ -249,9 +265,21 @@ Observed normalized drift stays in the authoritative reviewed-plan digest; only
 the already-validated evaluator view is removed from the legacy compatibility
 verifier's temporary copy.
 
-Regenerate all affected CI/CD plans at the new reviewed main revision. Existing
-approvals are not approvals for new digests. Reader access remains disabled until
-its new exact list/detail plan is approved and its positive readback succeeds.
-The dedicated fixture currently retains its original trial balance; no trial
-activation/reset, account creation/deletion, provider request, UAT or Production
-change has occurred in this qualification increment.
+The corrected main revision is `990e66e8c0b8a9dcc2dcb114745b015655f4e43f`.
+Owner-approved reader activation apply `37146970010` passed exact readback and
+zero drift. Reader list/detail are enabled for the dedicated account only;
+AI and providers remain blocked. Backend qualification produced four results,
+two charged and two inconclusive/uncharged. The original trial clock and
+eligibility are preserved; used/reserved/remaining moved from 1/0/9 to 3/0/7.
+No trial activation/reset, account creation/deletion, UAT or Production change
+occurred in that backend window. Subsequent Android normal-app EN/ES phases passed
+across reviewed windows, and PR68 is integrated into `release-V01` at
+`59c515f4ce83eefe999da7d798452ccbd0e6eb25`. Final trial counters are 10/5/0/5
+(limit/used/reserved/remaining); reads and reopening charged no extra check.
+The owner subsequently instructed “no rollback” on October 3, 2026, so all
+three post-test inactive applies are intentionally unperformed. Existing scoped
+admission and the private CI/CD subject selection remain in place. This changes
+only the retained completion scope; it enables no additional user, capability,
+provider or environment. Future disabling requires a fresh plan at the current
+source revision, its own exact-digest approval and successful readback. See the
+[current evidence](evidence/sec340-governed-history-dev/README.md).
