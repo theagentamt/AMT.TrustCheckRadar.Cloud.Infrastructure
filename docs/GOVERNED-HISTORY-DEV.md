@@ -267,7 +267,11 @@ AI and providers remain blocked. Backend qualification produced four results,
 two charged and two inconclusive/uncharged. The original trial clock and
 eligibility are preserved; used/reserved/remaining moved from 1/0/9 to 3/0/7.
 No trial activation/reset, account creation/deletion, UAT or Production change
-occurred. Android normal-app acceptance and all three post-test inactive applies
-remain pending. Existing approvals do not cover new plan digests; rollback
+occurred in that backend window. Subsequent Android normal-app EN/ES phases passed
+across reviewed windows, and PR68 is integrated into `release-V01` at
+`59c515f4ce83eefe999da7d798452ccbd0e6eb25`. Final trial counters are 10/5/0/5
+(limit/used/reserved/remaining); reads and reopening charged no extra check.
+All three post-test inactive applies remain pending. Existing approvals do not
+cover new plan digests; rollback
 requires its own exact-digest approval and successful readback. See the
 [current evidence](evidence/sec340-governed-history-dev/README.md).
