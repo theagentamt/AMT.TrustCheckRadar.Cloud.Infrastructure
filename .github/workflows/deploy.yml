@@ -270,6 +270,8 @@ jobs:
           terraform -chdir=terraform/api plan \
             -var-file="../../environments/$DEPLOY_ENV/api.tfvars" \
             -out=api.tfplan
+          terraform -chdir=terraform/api show -json api.tfplan > "$RUNNER_TEMP/api-retirement-plan.json"
+          python3 scripts/verify_analysis_retirement.py "$RUNNER_TEMP/api-retirement-plan.json" --revision "$GITHUB_SHA" > "$RUNNER_TEMP/api-retirement-review.json"
 
       - name: Apply API
         if: env.DEPLOY_SCOPE == 'all' && env.EXECUTION_MODE == 'apply'

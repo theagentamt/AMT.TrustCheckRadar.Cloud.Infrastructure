@@ -31,7 +31,7 @@ locals {
   } : {}
 }
 data "aws_iam_policy_document" "period_work" {
-  for_each = local.period_work_prepared ? toset(["analysis", "account_data"]) : toset([])
+  for_each = local.period_work_prepared ? toset(["account_data"]) : toset([])
   statement {
     sid       = "VerifyPeriodWorkResourceIdentity"
     actions   = ["dynamodb:DescribeTable"]

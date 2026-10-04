@@ -432,115 +432,31 @@ resource "aws_iam_role_policy_attachment" "web_risk_communication_basic_executio
 }
 
 data "aws_iam_policy_document" "analysis_runtime" {
-  statement {
-    sid    = "UsersTableReadWrite"
-    effect = "Allow"
-    actions = [
-      "dynamodb:ConditionCheckItem",
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:UpdateItem",
-      "dynamodb:DeleteItem",
-      "dynamodb:Query"
-    ]
-
-    resources = [local.users_table_arn]
-  }
-
-  statement {
-    sid    = "AbuseControlTableReadWrite"
-    effect = "Allow"
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:UpdateItem",
-      "dynamodb:DeleteItem",
-      "dynamodb:Query"
-    ]
-
-    resources = [local.analysis_abuse_control_table_arn]
-  }
-
-  statement {
-    sid    = "EntitlementsTableReadWrite"
-    effect = "Allow"
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:UpdateItem",
-      "dynamodb:DeleteItem",
-      "dynamodb:Query"
-    ]
-
-    resources = [
-      local.analysis_entitlements_table_arn,
-      "${local.analysis_entitlements_table_arn}/index/*"
-    ]
-  }
-
   dynamic "statement" {
-    for_each = var.campaign_intelligence_enabled ? [1] : []
-
+    for_each = local.analysis_retirement_selected ? local.analysis_replay_reads : {}
     content {
-      sid       = "WriteCampaignOutboxTransactionally"
+      sid       = "ReadReplay${title(statement.key)}"
       effect    = "Allow"
-      actions   = local.campaign_outbox_write_actions
-      resources = [local.campaign_outbox_table_arn]
-
+      actions   = ["dynamodb:GetItem"]
+      resources = [statement.value.arn]
       condition {
-        test     = "ForAnyValue:StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = local.campaign_outbox_write_enclosing_operations
+        test     = "ForAllValues:StringLike"
+        variable = "dynamodb:LeadingKeys"
+        values   = statement.value.keys
       }
     }
   }
-
-  dynamic "statement" {
-    for_each = var.campaign_intelligence_enabled ? [1] : []
-
-    content {
-      sid       = "UseCampaignOutboxEncryptionThroughDynamoDB"
-      effect    = "Allow"
-      actions   = local.campaign_outbox_kms_actions
-      resources = [local.campaign.transient_kms_key_arn]
-
-      condition {
-        test     = "StringEquals"
-        variable = "kms:CallerAccount"
-        values   = [local.campaign_outbox_account_id]
-      }
-
-      condition {
-        test     = "StringEquals"
-        variable = "kms:ViaService"
-        values   = ["dynamodb.${var.aws_region}.amazonaws.com"]
-      }
-    }
-  }
-
   statement {
-    sid    = "DeviceBindingsReadOnly"
-    effect = "Allow"
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:Query"
-    ]
-
-    resources = [
-      local.device_bindings_table_arn,
-      "${local.device_bindings_table_arn}/index/*"
-    ]
+    sid       = "DenyProviderCredentialsAndDispatch"
+    effect    = "Deny"
+    actions   = ["secretsmanager:GetSecretValue", "ssm:GetParameter", "ssm:GetParameters", "ssm:GetParametersByPath", "lambda:InvokeFunction", "bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:StartAsyncInvoke", "kms:Decrypt", "kms:GenerateDataKey*"]
+    resources = ["*"]
   }
-
   statement {
-    sid    = "ReadOpenAISecret"
-    effect = "Allow"
-    actions = [
-      "secretsmanager:GetSecretValue",
-      "secretsmanager:DescribeSecret"
-    ]
-
-    resources = [local.effective_openai_secret_arn]
+    sid       = "DenyNonReplayDatabaseAccess"
+    effect    = "Deny"
+    actions   = ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:BatchWriteItem", "dynamodb:ConditionCheckItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:BatchGetItem", "dynamodb:PartiQLSelect", "dynamodb:PartiQLInsert", "dynamodb:PartiQLUpdate", "dynamodb:PartiQLDelete"]
+    resources = ["*"]
   }
 }
 
@@ -1078,52 +994,35 @@ resource "aws_lambda_function" "age_attestation" {
 resource "aws_lambda_function" "analysis" {
   function_name = local.analysis_lambda_name
   role          = aws_iam_role.analysis.arn
-  runtime       = local.research_migration_selected ? "python3.14" : (var.analysis_lambda_runtime)
-  handler       = var.analysis_lambda_handler
+  runtime       = "python3.14"
+  handler       = "app.lambda_handler"
+  publish       = local.analysis_retirement_selected
 
   timeout                        = var.analysis_lambda_timeout_seconds
   memory_size                    = var.analysis_lambda_memory_mb
-  architectures                  = var.analysis_lambda_architectures
-  reserved_concurrent_executions = var.campaign_period_work_quiescence ? 0 : var.analysis_lambda_reserved_concurrency
+  architectures                  = ["arm64"]
+  reserved_concurrent_executions = !local.analysis_retirement_selected || var.campaign_period_work_quiescence ? 0 : var.analysis_lambda_reserved_concurrency
 
-  s3_bucket         = local.research_migration_selected ? local.foundation.artifact_bucket_name : (local.analysis_artifact_bucket_name)
-  s3_key            = local.research_migration_selected ? "releases/${var.research_consent_migration_deployment.release_id}/conversation_analysis.zip" : (local.analysis_artifact_key)
-  s3_object_version = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["analysis"].object_version : (var.history_deployment != null ? var.history_deployment.artifacts["analysis"].object_version : var.analysis_lambda_s3_object_version)
-  source_code_hash  = local.research_migration_selected ? var.research_consent_migration_deployment.artifacts["analysis"].source_hash : (var.history_deployment != null ? var.history_deployment.artifacts["analysis"].source_hash : null)
+  s3_bucket         = local.foundation.artifact_bucket_name
+  s3_key            = "releases/${try(local.analysis_retirement.release_id, "d98ffd65b42d54953ad83e980e58846b6fc02c5d")}/conversation_analysis.zip"
+  s3_object_version = try(local.analysis_retirement.object_version, null)
+  source_code_hash  = try(local.analysis_retirement.source_hash, null)
 
   environment {
-    variables = merge(var.analysis_lambda_env, {
-      USERS_TABLE_ARN                       = local.users_table_arn
-      USERS_TABLE_NAME                      = local.users_table_name
-      ABUSE_CONTROL_TABLE_ARN               = local.analysis_abuse_control_table_arn
-      ABUSE_CONTROL_TABLE_NAME              = local.analysis_abuse_control_table_name
-      ANALYSIS_ABUSE_TABLE_NAME             = local.analysis_abuse_control_table_name
-      DEVICE_BINDINGS_TABLE_NAME            = local.device_bindings_table_name
-      ENTITLEMENTS_TABLE_ARN                = local.analysis_entitlements_table_arn
-      ENTITLEMENTS_TABLE_NAME               = local.analysis_entitlements_table_name
-      PROCESSING_LEASE_SECONDS              = tostring(var.analysis_processing_lease_seconds)
-      SCAN_RATE_LIMIT_WINDOW_SECONDS        = tostring(var.analysis_scan_rate_limit_window_seconds)
-      SCAN_RATE_LIMIT_MAX_REQUESTS          = tostring(var.analysis_scan_rate_limit_max_requests)
-      FREE_MONTHLY_SCAN_LIMIT               = tostring(var.analysis_free_monthly_scan_limit)
-      PARTICIPATING_FREE_MONTHLY_SCAN_LIMIT = tostring(var.campaign_participating_free_monthly_scan_limit)
-      PRO_MONTHLY_SCAN_LIMIT                = tostring(var.analysis_pro_monthly_scan_limit)
-      CAMPAIGN_PARTICIPATION_ITEM_SK        = "CAMPAIGN_PARTICIPATION"
-      PURCHASE_USAGE_COUNTER_RETENTION_DAYS = tostring(var.purchase_usage_counter_retention_days)
-      ENTITLEMENT_DEFAULT_TIER              = var.entitlement_default_tier
-      ENTITLEMENT_PREMIUM_TIER              = var.entitlement_premium_tier
-      ENTITLEMENT_USAGE_PERIOD_MODE         = var.entitlement_usage_period_mode
-      ENTITLEMENT_ACCESS_GRANTING_STATUSES  = jsonencode(var.entitlement_access_granting_statuses)
-      ENTITLEMENT_NONTERMINAL_STATUSES      = jsonencode(var.entitlement_nonterminal_statuses)
-      ENTITLEMENT_PLATFORM                  = "google_play"
-      ENTITLEMENT_PRODUCT_ID                = var.google_play_subscription_product_id
-      OPENAI_SECRET_ARN                     = local.effective_openai_secret_arn
-      OPENAI_SECRET_NAME                    = local.openai_secret_name
-      ANALYSIS_REQUEST_TIMEOUT_MS           = tostring(29000)
-      }, var.campaign_intelligence_enabled ? {
-      CAMPAIGN_OUTBOX_TABLE_ARN  = local.campaign_outbox_table_arn
-      CAMPAIGN_OUTBOX_TABLE_NAME = local.campaign_outbox_table_name
-      CAMPAIGN_SCHEMA_VERSION    = "1"
-    } : {}, local.history_analysis_env, local.research_migration_replay_env, local.period_work_closed_env)
+    variables = local.analysis_replay_env
+  }
+
+  lifecycle {
+    precondition {
+      condition = local.analysis_retirement == null ? false : try(
+        local.analysis_retirement_catalog[var.environment][local.analysis_retirement.release_id] == {
+          object_version = local.analysis_retirement.object_version
+          source_hash    = local.analysis_retirement.source_hash
+        },
+        false
+      )
+      error_message = "Analysis requires an immutable source-reviewed replay-only archive before planning; missing selections, unknown revisions or changed hashes require retirement qualification and catalog review."
+    }
   }
 
   depends_on = [terraform_data.research_migration_cutover, aws_iam_role_policy.research_migration_boundary, aws_cloudwatch_log_group.analysis_lambda, aws_iam_role_policy.history_analysis, aws_iam_role_policy_attachment.analysis_runtime]
@@ -1448,7 +1347,7 @@ resource "aws_apigatewayv2_route" "age_attestation" {
 resource "aws_apigatewayv2_integration" "analysis_lambda" {
   api_id                 = aws_apigatewayv2_api.age_attestation.id
   integration_type       = "AWS_PROXY"
-  integration_uri        = aws_lambda_function.analysis.invoke_arn
+  integration_uri        = local.analysis_retirement_selected ? aws_lambda_alias.analysis_retired[0].invoke_arn : aws_lambda_function.analysis.invoke_arn
   integration_method     = "POST"
   payload_format_version = "2.0"
   timeout_milliseconds   = 29000
@@ -1700,11 +1599,25 @@ resource "aws_lambda_permission" "allow_api_gateway_invoke_age_attestation" {
 }
 
 resource "aws_lambda_permission" "allow_api_gateway_invoke_analysis" {
-  statement_id  = "AllowExecutionFromApiGatewayAnalysis"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.analysis.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.age_attestation.execution_arn}/*/*"
+  count          = local.analysis_retirement_selected ? 1 : 0
+  statement_id   = "AllowExecutionFromApiGatewayAnalysis"
+  action         = "lambda:InvokeFunction"
+  function_name  = aws_lambda_function.analysis.function_name
+  qualifier      = aws_lambda_alias.analysis_retired[0].name
+  principal      = "apigateway.amazonaws.com"
+  source_account = split(":", local.users_table_arn)[4]
+  source_arn     = "${aws_apigatewayv2_api.age_attestation.execution_arn}/${var.api_stage_name}/POST${var.analysis_primary_path}"
+}
+
+resource "aws_lambda_permission" "allow_api_gateway_invoke_analysis_legacy" {
+  count          = local.analysis_retirement_selected && var.analysis_legacy_path_enabled ? 1 : 0
+  statement_id   = "AllowExecutionFromApiGatewayAnalysisLegacy"
+  action         = "lambda:InvokeFunction"
+  function_name  = aws_lambda_function.analysis.function_name
+  qualifier      = aws_lambda_alias.analysis_retired[0].name
+  principal      = "apigateway.amazonaws.com"
+  source_account = split(":", local.users_table_arn)[4]
+  source_arn     = "${aws_apigatewayv2_api.age_attestation.execution_arn}/${var.api_stage_name}/POST/v1/conversation-analysis"
 }
 
 resource "aws_lambda_permission" "allow_api_gateway_invoke_device_registration" {

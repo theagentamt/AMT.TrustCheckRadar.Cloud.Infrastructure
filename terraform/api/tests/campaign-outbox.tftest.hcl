@@ -7,6 +7,13 @@ mock_provider "aws" {
 }
 
 variables {
+  analysis_retirement_deployment = {
+    release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
+    object_version     = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1"
+    source_hash        = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4="
+    approval_reference = "synthetic-retirement-review"
+    promotion_approved = true
+  }
   aws_region          = "us-east-1"
   project_name        = "trustcheckradar"
   environment         = "dev"
@@ -42,22 +49,14 @@ override_data {
   }
 }
 
-run "analysis_can_query_device_bindings_indexes" {
+run "retired_analysis_cannot_query_device_bindings_indexes" {
   command = plan
-
-  # Inspect configured statements: the mock provider replaces the rendered JSON.
   assert {
-    condition = length([
-      for statement in data.aws_iam_policy_document.analysis_runtime.statement : statement
-      if statement.sid == "DeviceBindingsReadOnly" &&
-      statement.effect == "Allow" &&
-      toset(statement.actions) == toset(["dynamodb:GetItem", "dynamodb:Query"]) &&
-      toset(statement.resources) == toset([
-        "arn:aws:dynamodb:us-east-1:107827791950:table/device-bindings",
-        "arn:aws:dynamodb:us-east-1:107827791950:table/device-bindings/index/*",
-      ])
-    ]) == 1
-    error_message = "The conversation-analysis runtime policy must allow GetItem and Query on its device-bindings table and indexes (including GSI1), without broader actions or resources."
+    condition = alltrue([for statement in data.aws_iam_policy_document.analysis_runtime.statement :
+      statement.effect != "Allow" || (toset(statement.actions) == toset(["dynamodb:GetItem"]) &&
+      alltrue([for resource in statement.resources : !strcontains(resource, "/index/")]))
+    ])
+    error_message = "Retired replay must have only table GetItem reads, without index queries or dispatch/settlement writes."
   }
 }
 
@@ -116,13 +115,11 @@ run "enabled_analysis_uses_its_environment_outbox" {
   }
 
   assert {
-    condition = (
-      aws_lambda_function.analysis.environment[0].variables["CAMPAIGN_OUTBOX_TABLE_NAME"] == "trustcheckradar-dev-campaign-outbox" &&
-      aws_lambda_function.analysis.environment[0].variables["CAMPAIGN_OUTBOX_TABLE_ARN"] == "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-outbox" &&
-      aws_lambda_function.analysis.environment[0].variables["CAMPAIGN_SCHEMA_VERSION"] == "1"
-    )
-    error_message = "The enabled analysis Lambda must receive the versioned outbox contract."
+    condition = (!contains(keys(aws_lambda_function.analysis.environment[0].variables), "CAMPAIGN_OUTBOX_TABLE_NAME") &&
+    alltrue([for st in data.aws_iam_policy_document.analysis_runtime.statement : st.effect != "Allow" || !contains(st.resources, local.campaign_outbox_table_arn)]))
+    error_message = "Campaign configuration cannot restore outbox access to retired analysis."
   }
+
 }
 
 run "cross_environment_campaign_state_is_rejected" {
