@@ -133,3 +133,13 @@ counts, privacy-safe evidence and cleanup. Those pending release cases are not
 reported as performed here. Android emulator/store work remains in its existing
 stories; physical-only ATCR148 stays open and does not block independent backend
 completion.
+
+## Plan-only diagnostic boundary — October 4, 2026
+
+Initial isolated Dev plan run `37207970664` reached verification and was rejected
+before apply. Its generic error did not identify the failed check. The verifier
+now emits only the static source-defined rejection label; SDK, parsing and other
+exception text remains redacted. An AST regression check requires every check
+label to remain a constant string. This improves diagnosis without accepting an
+extra action, relaxing a field/policy check, changing any archive, or applying a
+plan. The rejection remains unqualified until a corrected plan passes review.

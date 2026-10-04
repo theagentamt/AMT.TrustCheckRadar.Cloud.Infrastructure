@@ -1,3 +1,4 @@
+import ast
 import base64
 import copy
 import hashlib
@@ -58,6 +59,18 @@ class RetirementTests(unittest.TestCase):
         mutate(plan)
         with self.assertRaises(ValueError):
             MODULE.review(plan, REVISION, bounded=True)
+
+    def test_diagnostics_use_only_static_check_labels(self):
+        tree = ast.parse(Path(MODULE.__file__).read_text())
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'require':
+                self.assertIsInstance(node.args[1], ast.Constant)
+                self.assertIsInstance(node.args[1].value, str)
+        with self.assertRaises(MODULE.ReviewRejected) as caught:
+            MODULE.require(False, 'Managed drift requires review')
+        self.assertIn('Managed drift requires review', MODULE.safe_failure_message(caught.exception))
+        for error in [ValueError('private-plan-value'), RuntimeError('private-sdk-value')]:
+            self.assertNotIn('private', MODULE.safe_failure_message(error))
 
     def test_bounded_transition_and_digest(self):
         report = MODULE.review(fixture(), REVISION, bounded=True)
