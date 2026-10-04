@@ -192,8 +192,9 @@ retirement shapes. This is not a general drift exemption or a state-only apply.
 
 The original owner-approved transition applied successfully in
 [run 37213843044](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/37213843044).
-Its post-apply acceptance failed, so SEC242 remains In Progress. The approval for
-that transition does not authorize another apply.
+Its initial post-apply acceptance failed, which kept SEC242 In Progress until
+the separately approved correction and live acceptance recorded below. The
+approval for that transition did not authorize another apply.
 
 Read-only SDK inventory verified the pinned alias/version, scoped API route and
 permission, exact two managed/two inline policies, and absence of untracked
@@ -244,3 +245,93 @@ policy and all other active shapes already match source. It does not repair a
 policy, persist refreshed state or authorize a deployment. After a successful
 repair, use this mode if a later acceptance audit is needed; do not reapply the
 original transition to reconcile computed views.
+
+## Final retained Dev acceptance — October 4, 2026
+
+The owner separately approved repair digest
+`d565ce50d049146ee42d7030573a242d090f709627c09162b9a3c0c2610bbbe8`
+at main `1f06b7c8338ce07f460ffbb0c16859b30877be5f` (reviewed source
+[PR160](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/pull/160)).
+Main [CI 37216599710](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/37216599710)
+and plan-only [run 37217141723](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/37217141723)
+passed. Approved [apply run 37227179724](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/37227179724)
+matched that digest, applied exactly one runtime IAM policy update and passed its
+post-apply verifier: zero managed changes, zero computed readback differences and
+the original immutable archive verified. No manual AWS deployment occurred.
+
+Read-only SDK inventory independently matched the exact role trust, two managed
+and two inline policies, application-context KMS deny without a KMS Allow, paired
+GetItem-only History access, pinned version/alias, exact same-account/stage/route
+permission, JWT primary route and absence of unqualified/version-specific or
+legacy-route permissions. The retained rules-only account scope was preserved.
+
+The bounded live check made exactly two HTTP requests without retry. The
+unauthenticated request returned 401 without handler work. The authenticated
+owned-device request used a fresh synthetic request ID and returned 409,
+`LEGACY_MIGRATION_REQUIRED`, `retryable=false`. Four consistent GetItems proved
+its exact request and consumption rows absent before and after. Pre/post authority
+readbacks matched the same existing trial/history and allowance with no new
+paid or complimentary source. There was no account/device/trial reset or fixture
+write. Fresh private authentication headers were deleted.
+
+The 1,742 ms API/Lambda log window contains exactly two API records (401/no
+integration and 409/backend 409), one Lambda START/END/REPORT, zero error logs
+and zero provider-name sentinels. An initial temporary operational assertion
+incorrectly expected service status 200 from `$context.integration.status`;
+[AWS documents that this field is the backend Lambda response status](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging-variables.html).
+The raw failed assertion is preserved and a separate hash-bound corrected
+assessment accepts the observed backend 409. No HTTP or cloud query was repeated
+to make this correction. The initial short-timeout authority read produced no
+snapshot and no HTTP request; one authorized read-only rerun with realistic
+timeouts then supplied the precondition.
+
+Observed telemetry covers the retired-analysis/API window only. Provider
+non-dispatch is established separately by the audited pinned handler's immediate
+missing-request return and IAM provider/dispatch denies, not by provider metrics.
+This is not paid-provider, evaluator/URL fanout, store or UAT qualification.
+The aggregate receipt is in
+[`evidence/sec242-analysis-retirement-dev/acceptance.json`](evidence/sec242-analysis-retirement-dev/acceptance.json).
+Private raw inventories, account/device identifiers, row keys, credentials and
+content are excluded from the repository.
+
+These results complete SEC242's retained Dev retirement boundary. Earlier scoped
+URL/access/trial/message/complimentary evidence supplies the other accepted
+infrastructure slices; SEC232's AWS_IAM-only operator route and actor-forgery
+denial supply the normal-mobile operator exclusion. Broader SEC190, SEC230 and
+SEC76 work remains open in its own scope. SEC334 remains open for the release
+matrix below; none of those unexecuted cases is reported as passed.
+
+### SEC334 retirement release instructions — pending execution
+
+1. Promote reviewed replay-only catalog bytes and environment configuration
+   through CI/CD, with fresh exact-digest approval where required. Privately
+   verify archive/version/alias, JWT route and scoped permissions, role inventory,
+   gates and test-account/device ownership. UAT/Production currently have no
+   admitted retirement catalog entry; this handoff does not activate them.
+2. Use the verified `POST /analysis` entry point and schema 1.0 with a fresh
+   request ID, `sourceType=pasted_text`, `localSanitizationApplied=true`, benign
+   synthetic `sanitizedText`, `entities=[]`, `campaignConsentGranted=false` and
+   `appFeatures=null`. A protected credential fixture must supply the real test
+   account JWT and current `X-Device-Binding-Fingerprint`; do not fabricate them.
+   Expect unauthenticated 401 and authenticated fresh-ID 409 migration denial,
+   `retryable=false`, no new request/consumption row and unchanged allowance.
+3. For positive legacy replay, first find an eligible owned existing completed
+   request/consumption pair. None existed during this Dev qualification. If there
+   is no eligible pair, keep the case pending until an explicitly approved fixture
+   procedure exists; do not manually create ledger or History rows. Reopen must
+   preserve original accounting and create no new provider work or charge. Repeat
+   ownership/device/deletion/expiry rejection cases with separately reviewed
+   fixtures and approvals for any protected mutation.
+4. Record private bounded row/authority readbacks and API/Lambda telemetry;
+   capture provider/evaluator metrics separately if claiming their qualification.
+   For this retired route, backend integration status is 409, distinct from the
+   Lambda service invocation status. The Dev runner was a private temporary
+   helper, not a committed reusable release runner. Implement and review that
+   release automation in SEC334 before repeating the automated matrix; do not use
+   the historical success-analysis smoke script as a retirement runner.
+5. Remove temporary credential/evidence fixtures without resetting the reusable
+   account, original trial, active device, receipts or retained one-account scope.
+   The owner retained that scope and requested no rollback. Any future disable
+   needs its own reviewed current-revision plan and authorization. Physical-only
+   work stays in ATCR148; an Android/UAT delay does not block independent backend
+   Dev delivery.
