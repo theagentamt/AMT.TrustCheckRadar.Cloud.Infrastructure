@@ -104,6 +104,16 @@ run "reviewed_retirement_is_qualified_and_cannot_resurrect_dispatch" {
     anytrue([for st in data.aws_iam_policy_document.analysis_runtime.statement : st.effect == "Deny" && contains(st.actions, "dynamodb:PutItem") && contains(st.actions, "dynamodb:Query")]))
     error_message = "Legacy env injection cannot restore quotas, provider secrets, settlement, campaign writes or broad database reads."
   }
+  assert {
+    condition = (length([for st in data.aws_iam_policy_document.analysis_runtime.statement : st if st.sid == "DenyApplicationKmsUse"]) == 1 &&
+      alltrue([for st in data.aws_iam_policy_document.analysis_runtime.statement :
+        st.sid != "DenyApplicationKmsUse" || (st.effect == "Deny" && toset(st.actions) == toset(["kms:Decrypt", "kms:GenerateDataKey*"]) &&
+          toset(st.resources) == toset(["*"]) && length(st.condition) == 1 &&
+      alltrue([for c in st.condition : c.test == "Null" && c.variable == "lambda:SourceFunctionArn" && toset(c.values) == toset(["false"])]))]) &&
+      alltrue([for st in data.aws_iam_policy_document.analysis_runtime.statement :
+    st.sid == "DenyApplicationKmsUse" || !anytrue([for action in st.actions : startswith(action, "kms:")])]))
+    error_message = "KMS deny must apply only to function-code requests, preserving AWS initialization without granting KMS access."
+  }
 }
 run "missing_pin_blocks_plan" {
   command = plan

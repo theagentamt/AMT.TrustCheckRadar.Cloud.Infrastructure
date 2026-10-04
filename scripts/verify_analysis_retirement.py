@@ -67,12 +67,21 @@ def runtime_policy():
     rows += [
       {'Sid': 'DenyProviderCredentialsAndDispatch', 'Effect': 'Deny', 'Resource': ['*'], 'Action': [
         'secretsmanager:GetSecretValue', 'ssm:GetParameter', 'ssm:GetParameters', 'ssm:GetParametersByPath', 'lambda:InvokeFunction',
-        'bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream', 'bedrock:StartAsyncInvoke', 'kms:Decrypt', 'kms:GenerateDataKey*']},
+        'bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream', 'bedrock:StartAsyncInvoke']},
+      {'Sid': 'DenyApplicationKmsUse', 'Effect': 'Deny', 'Resource': ['*'], 'Action': ['kms:Decrypt', 'kms:GenerateDataKey*'],
+       'Condition': {'Null': {'lambda:SourceFunctionArn': ['false']}}},
       {'Sid': 'DenyNonReplayDatabaseAccess', 'Effect': 'Deny', 'Resource': ['*'], 'Action': [
         'dynamodb:PutItem', 'dynamodb:UpdateItem', 'dynamodb:DeleteItem', 'dynamodb:BatchWriteItem', 'dynamodb:ConditionCheckItem', 'dynamodb:Query', 'dynamodb:Scan', 'dynamodb:BatchGetItem', 'dynamodb:PartiQLSelect',
         'dynamodb:PartiQLInsert', 'dynamodb:PartiQLUpdate', 'dynamodb:PartiQLDelete']},
     ]
     return json.dumps({'Version': '2012-10-17', 'Statement': rows})
+
+
+def runtime_before_kms_fix():
+    doc = json.loads(runtime_policy())
+    doc['Statement'] = [row for row in doc['Statement'] if row['Sid'] != 'DenyApplicationKmsUse']
+    next(row for row in doc['Statement'] if row['Sid'] == 'DenyProviderCredentialsAndDispatch')['Action'] += ['kms:Decrypt', 'kms:GenerateDataKey*']
+    return json.dumps(doc)
 
 
 DRIFT_FIELDS = COMPUTED | {'inline_policy', 'estimated_number_of_users', 'environment', 'publish',
@@ -143,13 +152,95 @@ def automatic_stage_readback(plan, row):
         return False
 
 
-def bounded_shapes(plan, managed, function, *, post_apply=False):
+def migration_boundary_policy():
+    return json.dumps({'Version': '2012-10-17', 'Statement': [
+        {'Sid': 'DenyProviderCredentialsAndDispatch', 'Effect': 'Deny', 'Action': [
+            'secretsmanager:GetSecretValue', 'ssm:GetParameter', 'ssm:GetParameters', 'ssm:GetParametersByPath', 'lambda:InvokeFunction'], 'Resource': ['*']},
+        {'Sid': 'DenyLegacySettlementAndWrites', 'Effect': 'Deny', 'Action': [
+            'dynamodb:PutItem', 'dynamodb:UpdateItem', 'dynamodb:DeleteItem', 'dynamodb:BatchWriteItem',
+            'dynamodb:PartiQLInsert', 'dynamodb:PartiQLUpdate', 'dynamodb:PartiQLDelete'], 'Resource': ['*']},
+        {'Sid': 'ReadReplayAccountDeletionFence', 'Effect': 'Allow', 'Action': ['dynamodb:GetItem'],
+            'Resource': ['arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-deletion-ledger'],
+            'Condition': {'ForAllValues:StringLike': {'dynamodb:LeadingKeys': ['ACCOUNT#*']}}},
+    ]})
+
+
+def policy_digest(text):
+    return hashlib.sha256(json.dumps(policy_shape(text), sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+def post_role_readback(plan, row, *, runtime_repair=False):
+    """Reconcile only the exact stale policy view after the approved transition."""
+    try:
+        address = 'aws_iam_role.analysis'
+        provider = 'registry.terraform.io/hashicorp/aws'
+        role = 'trustcheckradar-dev-conversation-analysis-role'
+        require(row.get('address') == address and row.get('provider_name') == provider, 'Unknown role readback')
+        change = row['change']; before, after = change['before'], change['after']
+        require(change['actions'] == ['update'] and type(before) is dict and type(after) is dict and
+                changed_fields(change) == {'inline_policy', 'managed_policy_arns'} and not unknown(change.get('after_unknown') or {}), 'Only owned policy views may differ')
+        configs = {item['address']: item for item in plan.get('configuration', {}).get('root_module', {}).get('resources', [])}
+        expressions = configs.get(address, {}).get('expressions', {})
+        require('inline_policy' not in expressions and 'managed_policy_arns' not in expressions and
+                'data.aws_iam_policy_document.age_attestation_assume_role.json' in expressions.get('assume_role_policy', {}).get('references', []), 'Separately managed role source required')
+        resources = [item for item in plan['resource_changes'] if item.get('mode') == 'managed']
+        def current(target):
+            matches = [item for item in resources if item.get('address') == target]
+            require(len(matches) == 1 and matches[0].get('provider_name') == provider, 'Exact managed policy counterpart required')
+            value = matches[0]['change']
+            repair = runtime_repair and target == 'aws_iam_policy.analysis_runtime'
+            require((value['actions'] == ['no-op'] and value['before'] == value['after'] or
+                    repair and value['actions'] == ['update'] and changed_fields(value) == {'policy'} and
+                    policy_shape(value['before']['policy']) == policy_shape(runtime_before_kms_fix())) and
+                    not unknown(value.get('after_unknown') or {}), 'Managed policy counterpart must be no-op or exact KMS repair')
+            return value['after']
+        require(current(address) == after and after['name'] == role and after['arn'] == 'arn:aws:iam::107827791950:role/' + role,
+                'Exact current role identity required')
+        require(current('aws_lambda_function.analysis')['role'] == after['arn'] and
+                'aws_iam_role.analysis.arn' in configs.get('aws_lambda_function.analysis', {}).get('expressions', {}).get('role', {}).get('references', []), 'Analysis must use the verified role')
+        trust = {'Version': '2012-10-17', 'Statement': [{'Sid': 'LambdaAssumeRole', 'Effect': 'Allow',
+            'Action': 'sts:AssumeRole', 'Principal': {'Service': 'lambda.amazonaws.com'}}]}
+        require(json.loads(after['assume_role_policy']) == trust, 'Exact Lambda role trust required')
+        runtime = current('aws_iam_policy.analysis_runtime')
+        runtime_arn = 'arn:aws:iam::107827791950:policy/trustcheckradar-dev-conversation-analysis-runtime'
+        basic_arn = 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        period_arn = 'arn:aws:iam::107827791950:policy/trustcheckradar-dev-analysis-period-work'
+        require(runtime['arn'] == runtime_arn and policy_shape(runtime['policy']) == policy_shape(runtime_policy()), 'Exact replay runtime policy required')
+        for target, arn in [('aws_iam_role_policy_attachment.analysis_runtime', runtime_arn),
+                            ('aws_iam_role_policy_attachment.analysis_basic_execution', basic_arn)]:
+            attachment = current(target)
+            require(attachment['role'] == role and attachment['policy_arn'] == arn, 'Exact replay attachment required')
+        require(type(before['managed_policy_arns']) is list and type(after['managed_policy_arns']) is list and
+                len(before['managed_policy_arns']) == 3 and set(before['managed_policy_arns']) == {runtime_arn, basic_arn, period_arn} and
+                len(after['managed_policy_arns']) == 2 and set(after['managed_policy_arns']) == {runtime_arn, basic_arn}, 'Exact retired attachment readback required')
+        history = current('aws_iam_role_policy.history_analysis[0]')
+        boundary = current('aws_iam_role_policy.research_migration_boundary["analysis"]')
+        require(history['name'] == 'history-analysis-runtime' and history['role'] == role and
+                boundary['name'] == 'trustcheckradar-dev-research-migration-analysis' and boundary['role'] == role and
+                policy_shape(boundary['policy']) == policy_shape(migration_boundary_policy()), 'Exact inline policy binding required')
+        def inline(values):
+            require(type(values) is list and len(values) == 2 and all(type(item) is dict and set(item) == {'name', 'policy'} for item in values), 'Exact inline policy view required')
+            result = {item['name']: item['policy'] for item in values}
+            require(len(result) == 2 and set(result) == {history['name'], boundary['name']}, 'Unknown or duplicate inline policy')
+            return result
+        old, new = inline(before['inline_policy']), inline(after['inline_policy'])
+        require(all(policy_shape(new[item['name']]) == policy_shape(item['policy']) for item in (history, boundary)), 'Current inline view differs from managed inventory')
+        require(policy_shape(old[boundary['name']]) == policy_shape(boundary['policy']) and
+                policy_digest(old[history['name']]) == '95a70a4cb727366daa2f93f60e90402e40b4813551ebc594ddbb7731431c3ab0', 'Historical inline view differs from bound pre-apply inventory')
+        return True
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
+def bounded_shapes(plan, managed, function, *, post_apply=False, runtime_repair=False):
     drift = safe_drift_summary(plan)
     if drift['managedDrift']:
         print(json.dumps(drift), file=sys.stderr)
     managed_drift = [row for row in plan.get('resource_drift', []) if row.get('mode') == 'managed']
-    require(len(managed_drift) <= 1 and all(automatic_stage_readback(plan, row)
-                for row in managed_drift), 'Managed drift requires review')
+    drift_addresses = [row.get('address') for row in managed_drift]
+    require(len(managed_drift) <= (2 if post_apply or runtime_repair else 1) and len(drift_addresses) == len(set(drift_addresses)) and
+                all(automatic_stage_readback(plan, row) or (post_apply or runtime_repair) and post_role_readback(plan, row, runtime_repair=runtime_repair)
+                    for row in managed_drift), 'Managed drift requires review')
     configs = {row['address']: row for row in plan.get('configuration', {}).get('root_module', {}).get('resources', [])}
     function_change = function['change']
     require(function_change['actions'] in (['update'], ['no-op']) and
@@ -241,9 +332,10 @@ def safe_failure_message(error):
     return prefix + '; inspect protected evidence locally.'
 
 
-def review(plan, revision, *, bounded=False, post_apply=False, catalog=None):
+def review(plan, revision, *, bounded=False, post_apply=False, runtime_repair=False, catalog=None):
     catalog = json.loads(CATALOG.read_text()) if catalog is None else catalog
     require(re.fullmatch('[0-9a-f]{40}', revision or ''), 'Exact revision required')
+    require(not runtime_repair or bounded and not post_apply, 'KMS repair requires bounded initial mode')
     require(plan.get('complete') is True and not plan.get('errored'), 'Incomplete plan')
     variables = {key: row.get('value') for key, row in plan.get('variables', {}).items()}
     selected = variables.get('analysis_retirement_deployment')
@@ -275,6 +367,15 @@ def review(plan, revision, *, bounded=False, post_apply=False, catalog=None):
         changed = {row['address'] for row in managed if row['change'].get('actions') != ['no-op']}
         if post_apply:
             require(not changed, 'Post-apply plan must be no-op')
+        elif runtime_repair:
+            require(changed == {'aws_iam_policy.analysis_runtime'}, 'KMS repair may change only runtime policy')
+            runtime = next(row for row in managed if row['address'] == 'aws_iam_policy.analysis_runtime')['change']
+            require(runtime['actions'] == ['update'] and changed_fields(runtime) == {'policy'} and
+                    not unknown(runtime.get('after_unknown') or {}) and
+                    policy_shape(runtime['before']['policy']) == policy_shape(runtime_before_kms_fix()), 'Exact pre-repair runtime policy required')
+            require(all(row['change']['actions'] == ['no-op'] and row['change']['before'] == row['change']['after'] and
+                        not unknown(row['change'].get('after_unknown') or {})
+                        for row in managed if row['address'] != 'aws_iam_policy.analysis_runtime'), 'KMS repair must preserve every other resource')
         else:
             if 'aws_iam_role_policy.history_analysis[0]' in addresses:
                 require('aws_iam_role_policy.history_analysis[0]' in changed, 'History policy correction required')
@@ -293,8 +394,8 @@ def review(plan, revision, *, bounded=False, post_apply=False, catalog=None):
     if bounded:
         require(tuple(variables.get(key) for key in ('environment', 'aws_region', 'project_name')) == ('dev', 'us-east-1', 'trustcheckradar'), 'Dev only')
         require(bucket == 'trustcheckradar-dev-107827791950-artifacts' and after.get('function_name') == 'trustcheckradar-dev-conversation-analysis', 'Wrong Dev target')
-        bounded_shapes(plan, managed, function, post_apply=post_apply)
-        if post_apply:
+        bounded_shapes(plan, managed, function, post_apply=post_apply, runtime_repair=runtime_repair)
+        if post_apply or runtime_repair:
             require(after.get('code_sha256') == sha, 'Applied Lambda bytes differ from the qualified archive')
         # Do not change code or activate unrelated services in this IAM/routing correction.
         before = function['change'].get('before') or {}
@@ -303,12 +404,14 @@ def review(plan, revision, *, bounded=False, post_apply=False, catalog=None):
         env = after.get('environment', [{}])[0].get('variables', {})
         require(env.get('HISTORY_WRITES_ENABLED') == 'false' and env.get('HISTORY_DURABLE_REPLAY_ENABLED') == 'false' and env.get('RECOGNITION_ENABLED') == 'false', 'Replay gates required')
         require(not any(key.startswith(('OPENAI_', 'FREE_', 'PRO_', 'PARTICIPATING_FREE_', 'ENTITLEMENT', 'CAMPAIGN_OUTBOX_')) for key in env), 'Legacy dispatch configuration')
-    stable = {'revision': revision, 'terraform_version': plan.get('terraform_version'), 'variables': plan.get('variables'),
+    stable = {'revision': revision, 'runtimeKmsRepair': runtime_repair, 'terraform_version': plan.get('terraform_version'), 'variables': plan.get('variables'),
               'managed': sorted(managed, key=lambda row: row['address']), 'configuration': plan.get('configuration'),
               'managedDrift': sorted((row for row in plan.get('resource_drift', []) if row.get('mode') == 'managed'), key=lambda row: row['address'])}
     digest = hashlib.sha256(json.dumps(stable, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     return {'revision': revision, 'reviewedPlanDigest': digest, 'changes': sorted(changes, key=lambda row: row['address']),
             'verifiedAutomaticStageReadbacks': sum(automatic_stage_readback(plan, row) for row in plan.get('resource_drift', []) if row.get('mode') == 'managed'),
+            'verifiedPostApplyRoleReadbacks': sum(post_role_readback(plan, row, runtime_repair=runtime_repair) for row in plan.get('resource_drift', []) if (post_apply or runtime_repair) and row.get('mode') == 'managed'),
+            'runtimeKmsRepair': runtime_repair,
             'artifact': {'bucket': bucket, 'key': after['s3_key'], 'version': version, 'source_hash': sha}}
 
 
@@ -346,11 +449,12 @@ def main():
     parser.add_argument('--expected-digest')
     parser.add_argument('--post-apply', action='store_true')
     parser.add_argument('--apply', action='store_true')
+    parser.add_argument('--runtime-kms-repair', action='store_true')
     args = parser.parse_args()
     plan = json.loads(args.plan.read_text())
     if not args.bounded_dev:
         ordinary_guard(plan)
-    report = review(plan, args.revision, bounded=args.bounded_dev, post_apply=args.post_apply)
+    report = review(plan, args.revision, bounded=args.bounded_dev, post_apply=args.post_apply, runtime_repair=args.runtime_kms_repair)
     require(not args.post_apply or args.bounded_dev, 'Post-apply verification requires bounded Dev mode')
     authorize(report, args.expected_digest, args.apply)
     verify_archive(report.pop('artifact'))

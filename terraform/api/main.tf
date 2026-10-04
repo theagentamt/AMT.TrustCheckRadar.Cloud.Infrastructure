@@ -449,8 +449,19 @@ data "aws_iam_policy_document" "analysis_runtime" {
   statement {
     sid       = "DenyProviderCredentialsAndDispatch"
     effect    = "Deny"
-    actions   = ["secretsmanager:GetSecretValue", "ssm:GetParameter", "ssm:GetParameters", "ssm:GetParametersByPath", "lambda:InvokeFunction", "bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:StartAsyncInvoke", "kms:Decrypt", "kms:GenerateDataKey*"]
+    actions   = ["secretsmanager:GetSecretValue", "ssm:GetParameter", "ssm:GetParameters", "ssm:GetParametersByPath", "lambda:InvokeFunction", "bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:StartAsyncInvoke"]
     resources = ["*"]
+  }
+  statement {
+    sid       = "DenyApplicationKmsUse"
+    effect    = "Deny"
+    actions   = ["kms:Decrypt", "kms:GenerateDataKey*"]
+    resources = ["*"]
+    condition {
+      test     = "Null"
+      variable = "lambda:SourceFunctionArn"
+      values   = ["false"]
+    }
   }
   statement {
     sid       = "DenyNonReplayDatabaseAccess"

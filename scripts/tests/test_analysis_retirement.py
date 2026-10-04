@@ -55,6 +55,159 @@ def fixture():
 
 
 class RetirementTests(unittest.TestCase):
+    def kms_repair_plan(self):
+        plan = self.post_role_plan()
+        runtime = next(row for row in plan['resource_changes'] if row['address'] == 'aws_iam_policy.analysis_runtime')['change']
+        runtime['actions'] = ['update']
+        runtime['before']['policy'] = MODULE.runtime_before_kms_fix()
+        return plan
+
+    def test_kms_repair_is_one_exact_policy_update_and_separate_approval(self):
+        plan = self.kms_repair_plan()
+        report = MODULE.review(plan, REVISION, bounded=True, runtime_repair=True)
+        self.assertTrue(report['runtimeKmsRepair'])
+        self.assertEqual(report['changes'], [{'address': 'aws_iam_policy.analysis_runtime', 'actions': ['update']}])
+        self.assertEqual(report['verifiedPostApplyRoleReadbacks'], 1)
+        for kwargs in ({'bounded': True}, {'bounded': True, 'post_apply': True}, {'runtime_repair': True},
+                       {'bounded': True, 'post_apply': True, 'runtime_repair': True}):
+            with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
+                MODULE.review(plan, REVISION, **kwargs)
+        MODULE.authorize(report, report['reviewedPlanDigest'], True)
+        with self.assertRaises(ValueError): MODULE.authorize(report, 'old-retirement-approval', True)
+        with self.assertRaises(ValueError): MODULE.ordinary_guard(plan)
+        # The repair is valid when provider-computed views have already refreshed.
+        plan['resource_drift'] = []
+        self.assertEqual(MODULE.review(plan, REVISION, bounded=True, runtime_repair=True)['verifiedPostApplyRoleReadbacks'], 0)
+
+    def test_kms_repair_rejects_policy_widening_other_changes_and_unknowns(self):
+        def runtime(plan): return next(row for row in plan['resource_changes'] if row['address'] == 'aws_iam_policy.analysis_runtime')['change']
+        def policy_mutation(change):
+            def mutate(plan):
+                doc = json.loads(runtime(plan)['after']['policy']); change(doc)
+                runtime(plan)['after']['policy'] = json.dumps(doc)
+            return mutate
+        def kms(doc): return next(row for row in doc['Statement'] if row['Sid'] == 'DenyApplicationKmsUse')
+        mutations = [
+            lambda p: runtime(p)['before'].__setitem__('policy', '{}'),
+            lambda p: runtime(p)['after_unknown'].__setitem__('policy', True),
+            lambda p: runtime(p)['after'].__setitem__('arn', 'other'),
+            lambda p: p['resource_changes'][0]['change'].__setitem__('actions', ['update']),
+            lambda p: p['resource_changes'][0]['change']['after_unknown'].__setitem__('version', True),
+            lambda p: p['resource_changes'][0]['change']['after'].__setitem__('reserved_concurrent_executions', 6),
+            lambda p: p['resource_changes'][2]['change']['after'].__setitem__('function_version', '2'),
+            lambda p: p['resource_drift'].append(copy.deepcopy(p['resource_drift'][1])),
+            policy_mutation(lambda d: kms(d).pop('Condition')),
+            policy_mutation(lambda d: kms(d).__setitem__('Condition', {'Null': {'lambda:SourceFunctionArn': ['true']}})),
+            policy_mutation(lambda d: kms(d).__setitem__('Condition', {'Null': {'other': ['false']}})),
+            policy_mutation(lambda d: kms(d)['Action'].append('kms:*')),
+            policy_mutation(lambda d: kms(d).__setitem__('Resource', ['specific-key'])),
+            policy_mutation(lambda d: kms(d).__setitem__('Effect', 'Allow')),
+            policy_mutation(lambda d: d['Statement'].append({'Sid': 'AllowKms', 'Effect': 'Allow', 'Action': ['kms:Decrypt'], 'Resource': ['*']})),
+            policy_mutation(lambda d: d['Statement'].__setitem__(4, {'Sid': 'ProviderAllow', 'Effect': 'Allow', 'Action': ['secretsmanager:GetSecretValue'], 'Resource': ['*']})),
+        ]
+        for index, mutate in enumerate(mutations):
+            with self.subTest(index=index):
+                plan = self.kms_repair_plan(); mutate(plan)
+                with self.assertRaises(ValueError): MODULE.review(plan, REVISION, bounded=True, runtime_repair=True)
+
+    def post_role_plan(self):
+        plan = self.stage_readback_plan()
+        role = 'trustcheckradar-dev-conversation-analysis-role'
+        role_arn = 'arn:aws:iam::107827791950:role/' + role
+        runtime_arn = 'arn:aws:iam::107827791950:policy/trustcheckradar-dev-conversation-analysis-runtime'
+        basic_arn = 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        period_arn = 'arn:aws:iam::107827791950:policy/trustcheckradar-dev-analysis-period-work'
+        table = 'arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-'
+        history = json.dumps({'Version': '2012-10-17', 'Statement': [{'Sid': 'ReadHistoryReplayAndState', 'Effect': 'Allow',
+            'Action': ['dynamodb:GetItem'], 'Resource': [table+'history-content', table+'history-control'],
+            'Condition': {'ForAllValues:StringLike': {'dynamodb:LeadingKeys': ['USER#*']}}}]})
+        # Historical public Terraform policy at 26b2437, bound to the pre-apply SDK inventory digest.
+        rows = []
+        for label, suffix, key in [('DeletionFence', 'deletion-ledger', 'ACCOUNT#*'), ('Profile', 'users', 'USER#*')]:
+            for prefix, action, atomic in [('ReadAuthoritative', 'dynamodb:GetItem', False),
+                ('CheckAuthoritative' if suffix == 'users' else 'Check', 'dynamodb:ConditionCheckItem', True)]:
+                conditions = {'ForAllValues:StringLike': {'dynamodb:LeadingKeys': [key]}}
+                if atomic: conditions['StringEquals'] = {'dynamodb:EnclosingOperation': ['TransactWriteItems']}
+                rows.append({'Sid': prefix+label+('Atomically' if atomic else ''), 'Effect':'Allow','Action':[action],'Resource':[table+suffix],'Condition':conditions})
+        rows += [json.loads(history)['Statement'][0], {'Sid':'AtomicHistoryCompletion','Effect':'Allow',
+            'Action':['dynamodb:PutItem','dynamodb:UpdateItem','dynamodb:ConditionCheckItem'],
+            'Resource':[table+'history-content',table+'history-control'],
+            'Condition':{'StringEquals':{'dynamodb:EnclosingOperation':['TransactWriteItems']},'ForAllValues:StringLike':{'dynamodb:LeadingKeys':['USER#*']}}}]
+        old_history = json.dumps({'Version':'2012-10-17','Statement':rows})
+        self.assertEqual(MODULE.policy_digest(old_history), '95a70a4cb727366daa2f93f60e90402e40b4813551ebc594ddbb7731431c3ab0')
+        boundary = MODULE.migration_boundary_policy()
+        inline = [{'name':'history-analysis-runtime','policy':history},
+            {'name':'trustcheckradar-dev-research-migration-analysis','policy':boundary}]
+        trust = json.dumps({'Version':'2012-10-17','Statement':[{'Sid':'LambdaAssumeRole','Effect':'Allow',
+            'Action':'sts:AssumeRole','Principal':{'Service':'lambda.amazonaws.com'}}]})
+        current_role = {'name':role,'arn':role_arn,'assume_role_policy':trust,'inline_policy':inline,'managed_policy_arns':[basic_arn,runtime_arn]}
+        stale = copy.deepcopy(current_role);stale['managed_policy_arns'].append(period_arn);stale['inline_policy'][0]['policy']=old_history
+        plan['resource_drift'].append({'address':'aws_iam_role.analysis','mode':'managed','provider_name':'registry.terraform.io/hashicorp/aws',
+            'change':{'actions':['update'],'before':stale,'after':copy.deepcopy(current_role),'after_unknown':{}}})
+        def add(address, value):
+            plan['resource_changes'].append({'address':address,'mode':'managed','provider_name':'registry.terraform.io/hashicorp/aws',
+                'change':{'actions':['no-op'],'before':copy.deepcopy(value),'after':copy.deepcopy(value),'after_unknown':{}}})
+        add('aws_iam_role.analysis',current_role)
+        add('aws_iam_role_policy_attachment.analysis_runtime',{'role':role,'policy_arn':runtime_arn})
+        add('aws_iam_role_policy_attachment.analysis_basic_execution',{'role':role,'policy_arn':basic_arn})
+        add('aws_iam_role_policy.history_analysis[0]',{'name':'history-analysis-runtime','role':role,'policy':history})
+        add('aws_iam_role_policy.research_migration_boundary["analysis"]',{'name':'trustcheckradar-dev-research-migration-analysis','role':role,'policy':boundary})
+        plan['resource_changes'][0]['change']['after']['role']=role_arn
+        plan['resource_changes'][0]['change']['after']['code_sha256']=SHA
+        plan['resource_changes'][1]['change']['after']['arn']=runtime_arn
+        plan['resource_changes'][2]['change']['after']['function_version']='1'
+        for row in plan['resource_changes']:
+            row['provider_name']='registry.terraform.io/hashicorp/aws'
+            row['change']['actions']=['no-op'];row['change']['before']=copy.deepcopy(row['change']['after'])
+        plan['configuration']['root_module']['resources'] += [
+            {'address':'aws_iam_role.analysis','expressions':{'assume_role_policy':{'references':['data.aws_iam_policy_document.age_attestation_assume_role.json']}}},
+            {'address':'aws_lambda_function.analysis','expressions':{'role':{'references':['aws_iam_role.analysis.arn']}}}]
+        return plan
+
+    def test_post_role_readback_is_post_only_exact_inventory_and_digest_bound(self):
+        plan = self.post_role_plan()
+        report = MODULE.review(plan,REVISION,bounded=True,post_apply=True)
+        self.assertEqual(report['verifiedPostApplyRoleReadbacks'],1)
+        self.assertEqual(report['changes'],[])
+        self.assertFalse(MODULE.automatic_stage_readback(plan,plan['resource_drift'][1]))
+        with self.assertRaises(ValueError):MODULE.review(plan,REVISION,bounded=True)
+        reordered=copy.deepcopy(plan)
+        for point in ('before','after'):
+            reordered['resource_drift'][1]['change'][point]['managed_policy_arns'].reverse()
+            reordered['resource_drift'][1]['change'][point]['inline_policy'].reverse()
+        for row in reordered['resource_changes']:
+            if row['address']=='aws_iam_role.analysis':
+                for point in ('before','after'):
+                    row['change'][point]['managed_policy_arns'].reverse();row['change'][point]['inline_policy'].reverse()
+        self.assertTrue(MODULE.post_role_readback(reordered,reordered['resource_drift'][1]))
+        self.assertNotEqual(report['reviewedPlanDigest'],MODULE.review(reordered,REVISION,bounded=True,post_apply=True)['reviewedPlanDigest'])
+
+    def test_post_role_readback_rejects_extra_permissions_unbound_history_and_changes(self):
+        def role_row(plan):return plan['resource_drift'][1]
+        def managed(plan,address):return next(row for row in plan['resource_changes'] if row['address']==address)
+        mutations=[
+            lambda p: role_row(p).__setitem__('provider_name','other'),
+            lambda p: role_row(p)['change']['after'].__setitem__('name','other'),
+            lambda p: role_row(p)['change']['after']['managed_policy_arns'].append('private-extra'),
+            lambda p: role_row(p)['change']['before']['managed_policy_arns'].pop(),
+            lambda p: role_row(p)['change']['after']['inline_policy'].append({'name':'extra','policy':'{}'}),
+            lambda p: role_row(p)['change']['before']['inline_policy'][0].__setitem__('policy','{}'),
+            lambda p: role_row(p)['change']['after']['inline_policy'][1].__setitem__('policy','{}'),
+            lambda p: role_row(p)['change'].__setitem__('after_unknown',{'inline_policy':True}),
+            lambda p: managed(p,'aws_iam_role.analysis')['change'].__setitem__('actions',['update']),
+            lambda p: managed(p,'aws_iam_role.analysis')['change']['after_unknown'].__setitem__('name',True),
+            lambda p: managed(p,'aws_iam_role_policy_attachment.analysis_runtime')['change']['after'].__setitem__('role','other'),
+            lambda p: managed(p,'aws_iam_role_policy.history_analysis[0]')['change']['after'].__setitem__('policy','{}'),
+            lambda p: managed(p,'aws_iam_role_policy.research_migration_boundary["analysis"]')['change']['after'].__setitem__('policy','{}'),
+            lambda p: p['resource_drift'].append(copy.deepcopy(role_row(p))),
+            lambda p: p['configuration']['root_module']['resources'][-2]['expressions'].__setitem__('inline_policy',{'constant_value':[]}),
+            lambda p: p['configuration']['root_module']['resources'][-1]['expressions'].__setitem__('role',{'references':['other']}),
+        ]
+        for index,mutate in enumerate(mutations):
+            with self.subTest(index=index):
+                plan=self.post_role_plan();mutate(plan)
+                with self.assertRaises(ValueError):MODULE.review(plan,REVISION,bounded=True,post_apply=True)
+
     def stage_readback_plan(self):
         plan = fixture()
         api = {'id': 'example1234', 'name': 'trustcheckradar-dev-age-attestation-api',
