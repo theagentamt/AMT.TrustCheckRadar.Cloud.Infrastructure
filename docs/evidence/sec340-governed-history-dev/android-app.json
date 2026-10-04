@@ -416,7 +416,7 @@
   "originalSetupPassed": false,
   "originalSwitchUiResponseObserved": true,
   "pending": [
-    "final_source_integration",
+    "infrastructure_aggregate_evidence_main_integration",
     "approved_CI_CD_rollback_or_explicit_scope_change"
   ],
   "privateContentIncluded": false,
@@ -848,5 +848,15 @@
     "sourceHead": "6ea0efd0d3771a6bda3927e666821101c312fd3e",
     "testApkSha256": "0f2fefef07c6907ff90963fdd77c557e76d8bdcc03f6df2d96d987647638f868"
   },
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "androidReleaseIntegration": {
+    "pr": 68,
+    "reviewedHead": "b9fcd837ce82cf7c55fc5edd30bab1d819f6461b",
+    "mergeCommit": "59c515f4ce83eefe999da7d798452ccbd0e6eb25",
+    "branch": "release-V01",
+    "verifiedRemote": true,
+    "reviewedHeadBehindBy": 0,
+    "docsOnlyAfterQualifiedRuntime": true,
+    "androidMainOrCiInvoked": false
+  }
 }

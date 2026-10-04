@@ -5,9 +5,9 @@ Backend, reader/cache and the completed explanation → History → real restart
 direct reopen phases passed. Exactly two normal-app checks completed and charged
 once each; reads/reopen caused no additional evaluation or charge. Current trial
 limit/used/reserved/remaining is 10/5/0/5. Failed harness attempts remain below;
-qualification spans reviewed windows and is not one clean four-phase run. Final
-source integration and approved Dev rollback (or an explicit owner scope change)
-remain pending.
+qualification spans reviewed windows and is not one clean four-phase run. Android source integration into `release-V01` is verified. Infrastructure aggregate
+evidence integration into `main` and approved Dev rollback (or an explicit owner
+scope change) remain pending.
 
 This increment qualifies candidate.3 rules-only message processing and candidate.1
 governed History for one existing dedicated reusable synthetic Dev account.
@@ -105,7 +105,12 @@ original trial are preserved; setup submits no analysis.
 The reviewed normal-app runner is published in Android
 [PR68](https://github.com/theagentamt/AMT.Android.TrustCheckRadar/pull/68), targeting
 `release-V01`. At that stage it remained unmerged while live qualification was incomplete;
-its normal Dev phases have since passed, and final source integration is pending.
+its normal Dev phases have since passed. Final reviewed head
+`b9fcd837ce82cf7c55fc5edd30bab1d819f6461b` is merged into `release-V01`
+at `59c515f4ce83eefe999da7d798452ccbd0e6eb25`; GitHub comparison confirms
+zero commits behind the exact reviewed head. Documentation-only descendants
+after qualified runtime `9b60308` changed no packaged inputs. Android `main`,
+CI and deployment were not invoked.
 The following attempts are failures or diagnostics, not acceptance passes:
 
 - The first setup stopped at `PRE_ON_CREATE`, before input consumption or any
