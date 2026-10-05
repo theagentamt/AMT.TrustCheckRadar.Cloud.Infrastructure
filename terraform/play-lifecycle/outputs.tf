@@ -11,7 +11,9 @@ output "candidate_contract" {
     token_stream_enabled          = false
     runtime_aliases               = { for name, alias in aws_lambda_alias.runtime : name => alias.arn }
     notification_endpoint         = try("${aws_apigatewayv2_api.notification[0].api_endpoint}/v1/notifications/google-play", null)
-    lifecycle_active              = false
+    lifecycle_active              = local.billing_ingress_active
+    scheduled_worker_active       = local.billing_worker_active
+    billing_subject_count         = var.billing_activation == null ? 0 : length(var.billing_activation.subjects)
     google_transport_provisioned  = false
     account_backup_audit_required = true
   }

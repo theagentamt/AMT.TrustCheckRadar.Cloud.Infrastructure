@@ -27,7 +27,7 @@ resource "aws_scheduler_schedule" "lifecycle" {
   for_each            = local.schedules
   name                = "${local.prefix}-${each.value.suffix}"
   group_name          = aws_scheduler_schedule_group.lifecycle[0].name
-  state               = each.key == "deletion" && local.token_deletion_active ? "ENABLED" : "DISABLED"
+  state               = ((each.key == "deletion" && local.token_deletion_active) || (each.key == "worker" && local.billing_worker_active)) ? "ENABLED" : "DISABLED"
   schedule_expression = "rate(1 minute)"
   flexible_time_window { mode = "OFF" }
   target {

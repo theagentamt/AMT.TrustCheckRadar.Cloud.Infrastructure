@@ -37,7 +37,7 @@ resource "aws_cloudwatch_metric_alarm" "operational" {
   treat_missing_data  = each.value.field == "heartbeat" ? "breaching" : "notBreaching"
   # Missing-heartbeat alerts are armed only alongside separately reviewed worker
   # activation; token cleanup can be qualified independently.
-  actions_enabled = each.value.field != "heartbeat" || (each.value.component == "deletion" && local.token_deletion_active)
+  actions_enabled = each.value.field != "heartbeat" || ((each.value.component == "deletion" && local.token_deletion_active) || (each.value.component == "worker" && local.billing_worker_active))
   alarm_actions   = [var.alert_topic_arn]
   ok_actions      = [var.alert_topic_arn]
   tags            = var.tags

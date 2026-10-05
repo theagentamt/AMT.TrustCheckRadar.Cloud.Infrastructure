@@ -1,8 +1,11 @@
 output "candidate_contract" {
   value = {
     provisioned              = var.enabled
-    play_handoff_enabled     = false
-    authority_enabled        = false
+    play_handoff_enabled     = local.billing_verification_active
+    preparation_enabled      = local.billing_preparation_active
+    token_retention_enabled  = local.billing_verification_active
+    authority_enabled        = local.billing_preparation_active
+    billing_subject_count    = var.billing_activation == null ? 0 : length(var.billing_activation.subjects)
     catalog_verified         = var.catalog_p1m_verified
     general_customer_access  = false
     route_published          = local.route_enabled

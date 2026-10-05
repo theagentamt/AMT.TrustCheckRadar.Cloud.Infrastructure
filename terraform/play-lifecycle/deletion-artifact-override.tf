@@ -32,5 +32,6 @@ variable "deletion_artifact_override" {
 }
 locals {
   runtime_artifacts = var.deployment == null ? {} : merge(var.deployment.artifacts,
+    { for name, pin in var.billing_artifact_overrides : name => pin.artifact },
   var.deletion_artifact_override == null ? {} : { deletion = var.deletion_artifact_override.artifact })
 }

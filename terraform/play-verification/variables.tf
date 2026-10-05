@@ -18,7 +18,7 @@ variable "tags" {
   default = {}
 }
 variable "enabled" {
-  description = "Provision only the inactive Dev verifier. This root has no activation switch."
+  description = "Provision the immutable Dev verifier; provisioning alone does not activate billing."
   type        = bool
   default     = false
   validation {
