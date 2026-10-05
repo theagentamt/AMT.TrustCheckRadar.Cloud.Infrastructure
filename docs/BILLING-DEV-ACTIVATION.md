@@ -105,6 +105,16 @@ Use `.github/workflows/billing-dev.yml` on **main**. Local mock tests do not dep
    or remove existing message/History/access selection. Any later deactivation
    or artifact change needs its own reviewed plan; do not improvise a rollback.
 
+The first preparation plan stopped on a stale IAM role `inline_policy` mirror:
+the role's cached copy predated the tracked KMS condition correction, while both
+separately managed policy resources and the live policies already matched source.
+The guard accepts only this selected handoff role mirror when its refreshed
+complete two-policy set equals both unchanged, separately managed policies and
+the planned role is unchanged. Extra/missing/modified policies, trust or boundary
+changes, policy writes, other roles and all other drift remain rejected. The
+original mirror observation remains part of the approved plan digest. This check
+does not grant or rewrite IAM, refresh backend state manually, or authorize apply.
+
 Do not dispatch apply until source, audit access, artifacts and behavioral
 prerequisites are qualified. The workflow does not create a Google subscription,
 configure Play Console, initiate a purchase or change an account.

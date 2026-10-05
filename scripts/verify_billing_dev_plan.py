@@ -15,10 +15,57 @@ PACKAGE_FIELDS = {'s3_bucket': 'bucket', 's3_key': 'key', 's3_object_version': '
 GATES = {'PLAY_HANDOFF_ENABLED', 'PLAY_PREPARATION_ENABLED', 'PLAY_LIFECYCLE_ENABLED', 'AUTHORITY_ENABLED', 'DEV_SUBJECT_ALLOWLIST_JSON', 'PLAY_SCOPED_OWNED_HEAD_ONLY_ENABLED', 'PLAY_SCOPED_LIFECYCLE_WORKER_ENABLED'}
 
 
+def declared_handoff_policy_mirror(plan, scope):
+    """Accept only the stale role mirror of two unchanged, separately managed policies."""
+    drift = [row for row in plan.get('resource_drift', []) if row.get('mode') == 'managed']
+    if not drift:
+        return True
+    if scope != 'handoff' or len(drift) != 1:
+        return False
+    try:
+        row = drift[0]
+        provider = 'registry.terraform.io/hashicorp/aws'
+        address = 'aws_iam_role.runtime[0]'
+        role = 'trustcheckradar-dev-v1-play-handoff-execution'
+        change = row['change']
+        before, after = change['before'], change['after']
+        if (row.get('address') != address or row.get('type') != 'aws_iam_role' or
+                row.get('provider_name') != provider or change['actions'] != ['update'] or
+                changed_fields(before, after) != {'inline_policy'} or
+                after.get('name') != role or after.get('id') != role or
+                after.get('arn') != f'arn:aws:iam::{ACCOUNT}:role/{role}'):
+            return False
+        inventory = {r['address']: r for r in plan['resource_changes'] if r.get('mode') == 'managed'}
+        planned_role = inventory[address]
+        if (planned_role.get('type') != 'aws_iam_role' or planned_role.get('provider_name') != provider or
+                planned_role['change']['actions'] != ['no-op'] or
+                planned_role['change']['before'] != after or planned_role['change']['after'] != after):
+            return False
+        expected = {}
+        for suffix, name in [('lifecycle', 'prepare-binding-and-retain-verified-token'),
+                             ('runtime', 'verified-play-ownership-and-authority')]:
+            policy = inventory[f'aws_iam_role_policy.{suffix}[0]']
+            definition = policy['change']['after']
+            if (policy.get('type') != 'aws_iam_role_policy' or policy.get('provider_name') != provider or
+                    policy['change']['actions'] != ['no-op'] or policy['change']['before'] != definition or
+                    definition.get('role') != role or definition.get('name') != name):
+                return False
+            expected[name] = json.loads(definition['policy'])
+        for mirror in (before['inline_policy'], after['inline_policy']):
+            if (type(mirror) is not list or len(mirror) != 2 or
+                    any(type(entry) is not dict or set(entry) != {'name', 'policy'} for entry in mirror) or
+                    {entry['name'] for entry in mirror} != set(expected)):
+                return False
+        actual = {entry['name']: json.loads(entry['policy']) for entry in after['inline_policy']}
+        return actual == expected
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return False
+
+
 def review(plan, revision, scope, mode):
     require(scope in MODES and mode in MODES[scope] and re.fullmatch(r'[a-f0-9]{40}', revision or ''), 'Reviewed main source and valid billing selection required.')
     require(plan.get('complete') is True and not plan.get('errored') and plan.get('terraform_version') == '1.12.1', 'Complete Terraform 1.12.1 plan required.')
-    require(not [x for x in plan.get('resource_drift', []) if x.get('mode') == 'managed'], 'Reconcile drift before billing activation.')
+    require(declared_handoff_policy_mirror(plan, scope), 'Reconcile drift before billing activation.')
     require(all(c.get('status') == 'pass' for c in plan.get('checks', [])), 'Every Terraform check must pass.')
     variables = {k: v.get('value') for k, v in plan.get('variables', {}).items()}
     require(variables.get('environment') == 'dev' and variables.get('aws_region') == 'us-east-1' and variables.get('project_name') == 'trustcheckradar' and variables.get('enabled') is True, 'Only existing Dev billing may transition.')

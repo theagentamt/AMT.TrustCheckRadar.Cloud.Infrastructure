@@ -74,7 +74,62 @@ def fixture(scope='handoff', mode='verification'):
     return {'complete': True, 'terraform_version': '1.12.1', 'variables': {k: {'value': v} for k, v in variables.items()}, 'resource_changes': changes, 'resource_drift': [], 'checks': [{'status': 'pass'}], 'output_changes': {'candidate_contract': {'after': contract}}}
 
 
+def stale_role_mirror_fixture():
+    plan = fixture('handoff', 'preparation')
+    role = 'trustcheckradar-dev-v1-play-handoff-execution'
+    policies = [
+        ('lifecycle', 'prepare-binding-and-retain-verified-token',
+         {'Version': '2012-10-17', 'Statement': [{'Sid': 'NewTokenEnvelopeKeyOnly', 'Effect': 'Allow', 'Action': 'kms:GenerateDataKey', 'Resource': 'synthetic-key', 'Condition': {'StringEquals': {'kms:EncryptionAlgorithm': 'SYMMETRIC_DEFAULT'}}}]}),
+        ('runtime', 'verified-play-ownership-and-authority',
+         {'Version': '2012-10-17', 'Statement': [{'Sid': 'OwnLogs', 'Effect': 'Allow', 'Action': 'logs:PutLogEvents', 'Resource': 'synthetic-log'}]}),
+    ]
+    mirror = []
+    for suffix, name, document in policies:
+        definition = {'name': name, 'role': role, 'policy': json.dumps(document)}
+        plan['resource_changes'].append({'address': f'aws_iam_role_policy.{suffix}[0]', 'type': 'aws_iam_role_policy', 'mode': 'managed', 'provider_name': 'registry.terraform.io/hashicorp/aws', 'change': {'actions': ['no-op'], 'before': copy.deepcopy(definition), 'after': definition}})
+        mirror.append({'name': name, 'policy': json.dumps(document)})
+    current = {'name': role, 'id': role, 'arn': f'arn:aws:iam::{prepare.ACCOUNT}:role/{role}', 'assume_role_policy': 'synthetic unchanged trust', 'permissions_boundary': '', 'inline_policy': mirror}
+    stale = copy.deepcopy(current)
+    old_policy = json.loads(stale['inline_policy'][0]['policy'])
+    old_policy['Statement'][0]['Condition'] = {'StringEquals': {'kms:DataKeySpec': 'AES_256'}}
+    stale['inline_policy'][0]['policy'] = json.dumps(old_policy)
+    plan['resource_drift'] = [{'address': 'aws_iam_role.runtime[0]', 'type': 'aws_iam_role', 'mode': 'managed', 'provider_name': 'registry.terraform.io/hashicorp/aws', 'change': {'actions': ['update'], 'before': stale, 'after': copy.deepcopy(current)}}]
+    plan['resource_changes'].append({'address': 'aws_iam_role.runtime[0]', 'type': 'aws_iam_role', 'mode': 'managed', 'provider_name': 'registry.terraform.io/hashicorp/aws', 'change': {'actions': ['no-op'], 'before': copy.deepcopy(current), 'after': current}})
+    return plan
+
+
 class PlanTests(ProvenanceCase):
+    def test_stale_role_mirror_matches_unchanged_declared_policies_and_binds_digest(self):
+        plan = stale_role_mirror_fixture()
+        _, digest, updates, _ = guard.review(plan, REVISION, 'handoff', 'preparation')
+        self.assertEqual(updates, 2)
+        without_mirror = copy.deepcopy(plan); without_mirror['resource_drift'] = []
+        self.assertNotEqual(digest, guard.review(without_mirror, REVISION, 'handoff', 'preparation')[1])
+
+    def test_stale_mirror_cannot_hide_policy_or_role_changes(self):
+        for case in ('extra_policy', 'missing_policy', 'duplicate_policy', 'modified_policy', 'trust', 'boundary', 'role', 'address', 'provider', 'replacement', 'policy_write', 'missing_declaration', 'extra_drift', 'mirror_schema'):
+            plan = stale_role_mirror_fixture(); drift = plan['resource_drift'][0]; after = drift['change']['after']
+            if case == 'extra_policy': after['inline_policy'].append({'name': 'extra', 'policy': '{"Statement": []}'})
+            elif case == 'missing_policy': after['inline_policy'].pop()
+            elif case == 'duplicate_policy': after['inline_policy'][1] = copy.deepcopy(after['inline_policy'][0])
+            elif case == 'modified_policy': after['inline_policy'][0]['policy'] = '{"Statement": []}'
+            elif case == 'trust': after['assume_role_policy'] = 'modified trust'
+            elif case == 'boundary': after['permissions_boundary'] = 'modified boundary'
+            elif case == 'role': after['arn'] = 'arn:aws:iam::999999999999:role/other'
+            elif case == 'address': drift['address'] = 'aws_iam_role.other'
+            elif case == 'provider': drift['provider_name'] = 'registry.terraform.io/other/aws'
+            elif case == 'replacement': drift['change']['actions'] = ['delete', 'create']
+            elif case == 'policy_write': plan['resource_changes'][2]['change']['actions'] = ['update']
+            elif case == 'missing_declaration': plan['resource_changes'].pop(2)
+            elif case == 'extra_drift': plan['resource_drift'].append(copy.deepcopy(drift))
+            else: after['inline_policy'][0]['unexpected'] = 'value'
+            with self.subTest(case=case), self.assertRaises(ValueError):
+                guard.review(plan, REVISION, 'handoff', 'preparation')
+
+    def test_role_mirror_exception_does_not_allow_lifecycle_drift(self):
+        plan = stale_role_mirror_fixture()
+        self.assertFalse(guard.declared_handoff_policy_mirror(plan, 'lifecycle'))
+
     def test_foreground_ingress_and_direct_head_worker(self):
         for scope, mode in [('handoff', 'verification'), ('lifecycle', 'ingress'), ('lifecycle', 'background')]:
             with self.subTest(scope=scope, mode=mode):
