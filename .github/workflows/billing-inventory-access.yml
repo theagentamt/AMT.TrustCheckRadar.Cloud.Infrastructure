@@ -1,0 +1,56 @@
+name: Billing Dev inventory access
+
+on:
+  workflow_dispatch:
+    inputs:
+      execution_mode:
+        description: Plan the metadata-only grant; apply requires its exact digest
+        type: choice
+        options: [plan, apply]
+        required: true
+        default: plan
+      expected_revision:
+        description: Exact reviewed main infrastructure commit
+        type: string
+        required: true
+      reviewed_policy_digest:
+        description: Required for apply of the reviewed metadata-only policy
+        type: string
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+jobs:
+  inventory:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: dev
+    env:
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      REVIEWED_POLICY_DIGEST: ${{ inputs.reviewed_policy_digest }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          allowed-account-ids: "107827791950"
+          role-session-name: billing-audit-${{ github.run_id }}
+      - name: Review or apply the exact metadata-only policy
+        run: |
+          set -euo pipefail
+          test "$GITHUB_SHA" = "$EXPECTED_REVISION"
+          args=(--revision "$EXPECTED_REVISION" --mode "$EXECUTION_MODE")
+          if [[ "$EXECUTION_MODE" == apply ]]; then args+=(--expected-digest "$REVIEWED_POLICY_DIGEST"); fi
+          python3 scripts/billing_inventory_access.py "${args[@]}" >> "$GITHUB_STEP_SUMMARY"

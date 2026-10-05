@@ -268,3 +268,182 @@ run "deletion_only_rejects_missing_alerting" {
   # Existing alert-topic validation rejects this before dependent activation validation.
   expect_failures = [var.alert_topic_arn]
 }
+
+run "one_account_ingress_keeps_global_worker_closed" {
+  command = plan
+  variables {
+    pubsub_identity = { audience = "https://api-dev.andmorethings.net/v1/notifications/google-play", subscription = "projects/trustcheck-radar/subscriptions/trustcheckradar-dev-play-lifecycle", service_account_email = "tcr-dev-play-push@trustcheck-radar.iam.gserviceaccount.com", service_account_subject = "123456789012345678901" }
+    billing_activation = {
+      mode                  = "ingress"
+      source_sha            = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      subjects              = ["00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic no-copy qualification"
+      runtime_reference     = "synthetic runtime qualification"
+      permissions_reference = "synthetic IAM qualification"
+    }
+    deletion_activation = {
+      source_sha            = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      subjects              = ["00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic existing cleanup inventory"
+      runtime_reference     = "synthetic existing cleanup runtime"
+      permissions_reference = "synthetic existing cleanup IAM"
+    }
+  }
+  assert {
+    condition     = aws_lambda_function.runtime["ingress"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "true" && aws_lambda_function.runtime["ingress"].environment[0].variables.AUTHORITY_ENABLED == "true" && aws_lambda_function.runtime["ingress"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000001"]) && output.candidate_contract.billing_subject_count == 1 && !output.candidate_contract.scheduled_worker_active
+    error_message = "Ingress must use only the billing selection."
+  }
+  assert {
+    condition     = aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "false" && aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_TOKEN_CLEANUP_ENABLED == "false" && aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_CHECKPOINT_POLICY_APPROVED == "false" && aws_scheduler_schedule.lifecycle["worker"].state == "DISABLED" && !aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled
+    error_message = "Ingress must not enable the global worker, cleanup traversal or checkpoint policy."
+  }
+  assert {
+    condition     = aws_lambda_function.runtime["deletion"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "false" && aws_lambda_function.runtime["deletion"].environment[0].variables.PLAY_TOKEN_CLEANUP_ENABLED == "true" && aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000002"]) && aws_scheduler_schedule.lifecycle["deletion"].state == "ENABLED" && aws_lambda_event_source_mapping.deletion[0].enabled
+    error_message = "Existing token deletion and its independent subject selection must be preserved."
+  }
+}
+run "billing_ingress_rejects_source_mismatch" {
+  command = plan
+  variables {
+    pubsub_identity = { audience = "https://api-dev.andmorethings.net/v1/notifications/google-play", subscription = "projects/trustcheck-radar/subscriptions/trustcheckradar-dev-play-lifecycle", service_account_email = "tcr-dev-play-push@trustcheck-radar.iam.gserviceaccount.com", service_account_subject = "123456789012345678901" }
+    billing_activation = {
+      mode                  = "ingress"
+      source_sha            = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      subjects              = ["00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic no-copy qualification"
+      runtime_reference     = "synthetic runtime qualification"
+      permissions_reference = "synthetic IAM qualification"
+    }
+  }
+  expect_failures = [var.billing_activation]
+}
+run "billing_ingress_rejects_empty_subjects" {
+  command = plan
+  variables {
+    pubsub_identity = { audience = "https://api-dev.andmorethings.net/v1/notifications/google-play", subscription = "projects/trustcheck-radar/subscriptions/trustcheckradar-dev-play-lifecycle", service_account_email = "tcr-dev-play-push@trustcheck-radar.iam.gserviceaccount.com", service_account_subject = "123456789012345678901" }
+    billing_activation = {
+      mode                  = "ingress"
+      source_sha            = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      subjects              = []
+      inventory_reference   = "synthetic no-copy qualification"
+      runtime_reference     = "synthetic runtime qualification"
+      permissions_reference = "synthetic IAM qualification"
+    }
+  }
+  expect_failures = [var.billing_activation]
+}
+run "billing_ingress_rejects_multiple_subjects" {
+  command = plan
+  variables {
+    pubsub_identity = { audience = "https://api-dev.andmorethings.net/v1/notifications/google-play", subscription = "projects/trustcheck-radar/subscriptions/trustcheckradar-dev-play-lifecycle", service_account_email = "tcr-dev-play-push@trustcheck-radar.iam.gserviceaccount.com", service_account_subject = "123456789012345678901" }
+    billing_activation = {
+      mode                  = "ingress"
+      source_sha            = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      subjects              = ["00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic no-copy qualification"
+      runtime_reference     = "synthetic runtime qualification"
+      permissions_reference = "synthetic IAM qualification"
+    }
+  }
+  expect_failures = [var.billing_activation]
+}
+run "billing_ingress_rejects_missing_evidence" {
+  command = plan
+  variables {
+    pubsub_identity = { audience = "https://api-dev.andmorethings.net/v1/notifications/google-play", subscription = "projects/trustcheck-radar/subscriptions/trustcheckradar-dev-play-lifecycle", service_account_email = "tcr-dev-play-push@trustcheck-radar.iam.gserviceaccount.com", service_account_subject = "123456789012345678901" }
+    billing_activation = {
+      mode                  = "ingress"
+      source_sha            = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      subjects              = ["00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic no-copy qualification"
+      runtime_reference     = "synthetic runtime qualification"
+      permissions_reference = ""
+    }
+  }
+  expect_failures = [var.billing_activation]
+}
+run "billing_ingress_requires_push_identity" {
+  command = plan
+  variables {
+    billing_activation = {
+      mode                  = "ingress"
+      source_sha            = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      subjects              = ["00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic no-copy qualification"
+      runtime_reference     = "synthetic runtime qualification"
+      permissions_reference = "synthetic IAM qualification"
+    }
+  }
+  expect_failures = [var.billing_activation]
+}
+run "billing_packages_preserve_deletion_baseline" {
+  command = plan
+  variables {
+    billing_artifact_overrides = {
+      ingress = {
+        source_sha           = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        provenance_reference = "synthetic package qualification"
+        artifact             = { bucket = "trustcheckradar-dev-107827791950-artifacts", key = "releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/play_lifecycle_ingress.zip", object_version = "new-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
+      }
+    }
+  }
+  assert {
+    condition     = aws_lambda_function.runtime["ingress"].s3_object_version == "new-version" && aws_lambda_function.runtime["worker"].s3_key == var.deployment.artifacts.worker.key && aws_lambda_function.runtime["deletion"].s3_key == var.deployment.artifacts.deletion.key && !output.candidate_contract.lifecycle_active
+    error_message = "Changing ingress package must preserve worker/deletion packages and leave billing closed."
+  }
+}
+
+run "one_account_direct_head_worker_has_no_global_access" {
+  command = plan
+  variables {
+    pubsub_identity = { audience = "https://api-dev.andmorethings.net/v1/notifications/google-play", subscription = "projects/trustcheck-radar/subscriptions/trustcheckradar-dev-play-lifecycle", service_account_email = "tcr-dev-play-push@trustcheck-radar.iam.gserviceaccount.com", service_account_subject = "123456789012345678901" }
+    billing_activation = {
+      mode                  = "background"
+      source_sha            = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      subjects              = ["00000000-0000-4000-8000-000000000001"]
+      inventory_reference   = "synthetic no-copy qualification"
+      runtime_reference     = "synthetic runtime qualification"
+      permissions_reference = "synthetic IAM qualification"
+    }
+    deletion_activation = {
+      source_sha            = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      subjects              = ["00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic existing cleanup inventory"
+      runtime_reference     = "synthetic existing cleanup runtime"
+      permissions_reference = "synthetic existing cleanup IAM"
+    }
+  }
+  assert {
+    condition     = aws_lambda_function.runtime["ingress"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "true" && aws_lambda_function.runtime["ingress"].environment[0].variables.AUTHORITY_ENABLED == "true" && aws_lambda_function.runtime["ingress"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000001"]) && output.candidate_contract.billing_subject_count == 1 && output.candidate_contract.scheduled_worker_active
+    error_message = "Ingress must use only the billing selection."
+  }
+  assert {
+    condition     = aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "true" && aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_TOKEN_CLEANUP_ENABLED == "false" && aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_CHECKPOINT_POLICY_APPROVED == "false" && aws_scheduler_schedule.lifecycle["worker"].state == "ENABLED" && aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled
+    error_message = "Scoped scheduled work must not enable global cleanup traversal or checkpoint policy."
+  }
+  assert {
+    condition     = aws_lambda_function.runtime["deletion"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "false" && aws_lambda_function.runtime["deletion"].environment[0].variables.PLAY_TOKEN_CLEANUP_ENABLED == "true" && aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000002"]) && aws_scheduler_schedule.lifecycle["deletion"].state == "ENABLED" && aws_lambda_event_source_mapping.deletion[0].enabled
+    error_message = "Existing token deletion and its independent subject selection must be preserved."
+  }
+  assert {
+    condition     = aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_SCOPED_LIFECYCLE_WORKER_ENABLED == "true" && aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_SCOPED_OWNED_HEAD_ONLY_ENABLED == "true" && aws_lambda_function.runtime["worker"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000001"]) && alltrue([for statement in jsondecode(aws_iam_role_policy.runtime["worker"].policy).Statement : !contains(["DueTokenKeys", "LifecycleCheckpointRead", "LifecycleCheckpointWrite"], statement.Sid) && (statement.Sid != "TokenReads" || toset(statement.Action) == toset(["dynamodb:GetItem", "dynamodb:ConditionCheckItem"]))]) && anytrue([for statement in jsondecode(aws_iam_role_policy.runtime["worker"].policy).Statement : statement.Sid == "NoScopedTokenEnumeration" && statement.Effect == "Deny" && toset(statement.Action) == toset(["dynamodb:Query", "dynamodb:Scan"])])
+    error_message = "The direct-head worker must use one subject, reject unknown ownership, and have no token enumeration or global checkpoint grants."
+  }
+}
+
+run "closed_worker_pin_retains_scope_denies_without_schedule" {
+  command = plan
+  variables {
+    billing_artifact_overrides = {
+      worker = {
+        source_sha           = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        provenance_reference = "synthetic package qualification"
+        artifact             = { bucket = "trustcheckradar-dev-107827791950-artifacts", key = "releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/play_lifecycle_worker.zip", object_version = "new-version", source_hash = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=" }
+      }
+    }
+  }
+  assert {
+    condition     = aws_scheduler_schedule.lifecycle["worker"].state == "DISABLED" && !aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled && aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "false" && alltrue([for statement in jsondecode(aws_iam_role_policy.runtime["worker"].policy).Statement : !contains(["DueTokenKeys", "LifecycleCheckpointRead", "LifecycleCheckpointWrite"], statement.Sid)]) && anytrue([for statement in jsondecode(aws_iam_role_policy.runtime["worker"].policy).Statement : statement.Sid == "NoScopedTokenEnumeration" && statement.Effect == "Deny"])
+    error_message = "Stopping scoped work must preserve its enumeration/checkpoint denials without enabling any schedule."
+  }
+}

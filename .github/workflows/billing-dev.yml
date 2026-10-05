@@ -1,0 +1,165 @@
+name: Billing Dev transition
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Independently reviewed billing state
+        type: choice
+        options: [handoff, lifecycle]
+        required: true
+      mode:
+        description: handoff inactive/preparation/verification; lifecycle inactive/ingress/background
+        type: choice
+        options: [inactive, preparation, verification, ingress, background]
+        required: true
+        default: inactive
+      execution_mode:
+        description: Plan first; apply requires its exact reviewed digest
+        type: choice
+        options: [plan, apply]
+        required: true
+        default: plan
+      expected_revision:
+        description: Exact reviewed main infrastructure commit
+        type: string
+        required: true
+      lambda_source_sha:
+        description: Reviewed immutable Lambda source matching the package manifest
+        type: string
+        required: true
+      reviewed_plan_digest:
+        description: Required for apply of the same revision/scope/mode
+        type: string
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+jobs:
+  transition:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: dev
+    env:
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
+      AWS_REGION: us-east-1
+      BILLING_SCOPE: ${{ inputs.scope }}
+      BILLING_MODE: ${{ inputs.mode }}
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      LAMBDA_SOURCE_SHA: ${{ inputs.lambda_source_sha }}
+      REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+      BILLING_PACKAGE_HASHES_JSON: ${{ vars.BILLING_PACKAGE_HASHES_JSON }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+      - name: Validate exact Dev source and scope
+        run: |
+          set -euo pipefail
+          test "$GITHUB_SHA" = "$EXPECTED_REVISION"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
+          [[ "$EXPECTED_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$LAMBDA_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$TF_STATE_BUCKET" = amt-trustcheckradar-107827791950-tfstate
+          test "$TF_STATE_KEY_PREFIX" = trustcheckradar
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            [[ "$REVIEWED_PLAN_DIGEST" =~ ^[0-9a-f]{64}$ ]]
+          fi
+          case "$BILLING_SCOPE" in
+            handoff) echo 'BILLING_STACK=play-verification' >> "$GITHUB_ENV" ;;
+            lifecycle) echo 'BILLING_STACK=play-lifecycle' >> "$GITHUB_ENV" ;;
+            *) exit 1 ;;
+          esac
+      - uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          allowed-account-ids: "107827791950"
+          role-session-name: billing-${{ github.run_id }}
+      - name: Prepare private subject and exact reviewed packages
+        env:
+          ENGINEERING_SUBJECTS_JSON: ${{ secrets.GOVERNED_HISTORY_ENGINEERING_SUBJECTS_JSON }}
+          BILLING_PACKAGE_HASHES_JSON: ${{ vars.BILLING_PACKAGE_HASHES_JSON }}
+          BILLING_EVIDENCE_JSON: ${{ vars.BILLING_EVIDENCE_JSON }}
+        run: |
+          set -euo pipefail
+          if [[ "$BILLING_MODE" == inactive ]]; then export ENGINEERING_SUBJECTS_JSON='[]'; fi
+          python3 scripts/prepare_billing_dev_configuration.py
+      - name: Generate private saved plan
+        run: |
+          set -euo pipefail
+          umask 077
+          bash scripts/terraform.sh init dev "$BILLING_STACK" > "$RUNNER_TEMP/billing-init.log" 2>&1
+          if ! terraform -chdir="terraform/$BILLING_STACK" plan -input=false \
+            -var-file="../../environments/dev/$BILLING_STACK.tfvars" \
+            -var-file="$RUNNER_TEMP/billing.tfvars.json" \
+            -out="$RUNNER_TEMP/billing.tfplan" > "$RUNNER_TEMP/billing-plan.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/billing-plan.log"
+            exit 1
+          fi
+          terraform -chdir="terraform/$BILLING_STACK" show -json "$RUNNER_TEMP/billing.tfplan" > "$RUNNER_TEMP/billing-plan.json"
+      - name: Verify boundaries and exact digest
+        run: |
+          set -euo pipefail
+          args=(--revision "$EXPECTED_REVISION" --scope "$BILLING_SCOPE" --mode "$BILLING_MODE")
+          if [[ "$EXECUTION_MODE" == apply ]]; then args+=(--expected-digest "$REVIEWED_PLAN_DIGEST"); fi
+          python3 scripts/verify_billing_dev_plan.py "$RUNNER_TEMP/billing-plan.json" "${args[@]}" > "$RUNNER_TEMP/billing-review.json"
+          cat "$RUNNER_TEMP/billing-review.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Requalify token storage and protected live runtimes
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          umask 077
+          if [[ "$BILLING_SCOPE" == lifecycle ]]; then
+            python3 scripts/verify_billing_dev_readback.py --scope "$BILLING_SCOPE" --snapshot "$RUNNER_TEMP/billing-protected.json" --plan "$RUNNER_TEMP/billing-plan.json" --handoff-prerequisite
+          fi
+          python3 -m pip install boto3==1.43.107
+          python3 - <<'PY'
+          import json, os, sys, boto3
+          sys.path.insert(0, 'scripts')
+          from audit_play_token_storage import audit
+          report = audit(boto3.Session(region_name='us-east-1'))
+          if report['configurationReviewRequired'] or not report['tableExists']:
+              raise SystemExit('Token storage requires review; activation rejected.')
+          with open(os.environ['RUNNER_TEMP'] + '/billing-storage.json', 'w') as stream:
+              json.dump(report, stream)
+          PY
+          python3 scripts/verify_billing_dev_readback.py --scope "$BILLING_SCOPE" --snapshot "$RUNNER_TEMP/billing-protected.json"
+      - name: Apply only the exact reviewed saved plan
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          umask 077
+          if ! terraform -chdir="terraform/$BILLING_STACK" apply -input=false "$RUNNER_TEMP/billing.tfplan" > "$RUNNER_TEMP/billing-apply.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/billing-apply.log"
+            exit 1
+          fi
+          python3 scripts/verify_billing_dev_readback.py --scope "$BILLING_SCOPE" --snapshot "$RUNNER_TEMP/billing-protected.json" --plan "$RUNNER_TEMP/billing-plan.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Verify no drift
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          umask 077
+          terraform -chdir="terraform/$BILLING_STACK" plan -input=false -detailed-exitcode \
+            -var-file="../../environments/dev/$BILLING_STACK.tfvars" \
+            -var-file="$RUNNER_TEMP/billing.tfvars.json" > "$RUNNER_TEMP/billing-drift.log" 2>&1
+          echo 'Zero billing drift verified. Configuration readback is not a store transaction test.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Remove private plans and configuration
+        if: always()
+        run: rm -f "$RUNNER_TEMP"/billing-*.json "$RUNNER_TEMP"/billing-*.log "$RUNNER_TEMP/billing.tfvars.json" "$RUNNER_TEMP/billing.tfplan"

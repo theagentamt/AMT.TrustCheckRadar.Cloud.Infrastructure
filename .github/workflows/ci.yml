@@ -150,8 +150,15 @@ jobs:
           terraform validate
           terraform test
 
-      - name: Validate inactive Google Play verifier
+      - name: Validate bounded Google Play verifier
         working-directory: terraform/play-verification
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
+      - name: Validate bounded Play lifecycle
+        working-directory: terraform/play-lifecycle
         run: |
           terraform init -backend=false -input=false
           terraform validate

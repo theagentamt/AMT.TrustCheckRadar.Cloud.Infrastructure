@@ -1,0 +1,11 @@
+{
+  "source_sha": "65c186b461d86e825bdffe1ab9d8d8ca4eb3f48b",
+  "reviewed_head": "baf4dde2bb3650950b2349bb0d2637b3d67f2819",
+  "pull_request": "https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/pull/111",
+  "ci_run": "https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/actions/runs/37248914018",
+  "publication_run": "https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/actions/runs/37249085677",
+  "v1_play_handoff": "95194969560e208386aa942697f1ec175572cae09eb5a917a0574f1ad513f42d",
+  "play_lifecycle_ingress": "d1471e610c47ca9bbc8585aceb0df50c61203c839af24b1c32ed78084be8e535",
+  "play_lifecycle_worker": "c5a082a63acb419bfa5b9362b12b327e0b8a2ba4aea4a721795308bc4a054fbb",
+  "scope": "Source and immutable package publication only; no runtime activation or store transaction qualification."
+}
