@@ -13,7 +13,8 @@ from verify_message_consumer_transition import aws
 
 def snapshot(scope, read=aws):
     require(read('sts', 'get-caller-identity').get('Account') == ACCOUNT, 'Only Dev readback permitted.')
-    selected = {'trustcheckradar-dev-v1-play-handoff'} if scope == 'handoff' else {'trustcheckradar-dev-play-lifecycle-ingress', 'trustcheckradar-dev-play-lifecycle-worker'}
+    require(scope in {'handoff', 'lifecycle', 'access-snapshot'}, 'Unknown protected runtime scope.')
+    selected = {'handoff': {'trustcheckradar-dev-v1-play-handoff'}, 'lifecycle': {'trustcheckradar-dev-play-lifecycle-ingress', 'trustcheckradar-dev-play-lifecycle-worker'}, 'access-snapshot': {'trustcheckradar-dev-v1-entitlements'}}[scope]
     # AWS CLI paginates this inventory automatically. No account/token items read.
     rows = read('lambda', 'list-functions').get('Functions', [])
     results = {}

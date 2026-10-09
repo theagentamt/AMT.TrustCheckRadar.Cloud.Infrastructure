@@ -145,6 +145,8 @@ resource "aws_lambda_function" "runtime" {
       COMPLIMENTARY_OPERATOR_ENABLED             = tostring(local.complimentary_operator_active)
       COMPLIMENTARY_AUDIT_RETENTION_SECONDS      = "31536000"
       COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON = jsonencode(local.complimentary_operator_active ? [local.complimentary_operator_role_arn] : [])
+      } : {}, each.key == "entitlements" && length(var.dev_access_snapshot_extra_subjects) > 0 ? {
+      DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON = jsonencode(sort(tolist(var.dev_access_snapshot_extra_subjects)))
     } : {}, each.key == "consumer" ? { URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn } : {})
   }
   depends_on = [aws_iam_role_policy.consumer, aws_iam_role_policy.recovery, aws_iam_role_policy.entitlements, aws_iam_role_policy.deletion]
