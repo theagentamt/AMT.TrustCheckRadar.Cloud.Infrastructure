@@ -1,0 +1,134 @@
+name: Dev access snapshot transition
+
+on:
+  workflow_dispatch:
+    inputs:
+      execution_mode:
+        description: Plan only unless its exact digest is approved for apply
+        type: choice
+        options: [plan, apply]
+        required: true
+        default: plan
+      expected_revision:
+        description: Exact reviewed main infrastructure commit
+        type: string
+        required: true
+      lambda_source_sha:
+        description: Reviewed immutable GET-only entitlement source
+        type: string
+        required: true
+      reviewed_plan_digest:
+        description: Required only for separately approved apply
+        type: string
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+jobs:
+  transition:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: dev
+    env:
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
+      AWS_REGION: us-east-1
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      LAMBDA_SOURCE_SHA: ${{ inputs.lambda_source_sha }}
+      REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+      - name: Validate exact Dev source and planning boundary
+        run: |
+          set -euo pipefail
+          test "$GITHUB_SHA" = "$EXPECTED_REVISION"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
+          [[ "$EXPECTED_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$LAMBDA_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$TF_STATE_BUCKET" = amt-trustcheckradar-107827791950-tfstate
+          test "$TF_STATE_KEY_PREFIX" = trustcheckradar
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            [[ "$REVIEWED_PLAN_DIGEST" =~ ^[0-9a-f]{64}$ ]]
+          else
+            test "$EXECUTION_MODE" = plan
+          fi
+      - uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          allowed-account-ids: "107827791950"
+          role-session-name: access-snapshot-${{ github.run_id }}
+      - name: Prepare independent private snapshot selection and pinned package
+        env:
+          PRESERVED_ACCESS_SUBJECTS_JSON: ${{ secrets.GOVERNED_HISTORY_ENGINEERING_SUBJECTS_JSON }}
+          ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON: ${{ secrets.ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON }}
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 scripts/prepare_access_snapshot_dev.py
+          python3 scripts/verify_access_snapshot_dev_readback.py --snapshot "$RUNNER_TEMP/access-snapshot-protected.json"
+      - name: Generate private saved plan without applying
+        run: |
+          set -euo pipefail
+          umask 077
+          bash scripts/terraform.sh init dev url-consumer > "$RUNNER_TEMP/access-snapshot-init.log" 2>&1
+          if ! terraform -chdir=terraform/url-consumer plan -input=false \
+            -var-file=../../environments/dev/url-consumer.tfvars \
+            -var-file="$RUNNER_TEMP/access-snapshot.tfvars.json" \
+            -out="$RUNNER_TEMP/access-snapshot.tfplan" > "$RUNNER_TEMP/access-snapshot-plan.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/access-snapshot-plan.log"
+            exit 1
+          fi
+          terraform -chdir=terraform/url-consumer show -json "$RUNNER_TEMP/access-snapshot.tfplan" > "$RUNNER_TEMP/access-snapshot-plan.json"
+      - name: Reject unrelated changes and verify exact plan digest
+        run: |
+          set -euo pipefail
+          args=(--revision "$EXPECTED_REVISION")
+          if [[ "$EXECUTION_MODE" == apply ]]; then args+=(--expected-digest "$REVIEWED_PLAN_DIGEST"); fi
+          python3 scripts/verify_access_snapshot_dev_plan.py "$RUNNER_TEMP/access-snapshot-plan.json" "${args[@]}" > "$RUNNER_TEMP/access-snapshot-review.json"
+          python3 scripts/verify_access_snapshot_dev_readback.py --snapshot "$RUNNER_TEMP/access-snapshot-protected.json" --plan "$RUNNER_TEMP/access-snapshot-plan.json" --pre-apply
+          tee -a "$GITHUB_STEP_SUMMARY" < "$RUNNER_TEMP/access-snapshot-review.json"
+      - name: Apply only a separately approved exact saved plan
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 scripts/verify_access_snapshot_dev_readback.py --snapshot "$RUNNER_TEMP/access-snapshot-protected.json" --plan "$RUNNER_TEMP/access-snapshot-plan.json" --pre-apply
+          if ! terraform -chdir=terraform/url-consumer apply -input=false "$RUNNER_TEMP/access-snapshot.tfplan" > "$RUNNER_TEMP/access-snapshot-apply.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/access-snapshot-apply.log"
+            exit 1
+          fi
+          python3 scripts/verify_access_snapshot_dev_readback.py --snapshot "$RUNNER_TEMP/access-snapshot-protected.json" --plan "$RUNNER_TEMP/access-snapshot-plan.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Require zero drift after an approved apply
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          umask 077
+          set +e
+          terraform -chdir=terraform/url-consumer plan -input=false -detailed-exitcode \
+            -var-file=../../environments/dev/url-consumer.tfvars \
+            -var-file="$RUNNER_TEMP/access-snapshot.tfvars.json" > "$RUNNER_TEMP/access-snapshot-drift.log" 2>&1
+          status=$?
+          set -e
+          test "$status" = 0
+          echo 'Zero drift and protected-runtime preservation verified; live Android acceptance remains separate.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Remove private selection, plans and logs
+        if: always()
+        run: rm -f "$RUNNER_TEMP"/access-snapshot-*.json "$RUNNER_TEMP"/access-snapshot-*.log "$RUNNER_TEMP/access-snapshot.tfvars.json" "$RUNNER_TEMP/access-snapshot.tfplan"

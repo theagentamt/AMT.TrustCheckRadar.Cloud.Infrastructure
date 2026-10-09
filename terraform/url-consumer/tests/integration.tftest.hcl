@@ -578,3 +578,46 @@ run "governed_trial_rejects_wildcard" {
   variables { governed_trial_subjects = ["*"] }
   expect_failures = [var.governed_trial_subjects]
 }
+
+
+run "extra_snapshot_selection_preserves_trial_and_all_other_scope" {
+  command = apply
+  variables {
+    governed_trial_subjects            = ["01997e3a-0000-7000-8000-000000000001"]
+    dev_access_snapshot_extra_subjects = ["00000000-0000-4000-8000-000000000003"]
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic inventory evidence"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["01997e3a-0000-7000-8000-000000000001"]) &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON == jsonencode(["00000000-0000-4000-8000-000000000003"]) &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "true" &&
+      alltrue([for role in ["consumer", "recovery", "deletion"] : !contains(keys(aws_lambda_function.runtime[role].environment[0].variables), "DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON")]) &&
+      aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000002"]) &&
+      aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "false" &&
+      !output.candidate_contract.general_customer_access && !output.candidate_contract.consumer_enabled
+    )
+    error_message = "The extra selection belongs only to entitlement GET logic; original trial, deletion and consumer/maintenance scope must remain unchanged."
+  }
+}
+run "extra_snapshot_requires_preserved_trial_mode" {
+  command = plan
+  variables { dev_access_snapshot_extra_subjects = ["00000000-0000-4000-8000-000000000003"] }
+  expect_failures = [var.dev_access_snapshot_extra_subjects]
+}
+run "extra_snapshot_rejects_wildcard" {
+  command = plan
+  variables { dev_access_snapshot_extra_subjects = ["*"] }
+  expect_failures = [var.dev_access_snapshot_extra_subjects]
+}
+run "extra_snapshot_rejects_multiple_subjects" {
+  command = plan
+  variables { dev_access_snapshot_extra_subjects = ["00000000-0000-4000-8000-000000000003", "00000000-0000-4000-8000-000000000004"] }
+  expect_failures = [var.dev_access_snapshot_extra_subjects]
+}

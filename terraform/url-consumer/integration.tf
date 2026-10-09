@@ -175,3 +175,22 @@ resource "aws_lambda_permission" "v1" {
   source_account = data.aws_caller_identity.current.account_id
   source_arn     = "${var.api_gateway.execution_arn}/*/${each.value.permission}"
 }
+
+# SEC195/244: additional snapshot admission must not expand the existing trial gate.
+variable "dev_access_snapshot_extra_subjects" {
+  description = "One privately selected Dev GET /v1/access subject; never trial or consumer admission."
+  type        = set(string)
+  sensitive   = true
+  default     = []
+  validation {
+    condition = length(var.dev_access_snapshot_extra_subjects) == 0 || (
+      length(var.dev_access_snapshot_extra_subjects) == 1 && var.enabled &&
+      var.environment == "dev" && var.aws_region == "us-east-1" &&
+      length(var.governed_trial_subjects) == 1 && !local.authority_engineering_active &&
+      length(var.engineering_subjects) == 0 && var.api_gateway != null &&
+      length(setintersection(var.dev_access_snapshot_extra_subjects, var.governed_trial_subjects)) == 0 &&
+      alltrue([for subject in var.dev_access_snapshot_extra_subjects : can(regex("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", subject))])
+    )
+    error_message = "Snapshot-only selection requires one distinct private Dev UUID and the preserved governed trial mode; other engineering modes must stay disabled."
+  }
+}

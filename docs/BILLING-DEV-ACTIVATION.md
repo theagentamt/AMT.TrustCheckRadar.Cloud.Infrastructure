@@ -147,3 +147,72 @@ for store/access end-to-end evidence and SECUR4ALL-334 for broader allowance
 qualification. Physical-only cases remain in ATCR-148. Do not close retained
 Dev acceptance merely by transferring it to QA. Independent component completion
 and V1 paid-launch readiness are separate.
+
+## Dev GET-only Pricing/Access selection (SEC195 / SEC244)
+
+This is separate from purchase preparation, verification, trial activation and
+History. The owner approved implementation and review on October 9, 2026; that
+approval does not authorize a runtime apply. Android ATCR-170 can opt into the
+fixed authenticated `GET /v1/access` route independently of purchase flags.
+
+The existing schemaVersion 1 / owner-2026-09-20-v1 response is unchanged. An
+admitted account without an active binding can receive an advisory snapshot with
+`activeDevice=false`, `access.reason=ACTIVE_DEVICE_REQUIRED` and external checks
+disabled. When no effective grant/period exists, allowance values are null;
+clients must not invent a paid or trial allowance. Existing authority refresh
+writes can occur during a GET, but this path neither grants nor activates trial.
+Extra-only subjects always see `trial.activationAvailable=false`. Account, age,
+deletion and JWT checks stay intact; no device registration is needed merely to
+display this state.
+
+`dev_access_snapshot_extra_subjects` is a sensitive, default-empty Dev-only set
+of at most one distinct canonical UUID. Its environment key is emitted only on
+the entitlements function and is interpreted only for exact GET route + method.
+The original `DEV_SUBJECT_ALLOWLIST_JSON` and global trial policy are preserved.
+Malformed extra configuration denies extra admission without breaking the
+original subject's behavior. The extra selection does not enable another route,
+scan admission, purchase retention, cleanup, provider call or background worker.
+
+The dedicated `access-snapshot-dev.yml` workflow reads the independent encrypted
+Dev environment secret `ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON`. It reads, but must
+not replace, `GOVERNED_HISTORY_ENGINEERING_SUBJECTS_JSON` to preserve the existing
+access/trial and History account. No identifiers belong in source, workflow
+arguments, public evidence or logs. The approved identity may be reused privately
+for selection; it is not fresh session/device/account eligibility evidence.
+
+Before a plan, the helper checks the preserved live access/History selection,
+trial gates, old entitlement package and unweighted alias, then downloads and
+hashes the exact reviewed new object version. Its checked-in package provenance
+is `docs/evidence/sec244-access-snapshot-package.json`; it must contain the actual
+immutable publication, not a guessed S3 version. Raw private plan/configuration
+and logs stay mode 0600 on the runner and are removed in the final cleanup step.
+The public review contains counts, revisions and a digest only.
+
+Plan and apply are separate dispatches at the exact reviewed main commit. The
+guard rejects drift, unknown Terraform checks, additions/replacements/deletions,
+IAM or API changes, unrelated function changes, original trial/subject edits and
+any environment change other than the extra GET key. It permits exactly two
+in-place updates: `trustcheckradar-dev-v1-entitlements` and its unweighted live
+alias, with the pinned reviewed ZIP. Protected live-runtime hashes exclude only
+that function, preserving History, purchase, deletion and other consumers.
+Apply must regenerate and match the approved exact digest, recheck the previous
+live runtime immediately before apply, read back the new configuration, compare
+protected runtimes and require a zero-drift plan. This is configuration evidence,
+not Android live acceptance. No apply is authorized while only implementation
+approval exists. UAT and Production have no selection or workflow path here.
+
+This dedicated transition owns the private override. Ordinary environment
+deployments do not deploy the URL-consumer stack; older guarded access/trial
+transitions reject the extra-environment removal and package replacement. Do not
+use raw Terraform or the generic shell helper to apply this stack without these
+inputs and guards. Future changes to access/trial or the entitlement package must
+preserve this scope or explicitly obtain approval to remove it. Removing access
+or restoring the previous ZIP needs a new, separately reviewed exact Dev plan;
+there is no automatic rollback or trial/account reset.
+
+After an approved apply, ATCR-114 / ATCR-170 must repeat the authenticated live
+GET from the preserved current session, render the authoritative plan/nullable
+allowance and disabled trial action, restart/refresh without a duplicate grant,
+and verify account/session isolation. The prior HTTP503 is failed acceptance.
+Purchase acceptance (ATCR-112) and its token-cleanup prerequisite (SEC125) remain
+separate; no purchase activation follows from this display-only work.
