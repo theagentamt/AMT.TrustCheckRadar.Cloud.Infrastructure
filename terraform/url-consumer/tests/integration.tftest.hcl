@@ -606,6 +606,29 @@ run "extra_snapshot_selection_preserves_trial_and_all_other_scope" {
     error_message = "The extra selection belongs only to entitlement GET logic; original trial, deletion and consumer/maintenance scope must remain unchanged."
   }
 }
+run "extra_snapshot_sensitivity_stays_on_entitlements_only" {
+  command = plan
+  variables {
+    governed_trial_subjects            = ["01997e3a-0000-7000-8000-000000000001"]
+    dev_access_snapshot_extra_subjects = ["00000000-0000-4000-8000-000000000003"]
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic inventory evidence"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  assert {
+    condition = (
+      issensitive(aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON) &&
+      !issensitive(aws_lambda_function.runtime["consumer"].environment[0].variables) &&
+      !issensitive(aws_lambda_function.runtime["recovery"].environment[0].variables) &&
+      !issensitive(aws_lambda_function.runtime["deletion"].environment[0].variables)
+    )
+    error_message = "Private snapshot sensitivity must not mark unrelated runtime environment maps or cause their updates."
+  }
+}
 run "extra_snapshot_requires_preserved_trial_mode" {
   command = plan
   variables { dev_access_snapshot_extra_subjects = ["00000000-0000-4000-8000-000000000003"] }
