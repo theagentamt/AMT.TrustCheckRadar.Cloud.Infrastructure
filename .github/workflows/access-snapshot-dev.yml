@@ -74,7 +74,8 @@ jobs:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: us-east-1
           allowed-account-ids: "107827791950"
-          role-session-name: access-snapshot-${{ github.run_id }}
+          # Serialized Dev runs keep caller-identity metadata stable for exact plan comparison.
+          role-session-name: access-snapshot-dev
       - name: Prepare independent private snapshot selection and pinned package
         env:
           PRESERVED_ACCESS_SUBJECTS_JSON: ${{ secrets.GOVERNED_HISTORY_ENGINEERING_SUBJECTS_JSON }}
