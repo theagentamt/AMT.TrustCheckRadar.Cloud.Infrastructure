@@ -64,6 +64,23 @@ def read_fixture(provenance):
 
 
 class SnapshotOnlyTests(unittest.TestCase):
+    def test_rejection_diagnostic_never_contains_exception_values(self):
+        private = 'private-subject-and-token-must-not-be-emitted'
+        try:
+            raise ValueError(private)
+        except ValueError as error:
+            self.assertEqual(gate.rejection_location(error), 'external-validation')
+        plan, provenance = fixture()
+        plan['complete'] = False
+        try:
+            gate.review(plan, REVISION, provenance)
+        except ValueError as error:
+            diagnostic = gate.rejection_location(error)
+            self.assertRegex(diagnostic, r'^review-line-[0-9]+$')
+            self.assertNotIn(private, diagnostic)
+        else:
+            self.fail('Incomplete plan was accepted')
+
     def test_exact_two_resource_transition(self):
         plan,provenance=fixture()
         artifacts,digest=gate.review(plan,REVISION,provenance)
