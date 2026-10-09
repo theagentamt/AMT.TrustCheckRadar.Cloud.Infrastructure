@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import re
+import traceback
 from pathlib import Path
 
 from prepare_access_snapshot_dev import (ACCOUNT, FUNCTION_NAME, EXTRA_GATE, PROVENANCE_REFERENCE,
@@ -89,6 +90,15 @@ def review(plan, revision, provenance=None):
     return {'entitlements':artifact}, digest
 
 
+def rejection_location(error):
+    """Expose only a checked-in review line, never exception text or locals."""
+    frames = traceback.extract_tb(error.__traceback__)
+    for frame in reversed(frames):
+        if Path(frame.filename).resolve() == Path(__file__).resolve() and frame.name == "review":
+            return f"review-line-{frame.lineno}"
+    return "external-validation"
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('plan',type=Path);parser.add_argument('--revision',required=True);parser.add_argument('--expected-digest')
@@ -99,8 +109,8 @@ def main():
         verify_artifacts(artifacts)
         print(json.dumps({'scope':'dev-access-snapshot-only','revision':args.revision,'reviewedPlanDigest':digest,
             'resourceUpdates':2,'extraSnapshotSubjects':1,'preservedTrialSubjects':1,'publicContractChanged':False}))
-    except Exception:
-        raise SystemExit('Snapshot plan rejected; private plan values were not printed.') from None
+    except Exception as error:
+        raise SystemExit(f'Snapshot plan rejected ({rejection_location(error)}); private plan values were not printed.') from None
 
 
 if __name__=='__main__':main()
