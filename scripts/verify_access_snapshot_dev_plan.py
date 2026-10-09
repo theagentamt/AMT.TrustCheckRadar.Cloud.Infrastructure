@@ -90,6 +90,32 @@ def review(plan, revision, provenance=None):
     return {'entitlements':artifact}, digest
 
 
+def minimized_changes(plan):
+    """Only known source addresses, fixed actions and public schema field names."""
+    names = {'entitlements', 'consumer', 'recovery', 'deletion'}
+    kinds = {'aws_lambda_function', 'aws_lambda_alias', 'aws_iam_role',
+             'aws_iam_role_policy', 'aws_cloudwatch_log_group'}
+    safe = {f'{kind}.runtime["{name}"]' for kind in kinds for name in names}
+    safe |= {f'aws_iam_role_policy.{name}[0]' for name in names | {'complimentary_operator'}}
+    safe |= {f'aws_lambda_function_event_invoke_config.no_async_retries["{name}"]' for name in names}
+    fields = COMPUTED | set(PACKAGE_FIELDS) | {
+        'environment', 'function_version', 'policy', 'tags', 'tags_all',
+        'handler', 'runtime', 'architectures', 'timeout', 'memory_size',
+        'reserved_concurrent_executions', 'role', 'publish', 'routing_config',
+        'retention_in_days', 'description', 'assume_role_policy'}
+    result = []
+    for row in plan.get('resource_changes', []):
+        change = row.get('change', {})
+        if row.get('mode') != 'managed' or change.get('actions') == ['no-op']:
+            continue
+        before, after = change.get('before'), change.get('after')
+        changed = changed_fields(before, after) if isinstance(before, dict) and isinstance(after, dict) else set()
+        result.append({'resource': row['address'] if row.get('address') in safe else 'other-managed-resource',
+            'actions': [v if v in {'create', 'update', 'delete', 'read'} else 'other' for v in change.get('actions', [])],
+            'changedFields': sorted(changed & fields), 'otherFieldCount': len(changed - fields)})
+    return {'managedChanges': result}
+
+
 def rejection_location(error):
     """Expose only a checked-in review line, never exception text or locals."""
     frames = traceback.extract_tb(error.__traceback__)
@@ -103,13 +129,17 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('plan',type=Path);parser.add_argument('--revision',required=True);parser.add_argument('--expected-digest')
     args=parser.parse_args()
+    plan = None
     try:
-        artifacts,digest=review(json.loads(args.plan.read_text()),args.revision)
+        plan = json.loads(args.plan.read_text())
+        artifacts,digest=review(plan,args.revision)
         require(args.expected_digest is None or args.expected_digest == digest, 'Exact approved digest required.')
         verify_artifacts(artifacts)
         print(json.dumps({'scope':'dev-access-snapshot-only','revision':args.revision,'reviewedPlanDigest':digest,
             'resourceUpdates':2,'extraSnapshotSubjects':1,'preservedTrialSubjects':1,'publicContractChanged':False}))
     except Exception as error:
+        if isinstance(plan, dict):
+            print(json.dumps(minimized_changes(plan)), flush=True)
         raise SystemExit(f'Snapshot plan rejected ({rejection_location(error)}); private plan values were not printed.') from None
 
 
