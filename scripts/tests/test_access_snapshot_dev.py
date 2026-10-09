@@ -1,6 +1,9 @@
 import base64
 import copy
 import hashlib
+import io
+import tempfile
+from contextlib import redirect_stdout
 import json
 import sys
 import unittest
@@ -64,6 +67,21 @@ def read_fixture(provenance):
 
 
 class SnapshotOnlyTests(unittest.TestCase):
+    def test_cli_rejection_emits_only_minimized_inventory(self):
+        plan, provenance = fixture()
+        plan['resource_changes'][0]['change']['actions'] = ['update']
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'private-plan.json'
+            path.write_text(json.dumps(plan))
+            output = io.StringIO()
+            with patch.object(sys, 'argv', ['guard', str(path), '--revision', REVISION]), patch.object(gate, 'load_provenance', return_value=provenance), redirect_stdout(output):
+                with self.assertRaisesRegex(SystemExit, r'Snapshot plan rejected \(review-line-[0-9]+\)'):
+                    gate.main()
+            result = json.loads(output.getvalue())
+            self.assertEqual(result, gate.minimized_changes(plan))
+            self.assertNotIn(SUBJECT, output.getvalue())
+            self.assertNotIn(EXTRA, output.getvalue())
+
     def test_change_inventory_omits_private_values_addresses_and_fields(self):
         private = 'private-subject-and-token-must-not-be-emitted'
         plan, _ = fixture()
