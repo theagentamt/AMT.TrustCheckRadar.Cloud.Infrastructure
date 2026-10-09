@@ -64,6 +64,24 @@ def read_fixture(provenance):
 
 
 class SnapshotOnlyTests(unittest.TestCase):
+    def test_change_inventory_omits_private_values_addresses_and_fields(self):
+        private = 'private-subject-and-token-must-not-be-emitted'
+        plan, _ = fixture()
+        row = copy.deepcopy(plan['resource_changes'][0])
+        row['address'] = private
+        row['change'] = {'actions': ['update'], 'before': {private: 'old'}, 'after': {private: private}}
+        plan['resource_changes'].append(row)
+        result = gate.minimized_changes(plan)
+        self.assertNotIn(private, json.dumps(result))
+        self.assertEqual(result['managedChanges'][-1], {'resource': 'other-managed-resource',
+            'actions': ['update'], 'changedFields': [], 'otherFieldCount': 1})
+
+    def test_change_inventory_names_only_expected_runtime_and_schema_fields(self):
+        plan, _ = fixture()
+        result = gate.minimized_changes(plan)['managedChanges']
+        self.assertEqual({r['resource'] for r in result}, {gate.FUNCTION, gate.ALIAS})
+        self.assertIn('environment', next(r for r in result if r['resource'] == gate.FUNCTION)['changedFields'])
+
     def test_rejection_diagnostic_never_contains_exception_values(self):
         private = 'private-subject-and-token-must-not-be-emitted'
         try:
