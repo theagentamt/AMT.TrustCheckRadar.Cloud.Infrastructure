@@ -4,7 +4,10 @@ import argparse
 import copy
 import json
 import os
+import re
+from datetime import datetime, timezone
 from pathlib import Path
+from uuid import UUID
 
 import verify_billing_cleanup_prerequisite as prerequisite
 from prepare_access_snapshot_dev import unique_pairs
@@ -18,6 +21,8 @@ CODES = frozenset({
     'scope', 'activation_schema', 'activation_source', 'evidence', 'artifact_pin',
     'artifact_source', 'metadata_account', 'metadata_capture', 'union_validation', 'private_output',
 })
+MAPPING_ADDRESS = 'aws_lambda_event_source_mapping.deletion[0]'
+MAPPING_PROVIDER = 'registry.terraform.io/hashicorp/aws'
 
 
 class PlanningRejected(ValueError):
@@ -67,10 +72,135 @@ def admitted(metadata):
     return result
 
 
-def variables(plan):
+def has_unknown(value):
+    if isinstance(value, dict):
+        return any(has_unknown(child) for child in value.values())
+    if isinstance(value, list):
+        return any(has_unknown(child) for child in value)
+    return value is True
+
+
+def timestamp(value):
+    require(isinstance(value, str) and re.fullmatch(
+        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})', value), 'plan_drift')
+    return datetime.fromisoformat(value.replace('Z', '+00:00')).astimezone(timezone.utc)
+
+
+def empty_configuration(value):
+    if isinstance(value, dict):
+        return all(empty_configuration(child) for child in value.values())
+    if isinstance(value, list):
+        return all(empty_configuration(child) for child in value)
+    return value is None
+
+
+def mapping_drift_structure(plan):
+    """Qualify only the proposed timestamp shape; fresh AWS proof is still required."""
+    try:
+        drift = plan.get('resource_drift')
+        require(type(drift) is list and len(drift) == 1, 'plan_drift')
+        row = drift[0]
+        require(row.get('address') == MAPPING_ADDRESS and row.get('mode') == 'managed' and
+                row.get('type') == 'aws_lambda_event_source_mapping' and
+                row.get('provider_name') == MAPPING_PROVIDER, 'plan_drift')
+        change = row['change']
+        require(change['actions'] == ['update'] and not has_unknown(change.get('before_unknown', {})) and
+                not has_unknown(change.get('after_unknown', {})), 'plan_drift')
+        before, after = change['before'], change['after']
+        require(type(before) is dict and type(after) is dict and set(before) == set(after), 'plan_drift')
+        require({key for key in before if before[key] != after[key]} == {'last_modified'}, 'plan_drift')
+        require(timestamp(before['last_modified']) != timestamp(after['last_modified']), 'plan_drift')
+        rows = [entry for entry in plan['resource_changes'] if entry.get('address') == MAPPING_ADDRESS]
+        require(len(rows) == 1, 'plan_drift')
+        counterpart = rows[0]
+        require(all(counterpart.get(key) == row.get(key) for key in ('mode', 'type', 'provider_name')), 'plan_drift')
+        planned = counterpart['change']
+        require(planned['actions'] == ['no-op'] and planned['before'] == planned['after'] == after and
+                not has_unknown(planned.get('before_unknown', {})) and
+                not has_unknown(planned.get('after_unknown', {})), 'plan_drift')
+        configs = [entry for entry in plan['configuration']['root_module']['resources']
+                   if entry.get('address') == 'aws_lambda_event_source_mapping.deletion']
+        require(len(configs) == 1, 'plan_drift')
+        expressions = configs[0]['expressions']
+        require('last_modified' not in expressions, 'plan_drift')
+        allowed_references = {
+            'event_source_arn': {'var.deployment.deletion_stream_arn', 'var.deployment'},
+            'function_name': {'aws_lambda_alias.runtime["deletion"].arn',
+                              'aws_lambda_alias.runtime["deletion"]', 'aws_lambda_alias.runtime'},
+        }
+        for field, allowed in allowed_references.items():
+            expression = expressions[field]
+            refs = expression.get('references')
+            required = 'var.deployment.deletion_stream_arn' if field == 'event_source_arn' else 'aws_lambda_alias.runtime["deletion"].arn'
+            require(set(expression) == {'references'} and type(refs) is list and required in refs and
+                    len(refs) == len(set(refs)) and set(refs) <= allowed, 'plan_drift')
+        return after
+    except Exception:
+        raise PlanningRejected('plan_drift') from None
+
+
+def qualify_mapping_drift(plan, metadata):
+    """A single computed timestamp refresh is admitted only with matching live metadata."""
+    try:
+        after = mapping_drift_structure(plan)
+        require(type(metadata) is dict and metadata['identity'].get('Account') == prerequisite.ACCOUNT, 'plan_drift')
+        mappings = metadata['mappings']['EventSourceMappings']
+        require(type(mappings) is list and len(mappings) == 1, 'plan_drift')
+        live = mappings[0]
+        identifier = after['uuid']
+        require(isinstance(identifier, str) and str(UUID(identifier)) == identifier and
+                after.get('id') == identifier == live.get('UUID'), 'plan_drift')
+        mapping_arn = f'arn:aws:lambda:{prerequisite.REGION}:{prerequisite.ACCOUNT}:event-source-mapping:{identifier}'
+        require(after.get('arn') == mapping_arn == live.get('EventSourceMappingArn'), 'plan_drift')
+        stream = metadata['function']['Environment']['Variables']['DELETION_LEDGER_STREAM_ARN']
+        declared_stream = plan['variables']['deployment']['value']['deletion_stream_arn']
+        require(isinstance(stream, str) and re.fullmatch(
+            rf'arn:aws:dynamodb:{prerequisite.REGION}:{prerequisite.ACCOUNT}:table/{prerequisite.PREFIX}-deletion-ledger/stream/[0-9T:.\-]+', stream) and
+                declared_stream == stream, 'plan_drift')
+        require(after.get('function_arn') == after.get('function_name') == live.get('FunctionArn') == prerequisite.ALIAS and
+                after.get('event_source_arn') == live.get('EventSourceArn') == stream, 'plan_drift')
+        require(timestamp(after['last_modified']) == timestamp(live['LastModified']), 'plan_drift')
+        require(after.get('enabled') is True and after.get('state') == live.get('State') == 'Enabled', 'plan_drift')
+        fields = {'batch_size': 'BatchSize', 'maximum_batching_window_in_seconds': 'MaximumBatchingWindowInSeconds',
+                  'parallelization_factor': 'ParallelizationFactor', 'maximum_retry_attempts': 'MaximumRetryAttempts',
+                  'maximum_record_age_in_seconds': 'MaximumRecordAgeInSeconds',
+                  'bisect_batch_on_function_error': 'BisectBatchOnFunctionError',
+                  'tumbling_window_in_seconds': 'TumblingWindowInSeconds', 'function_response_types': 'FunctionResponseTypes'}
+        require(all(key in after and value in live and after[key] == live[value] for key, value in fields.items()), 'plan_drift')
+        require(after.get('starting_position') == 'TRIM_HORIZON' and
+                live.get('StartingPosition') == 'TRIM_HORIZON', 'plan_drift')
+        absent_configuration = {
+            'destination_config': 'DestinationConfig', 'source_access_configuration': 'SourceAccessConfigurations',
+            'self_managed_event_source': 'SelfManagedEventSource', 'topics': 'Topics', 'queues': 'Queues',
+            'amazon_managed_kafka_event_source_config': 'AmazonManagedKafkaEventSourceConfig',
+            'self_managed_kafka_event_source_config': 'SelfManagedKafkaEventSourceConfig',
+            'scaling_config': 'ScalingConfig', 'document_db_event_source_config': 'DocumentDBEventSourceConfig',
+            'metrics_config': 'MetricsConfig', 'provisioned_poller_config': 'ProvisionedPollerConfig',
+        }
+        require(all(empty_configuration(after.get(key)) and empty_configuration(live.get(value))
+                    for key, value in absent_configuration.items()), 'plan_drift')
+        # The provider represents these two absent optional strings as "".
+        # AWS must omit both; no other optional value receives this normalization.
+        require(all(after.get(key) in (None, '') and value not in live for key, value in {
+            'kms_key_arn': 'KMSKeyArn', 'starting_position_timestamp': 'StartingPositionTimestamp'}.items()), 'plan_drift')
+        require(empty_configuration(live.get('FilterCriteriaError')), 'plan_drift')
+        filters = after.get('filter_criteria')
+        live_filters = live.get('FilterCriteria', {}).get('Filters')
+        require(type(filters) is list and len(filters) == 1 and set(filters[0]) == {'filter'} and
+                type(live_filters) is list and len(live_filters) == 1, 'plan_drift')
+        actual_filters = filters[0]['filter']
+        require(type(actual_filters) is list and len(actual_filters) == 1 and set(actual_filters[0]) == {'pattern'} and
+                set(live_filters[0]) == {'Pattern'}, 'plan_drift')
+        require(json.loads(actual_filters[0]['pattern'], object_pairs_hook=unique_pairs) ==
+                json.loads(live_filters[0]['Pattern'], object_pairs_hook=unique_pairs), 'plan_drift')
+    except Exception:
+        raise PlanningRejected('plan_drift') from None
+
+
+def baseline_variables(plan):
+    """Pure input checks run before any metadata discovery; this does not admit drift."""
     require(plan.get('complete') is True and not plan.get('errored'), 'plan_complete')
     require(plan.get('terraform_version') == '1.12.1', 'plan_version')
-    require(not plan.get('resource_drift'), 'plan_drift')
     require(all(check.get('status') == 'pass' for check in plan.get('checks', [])), 'plan_checks')
     values = {key: entry.get('value') for key, entry in plan['variables'].items()}
     require(values.get('environment') == 'dev' and values.get('aws_region') == prerequisite.REGION and
@@ -86,12 +216,19 @@ def variables(plan):
     return values
 
 
+def variables(plan, metadata=None):
+    values = baseline_variables(plan)
+    if plan.get('resource_drift'):
+        qualify_mapping_drift(plan, metadata)
+    return values
+
+
 def build(baseline, selected, metadata):
     """Preserve all currently admitted subjects, including additions absent from source."""
     prerequisite.validate_subjects(selected, 1)
     previous = admitted(metadata)
     prerequisite.verify_metadata([previous[0]], metadata, artifact()['source_hash'])
-    activation = copy.deepcopy(variables(baseline)['deletion_activation'])
+    activation = copy.deepcopy(variables(baseline, metadata)['deletion_activation'])
     activation['subjects'] = sorted(set(previous) | set(selected))
     prerequisite.validate_subjects(activation['subjects'], 10)
     return {'deletion_activation': activation}
@@ -115,9 +252,13 @@ def main():
         stage = 'baseline_json'
         baseline = load(args.baseline_plan)
         stage = 'baseline_validation'
-        variables(baseline)
+        baseline_variables(baseline)
+        if baseline.get('resource_drift'):
+            mapping_drift_structure(baseline)
         stage = 'metadata_capture'
         metadata = capture()
+        stage = 'baseline_validation'
+        variables(baseline, metadata)
         stage = 'union_validation'
         result = build(baseline, selected, metadata)
         stage = 'private_output'

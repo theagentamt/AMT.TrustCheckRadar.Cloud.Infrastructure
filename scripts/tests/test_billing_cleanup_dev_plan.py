@@ -222,4 +222,153 @@ class CleanupRejectionDiagnosticTests(unittest.TestCase):
         self.assertEqual(prepare.public_code({'private': BILLING}), 'internal')
 
 
+def timestamp_drift_fixture():
+    plan, baseline, captured = fixture()
+    identifier = '22222222-2222-4222-8222-222222222222'
+    mapping = captured['metadata']['mappings']['EventSourceMappings'][0]
+    mapping.update(UUID=identifier, EventSourceMappingArn=f'arn:aws:lambda:us-east-1:{prepare.prerequisite.ACCOUNT}:event-source-mapping:{identifier}',
+                   LastModified='2026-09-30T17:23:00-05:00', MaximumBatchingWindowInSeconds=0,
+                   ParallelizationFactor=1, TumblingWindowInSeconds=0, StartingPosition='TRIM_HORIZON')
+    after = {'id': identifier, 'uuid': identifier, 'arn': mapping['EventSourceMappingArn'],
+             'function_arn': mapping['FunctionArn'], 'function_name': mapping['FunctionArn'],
+             'event_source_arn': mapping['EventSourceArn'], 'enabled': True, 'state': 'Enabled',
+             'last_modified': '2026-09-30T22:23:00Z', 'starting_position': 'TRIM_HORIZON',
+             'kms_key_arn': '', 'starting_position_timestamp': '',
+             'batch_size': 5, 'maximum_batching_window_in_seconds': 0, 'parallelization_factor': 1,
+             'maximum_retry_attempts': 2, 'maximum_record_age_in_seconds': 600,
+             'bisect_batch_on_function_error': True, 'tumbling_window_in_seconds': 0,
+             'function_response_types': ['ReportBatchItemFailures'],
+             'filter_criteria': [{'filter': [{'pattern': mapping['FilterCriteria']['Filters'][0]['Pattern']}]}]}
+    before = dict(after, last_modified='2026-09-29T22:23:00Z')
+    row = {'address': prepare.MAPPING_ADDRESS, 'mode': 'managed', 'type': 'aws_lambda_event_source_mapping',
+           'provider_name': prepare.MAPPING_PROVIDER,
+           'change': {'actions': ['update'], 'before': before, 'after': after, 'after_unknown': {}}}
+    config = {'address': 'aws_lambda_event_source_mapping.deletion', 'expressions': {
+        'event_source_arn': {'references': ['var.deployment.deletion_stream_arn', 'var.deployment']},
+        'function_name': {'references': ['aws_lambda_alias.runtime["deletion"].arn',
+                                       'aws_lambda_alias.runtime["deletion"]', 'aws_lambda_alias.runtime']}}}
+    for target in (plan, baseline):
+        target['variables']['deployment'] = {'value': {'deletion_stream_arn': mapping['EventSourceArn']}}
+        target['resource_drift'] = [copy.deepcopy(row)]
+        counterpart = next(entry for entry in target['resource_changes'] if entry['address'] == prepare.MAPPING_ADDRESS)
+        counterpart['change'] = {'actions': ['no-op'], 'before': copy.deepcopy(after), 'after': copy.deepcopy(after), 'after_unknown': {}}
+        target['configuration']['root_module']['resources'].append(copy.deepcopy(config))
+    return plan, baseline, captured
+
+
+class MappingTimestampDriftTests(unittest.TestCase):
+    def rejects(self, plan, metadata):
+        with self.assertRaises(prepare.PlanningRejected) as error:
+            prepare.variables(plan, metadata)
+        self.assertEqual(error.exception.code, 'plan_drift')
+
+    def test_exact_timestamp_refresh_requires_timezone_equivalent_live_proof(self):
+        plan, baseline, captured = timestamp_drift_fixture()
+        metadata = captured['metadata']
+        self.assertEqual(prepare.variables(plan, metadata)['environment'], 'dev')
+        self.assertEqual(prepare.build(baseline, captured['selected'], metadata)['deletion_activation']['subjects'], sorted([BILLING, PRESERVED]))
+        self.assertEqual(guard.review(plan, baseline, captured, REVISION)['resourceUpdates'], 2)
+        self.rejects(plan, None)
+        metadata['mappings']['EventSourceMappings'][0]['LastModified'] = '2026-09-30T22:23:00+00:00'
+        self.assertEqual(prepare.variables(plan, metadata)['environment'], 'dev')
+
+    def test_other_resource_provider_action_or_additional_drift_rejected(self):
+        mutations = [('address', 'aws_lambda_function.runtime["deletion"]'), ('mode', 'data'),
+                     ('type', 'aws_lambda_function'), ('provider_name', 'registry.terraform.io/other/aws')]
+        for field, value in mutations:
+            plan, _, captured = timestamp_drift_fixture(); plan['resource_drift'][0][field] = value
+            with self.subTest(field=field): self.rejects(plan, captured['metadata'])
+        for action in (['no-op'], ['delete', 'create'], ['create']):
+            plan, _, captured = timestamp_drift_fixture(); plan['resource_drift'][0]['change']['actions'] = action
+            with self.subTest(action=action): self.rejects(plan, captured['metadata'])
+        for extra in ({'mode': 'data'}, {'mode': 'managed'}):
+            plan, _, captured = timestamp_drift_fixture(); plan['resource_drift'].append(extra)
+            with self.subTest(extra=extra): self.rejects(plan, captured['metadata'])
+
+    def test_other_changed_fields_unknowns_and_changed_counterpart_rejected(self):
+        for mutation in ('other-field', 'before-unknown', 'after-unknown', 'counterpart-after', 'counterpart-actions', 'counterpart-unknown', 'duplicate'):
+            plan, _, captured = timestamp_drift_fixture()
+            drift = plan['resource_drift'][0]['change']
+            counterpart = next(row for row in plan['resource_changes'] if row['address'] == prepare.MAPPING_ADDRESS)
+            if mutation == 'other-field': drift['before']['batch_size'] = 99
+            if mutation == 'before-unknown': drift['before_unknown'] = {'last_modified': True}
+            if mutation == 'after-unknown': drift['after_unknown'] = {'last_modified': True}
+            if mutation == 'counterpart-after': counterpart['change']['after']['batch_size'] = 99
+            if mutation == 'counterpart-actions': counterpart['change']['actions'] = ['update']
+            if mutation == 'counterpart-unknown': counterpart['change']['after_unknown'] = {'filter_criteria': [{'filter': True}]}
+            if mutation == 'duplicate': plan['resource_changes'].append(copy.deepcopy(counterpart))
+            with self.subTest(mutation=mutation): self.rejects(plan, captured['metadata'])
+
+    def test_timestamp_malformed_naive_equal_or_fresh_mismatch_rejected(self):
+        for value in ('2026-09-30T22:23:00', 'not-a-timestamp', '2026-99-30T22:23:00Z', '2026-09-30T22:23:01Z'):
+            plan, _, captured = timestamp_drift_fixture()
+            captured['metadata']['mappings']['EventSourceMappings'][0]['LastModified'] = value
+            with self.subTest(value=value): self.rejects(plan, captured['metadata'])
+        plan, _, captured = timestamp_drift_fixture()
+        plan['resource_drift'][0]['change']['before']['last_modified'] = '2026-09-30T17:23:00-05:00'
+        self.rejects(plan, captured['metadata'])
+
+    def test_wrong_live_identity_or_configuration_rejected(self):
+        for field, value in [('UUID', 'not-a-uuid'), ('EventSourceMappingArn', 'other'), ('FunctionArn', 'other'),
+                             ('EventSourceArn', 'other'), ('State', 'Disabled'), ('BatchSize', 99),
+                             ('MaximumRetryAttempts', -1), ('MaximumBatchingWindowInSeconds', 10),
+                             ('StartingPosition', 'LATEST'), ('DestinationConfig', {'OnFailure': {'Destination': 'other'}}),
+                             ('FilterCriteria', {'Filters': [{'Pattern': '{}'}]})]:
+            plan, _, captured = timestamp_drift_fixture()
+            captured['metadata']['mappings']['EventSourceMappings'][0][field] = value
+            with self.subTest(field=field): self.rejects(plan, captured['metadata'])
+
+    def test_only_two_absent_provider_strings_are_normalized_and_live_start_required(self):
+        for field, live_field in [('kms_key_arn', 'KMSKeyArn'), ('starting_position_timestamp', 'StartingPositionTimestamp')]:
+            plan, _, captured = timestamp_drift_fixture()
+            for side in ('before', 'after'): plan['resource_drift'][0]['change'][side][field] = 'nonempty'
+            counterpart = next(row for row in plan['resource_changes'] if row['address'] == prepare.MAPPING_ADDRESS)
+            for side in ('before', 'after'): counterpart['change'][side][field] = 'nonempty'
+            with self.subTest(field=field): self.rejects(plan, captured['metadata'])
+            plan, _, captured = timestamp_drift_fixture()
+            captured['metadata']['mappings']['EventSourceMappings'][0][live_field] = None
+            with self.subTest(live_field=live_field): self.rejects(plan, captured['metadata'])
+        plan, _, captured = timestamp_drift_fixture()
+        del captured['metadata']['mappings']['EventSourceMappings'][0]['StartingPosition']
+        self.rejects(plan, captured['metadata'])
+        for field in ('id', 'uuid', 'arn', 'function_arn', 'function_name', 'event_source_arn'):
+            plan, _, captured = timestamp_drift_fixture()
+            for side in ('before', 'after'): plan['resource_drift'][0]['change'][side][field] = 'other'
+            counterpart = next(row for row in plan['resource_changes'] if row['address'] == prepare.MAPPING_ADDRESS)
+            for side in ('before', 'after'): counterpart['change'][side][field] = 'other'
+            with self.subTest(field=field): self.rejects(plan, captured['metadata'])
+
+    def test_source_timestamp_assignment_or_wrong_binding_rejected(self):
+        for mutation in ('timestamp', 'function-ref', 'source-ref', 'literal', 'declared-stream'):
+            plan, _, captured = timestamp_drift_fixture()
+            expr = plan['configuration']['root_module']['resources'][-1]['expressions']
+            if mutation == 'timestamp': expr['last_modified'] = {'constant_value': '2026-09-30T22:23:00Z'}
+            if mutation == 'function-ref': expr['function_name']['references'] = ['aws_lambda_alias.runtime["worker"].arn']
+            if mutation == 'source-ref': expr['event_source_arn']['references'] = ['var.other_stream']
+            if mutation == 'literal': expr['function_name'] = {'constant_value': prepare.prerequisite.ALIAS}
+            if mutation == 'declared-stream': plan['variables']['deployment']['value']['deletion_stream_arn'] = 'other'
+            with self.subTest(mutation=mutation): self.rejects(plan, captured['metadata'])
+
+    def test_preparation_checks_static_gates_then_captures_metadata_once(self):
+        _, baseline, captured = timestamp_drift_fixture()
+        artifact = prepare.artifact()
+        with tempfile.TemporaryDirectory() as directory, \
+             patch.dict(os.environ, {'BILLING_ENGINEERING_SUBJECTS_JSON': json.dumps([BILLING]), 'RUNNER_TEMP': directory}, clear=True), \
+             patch.object(sys, 'argv', ['prepare', '--baseline-plan', '/unused-private-plan']), \
+             patch.object(prepare, 'load', return_value=baseline), patch.object(prepare, 'artifact', return_value=artifact), \
+             patch.object(prepare, 'capture', return_value=captured['metadata']) as capture, redirect_stdout(StringIO()):
+            prepare.main()
+            self.assertEqual(capture.call_count, 1)
+        for field, value, code in [('complete', False, 'plan_complete'), ('terraform_version', 'other', 'plan_version'),
+                                   ('checks', [{'status': 'unknown'}], 'plan_checks')]:
+            _, baseline, _ = timestamp_drift_fixture(); baseline[field] = value
+            with self.subTest(field=field), patch.dict(os.environ, {'BILLING_ENGINEERING_SUBJECTS_JSON': json.dumps([BILLING])}, clear=True), \
+                 patch.object(sys, 'argv', ['prepare', '--baseline-plan', '/unused-private-plan']), \
+                 patch.object(prepare, 'load', return_value=baseline), patch.object(prepare, 'artifact', return_value=artifact), \
+                 patch.object(prepare, 'capture', side_effect=AssertionError('Static gates must run first')) as capture:
+                with self.assertRaises(SystemExit) as error: prepare.main()
+                self.assertEqual(str(error.exception), code)
+                self.assertEqual(capture.call_count, 0)
+
+
 if __name__ == '__main__': unittest.main()

@@ -38,7 +38,7 @@ def inventory(plan):
 
 def review(plan, baseline_plan, captured, revision):
     require(isinstance(revision, str) and re.fullmatch(r'[a-f0-9]{40}', revision))
-    current, base = prepare.variables(plan), prepare.variables(baseline_plan)
+    current, base = prepare.variables(plan, captured['metadata']), prepare.variables(baseline_plan, captured['metadata'])
     expected = prepare.build(baseline_plan, captured['selected'], captured['metadata'])
     require(current == dict(base, **expected))
     rows, baseline = inventory(plan), inventory(baseline_plan)
