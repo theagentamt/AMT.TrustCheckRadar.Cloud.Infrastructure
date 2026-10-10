@@ -326,6 +326,29 @@ must still display the test-purchase notice and a Google test payment instrument
    or authorize admission/runtime changes; the next real plan must identify
    and resolve the actual blocking condition.
 
+   The owner subsequently approved qualification of only the computed
+   `aws_lambda_event_source_mapping.deletion[0].last_modified` refresh. The
+   exception requires exactly one managed AWS mapping drift row, with an update
+   action and every other before/after attribute identical. Both timestamps must
+   be known timezone-aware values representing different instants; the refreshed
+   value must equal fresh AWS metadata after UTC normalization. The mapping UUID,
+   ARN, live deletion alias, declared deletion-ledger stream and effective stream
+   configuration must also match. The source must not assign `last_modified`,
+   and its stream/function references must select the existing deletion mapping.
+   The planned counterpart must be exactly one unchanged no-op equal to the
+   refreshed row, without unknown values. Missing proof, any additional drift
+   (including data rows), or any other changed field still rejects with
+   `plan_drift`. Metadata is captured once during preparation and reused for the
+   same plan review; the final existing readback must still confirm it is fresh.
+   The provider's empty-string defaults are normalized only for absent
+   `kms_key_arn` and `starting_position_timestamp`; both corresponding AWS fields
+   must be omitted. The live starting position must explicitly be `TRIM_HORIZON`.
+   The helper was checked against the regenerated real baseline's mapping row
+   and the fresh AWS mapping metadata; that adapter check passed. It does not
+   establish that the complete workflow's subsequent plan has passed.
+   This qualifies a read-only timestamp observation, not a state write, mapping
+   update, cleanup admission or successful behavioral acceptance.
+
    Diagnostic-source main CI
    [38059948494](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38059948494)
    passed stack validation but found a pre-existing snapshot rejection-test
