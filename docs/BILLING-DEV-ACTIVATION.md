@@ -252,10 +252,16 @@ No current saved-plan digest is available. Owner-completed AWS SSO refresh
 verified the expected Dev account; fresh metadata evidence is recorded in
 `docs/evidence/sec244-billing-account-readiness-2026-10-10.json`. The snapshot-only
 selection differs from foreground billing, and neither is covered by cleanup.
-The corrected local guard passes the existing cleanup selection using real
-metadata reads. The deploy role lacks billing scheduler read access;
-SECUR4ALL-342 owns its local metadata-only permission proposal and actual-role
-qualification. No runtime, grant or selection has changed. Owner confirmation establishes that
+The corrected guard passes the existing cleanup selection using real metadata
+reads. The owner-approved metadata-only grant was applied by
+[run 38056641078](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38056641078)
+from exact source `c8a7fe49145769aeffca104992d39d807ab60b51`; independent live policy
+readback matched and preserved both prior statements. After PR173 and successful
+main CI, [run 38057601139](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38057601139)
+from `c64f7160aafb87d643411f2d4d4ca6ef1ff5754c` qualified all four Scheduler reads
+through the actual GitHub OIDC deployment role. No runtime or account selection
+changed. The dedicated billing-selection secret was absent in the names-only
+readiness check; no secret values were read. Owner confirmation establishes that
 the current Play account is eligible for license testing; the actual checkout
 must still display the test-purchase notice and a Google test payment instrument.
 
@@ -273,12 +279,28 @@ must still display the test-purchase notice and a Google test payment instrument
    Reconfirm the current account through a fresh authorized protected session;
    do not reuse expired identity fixtures or move to the old History account.
 3. If cleanup does not admit the approved billing subject, prepare a separate
-   cleanup-only saved plan adding that one subject to the existing deletion
-   admission set. Preserve all existing subjects, exact package, IAM, stream,
+   cleanup-only saved plan using manual `billing-cleanup-dev.yml`, with only the
+   exact main `expected_revision` input. Before dispatch, obtain fresh private
+   account confirmation and explicit approval to configure the protected
+   `BILLING_ENGINEERING_SUBJECTS_JSON` input with that one canonical subject.
+   The workflow reads and privately preserves every live cleanup subject, adds
+   the selected subject, and rejects a union larger than ten. Preserve the exact
+   SEC332 package, IAM, stream,
    schedule and non-cleanup gates. Expected writable runtime surface is only
    token-deletion function configuration/version and its live alias; unexpected
    changes stop review. SECUR4ALL-125 owns actual erasure qualification. Metadata
    checks alone do not establish that behavior, effective IAM or provider access.
+   This route is plan-only: it has no apply input, apply step or artifact upload.
+   Baseline and candidate plans/configuration stay private on the runner and are
+   deleted; only counts and the review digest are published. Its guard requires
+   fresh unchanged runtime metadata and rejects unrelated sibling/package drift.
+   The digest identifies that run's private reviewed plan and may change on
+   regeneration because caller-session data is included. The deleted plan cannot
+   be applied; a future apply route must produce separately reviewed executable
+   plan evidence.
+   No successful live plan is implied by local tests. Executing a resulting
+   change needs a separately reviewed apply route and exact action-time approval;
+   do not substitute a blanket deployment or manual configuration edit.
 4. Configure the dedicated encrypted billing selection only after explicit
    configuration approval. SECUR4ALL-244 then prepares `handoff/preparation`
    against an exact integrated infrastructure revision and the reviewed Lambda
@@ -369,8 +391,12 @@ Lambda-only calculation would be approximately $8.65. Neither is an incremental
 cost prediction, total AWS bill, guarantee or spend cap. DynamoDB, secrets,
 scheduler, logs, APIs, KMS, GitHub Actions, taxes and other workloads are excluded.
 Adding subject coverage may increase duration/requests; stream events and
-foreground requests are additional workload. The requested additional spending
-ceiling is still unspecified; no budget or spending-control change is proposed.
+foreground requests are additional workload. The owner approved a USD 5
+additional-AWS operational stop threshold for the first 24 hours, from
+2026-10-10T13:40:29Z through 2026-10-11T13:40:29Z. One Cost Explorer baseline read
+succeeded, but estimated daily whole-account totals cannot isolate the workflow
+or testing session. GitHub workflow costs are separate from this AWS threshold.
+No budget, alert or spending-control setting was changed.
 
 Use bounded manual validation with recorded request counts and the agreed
 transient retry limit. Review aggregate usage after the approved deployment and
