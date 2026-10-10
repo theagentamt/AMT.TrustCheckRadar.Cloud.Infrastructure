@@ -349,6 +349,32 @@ must still display the test-purchase notice and a Google test payment instrument
    This qualifies a read-only timestamp observation, not a state write, mapping
    update, cleanup admission or successful behavioral acceptance.
 
+   At source `b5531e1552bacac7fd28f5278e8e1cebab35a136`, actual-role qualification
+   [38069802993](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38069802993)
+   passed, but cleanup plan
+   [38069854399](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38069854399)
+   reached the saved-plan guard and rejected an output update. Both real plans
+   contained the identical `candidate_contract` update: it added only the
+   previously absent `billing_subject_count = 0` and
+   `scheduled_worker_active = false`, preserving every old output value.
+   The source-only guard correction permits exactly that six-field Terraform
+   output row, with known object values, explicit false sensitivity flags and
+   `after_unknown = false`. The count must be an integer zero and the worker
+   flag a Boolean false; both plans must have null `billing_activation`.
+   Output inventories and complete rows must match between baseline and
+   candidate, including value types. Every other output must remain a known
+   no-op. Additional fields, changed prior values, unknowns, sensitivity or
+   different actions still reject. All resource, source and live-metadata
+   guards remain in force.
+
+   Local boundary tests include the output addition together with the qualified
+   timestamp refresh. The full guard also passed against the freshly regenerated
+   private real baseline, candidate and captured metadata, reporting only two
+   resource updates. This local verification neither applies nor writes state;
+   the published plan-only workflow must still run successfully before a saved
+   plan is qualified. Cleanup admission and behavioral qualification remain
+   pending, and no apply authorization is implied.
+
    Diagnostic-source main CI
    [38059948494](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38059948494)
    passed stack validation but found a pre-existing snapshot rejection-test

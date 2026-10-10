@@ -28,6 +28,44 @@ def unknown(value):
     return value is True
 
 
+def identical(left, right):
+    """Compare JSON without conflating false/zero or changing nested value types."""
+    if type(left) is not type(right):
+        return False
+    if isinstance(left, dict):
+        return set(left) == set(right) and all(identical(left[key], right[key]) for key in left)
+    if isinstance(left, list):
+        return len(left) == len(right) and all(identical(a, b) for a, b in zip(left, right))
+    return left == right
+
+
+def review_outputs(plan, baseline_plan):
+    """Allow only the identical source-only addition of two closed billing outputs."""
+    outputs, baseline = plan.get('output_changes'), baseline_plan.get('output_changes')
+    require(type(outputs) is dict and type(baseline) is dict and
+            set(outputs) == set(baseline) and 'candidate_contract' in outputs)
+    for name, row in outputs.items():
+        require(type(row) is dict and identical(row, baseline[name]))
+        require(row.get('before_sensitive') is False and row.get('after_sensitive') is False and
+                not unknown(row.get('before_unknown', {})) and not unknown(row.get('after_unknown', {})))
+        if row.get('actions') == ['no-op']:
+            require('before' in row and 'after' in row and identical(row['before'], row['after']))
+            continue
+        require(name == 'candidate_contract' and row.get('actions') == ['update'])
+        require(set(row) == {'actions', 'before', 'after', 'after_unknown', 'before_sensitive', 'after_sensitive'})
+        require(row['after_unknown'] is False)
+        before, after = row['before'], row['after']
+        require(type(before) is dict and type(after) is dict)
+        additions = {'billing_subject_count', 'scheduled_worker_active'}
+        require(not additions.intersection(before) and set(after) == set(before) | additions)
+        require(all(identical(value, after[key]) for key, value in before.items()))
+        require(type(after['billing_subject_count']) is int and after['billing_subject_count'] == 0 and
+                type(after['scheduled_worker_active']) is bool and after['scheduled_worker_active'] is False)
+        for source in (plan, baseline_plan):
+            activation = source.get('variables', {}).get('billing_activation')
+            require(type(activation) is dict and 'value' in activation and activation['value'] is None)
+
+
 def inventory(plan):
     rows = [row for row in plan['resource_changes'] if row.get('mode') == 'managed']
     require(all(row.get('provider_name') == 'registry.terraform.io/hashicorp/aws' for row in rows))
@@ -92,8 +130,7 @@ def review(plan, baseline_plan, captured, revision):
                 alias['after'].get('function_version') == after['version'])
     if before['environment'] != after['environment']:
         require(set(changed) == {FUNCTION_ADDRESS, ALIAS_ADDRESS})
-    for output in plan.get('output_changes', {}).values():
-        require(output.get('actions') == ['no-op'] and output.get('before') == output.get('after') and not unknown(output.get('after_unknown', {})))
+    review_outputs(plan, baseline_plan)
     projected = {key: plan.get(key) for key in ('terraform_version', 'variables', 'resource_changes', 'resource_drift', 'output_changes', 'checks', 'configuration')}
     digest = hashlib.sha256(json.dumps({'revision': revision, 'plan': projected, 'selected': captured['selected'],
         'preservedSubjects': prepare.admitted(metadata), 'deletionArtifact': prepare.artifact()}, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
