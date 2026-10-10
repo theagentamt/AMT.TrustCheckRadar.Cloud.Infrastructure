@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       execution_mode:
-        description: Plan the metadata-only grant; apply requires its exact digest
+        description: Plan/apply the grant or qualify actual metadata reads without writes
         type: choice
-        options: [plan, apply]
+        options: [plan, apply, qualify]
         required: true
         default: plan
       expected_revision:
@@ -14,7 +14,7 @@ on:
         type: string
         required: true
       reviewed_policy_digest:
-        description: Required for apply of the reviewed metadata-only policy
+        description: Required for apply or read-only qualification of the exact policy
         type: string
         required: false
 
@@ -52,5 +52,5 @@ jobs:
           set -euo pipefail
           test "$GITHUB_SHA" = "$EXPECTED_REVISION"
           args=(--revision "$EXPECTED_REVISION" --mode "$EXECUTION_MODE")
-          if [[ "$EXECUTION_MODE" == apply ]]; then args+=(--expected-digest "$REVIEWED_POLICY_DIGEST"); fi
+          if [[ "$EXECUTION_MODE" != plan ]]; then args+=(--expected-digest "$REVIEWED_POLICY_DIGEST"); fi
           python3 scripts/billing_inventory_access.py "${args[@]}" >> "$GITHUB_STEP_SUMMARY"
