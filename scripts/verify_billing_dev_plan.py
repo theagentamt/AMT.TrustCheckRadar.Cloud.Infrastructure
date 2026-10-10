@@ -6,6 +6,8 @@ import json
 import re
 from pathlib import Path
 
+from billing_plan_digest import projection
+
 from prepare_billing_dev_configuration import MODES, PACKAGES, ACCOUNT, BUCKET, require, load_provenance
 from verify_governed_history_plan import changed_fields
 from verify_message_consumer_transition import aws, verify_artifacts
@@ -163,7 +165,7 @@ def review(plan, revision, scope, mode):
         require(contract.get('general_customer_access') is False and contract.get('play_handoff_enabled') is (mode == 'verification') and contract.get('preparation_enabled') is active, 'Handoff output mismatch.')
     else:
         require(contract.get('lifecycle_active') is active and contract.get('scheduled_worker_active') is (mode == 'background') and contract.get('google_transport_provisioned') is False, 'Lifecycle output mismatch.')
-    projected = {key: plan.get(key) for key in ('terraform_version', 'variables', 'resource_changes', 'resource_drift', 'output_changes', 'checks', 'configuration')}
+    projected = projection(plan)
     digest = hashlib.sha256(json.dumps(dict(revision=revision, scope=scope, mode=mode, plan=projected, packageProvenance=provenance), sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     return artifacts, digest, len(changed), len(subjects)
 

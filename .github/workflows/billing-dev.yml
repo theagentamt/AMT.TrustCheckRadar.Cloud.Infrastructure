@@ -120,8 +120,8 @@ jobs:
           args=(--revision "$EXPECTED_REVISION" --scope "$BILLING_SCOPE" --mode "$BILLING_MODE")
           if [[ "$EXECUTION_MODE" == apply ]]; then args+=(--expected-digest "$REVIEWED_PLAN_DIGEST"); fi
           python3 scripts/verify_billing_dev_plan.py "$RUNNER_TEMP/billing-plan.json" "${args[@]}" > "$RUNNER_TEMP/billing-review.json"
-          python3 scripts/verify_billing_cleanup_prerequisite.py --plan "$RUNNER_TEMP/billing-plan.json" >> "$GITHUB_STEP_SUMMARY"
           tee -a "$GITHUB_STEP_SUMMARY" < "$RUNNER_TEMP/billing-review.json"
+          python3 scripts/verify_billing_cleanup_prerequisite.py --plan "$RUNNER_TEMP/billing-plan.json" >> "$GITHUB_STEP_SUMMARY"
       - name: Requalify token storage and protected live runtimes
         if: inputs.execution_mode == 'apply'
         run: |
