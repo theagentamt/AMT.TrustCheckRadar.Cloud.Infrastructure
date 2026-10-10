@@ -104,6 +104,11 @@ endpoint or store acceptance.
    policy. Obtain approval of its source/policy digest before apply; it grants
    neither backup operations nor access to token records. Existing inline grants
    are preserved. Read back it and prove effective audit access before billing apply.
+   Use `execution_mode=qualify` with the exact source revision and policy digest
+   to prove the two schedule reads plus group and tag reads through the actual
+   GitHub OIDC deployment role. This mode requires the installed policy to match,
+   reports only resource states/counts, and performs no policy or runtime writes.
+   An AdministratorAccess read or IAM simulation is not actual-role qualification.
 3. Dispatch `execution_mode=plan` for the selected scope/mode with exact
    infrastructure `expected_revision` and `lambda_source_sha`. The preparer
    downloads version-pinned packages and checks their hashes. The guard rejects
