@@ -319,7 +319,17 @@ class InventoryPolicyTests(unittest.TestCase):
         actions = []
         for row in policy['Statement']:
             actions.extend(row['Action'] if type(row['Action']) is list else [row['Action']])
-        self.assertEqual(set(actions), {'backup:ListRecoveryPointsByResource', 'backup:ListBackupPlans', 'backup:ListBackupSelections', 'backup:GetBackupSelection', 'iam:ListRoles', 'scheduler:GetSchedule', 'scheduler:GetScheduleGroup', 'scheduler:ListTagsForResource'})
+        self.assertEqual(set(actions), {'backup:ListRecoveryPointsByResource', 'backup:ListBackupPlans', 'backup:ListBackupSelections', 'backup:GetBackupSelection', 'iam:ListRoles', 'scheduler:GetSchedule', 'scheduler:GetScheduleGroup', 'scheduler:ListTagsForResource', 'kms:DescribeKey', 'kms:GetKeyPolicy', 'kms:GetKeyRotationStatus', 'kms:ListResourceTags'})
+        self.assertEqual(policy['Statement'][:4], inventory_access.previous_document()['Statement'])
+        self.assertEqual(policy['Statement'][4:], [
+            {'Sid': 'ReadBillingTokenKeyMetadata', 'Effect': 'Allow',
+             'Action': ['kms:DescribeKey', 'kms:GetKeyPolicy', 'kms:GetKeyRotationStatus', 'kms:ListResourceTags'],
+             'Resource': 'arn:aws:kms:us-east-1:107827791950:key/62f786f5-76ab-41c3-ac77-fe362e0108ae',
+             'Condition': {'StringEquals': {'aws:RequestedRegion': 'us-east-1'}}},
+            {'Sid': 'ReadBillingTableEncryptionKeyMetadata', 'Effect': 'Allow', 'Action': 'kms:DescribeKey',
+             'Resource': 'arn:aws:kms:us-east-1:107827791950:key/8724b7c1-4afc-48ab-b1ab-6e1a0aa74769',
+             'Condition': {'StringEquals': {'aws:RequestedRegion': 'us-east-1'}}},
+        ])
         self.assertEqual(policy['Statement'][0]['Condition'], {'StringEquals': {'aws:RequestedRegion': 'us-east-1'}})
         scheduler = [row for row in policy['Statement'] if any(action.startswith('scheduler:') for action in (row['Action'] if type(row['Action']) is list else [row['Action']]))]
         self.assertEqual(scheduler, [
@@ -342,8 +352,8 @@ class InventoryCommandTests(unittest.TestCase):
             calls = []
             def read(service, operation, *args):
                 calls.append(operation)
-                if operation == 'get-caller-identity': return {'Account': prepare.ACCOUNT}
-                if operation == 'get-role-policy': return {'PolicyDocument': inventory_access.document()}
+                if operation == 'get-caller-identity': return {'Account': prepare.ACCOUNT, 'Arn': f'arn:aws:sts::{prepare.ACCOUNT}:assumed-role/{inventory_access.ROLE}/test'}
+                if operation == 'get-role-policy': return {'PolicyDocument': inventory_access.previous_document() if calls.count(operation) == 1 else inventory_access.document()}
                 raise AssertionError('Unexpected AWS API')
             argv = ['test', '--revision', REVISION, '--mode', mode]
             if mode == 'apply': argv += ['--expected-digest', inventory_access.digest(REVISION)]
@@ -352,7 +362,7 @@ class InventoryCommandTests(unittest.TestCase):
                 self.assertEqual(command.call_count, 1 if mode == 'plan' else 2)
                 if mode == 'apply':
                     self.assertEqual(command.call_args.args[0][:4], ['aws', 'iam', 'put-role-policy', '--role-name'])
-            self.assertEqual(calls, ['get-caller-identity'] if mode == 'plan' else ['get-caller-identity', 'get-role-policy'])
+            self.assertEqual(calls, ['get-caller-identity'] if mode == 'plan' else ['get-caller-identity', 'get-role-policy', 'get-role-policy'])
 
     def test_wrong_policy_digest_stops_before_write(self):
         argv = ['test', '--revision', REVISION, '--mode', 'apply', '--expected-digest', 'f' * 64]
