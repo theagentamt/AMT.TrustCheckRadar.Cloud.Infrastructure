@@ -4,6 +4,8 @@ import os
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
@@ -103,7 +105,7 @@ class CleanupPlanTests(unittest.TestCase):
         with patch.dict(os.environ, {}, clear=True), patch.object(sys, 'argv', ['prepare', '--baseline-plan', '/unused']), \
              patch.object(prepare, 'capture', side_effect=AssertionError('Must reject before AWS')):
             with self.assertRaises(SystemExit) as error: prepare.main()
-        self.assertEqual(str(error.exception), prepare.ERROR)
+        self.assertEqual(str(error.exception), 'selection_shape')
 
     def test_unrelated_iam_schedule_stream_or_worker_change_rejected(self):
         for index in range(2, 6):
@@ -158,6 +160,66 @@ class CleanupPlanTests(unittest.TestCase):
             with self.assertRaises(FileExistsError): prepare.write_private(target, {})
             link = Path(directory) / 'link'; link.symlink_to(target)
             with self.assertRaises(FileExistsError): prepare.write_private(link, {})
+
+
+class CleanupRejectionDiagnosticTests(unittest.TestCase):
+    def rejection(self, selected, baseline=None, capture_error=None, load_error=None):
+        if baseline is None:
+            _, baseline, _ = fixture()
+        artifact = prepare.artifact()
+        env = {} if selected is None else {'BILLING_ENGINEERING_SUBJECTS_JSON': selected}
+        with patch.dict(os.environ, env, clear=True), \
+             patch.object(sys, 'argv', ['prepare', '--baseline-plan', '/unused-private-plan']), \
+             patch.object(prepare, 'load', return_value=baseline, side_effect=load_error), \
+             patch.object(prepare, 'artifact', return_value=artifact), \
+             patch.object(prepare, 'capture', side_effect=capture_error or AssertionError('AWS must not be reached')) as capture, \
+             redirect_stdout(StringIO()) as stdout, redirect_stderr(StringIO()) as stderr:
+            with self.assertRaises(SystemExit) as error:
+                prepare.main()
+        self.assertEqual(stdout.getvalue(), '')
+        self.assertEqual(stderr.getvalue(), '')
+        code = str(error.exception)
+        self.assertIn(code, prepare.CODES)
+        self.assertNotIn(BILLING, code)
+        self.assertNotIn(PRESERVED, code)
+        return code, capture.call_count
+
+    def test_missing_malformed_or_noncanonical_selection_has_fixed_category(self):
+        cases = [(None, 'selection_shape'), ('', 'selection_shape'), ('[', 'selection_json'),
+                 (json.dumps({'private': BILLING}), 'selection_shape'),
+                 (json.dumps(['NONCANONICAL-' + BILLING]), 'selection_shape'),
+                 (json.dumps([BILLING, PRESERVED]), 'selection_shape'),
+                 ('{"private":"' + BILLING + '","private":"' + PRESERVED + '"}', 'selection_json')]
+        for selected, expected in cases:
+            with self.subTest(expected=expected, selected=selected):
+                self.assertEqual(self.rejection(selected), (expected, 0))
+
+    def test_plan_drift_and_check_rejections_are_distinct_without_resource_values(self):
+        for key, value, expected in [
+            ('resource_drift', [{'address': 'private-resource-' + BILLING}], 'plan_drift'),
+            ('checks', [{'status': 'unknown', 'private': BILLING}], 'plan_checks'),
+            ('checks', [{'status': 'fail', 'private': PRESERVED}], 'plan_checks'),
+            ('complete', False, 'plan_complete'), ('errored', True, 'plan_complete'),
+            ('terraform_version', 'private-version-' + BILLING, 'plan_version'),
+        ]:
+            _, baseline, _ = fixture(); baseline[key] = value
+            with self.subTest(key=key):
+                self.assertEqual(self.rejection(json.dumps([BILLING]), baseline), (expected, 0))
+
+    def test_unexpected_parse_or_capture_exception_never_appears_in_output(self):
+        private = 'credential-like-sentinel-' + BILLING
+        self.assertEqual(self.rejection(json.dumps([BILLING]), load_error=RuntimeError(private)), ('baseline_json', 0))
+        self.assertEqual(self.rejection(json.dumps([BILLING]), capture_error=RuntimeError(private)), ('metadata_capture', 1))
+
+    def test_exception_codes_are_allowlisted_at_creation_and_emission(self):
+        with self.assertRaises(prepare.PlanningRejected) as error:
+            prepare.require(False, BILLING)
+        self.assertEqual(error.exception.code, 'internal')
+        self.assertEqual(str(error.exception), prepare.ERROR)
+        unsafe = prepare.PlanningRejected('metadata_account')
+        unsafe.code = BILLING
+        self.assertEqual(self.rejection(json.dumps([BILLING]), capture_error=unsafe), ('internal', 1))
+        self.assertEqual(prepare.public_code({'private': BILLING}), 'internal')
 
 
 if __name__ == '__main__': unittest.main()
