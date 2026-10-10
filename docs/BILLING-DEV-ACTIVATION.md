@@ -28,9 +28,11 @@ not block independent Google component delivery.
 
 Both roots default to closed billing. The optional activation inputs require one
 canonical Dev subject, matching immutable Lambda source, and inventory/runtime/IAM
-qualification references. Subjects are supplied from the existing encrypted
-`GOVERNED_HISTORY_ENGINEERING_SUBJECTS_JSON` environment secret; they are never
-printed in summaries or newly committed here.
+qualification references. Supply the one approved billing subject through the
+independent encrypted `BILLING_ENGINEERING_SUBJECTS_JSON` environment secret.
+There is no fallback to History selection. Preserve the existing
+`GOVERNED_HISTORY_ENGINEERING_SUBJECTS_JSON` secret and all unrelated selections;
+subjects are never printed in summaries or newly committed here.
 
 | Root / mode | Enabled work | Boundaries |
 | --- | --- | --- |
@@ -48,7 +50,16 @@ token observations remain coupled to conditional writes.
 
 Existing token deletion retains its separate package correction, subjects, stream,
 schedule and heartbeat settings. The billing package override cannot replace its
-artifact. Unrelated message, governed History, entitlements, analysis providers,
+artifact. Every active billing plan and immediate pre-apply check requires the
+selected billing subject to be admitted by the existing active token-deletion
+runtime. The metadata prerequisite checks the reviewed package, live alias,
+cleanup-only gates, tables/policy, concurrency, schedule and ledger stream. It
+uses control-plane reads including `lambda:ListEventSourceMappings` and
+`scheduler:GetSchedule`; denied reads fail closed. Metadata does not prove
+actual erasure. Missing subject coverage requires a separately reviewed cleanup
+plan that preserves existing subjects and all other deletion settings; this
+workflow never widens cleanup automatically. Unrelated message, governed
+History, entitlements, analysis providers,
 export and deletion services are outside this transition. UAT and Production
 are outside the workflow.
 
@@ -59,7 +70,18 @@ Scoped current-head reconciliation neither reads nor writes that cursor.
 
 ## CI/CD plan and apply
 
-Use `.github/workflows/billing-dev.yml` on **main**. Local mock tests do not deploy.
+On 2026-10-10 the owner explicitly authorized publication and reviewed integration
+into **main** for this Android billing gap-fix effort. This is a scoped exception
+to the default `release-V01` integration policy, not a blanket branch merge or
+release promotion. The fix branch is `codex/billing-account-isolation-dev`, based
+on the published main source; unrelated feature history is not imported.
+
+A main merge triggers validation CI only. Deployment, billing transition and IAM
+workflows remain manual `workflow_dispatch`; source integration does not apply
+an IAM grant, change account selection, activate a runtime or approve a purchase.
+Use `.github/workflows/billing-dev.yml` on main only after the separate exact
+source/scope/digest and security/cost approvals. Unit tests do not establish live
+endpoint or store acceptance.
 
 1. Review and integrate source; verify successful main CI and immutable Lambda
    package publication. Supply `BILLING_PACKAGE_HASHES_JSON` as a JSON object with
@@ -216,3 +238,152 @@ allowance and disabled trial action, restart/refresh without a duplicate grant,
 and verify account/session isolation. The prior HTTP503 is failed acceptance.
 Purchase acceptance (ATCR-112) and its token-cleanup prerequisite (SEC125) remain
 separate; no purchase activation follows from this display-only work.
+
+
+## Pending current-account activation proposal (2026-10-10)
+
+This is the proposed sequence for review, not an approved saved Terraform plan.
+No current saved-plan digest is available. Owner-completed AWS SSO refresh
+verified the expected Dev account; fresh metadata evidence is recorded in
+`docs/evidence/sec244-billing-account-readiness-2026-10-10.json`. The snapshot-only
+selection differs from foreground billing, and neither is covered by cleanup.
+The corrected local guard passes the existing cleanup selection using real
+metadata reads. The deploy role lacks billing scheduler read access;
+SECUR4ALL-342 owns its local metadata-only permission proposal and actual-role
+qualification. No runtime, grant or selection has changed. Owner confirmation establishes that
+the current Play account is eligible for license testing; the actual checkout
+must still display the test-purchase notice and a Google test payment instrument.
+
+1. Publish and independently review the scoped source fix against main under
+   the owner's 2026-10-10 exception, then merge after local checks pass. The
+   source baseline is `1d7bb5f8dc35bf126620f0399178cb5931cb6d37`; the preserved
+   release baseline is `353303b657dfe3e44eda59cd8ed343284880cf69`. No blanket
+   merge or manual dispatch extension is needed for the authorized main route.
+   Verify post-merge main CI; its failures block further deployment/promotion.
+   This source permission does not authorize the remaining runtime/grant actions.
+2. Dev identity and current live package/alias/gate metadata have been read.
+   Complete actual protected deployment-role qualification after its reviewed
+   metadata grant; its policy simulation is not role-execution evidence. Check
+   effective permissions and the existing cleanup selection privately.
+   Reconfirm the current account through a fresh authorized protected session;
+   do not reuse expired identity fixtures or move to the old History account.
+3. If cleanup does not admit the approved billing subject, prepare a separate
+   cleanup-only saved plan adding that one subject to the existing deletion
+   admission set. Preserve all existing subjects, exact package, IAM, stream,
+   schedule and non-cleanup gates. Expected writable runtime surface is only
+   token-deletion function configuration/version and its live alias; unexpected
+   changes stop review. SECUR4ALL-125 owns actual erasure qualification. Metadata
+   checks alone do not establish that behavior, effective IAM or provider access.
+4. Configure the dedicated encrypted billing selection only after explicit
+   configuration approval. SECUR4ALL-244 then prepares `handoff/preparation`
+   against an exact integrated infrastructure revision and the reviewed Lambda
+   source `65c186b461d86e825bdffe1ab9d8d8ca4eb3f48b`. Review the real saved-plan
+   digest before apply. History, GET-only snapshot admission, trial policy and
+   unrelated provider/account selections remain outside this transition.
+5. Separately approve the exact Android source/build and installation. The
+   purchase-capable Dev build uses `tcrPlayTestPackage`, `tcrPlayDeviceSetup`
+   and `tcrPlayPurchase`; the installed snapshot-only APK cannot qualify checkout.
+   Device registration, prepare and purchase are distinct permitted actions.
+   Test the real protected preparation endpoint before any store transaction.
+6. Only after preparation and cleanup prerequisites pass, prepare and review
+   `handoff/verification`. ATCR-112 then executes the explicitly authorized Google
+   Play test-payment flow on the preserved emulator/session. Require observed
+   server verification, durable entitlement and server acknowledgment, followed
+   by authoritative GET refresh; do not substitute fixture responses. Stop if
+   the dialog lacks the test-purchase notice or offers a real charge.
+7. Propose `lifecycle/ingress` and then `lifecycle/background` separately after
+   foreground qualification. Preserve their exact account/source coupling and
+   transport prerequisites. Actual RTDN, lifecycle and missed-delivery recovery
+   evidence remain open; no foreground pass implies background readiness.
+
+For each connected scenario, allow the initial attempt and at most two retries
+for a classified transient read/transport failure. Stop immediately for an
+observed reproducible defect, authentication failure or unmet gate. Reconcile
+purchase/mutation outcomes before considering a retry. Route the defect to its
+owning component, implement an authorized local fix, then repeat the original
+case and affected integration checks; post-fix retesting is a new validation
+cycle. Never use retries to bypass auth or fabricate provider responses.
+
+
+## Initial Dev rollout impact and cost review
+
+The eight-file local candidate changes infrastructure workflow/guard/policy,
+regression tests and evidence only. No Lambda application source or ZIP and no
+Android source was changed. The two runtime packages remain the observed live
+handoff and cleanup packages. A later allowlist update would use Lambda
+configuration updates, publish a version and move the existing live alias;
+it does not require changing application code or installing a new package.
+
+The initial proposed scope creates no AWS function, table, KMS key, log group,
+queue, topic or schedule. This is the expected scope, not a generated Terraform
+plan result; any create/delete or unrelated drift stops exact-plan review.
+The dedicated billing subject is a GitHub Dev environment secret, not a new
+AWS Secrets Manager secret. The existing History secret remains unchanged.
+
+Exact IAM proposal for role `trustcheckradar-dev-github-deploy`, inline policy
+`read-dev-billing-backup-inventory`, preserving its existing backup/IAM statements:
+
+- `scheduler:GetSchedule` on
+  `arn:aws:scheduler:us-east-1:107827791950:schedule/trustcheckradar-dev-play-lifecycle/trustcheckradar-dev-play-token-deletion`
+  and
+  `arn:aws:scheduler:us-east-1:107827791950:schedule/trustcheckradar-dev-play-lifecycle/trustcheckradar-dev-play-lifecycle-worker`.
+- `scheduler:GetScheduleGroup` and `scheduler:ListTagsForResource` on
+  `arn:aws:scheduler:us-east-1:107827791950:schedule-group/trustcheckradar-dev-play-lifecycle`.
+- Every added statement requires `aws:RequestedRegion=us-east-1`. No scheduler
+  mutation permission is added. SECUR4ALL-342 retains actual-role qualification.
+
+Cleanup is already enabled every minute, with one scheduled target attempt,
+256 MB, 60-second timeout and reserved concurrency one. Adding the current
+approved subject preserves the previous subject(s), package, IAM, stream,
+schedule and gates. It may increase existing per-invocation reads/processing.
+It admits actual account-deletion handling for that subject if a valid deletion
+command/event exists; qualification is not permission to request deletion.
+No token decrypt/provider call or global traversal is enabled by this scope.
+
+Foreground currently admits one different billing account. Selecting the
+approved current account intentionally changes that one-account billing
+admission while preserving History and GET-only access scope. A preparation
+transition would close foreground purchase verification while retaining the
+preparation path; verification is separately enabled after prerequisites.
+The function remains 256 MB, timeout 29 seconds, concurrency2, attempts 20 per
+60-second window and max in-flight 2. Registration/preparation can persist
+binding/locator state; verification can retain a token and commit a real
+entitlement and server acknowledgment. Each action requires its own acceptance
+scope. Lifecycle ingress and its minute worker remain disabled in this initial
+rollout; AI/proposer gates remain unchanged and disabled.
+
+CloudWatch reported 1,440 cleanup invocations, zero errors/throttles and
+651,522.34 ms total duration for the 24-hour window ending
+2026-10-10T05:53:40Z. No handoff/worker invocation datapoints were returned for
+that window. Official AWS Price List API rates effective 2026-10-01 in us-east-1
+were $0.0000133334 per ARM GB-second at tier 1 and $0.0000002 per Lambda request.
+At unchanged observed cleanup usage, 30 days of Lambda compute+requests are
+approximately $0.074 before free tiers/discounts. If every existing scheduled
+cleanup invocation consumed its full 60-second timeout for 30 days, the same
+Lambda-only calculation would be approximately $8.65. Neither is an incremental
+cost prediction, total AWS bill, guarantee or spend cap. DynamoDB, secrets,
+scheduler, logs, APIs, KMS, GitHub Actions, taxes and other workloads are excluded.
+Adding subject coverage may increase duration/requests; stream events and
+foreground requests are additional workload. The requested additional spending
+ceiling is still unspecified; no budget or spending-control change is proposed.
+
+Use bounded manual validation with recorded request counts and the agreed
+transient retry limit. Review aggregate usage after the approved deployment and
+stop new discretionary test actions at the agreed operational threshold;
+billing latency means a threshold alone is not a guaranteed hard cost cap.
+
+Runtime backout requires a new reviewed exact Dev plan. Preserve source/package
+pins and the prior alias/configuration readback, drain affected invocations and
+close new foreground admission if needed. Do not automatically restore broad
+History selection, delete bindings/entitlements, remove cleanup admission while
+retained data requires it, disable existing cleanup, reset trial/allowances or
+replay a purchase. Reconcile any in-flight store outcome before further action.
+The read-only IAM addition can be restored to its prior reviewed document through
+the same explicit policy-digest approval flow. No rollback was executed.
+
+The owner's scoped main-integration exception removes the need for a release
+workflow extension for these fixes. Preserve existing main-only automatic CI,
+manual Dev workflows, environment protections and exact revision/digest approval.
+A main source merge runs validation only; runtime and security changes still
+require their own explicit action-time authorization. UAT and Production remain
+outside this proposal.

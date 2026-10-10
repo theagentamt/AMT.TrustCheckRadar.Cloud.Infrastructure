@@ -319,8 +319,20 @@ class InventoryPolicyTests(unittest.TestCase):
         actions = []
         for row in policy['Statement']:
             actions.extend(row['Action'] if type(row['Action']) is list else [row['Action']])
-        self.assertEqual(set(actions), {'backup:ListRecoveryPointsByResource', 'backup:ListBackupPlans', 'backup:ListBackupSelections', 'backup:GetBackupSelection', 'iam:ListRoles'})
+        self.assertEqual(set(actions), {'backup:ListRecoveryPointsByResource', 'backup:ListBackupPlans', 'backup:ListBackupSelections', 'backup:GetBackupSelection', 'iam:ListRoles', 'scheduler:GetSchedule', 'scheduler:GetScheduleGroup', 'scheduler:ListTagsForResource'})
         self.assertEqual(policy['Statement'][0]['Condition'], {'StringEquals': {'aws:RequestedRegion': 'us-east-1'}})
+        scheduler = [row for row in policy['Statement'] if any(action.startswith('scheduler:') for action in (row['Action'] if type(row['Action']) is list else [row['Action']]))]
+        self.assertEqual(scheduler, [
+            {'Sid': 'ReadBillingLifecycleSchedules', 'Effect': 'Allow', 'Action': 'scheduler:GetSchedule',
+             'Resource': [
+                 'arn:aws:scheduler:us-east-1:107827791950:schedule/trustcheckradar-dev-play-lifecycle/trustcheckradar-dev-play-token-deletion',
+                 'arn:aws:scheduler:us-east-1:107827791950:schedule/trustcheckradar-dev-play-lifecycle/trustcheckradar-dev-play-lifecycle-worker',
+             ], 'Condition': {'StringEquals': {'aws:RequestedRegion': 'us-east-1'}}},
+            {'Sid': 'ReadBillingLifecycleScheduleGroup', 'Effect': 'Allow',
+             'Action': ['scheduler:GetScheduleGroup', 'scheduler:ListTagsForResource'],
+             'Resource': 'arn:aws:scheduler:us-east-1:107827791950:schedule-group/trustcheckradar-dev-play-lifecycle',
+             'Condition': {'StringEquals': {'aws:RequestedRegion': 'us-east-1'}}},
+        ])
         self.assertNotEqual(inventory_access.digest(REVISION), inventory_access.digest(SOURCE))
 
 

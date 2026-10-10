@@ -94,12 +94,12 @@ jobs:
           role-session-name: billing-${{ github.run_id }}
       - name: Prepare private subject and exact reviewed packages
         env:
-          ENGINEERING_SUBJECTS_JSON: ${{ secrets.GOVERNED_HISTORY_ENGINEERING_SUBJECTS_JSON }}
+          BILLING_ENGINEERING_SUBJECTS_JSON: ${{ secrets.BILLING_ENGINEERING_SUBJECTS_JSON }}
           BILLING_PACKAGE_HASHES_JSON: ${{ vars.BILLING_PACKAGE_HASHES_JSON }}
           BILLING_EVIDENCE_JSON: ${{ vars.BILLING_EVIDENCE_JSON }}
         run: |
           set -euo pipefail
-          if [[ "$BILLING_MODE" == inactive ]]; then export ENGINEERING_SUBJECTS_JSON='[]'; fi
+          if [[ "$BILLING_MODE" == inactive ]]; then export BILLING_ENGINEERING_SUBJECTS_JSON='[]'; fi
           python3 scripts/prepare_billing_dev_configuration.py
       - name: Generate private saved plan
         run: |
@@ -120,12 +120,14 @@ jobs:
           args=(--revision "$EXPECTED_REVISION" --scope "$BILLING_SCOPE" --mode "$BILLING_MODE")
           if [[ "$EXECUTION_MODE" == apply ]]; then args+=(--expected-digest "$REVIEWED_PLAN_DIGEST"); fi
           python3 scripts/verify_billing_dev_plan.py "$RUNNER_TEMP/billing-plan.json" "${args[@]}" > "$RUNNER_TEMP/billing-review.json"
+          python3 scripts/verify_billing_cleanup_prerequisite.py --plan "$RUNNER_TEMP/billing-plan.json" >> "$GITHUB_STEP_SUMMARY"
           tee -a "$GITHUB_STEP_SUMMARY" < "$RUNNER_TEMP/billing-review.json"
       - name: Requalify token storage and protected live runtimes
         if: inputs.execution_mode == 'apply'
         run: |
           set -euo pipefail
           umask 077
+          python3 scripts/verify_billing_cleanup_prerequisite.py --plan "$RUNNER_TEMP/billing-plan.json" >> "$GITHUB_STEP_SUMMARY"
           if [[ "$BILLING_SCOPE" == lifecycle ]]; then
             python3 scripts/verify_billing_dev_readback.py --scope "$BILLING_SCOPE" --snapshot "$RUNNER_TEMP/billing-protected.json" --plan "$RUNNER_TEMP/billing-plan.json" --handoff-prerequisite
           fi
