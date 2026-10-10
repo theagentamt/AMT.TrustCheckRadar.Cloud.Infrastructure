@@ -339,6 +339,9 @@ must still display the test-purchase notice and a Google test payment instrument
    write, accepts an identical installed document without rewriting it, and
    requires the actual deployment role. Qualification then performs four
    Scheduler and five KMS metadata reads without exposing policy/tag contents.
+   The token-key tag read disables CLI pagination to retain the service's
+   `Truncated` flag and rejects missing or incomplete pages. Default CLI
+   aggregation omits that flag; the real qualification must pass this boundary.
    Grant publication, actual role qualification and a successful real cleanup
    plan remain separate evidence. Runtime admission/apply is not authorized.
 4. Configure the dedicated encrypted billing selection only after explicit
