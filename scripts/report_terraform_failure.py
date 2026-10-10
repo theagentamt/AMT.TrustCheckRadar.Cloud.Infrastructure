@@ -12,23 +12,37 @@ MAX_CAPTURE_LENGTH = 64
 ALLOWED_AWS_ACTIONS = frozenset({
     "apigateway:GET",
     "cloudwatch:DescribeAlarms",
+    "dynamodb:DescribeContinuousBackups",
+    "dynamodb:DescribeTable",
+    "dynamodb:DescribeTimeToLive",
+    "dynamodb:ListTagsOfResource",
     "events:DescribeRule",
     "events:ListTargetsByRule",
     "iam:GetRole",
     "iam:GetRolePolicy",
     "iam:ListAttachedRolePolicies",
     "iam:ListRolePolicies",
+    "kms:DescribeKey",
+    "kms:GetKeyPolicy",
+    "kms:GetKeyRotationStatus",
+    "kms:ListAliases",
+    "kms:ListResourceTags",
     "lambda:GetAlias",
     "lambda:GetEventSourceMapping",
     "lambda:GetFunction",
     "lambda:GetFunctionCodeSigningConfig",
     "lambda:GetFunctionEventInvokeConfig",
     "lambda:GetPolicy",
+    "lambda:GetFunctionConcurrency",
+    "lambda:ListTags",
     "lambda:ListVersionsByFunction",
     "logs:DescribeLogGroups",
     "logs:DescribeMetricFilters",
     "secretsmanager:DescribeSecret",
     "secretsmanager:GetResourcePolicy",
+    "scheduler:GetSchedule",
+    "scheduler:GetScheduleGroup",
+    "scheduler:ListTagsForResource",
     "sts:GetCallerIdentity",
 })
 ALLOWED_AWS_OPERATIONS = frozenset({
@@ -36,23 +50,37 @@ ALLOWED_AWS_OPERATIONS = frozenset({
     "APIGatewayV2:GetIntegration",
     "APIGatewayV2:GetRoute",
     "CloudWatch:DescribeAlarms",
+    "DynamoDB:DescribeContinuousBackups",
+    "DynamoDB:DescribeTable",
+    "DynamoDB:DescribeTimeToLive",
+    "DynamoDB:ListTagsOfResource",
     "EventBridge:DescribeRule",
     "EventBridge:ListTargetsByRule",
     "IAM:GetRole",
     "IAM:GetRolePolicy",
     "IAM:ListAttachedRolePolicies",
     "IAM:ListRolePolicies",
+    "KMS:DescribeKey",
+    "KMS:GetKeyPolicy",
+    "KMS:GetKeyRotationStatus",
+    "KMS:ListAliases",
+    "KMS:ListResourceTags",
     "Lambda:GetAlias",
     "Lambda:GetEventSourceMapping",
     "Lambda:GetFunction",
     "Lambda:GetFunctionCodeSigningConfig",
     "Lambda:GetFunctionEventInvokeConfig",
     "Lambda:GetPolicy",
+    "Lambda:GetFunctionConcurrency",
+    "Lambda:ListTags",
     "Lambda:ListVersionsByFunction",
     "CloudWatchLogs:DescribeLogGroups",
     "CloudWatchLogs:DescribeMetricFilters",
     "SecretsManager:DescribeSecret",
     "SecretsManager:GetResourcePolicy",
+    "Scheduler:GetSchedule",
+    "Scheduler:GetScheduleGroup",
+    "Scheduler:ListTagsForResource",
     "STS:GetCallerIdentity",
 })
 ALLOWED_TERRAFORM_VARIABLES = frozenset({
@@ -63,6 +91,12 @@ ALLOWED_TERRAFORM_VARIABLES = frozenset({
     "activate_trial_engineering",
     "authority_configuration",
     "deletion_activation",
+    "deletion_artifact_override",
+    "deployment",
+    "pubsub_identity",
+    "alert_topic_arn",
+    "billing_activation",
+    "billing_artifact_overrides",
     "engineering_subjects",
     "provider_budget",
 })
@@ -82,6 +116,10 @@ def classify(text):
         category = "VARIABLE_VALIDATION_FAILED"
     elif "backend initialization required" in lowered or "failed to get existing workspaces" in lowered:
         category = "BACKEND_CONFIGURATION_FAILED"
+    elif "no value for required variable" in lowered:
+        category = "REQUIRED_VARIABLE_MISSING"
+    elif "resource precondition failed" in lowered or "resource postcondition failed" in lowered:
+        category = "RESOURCE_CONDITION_FAILED"
     else:
         category = "TERRAFORM_PLAN_FAILED_REDACTED"
 

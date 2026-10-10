@@ -13,6 +13,24 @@ SPEC.loader.exec_module(report)
 
 
 class TerraformFailureReportTests(unittest.TestCase):
+    def test_lifecycle_denial_retains_only_fixed_operation_names(self):
+        value = report.classify(
+            'operation error Scheduler: GetScheduleGroup, AccessDeniedException: '
+            'not authorized to perform: scheduler:GetScheduleGroup on private-subject '
+            'token=private-password'
+        )
+        self.assertEqual(value['awsActions'], ['scheduler:GetScheduleGroup'])
+        self.assertEqual(value['awsOperations'], ['Scheduler:GetScheduleGroup'])
+        self.assertNotIn('private', json.dumps(value))
+
+    def test_missing_input_and_condition_failure_do_not_echo_values(self):
+        missing = report.classify('No value for required variable in variable "deployment": private')
+        condition = report.classify('Resource precondition failed: subject=private')
+        self.assertEqual(missing['category'], 'REQUIRED_VARIABLE_MISSING')
+        self.assertEqual(missing['terraformVariables'], ['deployment'])
+        self.assertEqual(condition['category'], 'RESOURCE_CONDITION_FAILED')
+        self.assertNotIn('private', json.dumps([missing, condition]))
+
     def test_access_denial_reports_only_action_and_operation(self):
         sensitive = (
             "operation error Lambda: GetFunction, api error AccessDeniedException: "
