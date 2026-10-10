@@ -57,12 +57,14 @@ jobs:
           set -euo pipefail
           umask 077
           if ! bash scripts/terraform.sh init dev play-lifecycle > "$RUNNER_TEMP/billing-cleanup-init.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/billing-cleanup-init.log"
             echo 'Cleanup baseline initialization failed; private output withheld.' >&2
             exit 1
           fi
           if ! terraform -chdir=terraform/play-lifecycle plan -input=false \
             -var-file=../../environments/dev/play-lifecycle.tfvars \
             -out="$RUNNER_TEMP/billing-cleanup-baseline.tfplan" > "$RUNNER_TEMP/billing-cleanup-baseline.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/billing-cleanup-baseline.log"
             echo 'Cleanup baseline plan failed; private output withheld.' >&2
             exit 1
           fi
@@ -83,6 +85,7 @@ jobs:
             -var-file=../../environments/dev/play-lifecycle.tfvars \
             -var-file="$RUNNER_TEMP/billing-cleanup.tfvars.json" \
             -out="$RUNNER_TEMP/billing-cleanup.tfplan" > "$RUNNER_TEMP/billing-cleanup-plan.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/billing-cleanup-plan.log"
             echo 'Cleanup candidate plan failed; private output withheld.' >&2
             exit 1
           fi

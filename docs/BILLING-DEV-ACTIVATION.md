@@ -301,6 +301,13 @@ must still display the test-purchase notice and a Google test payment instrument
    No successful live plan is implied by local tests. Executing a resulting
    change needs a separately reviewed apply route and exact action-time approval;
    do not substitute a blanket deployment or manual configuration edit.
+
+   The first actual plan-only dispatch, run
+   [38059719092](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38059719092),
+   failed during the real Terraform baseline before account-union preparation.
+   Nothing was applied and private files were removed. Planning failures now
+   emit only a bounded category and fixed allowlisted AWS operation/input names;
+   raw configuration, identities, resource identifiers and log text remain private.
 4. Configure the dedicated encrypted billing selection only after explicit
    configuration approval. SECUR4ALL-244 then prepares `handoff/preparation`
    against an exact integrated infrastructure revision and the reviewed Lambda
