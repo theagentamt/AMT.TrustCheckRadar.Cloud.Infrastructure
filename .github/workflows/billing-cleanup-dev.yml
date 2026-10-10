@@ -1,0 +1,103 @@
+name: Billing cleanup Dev plan
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_revision:
+        description: Exact reviewed main infrastructure commit; plan only
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: dev
+    env:
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
+      AWS_REGION: us-east-1
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+      - name: Validate exact reviewed Dev source
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          test "$GITHUB_SHA" = "$EXPECTED_REVISION"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
+          test "$TF_STATE_BUCKET" = amt-trustcheckradar-107827791950-tfstate
+          test "$TF_STATE_KEY_PREFIX" = trustcheckradar
+      - uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          allowed-account-ids: "107827791950"
+          role-session-name: billing-cleanup-plan-${{ github.run_id }}
+      - name: Generate private baseline without applying
+        run: |
+          set -euo pipefail
+          umask 077
+          if ! bash scripts/terraform.sh init dev play-lifecycle > "$RUNNER_TEMP/billing-cleanup-init.log" 2>&1; then
+            echo 'Cleanup baseline initialization failed; private output withheld.' >&2
+            exit 1
+          fi
+          if ! terraform -chdir=terraform/play-lifecycle plan -input=false \
+            -var-file=../../environments/dev/play-lifecycle.tfvars \
+            -out="$RUNNER_TEMP/billing-cleanup-baseline.tfplan" > "$RUNNER_TEMP/billing-cleanup-baseline.log" 2>&1; then
+            echo 'Cleanup baseline plan failed; private output withheld.' >&2
+            exit 1
+          fi
+          terraform -chdir=terraform/play-lifecycle show -json "$RUNNER_TEMP/billing-cleanup-baseline.tfplan" \
+            > "$RUNNER_TEMP/billing-cleanup-baseline-plan.json" 2> "$RUNNER_TEMP/billing-cleanup-show.log"
+      - name: Prepare private approved account union
+        env:
+          BILLING_ENGINEERING_SUBJECTS_JSON: ${{ secrets.BILLING_ENGINEERING_SUBJECTS_JSON }}
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 scripts/prepare_billing_cleanup_dev.py --baseline-plan "$RUNNER_TEMP/billing-cleanup-baseline-plan.json"
+      - name: Generate cleanup-only saved plan
+        run: |
+          set -euo pipefail
+          umask 077
+          if ! terraform -chdir=terraform/play-lifecycle plan -input=false \
+            -var-file=../../environments/dev/play-lifecycle.tfvars \
+            -var-file="$RUNNER_TEMP/billing-cleanup.tfvars.json" \
+            -out="$RUNNER_TEMP/billing-cleanup.tfplan" > "$RUNNER_TEMP/billing-cleanup-plan.log" 2>&1; then
+            echo 'Cleanup candidate plan failed; private output withheld.' >&2
+            exit 1
+          fi
+          terraform -chdir=terraform/play-lifecycle show -json "$RUNNER_TEMP/billing-cleanup.tfplan" \
+            > "$RUNNER_TEMP/billing-cleanup-plan.json" 2> "$RUNNER_TEMP/billing-cleanup-show.log"
+      - name: Verify exact boundary and fresh unchanged runtime
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 scripts/verify_billing_cleanup_dev_plan.py \
+            --plan "$RUNNER_TEMP/billing-cleanup-plan.json" \
+            --baseline-plan "$RUNNER_TEMP/billing-cleanup-baseline-plan.json" \
+            --baseline "$RUNNER_TEMP/billing-cleanup-baseline.json" \
+            --revision "$EXPECTED_REVISION" > "$RUNNER_TEMP/billing-cleanup-review.json"
+          tee -a "$GITHUB_STEP_SUMMARY" < "$RUNNER_TEMP/billing-cleanup-review.json"
+      - name: Remove all private plans and configuration
+        if: always()
+        run: rm -f "$RUNNER_TEMP"/billing-cleanup*.json "$RUNNER_TEMP"/billing-cleanup*.log "$RUNNER_TEMP"/billing-cleanup*.tfplan
