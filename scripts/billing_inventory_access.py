@@ -18,6 +18,15 @@ def document():
          'Action': ['backup:ListRecoveryPointsByResource', 'backup:ListBackupPlans', 'backup:ListBackupSelections', 'backup:GetBackupSelection'],
          'Resource': '*', 'Condition': {'StringEquals': {'aws:RequestedRegion': 'us-east-1'}}},
         {'Sid': 'ReadBackupExecutionRoleTrust', 'Effect': 'Allow', 'Action': 'iam:ListRoles', 'Resource': '*'},
+        {'Sid': 'ReadBillingLifecycleSchedules', 'Effect': 'Allow', 'Action': 'scheduler:GetSchedule',
+         'Resource': [
+             f'arn:aws:scheduler:us-east-1:{ACCOUNT}:schedule/trustcheckradar-dev-play-lifecycle/trustcheckradar-dev-play-token-deletion',
+             f'arn:aws:scheduler:us-east-1:{ACCOUNT}:schedule/trustcheckradar-dev-play-lifecycle/trustcheckradar-dev-play-lifecycle-worker',
+         ], 'Condition': {'StringEquals': {'aws:RequestedRegion': 'us-east-1'}}},
+        {'Sid': 'ReadBillingLifecycleScheduleGroup', 'Effect': 'Allow',
+         'Action': ['scheduler:GetScheduleGroup', 'scheduler:ListTagsForResource'],
+         'Resource': f'arn:aws:scheduler:us-east-1:{ACCOUNT}:schedule-group/trustcheckradar-dev-play-lifecycle',
+         'Condition': {'StringEquals': {'aws:RequestedRegion': 'us-east-1'}}},
     ]}
 
 

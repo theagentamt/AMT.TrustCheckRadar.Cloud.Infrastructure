@@ -1,0 +1,171 @@
+{
+  "observedAtUtc": "2026-10-10T05:29:08.456510+00:00",
+  "scope": "Real AWS control-plane metadata only; no record, secret value, endpoint, invocation, purchase or grant operation",
+  "awsSession": {
+    "userCompletedSso": true,
+    "expectedDevAccountVerified": true
+  },
+  "source": {
+    "candidateInfrastructure": "1d7bb5f8dc35bf126620f0399178cb5931cb6d37",
+    "releaseInfrastructure": "353303b657dfe3e44eda59cd8ed343284880cf69",
+    "publishedLambda": "8ecc79678fd1f87c575c43f7f4ffb856869db48d",
+    "foregroundPackageSource": "65c186b461d86e825bdffe1ab9d8d8ca4eb3f48b"
+  },
+  "runtime": {
+    "foregroundLiveVersion": "4",
+    "foregroundCodeSha256": "lRlJaVYOIIOGqpQml/HsF1VyyuCetakXoFdPGtUT9C0=",
+    "foregroundPreparationVerificationAndTestPurchaseGates": true,
+    "entitlementsLiveVersion": "15",
+    "lifecycleIngressLiveVersion": "2",
+    "lifecycleWorkerLiveVersion": "1",
+    "lifecycleIngressAndWorkerDisabled": true,
+    "cleanupLiveVersion": "15",
+    "cleanupCodeSha256": "EgY9o17ASfGm9RhY3Zfl7naFlw2fkrz6ZSSSyFQ4mjo=",
+    "cleanupReviewedPackageMatches": true,
+    "observedAliasesUnweighted": true,
+    "observedFunctionsActiveAndUpdatesSuccessful": true
+  },
+  "selection": {
+    "billingSubjectCount": 1,
+    "getOnlySnapshotExtraSubjectCount": 1,
+    "cleanupSubjectCount": 1,
+    "snapshotExtraMatchesBilling": false,
+    "snapshotExtraCoveredByCleanup": false,
+    "billingSelectionCoveredByCleanup": false,
+    "freshCurrentAppIdentityOrBindingVerified": false
+  },
+  "cleanupGuardLiveRetest": {
+    "unqualifiedFunctionMappingCount": 0,
+    "liveAliasMappingCount": 1,
+    "mappingEnabled": true,
+    "correctedGuardPassesExistingCleanupSelection": true,
+    "behavioralQualification": false
+  },
+  "tokenStorageMetadata": {
+    "tableStatus": "ACTIVE",
+    "ttlEnabledOnExpiresAt": true,
+    "pitrStatus": "DISABLED",
+    "dynamoBackupCount": 0,
+    "awsBackupRecoveryPointCount": 0,
+    "backupPlanCount": 0,
+    "backupExecutionRoleCount": 0,
+    "configurationReviewRequired": false,
+    "doesNotProvePhysicalErasure": true
+  },
+  "deploymentRole": {
+    "schedulerReadExistingPolicy": "implicitDeny for exact billing lifecycle schedule; managed scheduler scope covers campaign only",
+    "lambdaMetadataReadsPolicySimulation": "allowed",
+    "existingBackupInventoryReadsPolicySimulation": "allowed",
+    "actualOidcRoleExecutionVerified": false,
+    "permissionChangeApplied": false,
+    "proposedReadPolicySimulation": {
+      "realIamSimulationCasesPassed": 7,
+      "intendedReadsAllowed": 4,
+      "mutationUnrelatedAndUatDenied": 3,
+      "noGrantApplied": true,
+      "actualRoleQualification": false
+    }
+  },
+  "applicationAI": {
+    "messageEvaluatorLiveVersion": "7",
+    "candidate3RulesOnly": true,
+    "aiEnabled": false,
+    "proposerEnabled": false,
+    "proposerModelConfigured": false
+  },
+  "localValidation": {
+    "billingUnitRegressionTestsPassed": 37,
+    "actionlintPassed": true,
+    "diffCheckPassed": true,
+    "connectedFeatureAcceptance": false,
+    "fullHelperTestsPassed": 389,
+    "fullHelperTestsSkipped": 0,
+    "pinnedTestDependenciesUsed": true,
+    "dependencyConsistencyPassed": true,
+    "terraformFormattingPassed": true,
+    "independentReview": "No actionable findings; scoped source approved after local checks",
+    "hostDependencyFailure": "Initial full run lacked boto3/botocore; resolved in isolated venv without source changes"
+  },
+  "tracking": {
+    "infrastructurePrerequisite": "SECUR4ALL-244",
+    "cleanupPrerequisite": "SECUR4ALL-125",
+    "schedulerReadBug": "SECUR4ALL-342",
+    "realPlayAcceptance": "ATCR-112",
+    "physicalFollowup": "ATCR-148"
+  },
+  "remaining": [
+    "scoped source PR review/integration and successful post-merge main CI",
+    "dedicated billing selection configuration approval",
+    "matching token-cleanup coverage and actual erasure qualification",
+    "exact reviewed metadata policy and actual deployment-role qualification",
+    "fresh preserved app identity and device binding",
+    "exact opt-in build/installation approval",
+    "explicit protected registration/preparation/test-payment action approval",
+    "actual verification, server acknowledgment, entitlement, restore and lifecycle acceptance"
+  ],
+  "publication": {
+    "committed": false,
+    "pushed": false,
+    "merged": false,
+    "deployed": false
+  },
+  "localDiffClassification": {
+    "lambdaApplicationSourceChanged": false,
+    "lambdaZipChangeProposed": false,
+    "androidSourceChanged": false,
+    "infrastructureWorkflowAndGuardChanges": true,
+    "futureRuntimeAllowlistConfigurationAndVersionUpdates": true,
+    "newAwsResourcesExpectedForInitialScope": 0,
+    "actualTerraformPlanGenerated": false
+  },
+  "costEvidence": {
+    "source": "Existing AWS CloudWatch aggregate reads and AWS Price List GetProducts API; no browser or provider transaction",
+    "windowStartUtc": "2026-10-09T05:53:40+00:00",
+    "windowEndUtc": "2026-10-10T05:53:40+00:00",
+    "cleanupInvocations": 1440,
+    "cleanupErrors": 0,
+    "cleanupThrottles": 0,
+    "cleanupTotalDurationMs": 651522.34,
+    "cleanupMemoryMb": 256,
+    "cleanupTimeoutSeconds": 60,
+    "cleanupReservedConcurrency": 1,
+    "cleanupScheduleAlreadyEnabled": "rate(1 minute)",
+    "cleanupScheduleTargetRetries": 0,
+    "lifecycleWorkerSchedule": "DISABLED",
+    "foregroundInvocationDatapoints": 0,
+    "workerInvocationDatapoints": 0,
+    "foregroundMemoryMb": 256,
+    "foregroundTimeoutSeconds": 29,
+    "foregroundReservedConcurrency": 2,
+    "priceEffectiveDate": "2026-10-01",
+    "region": "us-east-1",
+    "armTier1UsdPerGbSecond": "0.0000133334",
+    "usdPerLambdaRequest": "0.0000002000",
+    "existingCleanup30DayLambdaComputeAndRequestsEstimateUsd": 0.07379255976117,
+    "existingCleanup30DayFullTimeoutLambdaComputeAndRequestsEnvelopeUsd": 8.6486832,
+    "estimateExcludes": [
+      "DynamoDB",
+      "Secrets Manager",
+      "EventBridge Scheduler",
+      "CloudWatch logs",
+      "API Gateway",
+      "KMS",
+      "GitHub Actions",
+      "taxes",
+      "other resources"
+    ],
+    "notMarginalCostOrBillGuarantee": true,
+    "freeTierAndDiscountEligibilityNotAssumed": true,
+    "additionalSpendCeilingNotSpecified": true,
+    "noBudgetChanges": true
+  },
+  "sourcePublicationAuthorization": {
+    "ownerApprovedReviewedMainIntegration": true,
+    "date": "2026-10-10",
+    "scope": "Android billing account-isolation and prerequisite fixes only",
+    "branch": "codex/billing-account-isolation-dev",
+    "blanketBranchMerge": false,
+    "mainMergeTriggers": "Validation CI only; runtime/security workflows manual",
+    "runtimeGrantPurchaseAuthorization": false
+  }
+}

@@ -64,7 +64,7 @@ def build(scope, mode, source, subjects, hashes, evidence, read=aws):
 def main():
     try:
         result = build(os.environ['BILLING_SCOPE'], os.environ['BILLING_MODE'], os.environ['LAMBDA_SOURCE_SHA'],
-                       json.loads(os.environ.get('ENGINEERING_SUBJECTS_JSON') or '[]'),
+                       json.loads(os.environ.get('BILLING_ENGINEERING_SUBJECTS_JSON') or '[]'),
                        json.loads(os.environ.get('BILLING_PACKAGE_HASHES_JSON') or '{}'),
                        json.loads(os.environ.get('BILLING_EVIDENCE_JSON') or '{}'))
         path = Path(os.environ['RUNNER_TEMP']) / 'billing.tfvars.json'
