@@ -317,6 +317,30 @@ must still display the test-purchase notice and a Google test payment instrument
    an unrelated resource explicitly, checks alternate row orders, and requires
    rejection before artifact access. Production admission guards remain unchanged;
    passing source CI is still required before retrying the actual AWS plan.
+
+   Main CI38060922997 passed at `c240c72e00c1658f20649da8042394df3f769c8c`;
+   actual plan retry
+   [38061674942](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38061674942)
+   failed with `kms:DescribeKey` access denial during baseline refresh. Exact-session
+   CloudTrail audit found two denied requests. The deployment role's existing
+   tagged-key permissions do not match the customer token key's tags or the
+   AWS-managed DynamoDB encryption key. No plan digest or account union was produced.
+
+   The owner approved full policy document SHA256
+   `a85c886cd1eaf7513a22cf4eea0c44ad508e19f2e85018fe9d4313a224e33b3e`:
+   preserve the four installed audit statements; add DescribeKey/GetKeyPolicy/
+   GetKeyRotationStatus/ListResourceTags on customer key
+   `62f786f5-76ab-41c3-ac77-fe362e0108ae`, and DescribeKey only on AWS-managed key
+   `8724b7c1-4afc-48ab-b1ab-6e1a0aa74769`. Both exact key ARNs use account
+   `107827791950`, region `us-east-1`, and RequestedRegion `us-east-1`. No
+   cryptographic or mutation actions are added. This document hash is not the
+   revision-bound workflow digest; derive that digest only after source review
+   and main integration. The grant helper rejects fresh policy drift before a
+   write, accepts an identical installed document without rewriting it, and
+   requires the actual deployment role. Qualification then performs four
+   Scheduler and five KMS metadata reads without exposing policy/tag contents.
+   Grant publication, actual role qualification and a successful real cleanup
+   plan remain separate evidence. Runtime admission/apply is not authorized.
 4. Configure the dedicated encrypted billing selection only after explicit
    configuration approval. SECUR4ALL-244 then prepares `handoff/preparation`
    against an exact integrated infrastructure revision and the reviewed Lambda
