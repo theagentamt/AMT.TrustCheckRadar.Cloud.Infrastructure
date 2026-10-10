@@ -47,7 +47,7 @@ def fixture():
     baseline = {'complete': True, 'errored': False, 'terraform_version': '1.12.1',
                 'variables': {key: {'value': value} for key, value in values.items()}, 'resource_changes': rows,
                 'resource_drift': [], 'checks': [{'status': 'pass'}],
-                'output_changes': {'candidate_contract': {'actions': ['no-op'], 'before': {'lifecycle_active': False}, 'after': {'lifecycle_active': False}, 'after_unknown': False}},
+                'output_changes': {'candidate_contract': {'actions': ['no-op'], 'before': {'lifecycle_active': False}, 'after': {'lifecycle_active': False}, 'after_unknown': False, 'before_sensitive': False, 'after_sensitive': False}},
                 'configuration': {'root_module': {'resources': [{'address': 'aws_lambda_alias.runtime', 'expressions': {'function_version': {'references': ['aws_lambda_function.runtime']}}}]}}}
     captured = {'selected': [BILLING], 'metadata': metadata}
     plan = copy.deepcopy(baseline)
@@ -369,6 +369,108 @@ class MappingTimestampDriftTests(unittest.TestCase):
                 with self.assertRaises(SystemExit) as error: prepare.main()
                 self.assertEqual(str(error.exception), code)
                 self.assertEqual(capture.call_count, 0)
+
+
+class CleanupOutputContractTests(unittest.TestCase):
+    def data(self):
+        data = timestamp_drift_fixture()
+        before = {'provisioned': True, 'lifecycle_active': False, 'token_retention_seconds': 604800,
+                  'runtime_aliases': {'deletion': 'synthetic-deletion-live-alias'},
+                  'application_context_keys': ['purpose', 'environment']}
+        row = {'actions': ['update'], 'before': before,
+               'after': dict(copy.deepcopy(before), billing_subject_count=0, scheduled_worker_active=False),
+               'after_unknown': False, 'before_sensitive': False, 'after_sensitive': False}
+        for plan in data[:2]: plan['output_changes'] = {'candidate_contract': copy.deepcopy(row)}
+        return data
+
+    def rejects(self, data):
+        with self.assertRaises(ValueError): guard.review(*data, REVISION)
+
+    def test_exact_source_output_addition_and_timestamp_drift_qualify_together(self):
+        data = self.data(); before = copy.deepcopy(data)
+        result = guard.review(*data, REVISION)
+        self.assertEqual(data, before)
+        self.assertEqual(result['resourceUpdates'], 2)
+        self.assertTrue(result['planOnly'])
+        self.assertFalse(result['behavioralQualification'])
+
+    def test_added_fields_have_exact_types_and_closed_values(self):
+        for field, value in [('billing_subject_count', False), ('billing_subject_count', 0.0),
+                             ('billing_subject_count', 1), ('billing_subject_count', '0'),
+                             ('scheduled_worker_active', 0), ('scheduled_worker_active', True),
+                             ('scheduled_worker_active', 'false')]:
+            data = self.data()
+            for plan in data[:2]: plan['output_changes']['candidate_contract']['after'][field] = value
+            with self.subTest(field=field, value=value): self.rejects(data)
+
+    def test_previous_fields_cannot_change_including_nested_types(self):
+        for mutation in ('flag-type', 'retention', 'nested', 'missing-old'):
+            data = self.data()
+            for plan in data[:2]:
+                after = plan['output_changes']['candidate_contract']['after']
+                if mutation == 'flag-type': after['lifecycle_active'] = 0
+                if mutation == 'retention': after['token_retention_seconds'] = 1
+                if mutation == 'nested': after['runtime_aliases']['deletion'] = 'another-alias'
+                if mutation == 'missing-old': del after['application_context_keys']
+            with self.subTest(mutation=mutation): self.rejects(data)
+
+    def test_added_fields_must_both_be_absent_before_and_only_additions(self):
+        for mutation in ('existing-count', 'existing-flag', 'extra', 'missing-addition'):
+            data = self.data()
+            for plan in data[:2]:
+                row = plan['output_changes']['candidate_contract']
+                if mutation == 'existing-count': row['before']['billing_subject_count'] = 0
+                if mutation == 'existing-flag': row['before']['scheduled_worker_active'] = False
+                if mutation == 'extra': row['after']['other'] = False
+                if mutation == 'missing-addition': del row['after']['scheduled_worker_active']
+            with self.subTest(mutation=mutation): self.rejects(data)
+
+    def test_baseline_inventory_or_any_row_difference_rejected(self):
+        for mutation in ('baseline-missing', 'candidate-missing', 'baseline-extra', 'candidate-extra',
+                         'different-before', 'different-after', 'different-metadata'):
+            data = self.data(); plan, baseline, _ = data
+            if mutation == 'baseline-missing': del baseline['output_changes']['candidate_contract']
+            if mutation == 'candidate-missing': del plan['output_changes']['candidate_contract']
+            if mutation == 'baseline-extra': baseline['output_changes']['other'] = copy.deepcopy(baseline['output_changes']['candidate_contract'])
+            if mutation == 'candidate-extra': plan['output_changes']['other'] = copy.deepcopy(plan['output_changes']['candidate_contract'])
+            if mutation == 'different-before': baseline['output_changes']['candidate_contract']['before']['lifecycle_active'] = True
+            if mutation == 'different-after': baseline['output_changes']['candidate_contract']['after']['billing_subject_count'] = 1
+            if mutation == 'different-metadata': baseline['output_changes']['candidate_contract']['before_sensitive'] = True
+            with self.subTest(mutation=mutation): self.rejects(data)
+
+    def test_unknown_sensitive_invalid_shape_and_actions_rejected(self):
+        for field, value in [('before', None), ('after', []), ('after_unknown', True),
+                             ('after_unknown', {'billing_subject_count': True}), ('before_unknown', True),
+                             ('before_sensitive', True), ('after_sensitive', True), ('before_sensitive', 0),
+                             ('actions', ['delete']), ('actions', ['create']), ('actions', ['delete', 'create']),
+                             ('additional_metadata', 'unreviewed')]:
+            data = self.data()
+            for plan in data[:2]: plan['output_changes']['candidate_contract'][field] = value
+            with self.subTest(field=field, value=value): self.rejects(data)
+        for field in ('before_sensitive', 'after_sensitive'):
+            data = self.data()
+            for plan in data[:2]: del plan['output_changes']['candidate_contract'][field]
+            with self.subTest(missing=field): self.rejects(data)
+
+    def test_added_closed_outputs_require_known_inactive_billing_input(self):
+        for value in ({}, {'subjects': []}, 'inactive'):
+            data = self.data()
+            for plan in data[:2]: plan['variables']['billing_activation']['value'] = value
+            with self.subTest(value=value): self.rejects(data)
+        data = self.data()
+        for plan in data[:2]: del plan['variables']['billing_activation']
+        self.rejects(data)
+
+    def test_other_existing_outputs_must_remain_identical_known_noops(self):
+        data = self.data()
+        row = {'actions': ['no-op'], 'before': 'unchanged', 'after': 'unchanged',
+               'after_unknown': False, 'before_sensitive': False, 'after_sensitive': False}
+        for plan in data[:2]: plan['output_changes']['existing_other'] = copy.deepcopy(row)
+        self.assertEqual(guard.review(*data, REVISION)['resourceUpdates'], 2)
+        for plan in data[:2]:
+            plan['output_changes']['existing_other']['actions'] = ['update']
+            plan['output_changes']['existing_other']['after'] = 'different'
+        self.rejects(data)
 
 
 if __name__ == '__main__': unittest.main()
