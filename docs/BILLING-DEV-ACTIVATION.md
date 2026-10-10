@@ -308,6 +308,15 @@ must still display the test-purchase notice and a Google test payment instrument
    Nothing was applied and private files were removed. Planning failures now
    emit only a bounded category and fixed allowlisted AWS operation/input names;
    raw configuration, identities, resource identifiers and log text remain private.
+
+   Diagnostic-source main CI
+   [38059948494](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38059948494)
+   passed stack validation but found a pre-existing snapshot rejection-test
+   fixture defect: selecting its first resource depends on Python set ordering
+   and can leave an already-permitted update unchanged. The repaired test selects
+   an unrelated resource explicitly, checks alternate row orders, and requires
+   rejection before artifact access. Production admission guards remain unchanged;
+   passing source CI is still required before retrying the actual AWS plan.
 4. Configure the dedicated encrypted billing selection only after explicit
    configuration approval. SECUR4ALL-244 then prepares `handoff/preparation`
    against an exact integrated infrastructure revision and the reviewed Lambda
