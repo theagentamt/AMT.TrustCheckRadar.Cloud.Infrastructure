@@ -80,7 +80,8 @@ def qualify(identity):
     rotation = aws('kms', 'get-key-rotation-status', '--key-id', TOKEN_KEY)
     require(rotation.get('KeyId') in (TOKEN_KEY, TOKEN_KEY.split('/')[-1])
             and type(rotation.get('KeyRotationEnabled')) is bool, 'Token key rotation metadata required.')
-    key_tags = aws('kms', 'list-resource-tags', '--key-id', TOKEN_KEY)
+    # Preserve the service's Truncated flag; CLI aggregation returns only Tags.
+    key_tags = aws('kms', 'list-resource-tags', '--key-id', TOKEN_KEY, '--no-paginate')
     require(key_tags.get('Truncated') is False and type(key_tags.get('Tags')) is list
             and all(type(tag) is dict and type(tag.get('TagKey')) is str and type(tag.get('TagValue')) is str
                     for tag in key_tags['Tags']), 'Complete token key tag metadata required.')

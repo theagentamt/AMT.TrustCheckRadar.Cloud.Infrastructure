@@ -87,6 +87,8 @@ class ActualRoleQualificationBoundaryTests(unittest.TestCase):
         self.assertEqual(kms, [('describe-key', gate.TOKEN_KEY), ('describe-key', gate.TABLE_KEY),
                               ('get-key-policy', gate.TOKEN_KEY), ('get-key-rotation-status', gate.TOKEN_KEY),
                               ('list-resource-tags', gate.TOKEN_KEY)])
+        tag_reads = [args for service, operation, args in calls if service == 'kms' and operation == 'list-resource-tags']
+        self.assertEqual(tag_reads, [('--key-id', gate.TOKEN_KEY, '--no-paginate')])
         self.assertEqual(value['kmsMetadataReadCount'], 5)
         self.assertEqual(value['schedulerMetadataReadCount'], 4)
         self.assertNotIn('private', json.dumps(value))
@@ -105,6 +107,7 @@ class ActualRoleQualificationBoundaryTests(unittest.TestCase):
             ('get-key-policy', {'Policy': json.dumps({'Version': '2012-10-17', 'Statement': 'private'})}),
             ('get-key-rotation-status', {'KeyId': gate.TABLE_KEY, 'KeyRotationEnabled': True}),
             ('list-resource-tags', {'Tags': [], 'Truncated': True}),
+            ('list-resource-tags', {'Tags': []}),
         ]
         for operation, response in cases:
             with self.subTest(operation=operation), patch.object(gate, 'aws', reader([], (('kms', operation), response))), self.assertRaises(ValueError):
