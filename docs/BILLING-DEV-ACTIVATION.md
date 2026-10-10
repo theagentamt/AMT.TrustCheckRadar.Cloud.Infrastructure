@@ -290,16 +290,32 @@ must still display the test-purchase notice and a Google test payment instrument
    token-deletion function configuration/version and its live alias; unexpected
    changes stop review. SECUR4ALL-125 owns actual erasure qualification. Metadata
    checks alone do not establish that behavior, effective IAM or provider access.
-   This route is plan-only: it has no apply input, apply step or artifact upload.
+   The default `execution_mode=plan` route has no runtime write or artifact upload.
    Baseline and candidate plans/configuration stay private on the runner and are
    deleted; only counts and the review digest are published. Its guard requires
    fresh unchanged runtime metadata and rejects unrelated sibling/package drift.
-   The digest identifies that run's private reviewed plan and may change on
-   regeneration because caller-session data is included. The deleted plan cannot
-   be applied; a future apply route must produce separately reviewed executable
-   plan evidence.
+   A separately approved `execution_mode=apply` requires the same exact main
+   revision and `reviewed_plan_digest`. It regenerates a fresh executable saved
+   plan, repeats all resource/output/package and fresh runtime guards, and
+   compares its action digest before applying that same saved binary. Deleted
+   plan files are never recovered or uploaded. The digest binds all prior seven
+   projected plan fields and the exact qualified caller identity; only validated
+   STS session suffixes are normalized. Account, role ARN prefix and role ID stay
+   bound, and source references may consume only caller `account_id`. Terraform
+   can omit an unchanged caller from resource changes; its exact known,
+   non-sensitive prior-state representation is then qualified and bound instead.
+   Apply additionally requires fresh actual `trustcheckradar-dev-github-deploy`
+   identity and the same captured live configuration immediately before apply.
+   The existing protected Dev environment, main-only condition, concurrency,
+   OIDC permissions and role grants remain unchanged.
+   Before apply, private fingerprints capture all other Dev live runtimes. After
+   apply, cleanup configuration, a single published unweighted live version,
+   exact package, concurrency, unchanged schedule/mapping configuration and
+   protected runtime fingerprints must match. A final detailed plan requires
+   zero drift with the same private union inputs. Failure requires reconciliation;
+   no automatic rollback, subject removal, deletion or purchase retry occurs.
    No successful live plan is implied by local tests. Executing a resulting
-   change needs a separately reviewed apply route and exact action-time approval;
+   change needs this reviewed apply route and exact action-time approval;
    do not substitute a blanket deployment or manual configuration edit.
 
    The first actual plan-only dispatch, run

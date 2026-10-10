@@ -101,11 +101,19 @@ def stale_role_mirror_fixture():
 class PlanTests(ProvenanceCase):
     def test_caller_session_metadata_does_not_change_digest(self):
         plan = fixture()
-        plan['prior_state'] = {'values': {'root_module': {'resources': [{'address': 'data.aws_caller_identity.current', 'values': {'account_id': prepare.ACCOUNT, 'arn': f'arn:aws:sts::{prepare.ACCOUNT}:assumed-role/trustcheckradar-dev-github-deploy/billing-1', 'user_id': 'synthetic-role-id:billing-1'}}]}}}
+        declaration = {'address': 'data.aws_caller_identity.current', 'mode': 'data',
+                       'type': 'aws_caller_identity', 'name': 'current', 'provider_config_key': 'aws'}
+        plan['configuration'] = {'root_module': {'resources': [declaration]}}
+        identity_row = {key: declaration[key] for key in ('address', 'mode', 'type', 'name')}
+        identity_row.update(provider_name='registry.terraform.io/hashicorp/aws', schema_version=0, sensitive_values={},
+                            values={'account_id': prepare.ACCOUNT, 'id': prepare.ACCOUNT,
+                                    'arn': f'arn:aws:sts::{prepare.ACCOUNT}:assumed-role/trustcheckradar-dev-github-deploy/billing-1',
+                                    'user_id': 'AROA' + 'A' * 17 + ':billing-1'})
+        plan['prior_state'] = {'values': {'root_module': {'resources': [identity_row]}}}
         original = guard.review(plan, REVISION, 'handoff', 'verification')[1]
         identity = plan['prior_state']['values']['root_module']['resources'][0]['values']
         identity['arn'] = identity['arn'].replace('billing-1', 'billing-2')
-        identity['user_id'] = 'synthetic-role-id:billing-2'
+        identity['user_id'] = 'AROA' + 'A' * 17 + ':billing-2'
         self.assertEqual(original, guard.review(plan, REVISION, 'handoff', 'verification')[1])
         plan['resource_changes'][0]['change']['after']['s3_object_version'] = 'modified-version'
         with self.assertRaises(ValueError): guard.review(plan, REVISION, 'handoff', 'verification')

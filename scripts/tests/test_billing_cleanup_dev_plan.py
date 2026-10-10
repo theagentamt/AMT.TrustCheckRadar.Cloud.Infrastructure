@@ -65,6 +65,30 @@ class CleanupPlanTests(unittest.TestCase):
     def review(self, values):
         return guard.review(*values, REVISION)
 
+    def test_apply_requires_exact_digest_and_both_protected_role_captures(self):
+        data = fixture(); captured = data[2]
+        identity = {'Account': prepare.prerequisite.ACCOUNT,
+                    'Arn': guard.DEPLOYMENT_ROLE + 'billing-cleanup-12345'}
+        captured['metadata']['identity'] = identity
+        fresh = copy.deepcopy(captured['metadata'])
+        fresh['identity']['Arn'] = guard.DEPLOYMENT_ROLE + 'billing-cleanup-67890'
+        result = self.review(data)
+        guard.apply_boundary(result, captured, fresh, result['reviewedPlanDigest'])
+        for digest in (None, '', 'A' * 64, 'b' * 64):
+            with self.subTest(digest=digest), self.assertRaises(ValueError):
+                guard.apply_boundary(result, captured, fresh, digest)
+        for changed in ('captured', 'fresh'):
+            before, after = copy.deepcopy(captured), copy.deepcopy(fresh)
+            target = before['metadata'] if changed == 'captured' else after
+            for identity in ({'Account': prepare.prerequisite.ACCOUNT,
+                              'Arn': 'arn:aws:sts::107827791950:assumed-role/another-role/session'},
+                             {'Account': '999999999999', 'Arn': guard.DEPLOYMENT_ROLE + 'session'},
+                             {'Account': prepare.prerequisite.ACCOUNT, 'Arn': guard.DEPLOYMENT_ROLE},
+                             {'Account': prepare.prerequisite.ACCOUNT, 'Arn': guard.DEPLOYMENT_ROLE + 'session/extra'}):
+                target['identity'] = identity
+                with self.subTest(changed=changed, identity=identity), self.assertRaises(ValueError):
+                    guard.apply_boundary(result, before, after, result['reviewedPlanDigest'])
+
     def test_only_union_and_published_alias_changes_are_accepted(self):
         data = fixture(); before = copy.deepcopy(data)
         result = self.review(data)

@@ -6,6 +6,8 @@ import json
 import re
 from pathlib import Path
 
+from billing_plan_digest import projection
+
 import prepare_billing_cleanup_dev as prepare
 import verify_billing_cleanup_prerequisite as prerequisite
 from verify_governed_history_plan import changed_fields
@@ -14,6 +16,7 @@ FUNCTION_ADDRESS = 'aws_lambda_function.runtime["deletion"]'
 ALIAS_ADDRESS = 'aws_lambda_alias.runtime["deletion"]'
 COMPUTED = {'last_modified', 'qualified_arn', 'qualified_invoke_arn', 'version'}
 PACKAGE_FIELDS = {'s3_bucket': 'bucket', 's3_key': 'key', 's3_object_version': 'object_version', 'source_code_hash': 'source_hash'}
+DEPLOYMENT_ROLE = 'arn:aws:sts::107827791950:assumed-role/trustcheckradar-dev-github-deploy/'
 
 
 def require(condition):
@@ -37,6 +40,17 @@ def identical(left, right):
     if isinstance(left, list):
         return len(left) == len(right) and all(identical(a, b) for a, b in zip(left, right))
     return left == right
+
+
+def apply_boundary(result, captured, fresh, expected_digest):
+    """Apply requires the same reviewed action and the protected deployment role."""
+    require(type(expected_digest) is str and re.fullmatch(r'[a-f0-9]{64}', expected_digest))
+    require(result['reviewedPlanDigest'] == expected_digest)
+    for metadata in (captured['metadata'], fresh):
+        identity = metadata.get('identity', {})
+        require(identity.get('Account') == prerequisite.ACCOUNT and
+                type(identity.get('Arn')) is str and identity['Arn'].startswith(DEPLOYMENT_ROLE) and
+                re.fullmatch(r'[A-Za-z0-9_+=,.@-]{2,64}', identity['Arn'][len(DEPLOYMENT_ROLE):]))
 
 
 def review_outputs(plan, baseline_plan):
@@ -131,7 +145,7 @@ def review(plan, baseline_plan, captured, revision):
     if before['environment'] != after['environment']:
         require(set(changed) == {FUNCTION_ADDRESS, ALIAS_ADDRESS})
     review_outputs(plan, baseline_plan)
-    projected = {key: plan.get(key) for key in ('terraform_version', 'variables', 'resource_changes', 'resource_drift', 'output_changes', 'checks', 'configuration')}
+    projected = projection(plan)
     digest = hashlib.sha256(json.dumps({'revision': revision, 'plan': projected, 'selected': captured['selected'],
         'preservedSubjects': prepare.admitted(metadata), 'deletionArtifact': prepare.artifact()}, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     return {'revision': revision, 'cleanupSource': prepare.SOURCE, 'reviewedPlanDigest': digest,
@@ -146,6 +160,8 @@ def main():
     parser.add_argument('--baseline-plan', type=Path, required=True)
     parser.add_argument('--baseline', type=Path, required=True)
     parser.add_argument('--revision', required=True)
+    parser.add_argument('--execution-mode', choices=['plan', 'apply'], default='plan')
+    parser.add_argument('--expected-digest')
     args = parser.parse_args()
     try:
         captured = prepare.load(args.baseline)
@@ -161,6 +177,10 @@ def main():
         require(mapping_configuration(fresh) == mapping_configuration(captured['metadata']))
         schedule_keys = ('Name', 'GroupName', 'State', 'ScheduleExpression', 'FlexibleTimeWindow', 'Target')
         require(all(fresh['schedule'].get(key) == captured['metadata']['schedule'].get(key) for key in schedule_keys))
+        if args.execution_mode == 'apply':
+            apply_boundary(result, captured, fresh, args.expected_digest)
+        else:
+            require(args.expected_digest is None)
         print(json.dumps(result))
     except Exception:
         raise SystemExit(prepare.ERROR) from None

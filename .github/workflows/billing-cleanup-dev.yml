@@ -1,12 +1,22 @@
-name: Billing cleanup Dev plan
+name: Billing cleanup Dev transition
 
 on:
   workflow_dispatch:
     inputs:
       expected_revision:
-        description: Exact reviewed main infrastructure commit; plan only
+        description: Exact reviewed main infrastructure commit
         type: string
         required: true
+      execution_mode:
+        description: Plan first; apply regenerates and verifies the reviewed action
+        type: choice
+        options: [plan, apply]
+        default: plan
+        required: true
+      reviewed_plan_digest:
+        description: Required for apply of the same reviewed source and account union
+        type: string
+        required: false
 
 permissions:
   contents: read
@@ -17,7 +27,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  plan:
+  transition:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -29,6 +39,8 @@ jobs:
       TF_STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
       AWS_REGION: us-east-1
       EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+      REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7.0.0
@@ -42,6 +54,11 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
           test "$TF_STATE_BUCKET" = amt-trustcheckradar-107827791950-tfstate
           test "$TF_STATE_KEY_PREFIX" = trustcheckradar
+          case "$EXECUTION_MODE" in
+            plan) test -z "$REVIEWED_PLAN_DIGEST" ;;
+            apply) [[ "$REVIEWED_PLAN_DIGEST" =~ ^[0-9a-f]{64}$ ]] ;;
+            *) exit 1 ;;
+          esac
       - uses: hashicorp/setup-terraform@v4.0.1
         with:
           terraform_version: 1.12.1
@@ -51,7 +68,7 @@ jobs:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: us-east-1
           allowed-account-ids: "107827791950"
-          role-session-name: billing-cleanup-plan-${{ github.run_id }}
+          role-session-name: billing-cleanup-${{ github.run_id }}
       - name: Generate private baseline without applying
         run: |
           set -euo pipefail
@@ -95,12 +112,53 @@ jobs:
         run: |
           set -euo pipefail
           umask 077
+          args=(--execution-mode "$EXECUTION_MODE")
+          if [[ "$EXECUTION_MODE" == apply ]]; then args+=(--expected-digest "$REVIEWED_PLAN_DIGEST"); fi
           python3 scripts/verify_billing_cleanup_dev_plan.py \
             --plan "$RUNNER_TEMP/billing-cleanup-plan.json" \
             --baseline-plan "$RUNNER_TEMP/billing-cleanup-baseline-plan.json" \
             --baseline "$RUNNER_TEMP/billing-cleanup-baseline.json" \
-            --revision "$EXPECTED_REVISION" > "$RUNNER_TEMP/billing-cleanup-review.json"
+            --revision "$EXPECTED_REVISION" "${args[@]}" > "$RUNNER_TEMP/billing-cleanup-review.json"
           tee -a "$GITHUB_STEP_SUMMARY" < "$RUNNER_TEMP/billing-cleanup-review.json"
+      - name: Capture protected Dev runtimes
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 scripts/verify_billing_cleanup_dev_readback.py --snapshot "$RUNNER_TEMP/billing-cleanup-protected.json"
+      - name: Apply only the fresh verified saved plan
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 scripts/verify_billing_cleanup_dev_plan.py \
+            --plan "$RUNNER_TEMP/billing-cleanup-plan.json" \
+            --baseline-plan "$RUNNER_TEMP/billing-cleanup-baseline-plan.json" \
+            --baseline "$RUNNER_TEMP/billing-cleanup-baseline.json" \
+            --revision "$EXPECTED_REVISION" --execution-mode apply \
+            --expected-digest "$REVIEWED_PLAN_DIGEST" > "$RUNNER_TEMP/billing-cleanup-recheck.json"
+          if ! terraform -chdir=terraform/play-lifecycle apply -input=false \
+            "$RUNNER_TEMP/billing-cleanup.tfplan" > "$RUNNER_TEMP/billing-cleanup-apply.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/billing-cleanup-apply.log"
+            echo 'Cleanup apply failed; reconcile private state before any retry.' >&2
+            exit 1
+          fi
+          python3 scripts/verify_billing_cleanup_dev_readback.py \
+            --plan "$RUNNER_TEMP/billing-cleanup-plan.json" \
+            --baseline "$RUNNER_TEMP/billing-cleanup-baseline.json" \
+            --snapshot "$RUNNER_TEMP/billing-cleanup-protected.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Verify zero cleanup drift
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          umask 077
+          if ! terraform -chdir=terraform/play-lifecycle plan -input=false -detailed-exitcode \
+            -var-file=../../environments/dev/play-lifecycle.tfvars \
+            -var-file="$RUNNER_TEMP/billing-cleanup.tfvars.json" > "$RUNNER_TEMP/billing-cleanup-drift.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/billing-cleanup-drift.log"
+            echo 'Cleanup drift requires reconciliation; automatic rollback is disabled.' >&2
+            exit 1
+          fi
+          echo 'Zero cleanup drift and protected runtime preservation verified; erasure and purchase acceptance remain open.' >> "$GITHUB_STEP_SUMMARY"
       - name: Remove all private plans and configuration
         if: always()
         run: rm -f "$RUNNER_TEMP"/billing-cleanup*.json "$RUNNER_TEMP"/billing-cleanup*.log "$RUNNER_TEMP"/billing-cleanup*.tfplan
