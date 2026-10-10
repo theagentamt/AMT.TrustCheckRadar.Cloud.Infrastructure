@@ -309,6 +309,23 @@ must still display the test-purchase notice and a Google test payment instrument
    emit only a bounded category and fixed allowlisted AWS operation/input names;
    raw configuration, identities, resource identifiers and log text remain private.
 
+   After the approved KMS metadata grant, actual-role qualification
+   [38065248175](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38065248175)
+   succeeded. Cleanup plan
+   [38065304351](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38065304351)
+   completed its private Terraform baseline but failed during account-union
+   preparation before metadata discovery. The original generic rejection does
+   not establish which predicate failed, and the private plan was removed.
+   The preparer now emits one fixed allowlisted rejection code, such as
+   `selection_json`, `selection_shape`, `plan_complete`, `plan_version`,
+   `plan_drift` or `plan_checks`. Other parsing, scope, provenance, metadata and
+   output stages have bounded fallback codes. It never prints the underlying
+   exception, supplied value, subject, resource identity or private plan.
+   Completion, drift, check-status, account and package predicates remain
+   unchanged. This diagnostic change does not establish successful planning
+   or authorize admission/runtime changes; the next real plan must identify
+   and resolve the actual blocking condition.
+
    Diagnostic-source main CI
    [38059948494](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38059948494)
    passed stack validation but found a pre-existing snapshot rejection-test
