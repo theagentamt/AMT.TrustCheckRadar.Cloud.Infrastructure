@@ -185,8 +185,9 @@ mock teardown. Existing unrelated test files may use mock apply; none are AWS ap
 Final infrastructure suites: consumer 87, assessment 8, resolver 17, store 9
 (**121 mocked cases passed**). The helper suite passed **462 cases**; Lambda final impacted checks passed
 **715 cases**, including 44 scoped cases, against source
-`a83d5b208949c17c709759bcae561b6254bb0f4b`. Its final docs/source branch head is
-`ed83d9c28c9f95a9319cbe74ab8f51f0a10bef1d`. The new
+`a83d5b208949c17c709759bcae561b6254bb0f4b`. Its tested documentation checkpoint is
+`ed83d9c28c9f95a9319cbe74ab8f51f0a10bef1d`; subsequent publication-only
+documentation commits and exact remote heads are recorded in the tracker. The new
 helper's twelve cases include bad plans, broadened IAM, unknown/private values,
 wrong-account roles, changed protected selections, alias/package mismatches,
 manifest manipulation, shutdown recovery and diagnostic redaction.
