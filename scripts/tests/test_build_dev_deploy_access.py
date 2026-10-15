@@ -30,6 +30,39 @@ class DeployAccessTests(unittest.TestCase):
         )
         self.assertNotIn("*", statement["Resource"])
 
+    def test_authority_rules_are_exactly_dev_scoped(self):
+        policy = POLICIES.authority_maintenance(
+            "107827791950", "us-east-1", "trustcheckradar", "dev"
+        )
+        statement = policy["Statement"][0]
+        self.assertEqual(policy["Version"], "2012-10-17")
+        self.assertEqual(statement["Sid"], "ManageV1AuthorityMaintenanceRules")
+        self.assertEqual(statement["Effect"], "Allow")
+        self.assertEqual(
+            statement["Action"],
+            [
+                "events:DescribeRule",
+                "events:ListTagsForResource",
+                "events:ListTargetsByRule",
+                "events:PutRule",
+                "events:PutTargets",
+                "events:RemoveTargets",
+                "events:DeleteRule",
+                "events:EnableRule",
+                "events:DisableRule",
+                "events:TagResource",
+                "events:UntagResource",
+            ],
+        )
+        self.assertEqual(
+            statement["Resource"],
+            [
+                "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-url-lease-recovery",
+                "arn:aws:events:us-east-1:107827791950:rule/trustcheckradar-dev-v1-authority-deletion",
+            ],
+        )
+        self.assertTrue(all("*" not in arn for arn in statement["Resource"]))
+
 
 if __name__ == "__main__":
     unittest.main()

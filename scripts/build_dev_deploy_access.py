@@ -66,6 +66,36 @@ def account_reconciliation(account_id: str, region: str, project: str, environme
     }
 
 
+def authority_maintenance(account_id: str, region: str, project: str, environment: str) -> dict:
+    rule_arns = [
+        f"arn:aws:events:{region}:{account_id}:rule/{project}-{environment}-{suffix}"
+        for suffix in ("url-lease-recovery", "v1-authority-deletion")
+    ]
+    return {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "ManageV1AuthorityMaintenanceRules",
+                "Effect": "Allow",
+                "Action": [
+                    "events:DescribeRule",
+                    "events:ListTagsForResource",
+                    "events:ListTargetsByRule",
+                    "events:PutRule",
+                    "events:PutTargets",
+                    "events:RemoveTargets",
+                    "events:DeleteRule",
+                    "events:EnableRule",
+                    "events:DisableRule",
+                    "events:TagResource",
+                    "events:UntagResource",
+                ],
+                "Resource": rule_arns,
+            }
+        ],
+    }
+
+
 def write_policy(path: Path, policy: dict) -> None:
     path.write_text(json.dumps(policy, separators=(",", ":")), encoding="utf-8")
 
@@ -74,6 +104,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--observability-policy-output", type=Path, required=True)
     parser.add_argument("--account-policy-output", type=Path, required=True)
+    parser.add_argument("--authority-policy-output", type=Path, required=True)
     parser.add_argument("--account-id", required=True)
     parser.add_argument("--region", required=True)
     parser.add_argument("--project", default="trustcheckradar")
@@ -89,6 +120,10 @@ def main() -> int:
     write_policy(
         args.account_policy_output,
         account_reconciliation(args.account_id, args.region, args.project, args.environment),
+    )
+    write_policy(
+        args.authority_policy_output,
+        authority_maintenance(args.account_id, args.region, args.project, args.environment),
     )
     return 0
 

@@ -30,7 +30,7 @@ resource "aws_iam_role_policy" "runtime" {
   policy = jsonencode({ Version = "2012-10-17", Statement = concat([
     { Sid = "OwnLogs", Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.runtime[each.key].arn}:*" },
     { Sid = "ReadIdentityFences", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:ConditionCheckItem"], Resource = [local.users_arn, local.devices_arn, local.deletion_arn] },
-    { Sid = "TokenReads", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:ConditionCheckItem", "dynamodb:Query"], Resource = local.table_arn,
+    { Sid = "TokenReads", Effect = "Allow", Action = each.key == "worker" && local.billing_worker_scoped ? ["dynamodb:GetItem", "dynamodb:ConditionCheckItem"] : ["dynamodb:GetItem", "dynamodb:ConditionCheckItem", "dynamodb:Query"], Resource = local.table_arn,
     Condition = { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*#*", "PLAY_BINDING#*"] } } },
     { Sid = "TokenTransactions", Effect = "Allow", Action = each.key == "deletion" ? ["dynamodb:DeleteItem"] : ["dynamodb:PutItem", "dynamodb:DeleteItem"], Resource = local.table_arn,
     Condition = merge(local.transaction_condition, { "ForAllValues:StringLike" = { "dynamodb:LeadingKeys" = ["V1#*#*", "PLAY_BINDING#*"] } }) },
@@ -64,12 +64,16 @@ resource "aws_iam_role_policy" "runtime" {
       ] : statement if each.key != "deletion"], [for statement in [
       { Sid = "DueTokenKeys", Effect = "Allow", Action = "dynamodb:Query", Resource = "${local.table_arn}/index/GSI1",
       Condition = { "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["V1_PLAY_RECONCILE"] } } }
-      ] : statement if each.key == "worker"], [for statement in [
+      ] : statement if each.key == "worker" && !local.billing_worker_scoped], [for statement in [
       { Sid = "LifecycleCheckpointRead", Effect = "Allow", Action = ["dynamodb:GetItem"], Resource = local.table_arn,
       Condition = { "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["PLAY#CONTROL"] } } },
       { Sid = "LifecycleCheckpointWrite", Effect = "Allow", Action = each.key == "worker" ? ["dynamodb:PutItem"] : ["dynamodb:DeleteItem"], Resource = local.table_arn,
       Condition = merge(local.transaction_condition, { "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["PLAY#CONTROL"], "dynamodb:Attributes" = ["PK", "SK", "schemaVersion", "revision", "cursor", "expiresAt", "scanStartedAtEpoch", "lastFullPassAtEpoch"] } }) }
-  ] : statement if contains(["worker", "deletion"], each.key)]) })
+      ] : statement if each.key == "deletion" || (each.key == "worker" && !local.billing_worker_scoped)], [for statement in [
+      { Sid = "NoScopedTokenEnumeration", Effect = "Deny", Action = ["dynamodb:Query", "dynamodb:Scan"], Resource = [local.table_arn, "${local.table_arn}/index/*"] },
+      { Sid = "NoScopedCheckpointAccess", Effect = "Deny", Action = ["dynamodb:GetItem", "dynamodb:ConditionCheckItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem"], Resource = local.table_arn,
+      Condition = { "ForAnyValue:StringEquals" = { "dynamodb:LeadingKeys" = ["PLAY#CONTROL"] } } }
+  ] : statement if each.key == "worker" && local.billing_worker_scoped]) })
 }
 resource "aws_lambda_function" "runtime" {
   for_each                       = local.functions
@@ -89,12 +93,12 @@ resource "aws_lambda_function" "runtime" {
   environment {
     variables = merge({
       STAGE                           = var.environment
-      PLAY_LIFECYCLE_ENABLED          = "false"
+      PLAY_LIFECYCLE_ENABLED          = tostring((each.key == "ingress" && local.billing_ingress_active) || (each.key == "worker" && local.billing_worker_active))
       PLAY_TOKEN_CLEANUP_ENABLED      = tostring(each.key == "deletion" && local.token_deletion_active)
       PLAY_CHECKPOINT_POLICY_APPROVED = "false"
       PLAY_PREPARATION_ENABLED        = "false"
-      AUTHORITY_ENABLED               = "false"
-      DEV_SUBJECT_ALLOWLIST_JSON      = each.key == "deletion" && local.token_deletion_active ? jsonencode(sort(tolist(var.deletion_activation.subjects))) : "[]"
+      AUTHORITY_ENABLED               = tostring((each.key == "ingress" && local.billing_ingress_active) || (each.key == "worker" && local.billing_worker_active))
+      DEV_SUBJECT_ALLOWLIST_JSON      = each.key == "deletion" && local.token_deletion_active ? jsonencode(sort(tolist(var.deletion_activation.subjects))) : (((each.key == "ingress" && local.billing_ingress_active) || (each.key == "worker" && local.billing_worker_active)) ? jsonencode(sort(tolist(var.billing_activation.subjects))) : "[]")
       PLAY_TOKEN_TABLE_NAME           = aws_dynamodb_table.tokens[0].name
       AUTHORITY_TABLE_NAME            = split("/", local.authority_arn)[1]
       PURCHASE_OWNERSHIP_TABLE_NAME   = split("/", local.authority_arn)[1]
@@ -133,6 +137,11 @@ resource "aws_lambda_function" "runtime" {
       PLAY_PUBSUB_SUBSCRIPTION            = var.pubsub_identity.subscription
       PLAY_PUBSUB_SERVICE_ACCOUNT_EMAIL   = var.pubsub_identity.service_account_email
       PLAY_PUBSUB_SERVICE_ACCOUNT_SUBJECT = var.pubsub_identity.service_account_subject
+      } : {}, each.key == "ingress" && local.billing_ingress_active ? {
+      PLAY_SCOPED_OWNED_HEAD_ONLY_ENABLED = "true"
+      } : {}, each.key == "worker" && local.billing_worker_active ? {
+      PLAY_SCOPED_OWNED_HEAD_ONLY_ENABLED  = "true"
+      PLAY_SCOPED_LIFECYCLE_WORKER_ENABLED = "true"
     } : {})
   }
   depends_on = [aws_iam_role_policy.runtime, aws_dynamodb_resource_policy.tokens]

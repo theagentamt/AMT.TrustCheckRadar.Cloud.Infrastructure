@@ -143,3 +143,31 @@ run "engineering_activation_without_subjects_is_rejected" {
   }
   expect_failures = [var.activate_rules_engineering]
 }
+
+run "candidate3_rules_only_keeps_provider_circuit_closed_and_denies_url_invocation" {
+  command = apply
+  variables {
+    activate_rules_engineering          = true
+    candidate3_rules_only_enabled       = true
+    governed_history_settlement_enabled = true
+    engineering_subjects                = ["11111111-1111-4111-8111-111111111111"]
+  }
+  assert {
+    condition     = alltrue([for fn in aws_lambda_function.runtime : fn.environment[0].variables.MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED == "true" && fn.environment[0].variables.MESSAGE_AI_ENABLED == "false"]) && aws_lambda_function.runtime["consumer"].environment[0].variables.MESSAGE_PROVIDER_CIRCUIT_OPEN == "true" && aws_lambda_function.runtime["consumer"].environment[0].variables.GOVERNED_HISTORY_SETTLEMENT_ENABLED == "true" && jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[1].Effect == "Deny"
+    error_message = "Candidate.3 deterministic qualification must not invoke a provider or enable AI."
+  }
+}
+run "candidate3_requires_exactly_one_subject" {
+  command = plan
+  variables {
+    activate_rules_engineering    = true
+    candidate3_rules_only_enabled = true
+    engineering_subjects          = ["11111111-1111-4111-8111-111111111111", "22222222-2222-4222-8222-222222222222"]
+  }
+  expect_failures = [var.candidate3_rules_only_enabled]
+}
+run "history_settlement_cannot_enable_itself" {
+  command = plan
+  variables { governed_history_settlement_enabled = true }
+  expect_failures = [var.governed_history_settlement_enabled]
+}

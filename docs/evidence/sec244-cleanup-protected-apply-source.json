@@ -1,0 +1,65 @@
+{
+  "scope": "protected Dev cleanup and foreground preparation source route",
+  "sourceBaseline": "d09375786943418afb05182f9b52f4dbf092187e",
+  "ownerSourceAuthorization": "2026-10-10 scoped main exception; runtime admission and permission changes remain gated",
+  "localValidation": {
+    "helperTests": 450,
+    "billingTests": 96,
+    "terraformFormat": "pass",
+    "campaignGuardrails": "pass",
+    "diffCheck": "pass"
+  },
+  "realReadOnlyPlanReview": {
+    "caller": "existing authorized AWS SSO metadata session",
+    "cleanupResourceUpdates": 2,
+    "preservedCleanupSubjects": 1,
+    "desiredCleanupSubjects": 2,
+    "foregroundMode": "preparation",
+    "foregroundResourceUpdates": 2,
+    "foregroundSubjects": 1,
+    "callerSessionVariantDigestEquality": "pass"
+  },
+  "previousProtectedRoleCleanupPlan": {
+    "run": "https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/38071484562",
+    "result": "success",
+    "source": "d09375786943418afb05182f9b52f4dbf092187e",
+    "runtimeApplied": false
+  },
+  "gates": {
+    "defaultExecutionMode": "plan",
+    "applyRequiresExactMainRevisionAndReviewedDigest": true,
+    "applyRequiresActualDeploymentRole": true,
+    "privateBinaryRegeneratedAndSameFileApplied": true,
+    "protectedOtherRuntimeSnapshot": true,
+    "freshRuntimeRecheck": true,
+    "postApplyConfigurationAndZeroDriftRequired": true,
+    "newPermissions": false,
+    "privatePlanArtifactUpload": false,
+    "automaticRollback": false
+  },
+  "unperformed": [
+    "new-source protected deployment-role plan qualification",
+    "runtime cleanup admission/apply/readback",
+    "foreground admission/apply",
+    "canonical Android installation and registration",
+    "real protected preparation endpoint",
+    "Google license-test checkout, verification, durable entitlement and server acknowledgment",
+    "RTDN/lifecycle and physical-device acceptance"
+  ],
+  "tracking": [
+    "SECUR4ALL-125",
+    "SECUR4ALL-244",
+    "ATCR-112",
+    "ATCR-148"
+  ],
+  "independentReview": {
+    "findings": 0,
+    "helperTests": 450,
+    "billingTests": 96,
+    "actualCleanupAndForegroundPlans": "pass",
+    "sameRoleSessionVariants": "pass",
+    "unsafeVariants": 5,
+    "actualSSOApplyIdentity": "rejected",
+    "scope": "source publication only; no runtime apply authorization"
+  }
+}

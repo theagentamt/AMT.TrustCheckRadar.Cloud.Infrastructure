@@ -7,6 +7,13 @@ mock_provider "aws" {
 }
 
 variables {
+  analysis_retirement_deployment = {
+    release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
+    object_version     = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1"
+    source_hash        = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4="
+    approval_reference = "synthetic-retirement-review"
+    promotion_approved = true
+  }
   aws_region          = "us-east-1"
   project_name        = "trustcheckradar"
   environment         = "dev"
@@ -82,10 +89,10 @@ run "participation_contract_keeps_consent_optional_and_quota_bounded" {
 
   assert {
     condition = (
-      aws_lambda_function.analysis.environment[0].variables["CAMPAIGN_PARTICIPATION_ITEM_SK"] == "CAMPAIGN_PARTICIPATION" &&
-      aws_lambda_function.analysis.environment[0].variables["PARTICIPATING_FREE_MONTHLY_SCAN_LIMIT"] == "15" &&
+      !contains(keys(aws_lambda_function.analysis.environment[0].variables), "CAMPAIGN_PARTICIPATION_ITEM_SK") &&
+      !contains(keys(aws_lambda_function.analysis.environment[0].variables), "PARTICIPATING_FREE_MONTHLY_SCAN_LIMIT") &&
       aws_lambda_function.entitlement_snapshot.environment[0].variables["CAMPAIGN_PARTICIPATION_ITEM_SK"] == "CAMPAIGN_PARTICIPATION"
     )
-    error_message = "Quota and publication readers must use the server-side participation record."
+    error_message = "Retired analysis has no research-linked free quota; retained snapshot metadata stays separate."
   }
 }

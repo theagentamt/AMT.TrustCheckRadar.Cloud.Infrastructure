@@ -12,5 +12,6 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_region
+  region              = var.aws_region
+  allowed_account_ids = var.governed_history_index_enabled ? ["107827791950"] : null
 }

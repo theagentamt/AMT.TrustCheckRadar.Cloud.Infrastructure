@@ -1,0 +1,873 @@
+{
+  "exactOwnedCleanupAttempt": {
+    "activityLaunched": false,
+    "actualWindowSha256": "ddb2918aa5e5548b761c8ebe5ab20a71bce6c9396e1b4cb8da180a70bbb7fba0",
+    "cleanupSuccessClaimed": false,
+    "discardPerformed": false,
+    "executedTests": 1,
+    "failureCategory": "STATE",
+    "failureMarkerSha256": "5d83e7406b6146e1d693dd9f66c11b76c5eea1d8210e38dbdb0d8e6d9c2a57d9",
+    "normalSubmissionStarted": false,
+    "operationalReadback": {
+      "authorityReadback": {
+        "complimentarySource": false,
+        "effectiveBasis": "trial",
+        "exactGetItems": 4,
+        "limit": 10,
+        "paidSource": false,
+        "remaining": 7,
+        "reserved": 0,
+        "scans": 0,
+        "trialHistoryConsistent": true,
+        "used": 3,
+        "writes": 0
+      },
+      "evidenceBindings": {
+        "authorityHelperSha256": "5ab12354bac63017bb0d02d82874a16de1738af633bafb11785dbef3325a1696",
+        "normalExpectationSha256": "448189c862e0186f1141557f1fefeff9117ff8137b0dc69d59a902ec047a9198",
+        "operationalHelperSha256": "3fb4d697c5b6b0b9f43024d17c143c3e27772c4010d8f1dccb3557d61eec8346"
+      },
+      "evidenceKind": "cleanup_pre_activity_stop_operational_readback",
+      "identifiersIncluded": false,
+      "normalSuccessExpectationNotApplicableForCleanup": true,
+      "normalSuccessQualificationPassed": false,
+      "observedAtEpoch": 1791077405,
+      "operationalReadback": {
+        "applicationEvents": {
+          "governedHistoryRead": 0,
+          "messageConsumer": 0
+        },
+        "errors": {
+          "governedHistory": 0,
+          "messageConsumer": 0,
+          "messageEvaluator": 0,
+          "urlAssessment": 0,
+          "v1Entitlements": 0
+        },
+        "invocations": {
+          "governedHistory": 0,
+          "messageConsumer": 0,
+          "messageEvaluator": 0,
+          "urlAssessment": 0,
+          "v1Entitlements": 0
+        },
+        "normalExpectationMatched": false,
+        "proofOccurrences": 0,
+        "providerCalls": 0,
+        "sensitiveSentinelOccurrences": 0,
+        "throttles": {
+          "governedHistory": 0,
+          "messageConsumer": 0,
+          "messageEvaluator": 0,
+          "urlAssessment": 0,
+          "v1Entitlements": 0
+        },
+        "writes": 0
+      },
+      "originalContentIncluded": false,
+      "schemaVersion": 1,
+      "secretMaterialIncluded": false,
+      "sourceWindow": {
+        "durationMs": 40629,
+        "sha256": "ddb2918aa5e5548b761c8ebe5ab20a71bce6c9396e1b4cb8da180a70bbb7fba0"
+      },
+      "testOutcome": {
+        "activityStarted": false,
+        "analysisSubmitted": false,
+        "cleanupQualified": false,
+        "discardStarted": false,
+        "restoreStarted": false,
+        "result": "FAILED_CLOSED",
+        "retryPerformed": false,
+        "stage": "snapshot-exact-owned-draft"
+      }
+    },
+    "operationalReadbackSha256": "74d1cee01c960a2c74e85a019d4725cc30802a182a4d9fd1e703cc3a39c0f5b7",
+    "passed": false,
+    "persistenceCause": "NOT_PROVEN",
+    "restorePerformed": false,
+    "retried": false,
+    "sourceHead": "6ea0efd0d3771a6bda3927e666821101c312fd3e",
+    "stage": "snapshot-exact-owned-draft",
+    "subsequentIndependentCurrentAccountDraftAbsenceChecks": 2
+  },
+  "failedNormalAttempts": [
+    {
+      "applicationLogs": {
+        "governed_history_read": 0,
+        "message_consumer": 0
+      },
+      "authority": {
+        "complimentarySource": false,
+        "exactGetItems": 4,
+        "limit": 10,
+        "paidSource": false,
+        "remaining": 7,
+        "reserved": 0,
+        "trialHistoryConsistent": true,
+        "used": 3
+      },
+      "completedLogicalChecks": 0,
+      "errors": {
+        "governedHistory": 0,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 0
+      },
+      "esStarted": false,
+      "identifiersIncluded": false,
+      "invocations": {
+        "governedHistory": 0,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 0
+      },
+      "originalWindowSha256": "eed5f8eb9fcbc8ec024d9639c64f42041ce6aa47dcd79149095b23206b4fc4d1",
+      "proofPatternMatches": 0,
+      "schemaVersion": 1,
+      "sensitiveSentinelMatches": 0,
+      "submissionDispatched": false,
+      "successQualificationPassed": false,
+      "throttles": {
+        "governedHistory": 0,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 0
+      },
+      "windowProjectionSha256": "34ad970c58cedb7a21bc18390ef5e71ce72f07fcf72051a6f9b88d4e8a3ca41e",
+      "windowResult": "aborted_pre_submission",
+      "writesPerformed": 0
+    },
+    {
+      "applicationLogs": {
+        "governed_history_read": 1,
+        "message_consumer": 0
+      },
+      "authority": {
+        "complimentarySource": false,
+        "exactGetItems": 4,
+        "limit": 10,
+        "paidSource": false,
+        "remaining": 7,
+        "reserved": 0,
+        "trialHistoryConsistent": true,
+        "used": 3
+      },
+      "completedLogicalChecks": 0,
+      "errors": {
+        "governedHistory": 0,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 0
+      },
+      "esStarted": false,
+      "failureMarkerSha256": "c9efb437586619408c47e461640ca9eebff72a9ccc82591526a9be152a3baeea",
+      "identifiersIncluded": false,
+      "invocations": {
+        "governedHistory": 1,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 1
+      },
+      "originalWindowSha256": "a50b0ae968358d8fea2182ae698412c8ec4cba8e4685196c102d45e923641120",
+      "proofPatternMatches": 0,
+      "schemaVersion": 1,
+      "sensitiveSentinelMatches": 0,
+      "submissionDispatched": false,
+      "successQualificationPassed": false,
+      "throttles": {
+        "governedHistory": 0,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 0
+      },
+      "windowProjectionSha256": "09649d3bd2869299bb69a5c1cdc843dc9b0daf9a32b313cd0c3e91d4b7b3b310",
+      "windowResult": "aborted_pre_submission",
+      "writesPerformed": 0
+    }
+  ],
+  "firstAdmittedNormalEnglishJourney": {
+    "appForceStoppedAndRestarted": true,
+    "completedLogicalChecks": 1,
+    "englishReopenExecutedTests": 1,
+    "englishReopenFailureStage": "direct-detail",
+    "englishReopenPassed": false,
+    "englishSubmitExecutedTests": 1,
+    "englishSubmitPassed": true,
+    "operationalReadback": {
+      "authorityReadback": {
+        "complimentarySource": false,
+        "effectiveBasis": "trial",
+        "exactGetItems": 4,
+        "limit": 10,
+        "paidSource": false,
+        "remaining": 6,
+        "reserved": 0,
+        "scans": 0,
+        "trialHistoryConsistent": true,
+        "used": 4,
+        "writes": 0
+      },
+      "evidenceBindings": {
+        "authorityHelperSha256": "5ab12354bac63017bb0d02d82874a16de1738af633bafb11785dbef3325a1696",
+        "normalExpectationSha256": "448189c862e0186f1141557f1fefeff9117ff8137b0dc69d59a902ec047a9198",
+        "operationalHelperSha256": "3fb4d697c5b6b0b9f43024d17c143c3e27772c4010d8f1dccb3557d61eec8346"
+      },
+      "evidenceKind": "normal_en_partial_reopen_operational_readback",
+      "identifiersIncluded": false,
+      "journey": {
+        "englishLogicalChecksCompleted": 1,
+        "englishReopen": "FAILED_CLOSED",
+        "englishReopenFailureStage": "direct-detail",
+        "englishSubmit": "PASS",
+        "normalJourneyQualified": false,
+        "reconcilePerformedAfterFailure": false,
+        "resubmitPerformed": false,
+        "retryPerformed": false,
+        "spanishStarted": false
+      },
+      "normalSuccessExpectationUnchanged": true,
+      "normalSuccessQualificationPassed": false,
+      "observedAtEpoch": 1791077905,
+      "operationalReadback": {
+        "applicationEvents": {
+          "governedHistoryRead": 4,
+          "messageConsumer": 2
+        },
+        "errors": {
+          "governedHistory": 0,
+          "messageConsumer": 0,
+          "messageEvaluator": 0,
+          "urlAssessment": 0,
+          "v1Entitlements": 0
+        },
+        "invocations": {
+          "governedHistory": 4,
+          "messageConsumer": 2,
+          "messageEvaluator": 1,
+          "urlAssessment": 0,
+          "v1Entitlements": 4
+        },
+        "normalExpectationMatched": false,
+        "proofOccurrences": 0,
+        "providerCalls": 0,
+        "sensitiveSentinelOccurrences": 0,
+        "throttles": {
+          "governedHistory": 0,
+          "messageConsumer": 0,
+          "messageEvaluator": 0,
+          "urlAssessment": 0,
+          "v1Entitlements": 0
+        },
+        "writesPerformedByAudit": 0
+      },
+      "originalContentIncluded": false,
+      "schemaVersion": 1,
+      "secretMaterialIncluded": false,
+      "settlementEvidence": {
+        "oneCompletedCheckReflectedInAuthority": true,
+        "originalAccountingDetailReadback": "PENDING_READ_ONLY_REOPEN_CORRECTION"
+      },
+      "sourceWindow": {
+        "durationMs": 250166,
+        "sha256": "6d59a2cfffd8519d78fb4cf3d346ecfbc89859e54d87410aeb02e6784e4c88e0"
+      }
+    },
+    "operationalReadbackSha256": "7a1f97e86da327be894af22bc2a7bb3720edb7bbea6ac7fe2ee38f51252e916c",
+    "readOnlyCorrectionPending": true,
+    "resubmissionPerformed": false,
+    "runtimeChangeRequired": false,
+    "sourceFinding": "test_waits_for_legacy_heading_absent_from_governed_screen",
+    "sourceHead": "6ea0efd0d3771a6bda3927e666821101c312fd3e",
+    "spanishStarted": false
+  },
+  "laterDispatchBoundaryStop": {
+    "actualBackendSubmission": false,
+    "executedTests": 1,
+    "failureCategory": "ASSERTION",
+    "historyObserved": false,
+    "hostAndAppMarkerByteIdentical": true,
+    "operationalReadback": {
+      "applicationLogs": {
+        "governed_history_read": 1,
+        "message_consumer": 0
+      },
+      "authority": {
+        "complimentarySource": false,
+        "exactGetItems": 4,
+        "limit": 10,
+        "paidSource": false,
+        "remaining": 7,
+        "reserved": 0,
+        "trialHistoryConsistent": true,
+        "used": 3
+      },
+      "backendSubmissionConfirmedAbsent": true,
+      "completedLogicalChecks": 0,
+      "errors": {
+        "governedHistory": 0,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 0
+      },
+      "esStarted": false,
+      "failureMarkerSha256": "061216349cfa4e715fb925459fed44a32c2fd199a286f3bede702d18f57d083f",
+      "identifiersIncluded": false,
+      "invocations": {
+        "governedHistory": 1,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 1
+      },
+      "proofPatternMatches": 0,
+      "schemaVersion": 1,
+      "sensitiveSentinelMatches": 0,
+      "submissionDispatched": false,
+      "successQualificationPassed": false,
+      "throttles": {
+        "governedHistory": 0,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 0
+      },
+      "windowResult": "aborted_pre_submission",
+      "windowSha256": "e92e4295ef2f81ef8b2ce7eec47ea74fd3147318d92af2d7e3e95a6817cda076",
+      "writesPerformed": 0
+    },
+    "operationalWindowSha256": "e92e4295ef2f81ef8b2ce7eec47ea74fd3147318d92af2d7e3e95a6817cda076",
+    "ownedSyntheticDraftEntered": true,
+    "passed": false,
+    "reportSha256": "061216349cfa4e715fb925459fed44a32c2fd199a286f3bede702d18f57d083f",
+    "settledObserved": false,
+    "sourceExactMarkerPreserved": true,
+    "sourceExactMarkerSha256": "061216349cfa4e715fb925459fed44a32c2fd199a286f3bede702d18f57d083f",
+    "sourceHead": "2936f6ab75fa489482965a56630ca477c852dbe8",
+    "specificUiFailureCause": "NOT_PROVEN",
+    "stage": "message-review-dispatch",
+    "submissionClicked": false
+  },
+  "laterPreconditionStop": {
+    "authorityReadback": {
+      "authority": {
+        "complimentarySource": false,
+        "exactGetItems": 4,
+        "limit": 10,
+        "paidSource": false,
+        "remaining": 7,
+        "reserved": 0,
+        "trialHistoryConsistent": true,
+        "used": 3
+      },
+      "completedLogicalChecks": 0,
+      "failureMarkerSha256": "5cede654e3ec6f11ab3530538be3f3631cd1f4e5321e349f8d0c4505c7e79b02",
+      "identifiersIncluded": false,
+      "invocationCountsClaimed": false,
+      "normalSuccessQualificationPassed": false,
+      "operationalReadback": "NOT_RUN",
+      "operationalReadbackReason": "actual_window_not_recorded",
+      "schemaVersion": 1,
+      "submissionDispatched": false,
+      "windowResult": "precondition_stop",
+      "writesPerformed": 0
+    },
+    "canonicalHostCopySha256": "caee1de09f00b059e1a6616698406ce9db97de40dabf2997b9c20107be69d62f",
+    "executedTests": 1,
+    "failureCategory": "STATE",
+    "historyObserved": false,
+    "hostCopyAddedTrailingNewline": true,
+    "operationalWindow": "NOT_RECORDED",
+    "ownedSyntheticDraftEntered": false,
+    "passed": false,
+    "preExistingTestFailureMarkerConfirmed": true,
+    "settledObserved": false,
+    "sourceExactCopyRetained": true,
+    "sourceExactMarkerSha256": "5cede654e3ec6f11ab3530538be3f3631cd1f4e5321e349f8d0c4505c7e79b02",
+    "sourceHead": "2936f6ab75fa489482965a56630ca477c852dbe8",
+    "stage": "preconditions",
+    "submissionClicked": false
+  },
+  "localPreSubmitRehearsal": {
+    "analysisCalls": 0,
+    "deviceCalls": 0,
+    "durationSeconds": 3.283,
+    "emptyRawInputProved": true,
+    "emulatorApi": 35,
+    "exactOwnedSyntheticDraftDiscarded": true,
+    "historyToHomeCompositionObserved": true,
+    "networkCalls": 0,
+    "passed": true,
+    "sourceHead": "ed6bab1a4f6af1f95b8c1b945f3e55bf7ca0748e",
+    "speakerRequiredBeforeSubmit": true,
+    "submitClicked": false,
+    "tests": 1,
+    "usesGovernedMessageServicesFake": true
+  },
+  "normalEnglishSpanishJourneyPassed": true,
+  "normalLogicalChecksSubmitted": 2,
+  "originalSetupPassed": false,
+  "originalSwitchUiResponseObserved": true,
+  "pending": [
+    "infrastructure_aggregate_evidence_main_integration"
+  ],
+  "privateContentIncluded": false,
+  "qualificationStatus": "normal_en_es_phases_passed_owner_retained_dev_scope_integration_pending",
+  "readOnlyDraftInspector": {
+    "absentDraftUiTestsPassed": 1,
+    "appApkSha256": "836dadd74af26ac6fd45221299dfb7add580232502c9825301438305974e55a0",
+    "appRuntimeUnchanged": true,
+    "blanketDraftPreservationClaimed": false,
+    "currentAccountOnly": true,
+    "currentReport": {
+      "analysisControllerActions": 0,
+      "analysisSubmitted": false,
+      "classification": "EMPTY",
+      "deviceRegistrationRequests": 0,
+      "endEpoch": 1791074205,
+      "expectedAccount": true,
+      "expectedNativeBinding": true,
+      "pendingDraftRestoredForInspection": false,
+      "persistedRecordAbsent": true,
+      "readOnly": true,
+      "restoreControlObserved": false,
+      "schemaVersion": 1,
+      "sealedDraftUnchanged": true,
+      "startEpoch": 1791074203
+    },
+    "firstInvocationSkippedBeforeExecution": true,
+    "flaggedLocalGateTasks": 109,
+    "hostFixtureTestsPassed": 7,
+    "independentSourceAndActualApkReview": "PASS",
+    "liveExecuted": true,
+    "metadataAndPreservationTestsPassed": 3,
+    "normalJourneyQualifiedByInspection": false,
+    "normalRestoreUiTestsPassed": 1,
+    "operationalReadback": {
+      "analysisControllerActions": 0,
+      "analysisSubmitted": false,
+      "applicationLogs": {
+        "governed_history_read": 0,
+        "message_consumer": 0
+      },
+      "authority": {
+        "complimentarySource": false,
+        "exactGetItems": 4,
+        "limit": 10,
+        "paidSource": false,
+        "remaining": 7,
+        "reserved": 0,
+        "trialHistoryConsistent": true,
+        "used": 3
+      },
+      "classification": "EMPTY",
+      "deviceRegistrationRequests": 0,
+      "errors": {
+        "governedHistory": 0,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 0
+      },
+      "evidenceKind": "read_only_draft_inspection",
+      "identifiersIncluded": false,
+      "inspectorReportSha256": "af4d06291805be93b24699fd2ddc466981c557cebc403774c93987587b5a34a1",
+      "invocations": {
+        "governedHistory": 0,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 0
+      },
+      "normalSuccessExpectationNotApplicableForReadOnlyInspection": true,
+      "normalSuccessQualificationPassed": false,
+      "proofPatternMatches": 0,
+      "readOnlyInspectionPassed": true,
+      "schemaVersion": 1,
+      "sensitiveSentinelMatches": 0,
+      "throttles": {
+        "governedHistory": 0,
+        "messageConsumer": 0,
+        "messageEvaluator": 0,
+        "urlAssessment": 0,
+        "v1Entitlements": 0
+      },
+      "windowProjectionSha256": "565bf9d4c863b1e0f08f508f137ce59cbc33efaa2e75008b72b6cd90df8e556f",
+      "writesPerformed": 0
+    },
+    "reportSha256": "af4d06291805be93b24699fd2ddc466981c557cebc403774c93987587b5a34a1",
+    "sourceHead": "2936f6ab75fa489482965a56630ca477c852dbe8",
+    "testApkSha256": "041cddbf785bb4351aa73de08233b17efed7f7e2de1a248a40b5a5af38327967"
+  },
+  "readOnlyReconciliation": {
+    "activationControlAbsent": true,
+    "activeAccessObserved": true,
+    "analysisSubmissions": 0,
+    "currentRunObservationsOnly": true,
+    "durationSeconds": 11.435,
+    "exactOwnedSyntheticDraftCleaned": true,
+    "expectedAccountAndBindingVerified": true,
+    "passed": true,
+    "registrationRequests": 0,
+    "reportSha256": "89e087af73f706b707f7367ff2cd321acf539089d1f240856d1076328a6c22f3",
+    "sourceHead": "10118fab45ea0dee272ec05fd3c28d54b4a6f0e9"
+  },
+  "readOnlyReopenLocalePreconditionStop": {
+    "executedTests": 1,
+    "newLogicalChecks": 0,
+    "normalAcceptancePassed": false,
+    "operationalReadback": {
+      "authorityReadback": {
+        "complimentarySource": false,
+        "effectiveBasis": "trial",
+        "exactGetItems": 4,
+        "limit": 10,
+        "paidSource": false,
+        "remaining": 6,
+        "reserved": 0,
+        "scans": 0,
+        "trialHistoryConsistent": true,
+        "used": 4,
+        "writes": 0
+      },
+      "cumulativeActuals": {
+        "governedHistory": 4,
+        "messageConsumer": 2,
+        "messageEvaluator": 1,
+        "urlAssessment": 0,
+        "v1Entitlements": 4
+      },
+      "evidenceBindings": {
+        "authorityHelperSha256": "5ab12354bac63017bb0d02d82874a16de1738af633bafb11785dbef3325a1696",
+        "operationalHelperSha256": "3fb4d697c5b6b0b9f43024d17c143c3e27772c4010d8f1dccb3557d61eec8346",
+        "priorWindowSha256": "6d59a2cfffd8519d78fb4cf3d346ecfbc89859e54d87410aeb02e6784e4c88e0",
+        "windowSha256": "71f63aa74b27fc525f5c2361f083e2a390b705801ad0dc8d5cf6d35a8bbe63f1"
+      },
+      "evidenceKind": "remaining_normal_phases_reopen_failure_readback",
+      "identifiersIncluded": false,
+      "journey": {
+        "englishExistingResultReopen": "FAILED_CLOSED",
+        "englishResubmitOrReconcilePerformed": false,
+        "failureStage": "preserved-authority",
+        "historyStageReached": false,
+        "newLogicalChecksCompleted": 0,
+        "remainingPhasesQualified": false,
+        "retryPerformed": false,
+        "spanishStarted": false
+      },
+      "observedAtEpoch": 1791078573,
+      "operationalReadback": {
+        "applicationEvents": {
+          "governedHistoryRead": 0,
+          "messageConsumer": 0
+        },
+        "errors": {
+          "governedHistory": 0,
+          "messageConsumer": 0,
+          "messageEvaluator": 0,
+          "urlAssessment": 0,
+          "v1Entitlements": 0
+        },
+        "invocations": {
+          "governedHistory": 0,
+          "messageConsumer": 0,
+          "messageEvaluator": 0,
+          "urlAssessment": 0,
+          "v1Entitlements": 0
+        },
+        "proofOccurrences": 0,
+        "providerCalls": 0,
+        "sensitiveSentinelOccurrences": 0,
+        "throttles": {
+          "governedHistory": 0,
+          "messageConsumer": 0,
+          "messageEvaluator": 0,
+          "urlAssessment": 0,
+          "v1Entitlements": 0
+        },
+        "writesPerformedByAudit": 0
+      },
+      "originalContentIncluded": false,
+      "originalNormalExpectation": {
+        "passed": false,
+        "sha256": "448189c862e0186f1141557f1fefeff9117ff8137b0dc69d59a902ec047a9198",
+        "unchanged": true
+      },
+      "phaseAssessment": {
+        "accessActual": 0,
+        "accessBound": {
+          "max": 6,
+          "min": 0
+        },
+        "actualInvocations": {
+          "governedHistory": 0,
+          "messageConsumer": 0,
+          "messageEvaluator": 0,
+          "urlAssessment": 0,
+          "v1Entitlements": 0
+        },
+        "assessmentMethod": "offline_exact_typed_comparison_of_immutable_helper_actuals",
+        "assessmentPassed": false,
+        "expectationSha256": "ab34626573ff34d2062f9aef9a2cff2083ba197b3b6dcf5ef8d8130be0316177",
+        "expectedInvocations": {
+          "governedHistory": 6,
+          "messageConsumer": 2,
+          "messageEvaluator": 1,
+          "urlAssessment": 0
+        },
+        "planSha256": "a6c8f96798b1d930a6b8759ab068332a7fee357ea0aaa11db2439be2d14b85b5",
+        "strictTypedMatch": false
+      },
+      "preservedPriorActuals": {
+        "governedHistory": 4,
+        "messageConsumer": 2,
+        "messageEvaluator": 1,
+        "urlAssessment": 0,
+        "v1Entitlements": 4
+      },
+      "schemaVersion": 1,
+      "secretMaterialIncluded": false,
+      "sourceWindow": {
+        "durationMs": 39330,
+        "sha256": "71f63aa74b27fc525f5c2361f083e2a390b705801ad0dc8d5cf6d35a8bbe63f1"
+      }
+    },
+    "operationalReadbackSha256": "295a610ec531c9ed38c8416f39d22d1ec0d87c7a165fa172849e5e3da77d9584",
+    "originalEnglishResubmitted": false,
+    "passed": false,
+    "sourceFinding": "previous_failed_reopen_restored_original_device_language_preference",
+    "sourceHead": "467399b582f7ba5159b8087c3f66f641f648fd4f",
+    "spanishStarted": false,
+    "stage": "preserved-authority"
+  },
+  "registrationCommittedExactlyOnce": true,
+  "registrationRetried": false,
+  "remainingNormalUiPhases": {
+    "actualWindowSha256": "b942cd63e486729a08911591428c5033513c6571705507e2af8aac7400984bdf",
+    "appApkSha256": "836dadd74af26ac6fd45221299dfb7add580232502c9825301438305974e55a0",
+    "appRuntimeUnchanged": true,
+    "contentFreeHistory": true,
+    "englishExistingResultReopen": {
+      "executedTests": 1,
+      "passed": true,
+      "reportSha256": "4966618af40d6e110cfc09ea249407df6432c9d7c6d8e743e49e614abc054461"
+    },
+    "englishResubmitted": false,
+    "independentSourceAndActualApkReview": "PASS",
+    "localRepositoryGateTasks": 491,
+    "newWindowLogicalChecks": 1,
+    "operationalAudit": {
+      "androidReportBindings": {
+        "contentFreeHistory": true,
+        "differentProcessAfterForceStop": true,
+        "directHistoryReopen": true,
+        "englishSha256": "4966618af40d6e110cfc09ea249407df6432c9d7c6d8e743e49e614abc054461",
+        "existingBindingPreserved": true,
+        "normalMainActivity": true,
+        "realAmplifySession": true,
+        "spanishSha256": "3e916b40948dd065bacfc218035bbb7ed5b079d49e20fdf0fcd79127f4d96537",
+        "strictPrivateReportsValidated": true
+      },
+      "authorityReadback": {
+        "after": {
+          "limit": 10,
+          "remaining": 5,
+          "reserved": 0,
+          "used": 5
+        },
+        "before": {
+          "limit": 10,
+          "remaining": 6,
+          "reserved": 0,
+          "used": 4
+        },
+        "complimentarySource": false,
+        "effectiveBasis": "trial",
+        "exactGetItems": 4,
+        "paidSource": false,
+        "scans": 0,
+        "trialHistoryConsistent": true,
+        "writes": 0
+      },
+      "cumulativeActuals": {
+        "governedHistory": 10,
+        "messageConsumer": 4,
+        "messageEvaluator": 2,
+        "urlAssessment": 0,
+        "v1Entitlements": 9
+      },
+      "cumulativeInterpretation": {
+        "chargedChecks": 2,
+        "completedLogicalChecks": 2,
+        "extraChargesFromReopen": 0,
+        "extraEvaluationsFromReopen": 0,
+        "extraReadOnlyGovernedHistoryInvocationsFromFirstFailedReopen": 2
+      },
+      "evidenceBindings": {
+        "authorityHelperSha256": "5ab12354bac63017bb0d02d82874a16de1738af633bafb11785dbef3325a1696",
+        "operationalHelperSha256": "3fb4d697c5b6b0b9f43024d17c143c3e27772c4010d8f1dccb3557d61eec8346",
+        "priorWindowSha256": "6d59a2cfffd8519d78fb4cf3d346ecfbc89859e54d87410aeb02e6784e4c88e0"
+      },
+      "evidenceKind": "remaining_normal_phases_success_readback",
+      "identifiersIncluded": false,
+      "journey": {
+        "englishExistingResultReopen": "PASS",
+        "englishNewLogicalChecksCompleted": 0,
+        "englishOriginalAccounting": {
+          "chargedChecks": 1,
+          "state": "charged"
+        },
+        "englishResubmitOrReconcilePerformed": false,
+        "remainingPhasesQualified": true,
+        "retryPerformed": false,
+        "spanishForceStopRestartReopen": "PASS",
+        "spanishNewLogicalChecksCompleted": 1,
+        "spanishOriginalAccounting": {
+          "chargedChecks": 1,
+          "state": "charged"
+        },
+        "spanishSubmitCompleted": "PASS"
+      },
+      "observedAtEpoch": 1791080114,
+      "operationalReadback": {
+        "applicationEvents": {
+          "governedHistoryRead": 6,
+          "messageConsumer": 2
+        },
+        "errors": {
+          "governedHistory": 0,
+          "messageConsumer": 0,
+          "messageEvaluator": 0,
+          "urlAssessment": 0,
+          "v1Entitlements": 0
+        },
+        "invocations": {
+          "governedHistory": 6,
+          "messageConsumer": 2,
+          "messageEvaluator": 1,
+          "urlAssessment": 0,
+          "v1Entitlements": 5
+        },
+        "proofOccurrences": 0,
+        "providerCalls": 0,
+        "sensitiveSentinelOccurrences": 0,
+        "throttles": {
+          "governedHistory": 0,
+          "messageConsumer": 0,
+          "messageEvaluator": 0,
+          "urlAssessment": 0,
+          "v1Entitlements": 0
+        },
+        "writesPerformedByAudit": 0
+      },
+      "originalContentIncluded": false,
+      "originalNormalExpectation": {
+        "passedForThisPartialWindow": false,
+        "sha256": "448189c862e0186f1141557f1fefeff9117ff8137b0dc69d59a902ec047a9198",
+        "unchanged": true
+      },
+      "phaseAssessment": {
+        "accessActual": 5,
+        "accessBound": {
+          "max": 6,
+          "min": 0
+        },
+        "actualInvocations": {
+          "governedHistory": 6,
+          "messageConsumer": 2,
+          "messageEvaluator": 1,
+          "urlAssessment": 0
+        },
+        "assessmentMethod": "offline_exact_typed_comparison_of_immutable_helper_actuals",
+        "assessmentPassed": true,
+        "expectationSha256": "ab34626573ff34d2062f9aef9a2cff2083ba197b3b6dcf5ef8d8130be0316177",
+        "expectedInvocations": {
+          "governedHistory": 6,
+          "messageConsumer": 2,
+          "messageEvaluator": 1,
+          "urlAssessment": 0
+        },
+        "planSha256": "a6c8f96798b1d930a6b8759ab068332a7fee357ea0aaa11db2439be2d14b85b5",
+        "strictTypedMatch": true
+      },
+      "preservedPriorActuals": {
+        "governedHistory": 4,
+        "messageConsumer": 2,
+        "messageEvaluator": 1,
+        "urlAssessment": 0,
+        "v1Entitlements": 4
+      },
+      "schemaVersion": 1,
+      "secretMaterialIncluded": false,
+      "sourceWindow": {
+        "durationMs": 272826,
+        "sha256": "b942cd63e486729a08911591428c5033513c6571705507e2af8aac7400984bdf"
+      },
+      "stoppedZeroWindowsPreservedSeparately": true
+    },
+    "operationalAuditSha256": "e9cc965663581e0b647917d51accc5382d6262c2a67838c35fdd468ea542d23f",
+    "originalPreferenceReadback": "PASS",
+    "qualifiedAsSingleCleanWindow": false,
+    "reportsIndependentlyStrictTypedValidated": true,
+    "sourceHead": "9b60308deb1954620a8bc432760b065f697c4296",
+    "spanishRestartAndDirectReopen": {
+      "executedTests": 1,
+      "passed": true,
+      "reportSha256": "3e916b40948dd065bacfc218035bbb7ed5b079d49e20fdf0fcd79127f4d96537"
+    },
+    "spanishSingleSubmit": {
+      "executedTests": 1,
+      "newLogicalChecks": 1,
+      "passed": true
+    },
+    "testApkSha256": "f75a76ba9a746c86d7ae76136074a42c25d0098b6eca2e2fb6c2cac90a87ac7c",
+    "testMarkersAndOneUseInputsRemovedOnlyAfterByteMatch": true
+  },
+  "reviewedCleanupAndSubmissionCorrection": {
+    "actualSavedAuditValidated": true,
+    "apkBuildSourceHead": "61bdc981d1677f3a5cb51e6948d3a09498131262",
+    "appApkSha256": "836dadd74af26ac6fd45221299dfb7add580232502c9825301438305974e55a0",
+    "appRuntimeUnchanged": true,
+    "cleanupLiveExecuted": false,
+    "delayedAccessFakeRehearsalPassed": true,
+    "fakeLogicalSubmissions": 1,
+    "flaggedLocalGateTasks": 109,
+    "hostTestsPassed": 9,
+    "independentReview": "PASS",
+    "initialStagingSchemaMismatchStoppedBeforeAuthorizationWrite": true,
+    "normalQualificationPassed": false,
+    "originalFailureEvidenceSeparatedFromCleanupExecutor": true,
+    "sourceHead": "6ea0efd0d3771a6bda3927e666821101c312fd3e",
+    "testApkSha256": "0f2fefef07c6907ff90963fdd77c557e76d8bdcc03f6df2d96d987647638f868"
+  },
+  "schemaVersion": 1,
+  "androidReleaseIntegration": {
+    "pr": 68,
+    "reviewedHead": "b9fcd837ce82cf7c55fc5edd30bab1d819f6461b",
+    "mergeCommit": "59c515f4ce83eefe999da7d798452ccbd0e6eb25",
+    "branch": "release-V01",
+    "verifiedRemote": true,
+    "reviewedHeadBehindBy": 0,
+    "docsOnlyAfterQualifiedRuntime": true,
+    "androidMainOrCiInvoked": false
+  },
+  "ownerScopeDecision": {
+    "date": "2026-10-03",
+    "instruction": "no rollback",
+    "existingDedicatedAccountDevScopeRetained": true,
+    "postTestInactiveApplyCriterionReplaced": true,
+    "inactivePlansApplied": false,
+    "temporarySubjectSelectionRemoved": false,
+    "runtimeMutationPerformedForDecision": false,
+    "newActivationAuthorized": false,
+    "trackerClosureRequiresVerifiedEvidenceMainIntegration": true
+  },
+  "statusRecordedBeforeEvidenceMainIntegration": true
+}

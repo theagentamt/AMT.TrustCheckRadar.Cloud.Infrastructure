@@ -1,0 +1,54 @@
+{
+  "androidMarkerCorrection": {
+    "activationConfirmed": true,
+    "activationResponseObserved": true,
+    "attestationSha256": "75c25ddf054fbfa7ea622ea21ebbedacaa55b76be73852ed9ab7f07c19d6733b",
+    "backendAuditResponseOutcomeKnown": false,
+    "observedAtEpochValid": true,
+    "originalArtifactsRetained": true,
+    "originalAttemptSha256": "fac5f07a75b8d5dfe2b5882963a3f2a5715dd677bd164291f6256678091d90a4",
+    "originalMarkerSha256": "b2162d4d3d05ba4666112dd7616cd550d3e053a586c426ab0255ed04631089f1",
+    "sourceBound": true
+  },
+  "authority": {
+    "complimentarySource": false,
+    "limit": 10,
+    "paidSource": false,
+    "remaining": 7,
+    "reserved": 0,
+    "snapshotUnchanged": true,
+    "trialHistoryUnchanged": true,
+    "used": 3
+  },
+  "observe": {
+    "auditComplete": true,
+    "exactGetItems": 9,
+    "helperSha256": "09f9a4c1869243c8e2618297b2e88e856316b806348f39cb97e03d15993d6458",
+    "identifiersEmitted": false,
+    "independentReview": "PASS",
+    "scans": 0,
+    "writes": 0
+  },
+  "provisionalCorrectionSuperseded": true,
+  "registrationRetried": false,
+  "schemaVersion": 1,
+  "stateClassification": "committed_switch",
+  "timed": {
+    "auditComplete": true,
+    "authoritativeStateTimingQualified": true,
+    "exactGetItems": 9,
+    "helperSha256": "ab6e24d43f2f41d522efe40b230c0c32583d17707a4f8a857bd35506d4eea11b",
+    "identifiersEmitted": false,
+    "independentReview": "PASS",
+    "oldBindingExpiryDays": 180,
+    "oldBindingInactive": true,
+    "pointerGenerationIncrementedOnce": true,
+    "scans": 0,
+    "targetBindingActive": true,
+    "writes": 0
+  },
+  "backendAuditResponseOutcomeKnown": false,
+  "originalSwitchUiResponseObserved": true,
+  "originalSetupOverallPassed": false,
+  "correctionNotes": "The original Android marker confirms SWITCH UI response observation. The host attempt producer inferred false from a stale stage label; its original file remains unchanged. The source-bound correction binds both original hashes. Backend audits did not consume an HTTP response; this is distinct from observed Android UI. Committed-state and timing checks remain independently valid."
+}

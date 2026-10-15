@@ -8,6 +8,13 @@ mock_provider "aws" {
 }
 
 variables {
+  analysis_retirement_deployment = {
+    release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
+    object_version     = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1"
+    source_hash        = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4="
+    approval_reference = "synthetic-retirement-review"
+    promotion_approved = true
+  }
   aws_region          = "us-east-1"
   project_name        = "trustcheckradar"
   environment         = "dev"
@@ -95,8 +102,8 @@ run "disabled_leaves_existing_analysis_untouched" {
       length(data.terraform_remote_state.history_data) == 0 &&
       length(aws_iam_role_policy.history_analysis) == 0 &&
       length(aws_secretsmanager_secret.history_cursor) == 0 &&
-      aws_lambda_function.analysis.s3_key == "releases/existing-release/conversation_analysis.zip" &&
-      !contains(keys(aws_lambda_function.analysis.environment[0].variables), "HISTORY_WRITES_ENABLED")
+      aws_lambda_function.analysis.s3_key == "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/conversation_analysis.zip" &&
+      aws_lambda_function.analysis.environment[0].variables.HISTORY_WRITES_ENABLED == "false"
     )
     error_message = "Without an approved deployment, History must not alter analysis or create resources."
   }
@@ -120,14 +127,14 @@ run "candidate_is_pinned_disabled_and_access_token_only" {
   }
   assert {
     condition = (
-      aws_lambda_function.analysis.s3_key == "releases/history-candidate/conversation_analysis.zip" &&
-      aws_lambda_function.analysis.s3_object_version == "analysis-version" &&
-      aws_lambda_function.analysis.source_code_hash == var.history_deployment.artifacts.analysis.source_hash &&
+      aws_lambda_function.analysis.s3_key == "releases/d98ffd65b42d54953ad83e980e58846b6fc02c5d/conversation_analysis.zip" &&
+      aws_lambda_function.analysis.s3_object_version == var.analysis_retirement_deployment.object_version &&
+      aws_lambda_function.analysis.source_code_hash == var.analysis_retirement_deployment.source_hash &&
       aws_lambda_function.history_api["read"].s3_object_version == "read-version" &&
       aws_lambda_function.history_api["mutation"].s3_object_version == "mutation-version" &&
       aws_lambda_function.age_attestation.s3_key == "releases/existing-release/age_attestation.zip"
     )
-    error_message = "History must pin only its own artifacts, including analysis, without replacing unrelated Lambda packages."
+    error_message = "History pins its APIs but cannot replace the separately qualified replay-only analysis archive."
   }
   assert {
     condition = (
@@ -236,15 +243,10 @@ run "runtime_permissions_are_scoped" {
     error_message = "The read handler may create cursors but must not change user state."
   }
   assert {
-    condition = length([for statement in data.aws_iam_policy_document.history_analysis[0].statement : statement
-      if statement.sid == "AtomicHistoryCompletion" &&
-      toset(statement.actions) == toset(["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:ConditionCheckItem"]) &&
-      toset(statement.resources) == toset([
-        "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-history-content",
-        "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-history-control"
-      ]) && anytrue([for condition in statement.condition : condition.variable == "dynamodb:EnclosingOperation" && toset(condition.values) == toset(["TransactWriteItems"])])
-    ]) == 1
-    error_message = "The producer must use table-scoped atomic writes, never broad DynamoDB permissions."
+    condition = alltrue([for statement in data.aws_iam_policy_document.history_analysis[0].statement :
+      toset(statement.actions) == toset(["dynamodb:GetItem"]) && !contains(statement.resources, "*")
+    ])
+    error_message = "The retired producer cannot regain History writes or atomic settlement."
   }
   assert {
     condition = alltrue(flatten([for policy in data.aws_iam_policy_document.history_api : [for statement in policy.statement :
@@ -281,8 +283,8 @@ run "active_cleanup_allows_explicit_activation" {
   }
   assert {
     condition = (
-      aws_lambda_function.analysis.environment[0].variables.HISTORY_WRITES_ENABLED == "true" &&
-      aws_lambda_function.analysis.environment[0].variables.HISTORY_DURABLE_REPLAY_ENABLED == "true" &&
+      aws_lambda_function.analysis.environment[0].variables.HISTORY_WRITES_ENABLED == "false" &&
+      aws_lambda_function.analysis.environment[0].variables.HISTORY_DURABLE_REPLAY_ENABLED == "false" &&
       aws_lambda_function.history_api["read"].environment[0].variables.RECOGNITION_ENABLED == "true" &&
       aws_lambda_function.history_api["mutation"].environment[0].variables.HISTORY_MUTATIONS_ENABLED == "true"
       && aws_lambda_function.history_api["mutation"].environment[0].variables.RECOGNITION_ENABLED == "true"

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "story": "SECUR4ALL-244",
+  "source_sha": "8ecc79678fd1f87c575c43f7f4ffb856869db48d",
+  "v1_entitlements": "90b006ddee49e19b57d2fb5f3d2a9c89137b4593e837ba284cc56958ee7ff531",
+  "object_version": "y6ygRzfBxVX8Mv1S4RQieotbELdRQ9ab",
+  "terraform_baseline": {
+    "source_sha": "39cce61623794a123e61d25f5248b0c081eccf4a",
+    "source_hash": "xFuy0ylGhHpfHsJBEFZsYcxhpdish1Qx4a5UcF0ZOhM=",
+    "object_version": "4v213SSYD50qrijRyBRDNW54IcRTww92"
+  },
+  "sourcePullRequest": "https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/pull/113",
+  "sourceCiRun": "https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/actions/runs/37962961598",
+  "publicationRun": "https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/actions/runs/37963493277",
+  "artifact": {
+    "bucket": "trustcheckradar-dev-107827791950-artifacts",
+    "key": "releases/8ecc79678fd1f87c575c43f7f4ffb856869db48d/v1_entitlements.zip",
+    "versionId": "y6ygRzfBxVX8Mv1S4RQieotbELdRQ9ab",
+    "sha256": "90b006ddee49e19b57d2fb5f3d2a9c89137b4593e837ba284cc56958ee7ff531",
+    "sourceCodeHash": "kLAG3e5J4ZtX0vtfPSqciRN7RZPoN7ooTMVpWO5/9TE=",
+    "runtime": "python3.14",
+    "architecture": "arm64"
+  },
+  "publicationBoundary": "Only v1_entitlements.zip was published. No runtime function, alias, route or account selection changed. This provenance authorizes no runtime apply."
+}

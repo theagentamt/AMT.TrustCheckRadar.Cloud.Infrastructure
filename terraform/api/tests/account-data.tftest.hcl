@@ -8,6 +8,13 @@ mock_provider "aws" {
 }
 
 variables {
+  analysis_retirement_deployment = {
+    release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
+    object_version     = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1"
+    source_hash        = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4="
+    approval_reference = "synthetic-retirement-review"
+    promotion_approved = true
+  }
   aws_region          = "us-east-1"
   project_name        = "trustcheckradar"
   environment         = "dev"
@@ -494,7 +501,7 @@ run "participation_fence_rejects_cross_environment_tables" {
       approval_reference = "synthetic-test", promotion_approved = true
     }
   }
-  expect_failures = [aws_lambda_function.campaign_participation]
+  expect_failures = [aws_lambda_function.analysis, aws_lambda_function.campaign_participation]
 }
 
 run "purchase_fence_is_pinned_and_authority_checked" {
@@ -654,7 +661,7 @@ run "another_environment_cannot_use_dev_account_data" {
       approval_reference = "synthetic-test", promotion_approved = true
     }
   }
-  expect_failures = [aws_lambda_function.account_data]
+  expect_failures = [aws_lambda_function.analysis, aws_lambda_function.account_data]
   assert {
     condition = (
       !local.recovery_storage_valid &&

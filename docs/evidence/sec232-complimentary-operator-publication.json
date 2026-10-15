@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "story": "SECUR4ALL-232",
+  "sourceCommit": "513e05b5533ccb539f5f9135ada9f2440a24568f",
+  "sourcePullRequest": "https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/pull/98",
+  "sourceCiRun": "https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/actions/runs/36995808885",
+  "publicationRun": "https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/actions/runs/36996086734",
+  "scope": "entitlements",
+  "artifact": {
+    "bucket": "trustcheckradar-dev-107827791950-artifacts",
+    "key": "releases/513e05b5533ccb539f5f9135ada9f2440a24568f/v1_entitlements.zip",
+    "versionId": "E8Oh0n3PO.ueeu3QF.T.Cw5TnfnJSl9Z",
+    "sha256": "a1bd3356abd3b52843bd1d90ab4577cb819301970e8efeddc8aa5043bb277b6a",
+    "sourceCodeHash": "ob0zVqvTtShDvR2Qq0V3y4GTAZcOjv7dyKpQQ7sne2o=",
+    "runtime": "python3.14",
+    "architecture": "arm64"
+  },
+  "publicationBoundary": "Only v1_entitlements.zip was uploaded. No Lambda function, alias, route or unrelated artifact was changed by publication."
+}

@@ -81,6 +81,21 @@ variable "activate_access_engineering" {
     error_message = "Access-only qualification requires exact subjects, policy, authenticated routing, alerts, deletion/expiry cleanup, a recorded readiness reference and full engineering mode off."
   }
 }
+variable "activate_trial_engineering" {
+  description = "Restricted Dev access snapshots and explicit trial activation only; URL execution remains disabled."
+  type        = bool
+  default     = false
+  validation {
+    condition = !var.activate_trial_engineering || (
+      !var.activate_engineering && !var.activate_access_engineering &&
+      var.enabled && var.environment == "dev" && length(var.engineering_subjects) == 1 &&
+      var.authority_configuration != null && var.api_gateway != null && var.alert_topic_arn != null &&
+      var.deletion_stream_arn != "" && try(contains(keys(var.deployment.artifacts), "deletion"), false) &&
+      length(trimspace(var.access_qualification_reference)) > 0
+    )
+    error_message = "Trial-only qualification requires one exact subject, policy, authenticated routing, alerts, deletion/expiry cleanup, a recorded readiness reference and all URL/full modes off."
+  }
+}
 variable "access_qualification_reference" {
   description = "Reference to independently reviewed whole-table cleanup/key inventory and scoped account-test readiness; a reference alone does not establish that evidence."
   type        = string
@@ -91,7 +106,24 @@ variable "access_qualification_reference" {
   }
 }
 locals {
-  authority_engineering_active = var.activate_engineering || var.activate_access_engineering
+  authority_engineering_active = var.activate_engineering || var.activate_access_engineering || var.activate_trial_engineering
+  entitlements_service_active  = local.authority_engineering_active || local.complimentary_operator_active || length(var.governed_trial_subjects) > 0
+}
+
+variable "governed_trial_subjects" {
+  description = "SEC340: one synthetic Dev subject for access/trial only, independent of deletion and lease maintenance. Empty disables this mode."
+  type        = set(string)
+  default     = []
+  validation {
+    condition = length(var.governed_trial_subjects) == 0 || (
+      length(var.governed_trial_subjects) == 1 && var.enabled && var.environment == "dev" &&
+      !local.authority_engineering_active && length(var.engineering_subjects) == 0 &&
+      var.authority_configuration != null && var.api_gateway != null &&
+      var.deletion_activation != null && var.alert_topic_arn != null &&
+      alltrue([for subject in var.governed_trial_subjects : can(regex("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", subject))])
+    )
+    error_message = "Governed qualification requires one exact Dev subject, existing cleanup/alerts and policy; other engineering modes must remain disabled."
+  }
 }
 locals {
   routes = var.enabled && var.api_gateway != null ? {
@@ -142,4 +174,23 @@ resource "aws_lambda_permission" "v1" {
   principal      = "apigateway.amazonaws.com"
   source_account = data.aws_caller_identity.current.account_id
   source_arn     = "${var.api_gateway.execution_arn}/*/${each.value.permission}"
+}
+
+# SEC195/244: additional snapshot admission must not expand the existing trial gate.
+variable "dev_access_snapshot_extra_subjects" {
+  description = "One privately selected Dev GET /v1/access subject; never trial or consumer admission."
+  type        = set(string)
+  sensitive   = true
+  default     = []
+  validation {
+    condition = length(var.dev_access_snapshot_extra_subjects) == 0 || (
+      length(var.dev_access_snapshot_extra_subjects) == 1 && var.enabled &&
+      var.environment == "dev" && var.aws_region == "us-east-1" &&
+      length(var.governed_trial_subjects) == 1 && !local.authority_engineering_active &&
+      length(var.engineering_subjects) == 0 && var.api_gateway != null &&
+      length(setintersection(var.dev_access_snapshot_extra_subjects, var.governed_trial_subjects)) == 0 &&
+      alltrue([for subject in var.dev_access_snapshot_extra_subjects : can(regex("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", subject))])
+    )
+    error_message = "Snapshot-only selection requires one distinct private Dev UUID and the preserved governed trial mode; other engineering modes must stay disabled."
+  }
 }

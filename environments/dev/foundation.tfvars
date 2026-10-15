@@ -47,3 +47,7 @@ age_attestation_contract = {
 
 # SECUR4ALL-207: sparse index preparation only; producers and recovery remain disabled.
 campaign_recovery_index_enabled = true
+
+# SEC340: persist the reviewed sparse History index selection before its
+# guarded Dev CI/CD apply. Ordinary deployment still refuses index transitions.
+governed_history_index_enabled = true

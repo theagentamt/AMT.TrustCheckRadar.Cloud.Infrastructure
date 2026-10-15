@@ -97,6 +97,19 @@ class TerraformHelperTests(unittest.TestCase):
                 self.assertEqual(calls[1], ["-chdir=terraform/message-consumer", "plan", f"-var-file=../../environments/{environment}/message-consumer.tfvars"])
                 self.assertNotIn("TF_VAR_artifact_release", json.loads(self.environment_log.read_text()))
 
+    def test_governed_history_manual_apply_cannot_bypass_reviewed_workflow(self):
+        result, calls = self.invoke("apply", "dev", "governed-history")
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(calls, [])
+        self.assertIn("exact plan digest", result.stderr)
+
+    def test_governed_history_uses_its_own_state_and_no_legacy_artifact(self):
+        result, calls = self.invoke("plan", "dev", "governed-history")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("-backend-config=key=trustcheckradar/dev/governed-history.tfstate", calls[0])
+        self.assertEqual(calls[1], ["-chdir=terraform/governed-history", "plan", "-var-file=../../environments/dev/governed-history.tfvars"])
+        self.assertNotIn("TF_VAR_artifact_release", json.loads(self.environment_log.read_text()))
+
     def test_recovery_candidate_has_separate_state_and_no_legacy_artifact(self):
         for environment in ("dev", "uat", "prod"):
             with self.subTest(environment=environment):

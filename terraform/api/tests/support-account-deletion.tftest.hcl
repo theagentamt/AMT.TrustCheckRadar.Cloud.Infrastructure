@@ -4,6 +4,13 @@ mock_provider "aws" {
 }
 
 variables {
+  analysis_retirement_deployment = {
+    release_id         = "d98ffd65b42d54953ad83e980e58846b6fc02c5d"
+    object_version     = "K6SXSdTc6rYObyN4qxbRVGTbsNvxAuU1"
+    source_hash        = "vMGNoWsUlbRK+JWlONEQ8tAjK+XvsOeyO4wYmKAn0O4="
+    approval_reference = "synthetic-retirement-review"
+    promotion_approved = true
+  }
   aws_region          = "us-east-1"
   project_name        = "trustcheckradar"
   environment         = "dev"
@@ -101,7 +108,7 @@ run "pinned_disabled_logs_only_candidate" {
 run "reject_other_environment" {
   command = plan
   variables { environment = "uat" }
-  expect_failures = [var.support_account_deletion_deployment]
+  expect_failures = [aws_lambda_function.analysis, var.support_account_deletion_deployment]
 }
 run "reject_unpinned_version" {
   command = plan

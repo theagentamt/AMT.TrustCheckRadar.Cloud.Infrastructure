@@ -70,6 +70,10 @@ run "routes_and_cleanup_default_inactive" {
     error_message = "Every V1 route must require the configured access-token JWT scope."
   }
   assert {
+    condition     = length(aws_iam_role.complimentary_operator) == 0 && length(aws_apigatewayv2_route.complimentary_operator) == 0 && length(aws_lambda_permission.complimentary_operator) == 0 && !output.candidate_contract.complimentary_operator_provisioned
+    error_message = "The operator role and route must be absent unless explicitly configured."
+  }
+  assert {
     condition     = alltrue([for p in aws_lambda_permission.v1 : p.qualifier == "live" && p.source_account == "107827791950" && startswith(p.source_arn, "arn:aws:execute-api:us-east-1:107827791950:abcdefghij/*/") && !endswith(p.source_arn, "/*")])
     error_message = "Gateway invoke permission must bind same-account API, alias, method and path."
   }
@@ -81,6 +85,100 @@ run "routes_and_cleanup_default_inactive" {
     condition     = anytrue([for statement in jsondecode(aws_iam_role_policy.deletion[0].policy).Statement : statement.Effect == "Deny" && try(contains(statement.Action, "lambda:InvokeFunction"), false)]) && aws_lambda_function.runtime["deletion"].timeout == 30 && aws_lambda_function.runtime["deletion"].reserved_concurrent_executions == 1
     error_message = "Deletion must be bounded and cannot call providers."
   }
+}
+
+run "complimentary_operator_is_one_iam_route_with_no_data_permissions" {
+  command = apply
+  variables {
+    complimentary_operator = {
+      active              = true
+      trusted_assumer_arn = "arn:aws:iam::107827791950:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_6659317f1273c022"
+      api_stage_name      = "$default"
+      approval_reference  = "SECUR4ALL-232 owner-approved operator control"
+    }
+  }
+  assert {
+    condition = (
+      aws_apigatewayv2_route.complimentary_operator[0].route_key == "POST /v1/operator/complimentary-access" &&
+      aws_apigatewayv2_route.complimentary_operator[0].authorization_type == "AWS_IAM" &&
+      aws_lambda_permission.complimentary_operator[0].qualifier == "live" &&
+      aws_lambda_permission.complimentary_operator[0].source_account == "107827791950" &&
+      aws_lambda_permission.complimentary_operator[0].source_arn == "arn:aws:execute-api:us-east-1:107827791950:abcdefghij/$default/POST/v1/operator/complimentary-access"
+    )
+    error_message = "The operator path must use one exact same-account AWS_IAM API route and live alias permission."
+  }
+  assert {
+    condition = (
+      length(jsondecode(aws_iam_role_policy.complimentary_operator[0].policy).Statement) == 1 &&
+      jsondecode(aws_iam_role_policy.complimentary_operator[0].policy).Statement[0].Action == "execute-api:Invoke" &&
+      jsondecode(aws_iam_role_policy.complimentary_operator[0].policy).Statement[0].Resource == "arn:aws:execute-api:us-east-1:107827791950:abcdefghij/$default/POST/v1/operator/complimentary-access" &&
+      !strcontains(aws_iam_role_policy.complimentary_operator[0].policy, "dynamodb") &&
+      !strcontains(aws_iam_role_policy.complimentary_operator[0].policy, "secretsmanager") &&
+      !strcontains(aws_iam_role_policy.complimentary_operator[0].policy, "lambda:InvokeFunction")
+    )
+    error_message = "The operator role may invoke only the exact API route and must receive no data, secret or direct Lambda permissions."
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.AUTHORITY_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.COMPLIMENTARY_OPERATOR_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.COMPLIMENTARY_AUDIT_RETENTION_SECONDS == "31536000" &&
+      jsondecode(aws_lambda_function.runtime["entitlements"].environment[0].variables.COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON) == ["arn:aws:iam::107827791950:role/trustcheckradar-dev-complimentary-operator"] &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
+      output.candidate_contract.complimentary_operator_active &&
+      !output.candidate_contract.general_customer_access
+    )
+    error_message = "Operator activation must enable only the entitlement writer with exact role and retention while customer URL execution stays closed."
+  }
+}
+
+run "complimentary_operator_can_be_provisioned_closed" {
+  command = apply
+  variables {
+    complimentary_operator = {
+      active              = false
+      trusted_assumer_arn = "arn:aws:iam::107827791950:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_6659317f1273c022"
+      api_stage_name      = "$default"
+      approval_reference  = "SECUR4ALL-232 rollback configuration"
+    }
+  }
+  assert {
+    condition = (
+      output.candidate_contract.complimentary_operator_provisioned &&
+      !output.candidate_contract.complimentary_operator_active &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.COMPLIMENTARY_OPERATOR_ENABLED == "false" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "false" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON == "[]"
+    )
+    error_message = "Rollback must preserve the role/route while failing closed before authority access."
+  }
+}
+
+run "complimentary_operator_rejects_cross_account_principal" {
+  command = plan
+  variables {
+    complimentary_operator = {
+      active              = true
+      trusted_assumer_arn = "arn:aws:iam::999999999999:role/Admin"
+      api_stage_name      = "$default"
+      approval_reference  = "SECUR4ALL-232 invalid fixture"
+    }
+  }
+  expect_failures = [var.complimentary_operator]
+}
+
+run "complimentary_operator_rejects_wildcard_principal" {
+  command = plan
+  variables {
+    complimentary_operator = {
+      active              = true
+      trusted_assumer_arn = "arn:aws:iam::107827791950:role/*"
+      api_stage_name      = "$default"
+      approval_reference  = "SECUR4ALL-232 invalid fixture"
+    }
+  }
+  expect_failures = [var.complimentary_operator]
 }
 run "inventory_markers_are_not_mutable" {
   command = apply
@@ -155,6 +253,8 @@ run "access_only_keeps_providers_and_trial_closed" {
     condition = (
       aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
       aws_lambda_function.runtime["consumer"].environment[0].variables.AUTHORITY_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == "[]" &&
       aws_lambda_function.runtime["consumer"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "false" &&
       aws_lambda_function.runtime["entitlements"].environment[0].variables.CONSUMER_ENABLED == "false" &&
       aws_lambda_function.runtime["entitlements"].environment[0].variables.AUTHORITY_ENABLED == "true" &&
@@ -187,6 +287,48 @@ run "access_only_and_full_modes_cannot_overlap" {
     access_qualification_reference = "synthetic test evidence"
   }
   expect_failures = [var.activate_access_engineering]
+}
+
+run "trial_only_requires_recorded_readiness_and_one_subject" {
+  command = plan
+  variables { activate_trial_engineering = true }
+  expect_failures = [var.activate_trial_engineering]
+}
+
+run "trial_only_enables_entitlements_without_url_execution" {
+  command = apply
+  variables {
+    activate_trial_engineering     = true
+    engineering_subjects           = ["01997e3a-0000-7000-8000-000000000001"]
+    access_qualification_reference = "SECUR4ALL-230 reviewed synthetic Dev qualification"
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.AUTHORITY_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == "[]" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.AUTHORITY_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.V1_ENTITLEMENTS_ENABLED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "true" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["01997e3a-0000-7000-8000-000000000001"]) &&
+      output.candidate_contract.access_enabled && output.candidate_contract.trial_activation_enabled &&
+      output.candidate_contract.trial_only_engineering && !output.candidate_contract.consumer_enabled &&
+      !output.candidate_contract.general_customer_access
+    )
+    error_message = "Trial-only mode must enable one-subject access and trial activation while URL execution remains closed."
+  }
+}
+
+run "trial_only_cannot_overlap_other_authority_modes" {
+  command = plan
+  variables {
+    activate_access_engineering    = true
+    activate_trial_engineering     = true
+    engineering_subjects           = ["01997e3a-0000-7000-8000-000000000001"]
+    access_qualification_reference = "synthetic test evidence"
+  }
+  expect_failures = [var.activate_trial_engineering]
 }
 
 run "deletion_only_exact_subjects_keep_other_capabilities_closed" {
@@ -359,8 +501,8 @@ run "deletion_only_rejects_missing_alerting" {
   expect_failures = [var.deletion_activation]
 }
 
-run "deletion_only_rejects_collides_with_activate_engineering" {
-  command = plan
+run "deletion_activation_unions_existing_and_full_engineering_subjects" {
+  command = apply
   variables {
     deletion_activation = {
       source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
@@ -373,11 +515,14 @@ run "deletion_only_rejects_collides_with_activate_engineering" {
     engineering_subjects           = ["00000000-0000-4000-8000-000000000001"]
     access_qualification_reference = "synthetic qualification evidence"
   }
-  expect_failures = [var.deletion_activation]
+  assert {
+    condition     = aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002"])
+    error_message = "Existing deletion coverage and engineering subjects must both remain admitted."
+  }
 }
 
-run "deletion_only_rejects_collides_with_activate_access_engineering" {
-  command = plan
+run "deletion_activation_unions_existing_and_trial_engineering_subjects" {
+  command = apply
   variables {
     deletion_activation = {
       source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
@@ -386,9 +531,116 @@ run "deletion_only_rejects_collides_with_activate_access_engineering" {
       runtime_reference     = "synthetic runtime evidence"
       permissions_reference = "synthetic IAM evidence"
     }
-    activate_access_engineering    = true
-    engineering_subjects           = ["00000000-0000-4000-8000-000000000001"]
+    activate_trial_engineering     = true
+    engineering_subjects           = ["01997e3a-0000-7000-8000-000000000001"]
     access_qualification_reference = "synthetic qualification evidence"
   }
-  expect_failures = [var.deletion_activation]
+  assert {
+    condition     = aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000002", "01997e3a-0000-7000-8000-000000000001"])
+    error_message = "Trial qualification must preserve the existing deletion subjects and add its one exact subject."
+  }
+}
+
+run "governed_trial_does_not_expand_deletion_or_maintenance" {
+  command = apply
+  variables {
+    governed_trial_subjects = ["01997e3a-0000-7000-8000-000000000001"]
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["01997e3a-0000-7000-8000-000000000001"]) &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "true" &&
+      aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000002"]) &&
+      aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
+      output.candidate_contract.governed_trial_only_engineering &&
+      !output.candidate_contract.recovery_enabled && !output.candidate_contract.general_customer_access
+    )
+    error_message = "Governed trial may admit one account to access/trial only; it must preserve deletion scope and disabled URL/recovery."
+  }
+}
+
+run "governed_trial_requires_existing_cleanup" {
+  command = plan
+  variables { governed_trial_subjects = ["01997e3a-0000-7000-8000-000000000001"] }
+  expect_failures = [var.governed_trial_subjects]
+}
+
+run "governed_trial_rejects_wildcard" {
+  command = plan
+  variables { governed_trial_subjects = ["*"] }
+  expect_failures = [var.governed_trial_subjects]
+}
+
+
+run "extra_snapshot_selection_preserves_trial_and_all_other_scope" {
+  command = apply
+  variables {
+    governed_trial_subjects            = ["01997e3a-0000-7000-8000-000000000001"]
+    dev_access_snapshot_extra_subjects = ["00000000-0000-4000-8000-000000000003"]
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic inventory evidence"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["01997e3a-0000-7000-8000-000000000001"]) &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON == jsonencode(["00000000-0000-4000-8000-000000000003"]) &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "true" &&
+      alltrue([for role in ["consumer", "recovery", "deletion"] : !contains(keys(aws_lambda_function.runtime[role].environment[0].variables), "DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON")]) &&
+      aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000002"]) &&
+      aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "false" &&
+      !output.candidate_contract.general_customer_access && !output.candidate_contract.consumer_enabled
+    )
+    error_message = "The extra selection belongs only to entitlement GET logic; original trial, deletion and consumer/maintenance scope must remain unchanged."
+  }
+}
+run "extra_snapshot_sensitivity_stays_on_entitlements_only" {
+  command = plan
+  variables {
+    governed_trial_subjects            = ["01997e3a-0000-7000-8000-000000000001"]
+    dev_access_snapshot_extra_subjects = ["00000000-0000-4000-8000-000000000003"]
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic inventory evidence"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  assert {
+    condition = (
+      issensitive(aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON) &&
+      !issensitive(aws_lambda_function.runtime["consumer"].environment[0].variables) &&
+      !issensitive(aws_lambda_function.runtime["recovery"].environment[0].variables) &&
+      !issensitive(aws_lambda_function.runtime["deletion"].environment[0].variables)
+    )
+    error_message = "Private snapshot sensitivity must not mark unrelated runtime environment maps or cause their updates."
+  }
+}
+run "extra_snapshot_requires_preserved_trial_mode" {
+  command = plan
+  variables { dev_access_snapshot_extra_subjects = ["00000000-0000-4000-8000-000000000003"] }
+  expect_failures = [var.dev_access_snapshot_extra_subjects]
+}
+run "extra_snapshot_rejects_wildcard" {
+  command = plan
+  variables { dev_access_snapshot_extra_subjects = ["*"] }
+  expect_failures = [var.dev_access_snapshot_extra_subjects]
+}
+run "extra_snapshot_rejects_multiple_subjects" {
+  command = plan
+  variables { dev_access_snapshot_extra_subjects = ["00000000-0000-4000-8000-000000000003", "00000000-0000-4000-8000-000000000004"] }
+  expect_failures = [var.dev_access_snapshot_extra_subjects]
 }

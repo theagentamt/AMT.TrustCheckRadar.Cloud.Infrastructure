@@ -67,7 +67,7 @@ resource "aws_iam_role_policy" "evaluator" {
     Version = "2012-10-17"
     Statement = [
       { Sid = "OwnLogs", Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.runtime["evaluator"].arn}:*" },
-      { Sid = "OneReviewedUrlAssessmentAlias", Effect = "Allow", Action = "lambda:InvokeFunction", Resource = var.deployment.assessment_alias_arn },
+      { Sid = "OneReviewedUrlAssessmentAlias", Effect = var.candidate3_rules_only_enabled ? "Deny" : "Allow", Action = "lambda:InvokeFunction", Resource = var.deployment.assessment_alias_arn },
       { Sid = "NoConsumerStorageSecretsOrRoleChaining", Effect = "Deny", Action = ["dynamodb:*", "secretsmanager:*", "s3:*", "ssm:*", "sts:AssumeRole"], Resource = "*" }
     ]
   })
@@ -89,27 +89,29 @@ resource "aws_lambda_function" "runtime" {
   publish                        = true
   environment {
     variables = merge({
-      STAGE                             = var.environment
-      MESSAGE_POLICY_VERSION            = "message-rules-2026-09-20-v1"
-      MESSAGE_POLICY_APPROVAL_SHA256    = "0367140fbdbaef36dd59ba81030f3e35e04e78dbbed4129277c9cb0758971a80"
-      MESSAGE_AI_ENABLED                = "false"
-      MESSAGE_AI_POLICY_VERSION         = "message-ai-2026-09-21-v1"
-      MESSAGE_AI_POLICY_APPROVAL_SHA256 = "d6e9fff12225540bef9ba7833cce457cca4b9c791af3b49dd8a4f1601d204349"
+      STAGE                                 = var.environment
+      MESSAGE_POLICY_VERSION                = "message-rules-2026-09-20-v1"
+      MESSAGE_POLICY_APPROVAL_SHA256        = "0367140fbdbaef36dd59ba81030f3e35e04e78dbbed4129277c9cb0758971a80"
+      MESSAGE_AI_ENABLED                    = "false"
+      MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED = tostring(var.candidate3_rules_only_enabled)
+      MESSAGE_AI_POLICY_VERSION             = "message-ai-2026-09-21-v1"
+      MESSAGE_AI_POLICY_APPROVAL_SHA256     = "d6e9fff12225540bef9ba7833cce457cca4b9c791af3b49dd8a4f1601d204349"
       }, each.key == "consumer" ? {
-      MESSAGE_CONSUMER_ENABLED       = tostring(var.activate_rules_engineering)
-      AUTHORITY_ENABLED              = tostring(var.activate_rules_engineering)
-      AUTHORITY_TABLE_NAME           = split("/", local.authority_arn)[1]
-      USERS_TABLE_NAME               = split("/", var.deployment.users_table_arn)[1]
-      DEVICE_BINDINGS_TABLE_NAME     = split("/", var.deployment.devices_table_arn)[1]
-      DELETION_LEDGER_TABLE_NAME     = split("/", var.deployment.deletion_table_arn)[1]
-      COGNITO_ISSUER                 = var.deployment.cognito_issuer
-      COGNITO_APP_CLIENT_ID          = var.deployment.cognito_app_client_id
-      COGNITO_REQUIRED_SCOPE         = "aws.cognito.signin.user.admin"
-      AUTHORITY_HMAC_SECRET_ARN      = var.deployment.authority_hmac_secret_arn
-      AUTHORITY_POLICY_VERSION       = "owner-2026-09-20-v1"
-      DEV_SUBJECT_ALLOWLIST_JSON     = jsonencode(sort(tolist(var.engineering_subjects)))
-      MESSAGE_EVALUATOR_FUNCTION_ARN = local.evaluator_alias_arn
-      MESSAGE_PROVIDER_CIRCUIT_OPEN  = tostring(!var.activate_rules_engineering)
+      GOVERNED_HISTORY_SETTLEMENT_ENABLED = tostring(var.governed_history_settlement_enabled)
+      MESSAGE_CONSUMER_ENABLED            = tostring(var.activate_rules_engineering)
+      AUTHORITY_ENABLED                   = tostring(var.activate_rules_engineering)
+      AUTHORITY_TABLE_NAME                = split("/", local.authority_arn)[1]
+      USERS_TABLE_NAME                    = split("/", var.deployment.users_table_arn)[1]
+      DEVICE_BINDINGS_TABLE_NAME          = split("/", var.deployment.devices_table_arn)[1]
+      DELETION_LEDGER_TABLE_NAME          = split("/", var.deployment.deletion_table_arn)[1]
+      COGNITO_ISSUER                      = var.deployment.cognito_issuer
+      COGNITO_APP_CLIENT_ID               = var.deployment.cognito_app_client_id
+      COGNITO_REQUIRED_SCOPE              = "aws.cognito.signin.user.admin"
+      AUTHORITY_HMAC_SECRET_ARN           = var.deployment.authority_hmac_secret_arn
+      AUTHORITY_POLICY_VERSION            = "owner-2026-09-20-v1"
+      DEV_SUBJECT_ALLOWLIST_JSON          = jsonencode(sort(tolist(var.engineering_subjects)))
+      MESSAGE_EVALUATOR_FUNCTION_ARN      = local.evaluator_alias_arn
+      MESSAGE_PROVIDER_CIRCUIT_OPEN       = tostring(!var.activate_rules_engineering || var.candidate3_rules_only_enabled)
       } : {
       MESSAGE_EVALUATOR_ENABLED   = tostring(var.activate_rules_engineering)
       MESSAGE_PROPOSER_ENABLED    = "false"

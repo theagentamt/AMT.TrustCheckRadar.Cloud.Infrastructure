@@ -254,56 +254,10 @@ resource "aws_iam_role_policy" "history_api" {
 
 data "aws_iam_policy_document" "history_analysis" {
   count = var.history_deployment != null ? 1 : 0
-  dynamic "statement" {
-    for_each = { users = local.users_table_arn, ledger = local.deletion_ledger_table_arn }
-    content {
-      sid       = statement.key == "users" ? "ReadAuthoritativeProfile" : "ReadAuthoritativeDeletionFence"
-      actions   = ["dynamodb:GetItem"]
-      resources = [statement.value]
-      condition {
-        test     = "ForAllValues:StringLike"
-        variable = "dynamodb:LeadingKeys"
-        values   = statement.key == "users" ? ["USER#*"] : ["ACCOUNT#*"]
-      }
-    }
-  }
-  dynamic "statement" {
-    for_each = { users = local.users_table_arn, ledger = local.deletion_ledger_table_arn }
-    content {
-      sid       = statement.key == "users" ? "CheckAuthoritativeProfileAtomically" : "CheckDeletionFenceAtomically"
-      actions   = ["dynamodb:ConditionCheckItem"]
-      resources = [statement.value]
-      condition {
-        test     = "StringEquals"
-        variable = "dynamodb:EnclosingOperation"
-        values   = ["TransactWriteItems"]
-      }
-      condition {
-        test     = "ForAllValues:StringLike"
-        variable = "dynamodb:LeadingKeys"
-        values   = statement.key == "users" ? ["USER#*"] : ["ACCOUNT#*"]
-      }
-    }
-  }
   statement {
     sid       = "ReadHistoryReplayAndState"
     actions   = ["dynamodb:GetItem"]
     resources = [local.history_data.content_table_arn, local.history_data.control_table_arn]
-    condition {
-      test     = "ForAllValues:StringLike"
-      variable = "dynamodb:LeadingKeys"
-      values   = ["USER#*"]
-    }
-  }
-  statement {
-    sid       = "AtomicHistoryCompletion"
-    actions   = ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:ConditionCheckItem"]
-    resources = [local.history_data.content_table_arn, local.history_data.control_table_arn]
-    condition {
-      test     = "StringEquals"
-      variable = "dynamodb:EnclosingOperation"
-      values   = ["TransactWriteItems"]
-    }
     condition {
       test     = "ForAllValues:StringLike"
       variable = "dynamodb:LeadingKeys"

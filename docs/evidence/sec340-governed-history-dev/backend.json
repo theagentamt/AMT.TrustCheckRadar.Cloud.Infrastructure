@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "story": "SECUR4ALL-340",
+  "environment": "dev",
+  "sourceSha": "6d9ae503b7d4e36a16a4cfc6bee2c939b988c723",
+  "mainCiRunId": 37142525442,
+  "publicationRunId": 37142703658,
+  "fixtureMode": "dedicated_reusable",
+  "languages": [
+    "en",
+    "es"
+  ],
+  "runner": {
+    "passed": true,
+    "requests": 38,
+    "settledResults": 4,
+    "completeResults": 2,
+    "inconclusiveResults": 2,
+    "chargedChecks": 2,
+    "zeroChargeResults": 2,
+    "accountPreserved": true,
+    "activationRequested": false,
+    "resetRequested": false,
+    "deletionRequested": false
+  },
+  "authorityAfter": {
+    "limit": 10,
+    "used": 3,
+    "reserved": 0,
+    "remaining": 7,
+    "trialHistoryConsistent": true,
+    "paidSource": false,
+    "complimentarySource": false,
+    "scans": 0,
+    "writes": 0,
+    "exactGetItemsPerAudit": 4,
+    "auditCount": 2
+  },
+  "exactWindowLogCounts": {
+    "messageConsumer": 16,
+    "messageEvaluator": 4,
+    "governedHistory": 18,
+    "v1Entitlements": 4,
+    "urlAssessment": 0,
+    "fixtureOrCredentialSentinelMatches": 0,
+    "proofPatternMatches": 0
+  },
+  "readOnlyEdges": {
+    "passed": true,
+    "requests": 7,
+    "paginationLimitOnePages": 2,
+    "paginationDistinct": true,
+    "malformedCursorStatus": 422,
+    "tamperedCursorStatus": 422,
+    "unauthenticatedStatus": 401,
+    "wrongDeviceStatus": 403,
+    "missingOwnedResultStatus": 404,
+    "completedChecks": 0,
+    "providerCalls": 0,
+    "writes": 0,
+    "otherAccountLookup": false
+  },
+  "privacy": {
+    "containsAccountIdentifier": false,
+    "containsResultIdentifier": false,
+    "containsCursor": false,
+    "containsProof": false,
+    "containsToken": false,
+    "containsOriginalMessage": false,
+    "containsResponseBody": false
+  },
+  "authorityBefore": {
+    "limit": 10,
+    "used": 1,
+    "reserved": 0,
+    "remaining": 9
+  },
+  "cloudWatchMetrics": {
+    "errors": 0,
+    "throttles": 0,
+    "minuteInvocationBucketsUsedAsExactProof": false
+  }
+}

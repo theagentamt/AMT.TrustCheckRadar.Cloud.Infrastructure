@@ -61,19 +61,19 @@ resource "aws_lambda_function" "runtime" {
   timeout                        = 29
   memory_size                    = 256
   reserved_concurrent_executions = 2
-  s3_bucket                      = var.deployment.artifact.bucket
-  s3_key                         = var.deployment.artifact.key
-  s3_object_version              = var.deployment.artifact.object_version
-  source_code_hash               = var.deployment.artifact.source_hash
+  s3_bucket                      = local.runtime_artifact.bucket
+  s3_key                         = local.runtime_artifact.key
+  s3_object_version              = local.runtime_artifact.object_version
+  source_code_hash               = local.runtime_artifact.source_hash
   publish                        = true
   environment {
     variables = merge({
       STAGE                                  = var.environment
-      PLAY_HANDOFF_ENABLED                   = "false"
-      PLAY_PREPARATION_ENABLED               = "false"
-      PLAY_LIFECYCLE_ENABLED                 = "false"
-      AUTHORITY_ENABLED                      = "false"
-      DEV_SUBJECT_ALLOWLIST_JSON             = "[]"
+      PLAY_HANDOFF_ENABLED                   = tostring(local.billing_verification_active)
+      PLAY_PREPARATION_ENABLED               = tostring(local.billing_preparation_active)
+      PLAY_LIFECYCLE_ENABLED                 = tostring(local.billing_verification_active)
+      AUTHORITY_ENABLED                      = tostring(local.billing_preparation_active)
+      DEV_SUBJECT_ALLOWLIST_JSON             = var.billing_activation == null ? "[]" : jsonencode(sort(tolist(var.billing_activation.subjects)))
       PLAY_CATALOG_P1M_VERIFIED              = tostring(var.catalog_p1m_verified)
       PLAY_REQUIRE_TEST_PURCHASES            = "true"
       USERS_TABLE_NAME                       = split("/", var.deployment.users_table_arn)[1]

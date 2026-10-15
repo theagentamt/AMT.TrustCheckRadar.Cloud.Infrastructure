@@ -1,0 +1,38 @@
+{
+  "story": "SECUR4ALL-178",
+  "contract": "0.1.0-draft.2",
+  "evidenceType": "offline_policy_timezone_check",
+  "proposedScheduleApproved": true,
+  "liveDeliveryTested": false,
+  "cases": [
+    {
+      "localDate": "2026-03-08",
+      "timezone": "America/Chicago",
+      "startInclusiveUtc": "2026-03-08T06:00:00+00:00",
+      "endExclusiveUtc": "2026-03-09T05:00:00+00:00",
+      "durationHours": 23,
+      "nextDay0800DeliveryUtc": "2026-03-09T13:00:00+00:00",
+      "result": "pass"
+    },
+    {
+      "localDate": "2026-11-01",
+      "timezone": "America/Chicago",
+      "startInclusiveUtc": "2026-11-01T05:00:00+00:00",
+      "endExclusiveUtc": "2026-11-02T06:00:00+00:00",
+      "durationHours": 25,
+      "nextDay0800DeliveryUtc": "2026-11-02T14:00:00+00:00",
+      "result": "pass"
+    },
+    {
+      "localDate": "2026-10-03",
+      "timezone": "America/Chicago",
+      "startInclusiveUtc": "2026-10-03T05:00:00+00:00",
+      "endExclusiveUtc": "2026-10-04T05:00:00+00:00",
+      "durationHours": 24,
+      "nextDay0800DeliveryUtc": "2026-10-04T13:00:00+00:00",
+      "result": "pass"
+    }
+  ],
+  "ownerApprovalDate": "2026-10-04",
+  "acceptedPolicyVersion": "1.0.0-policy.1"
+}
