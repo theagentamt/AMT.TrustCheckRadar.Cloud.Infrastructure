@@ -185,7 +185,7 @@ resource "aws_iam_role_policy" "execution" {
   role  = aws_iam_role.resolver[0].id
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+    Statement = concat([
       {
         Sid      = "OwnLogs", Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"],
         Resource = "${aws_cloudwatch_log_group.resolver[0].arn}:*"
@@ -197,9 +197,14 @@ resource "aws_iam_role_policy" "execution" {
       },
       {
         Sid    = "NoSecretsOrConsumerData", Effect = "Deny",
-        Action = ["secretsmanager:*", "ssm:*", "dynamodb:*", "s3:*", "kms:*", "sts:AssumeRole"], Resource = "*"
+        Action = concat(["secretsmanager:*", "ssm:*"], local.url_qualification_configured ? [] : ["dynamodb:*"], ["s3:*", "kms:*", "sts:AssumeRole"]), Resource = "*"
       }
-    ]
+      ], jsondecode(local.url_qualification_configured ? jsonencode([
+        { Sid = "SyntheticCleanupControlOnly", Effect = "Allow", Action = "dynamodb:GetItem", Resource = var.url_qualification.table_arn,
+        Condition = { "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["CONTROL"] } } },
+        { Sid = "DenyOtherTables", Effect = "Deny", Action = "dynamodb:*", NotResource = var.url_qualification.table_arn },
+        { Sid = "NoDataWritesOrScans", Effect = "Deny", Action = ["dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:Scan", "dynamodb:Query", "dynamodb:BatchWriteItem", "dynamodb:CreateBackup", "backup:*"], Resource = "*" }
+    ]) : "[]"))
   })
 }
 
@@ -218,6 +223,18 @@ resource "aws_lambda_function" "resolver" {
   s3_object_version              = var.artifact.object_version
   source_code_hash               = var.artifact.source_hash
   publish                        = true
+  lifecycle {
+    postcondition {
+      condition = try(sum([for key, value in self.environment[0].variables :
+        length(base64encode("${key}${value}")) * 3 / 4 - length(regexall("=", base64encode("${key}${value}")))
+      ]), 0) <= 4096
+      error_message = "The complete UTF-8 Lambda environment must fit the 4096-byte service limit."
+    }
+  }
+  dynamic "environment" {
+    for_each = local.url_qualification_configured ? [1] : []
+    content { variables = local.url_qualification_environment }
+  }
   vpc_config {
     subnet_ids                  = [aws_subnet.private[0].id]
     security_group_ids          = [aws_security_group.resolver[0].id]

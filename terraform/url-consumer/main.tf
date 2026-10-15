@@ -46,7 +46,7 @@ resource "aws_iam_role_policy" "consumer" {
   role  = aws_iam_role.runtime["consumer"].id
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+    Statement = concat([
       { Sid = "OwnLogs", Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.runtime["consumer"].arn}:*" },
       { Sid = "ReadIdentityFences", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:ConditionCheckItem"], Resource = local.identity_arns },
       { Sid = "ReadAuthority", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:ConditionCheckItem"], Resource = local.authority_arn,
@@ -57,7 +57,12 @@ resource "aws_iam_role_policy" "consumer" {
       Condition = { StringEquals = { "secretsmanager:VersionStage" = "AWSCURRENT" } } },
       { Sid = "OnePrivateAssessmentAlias", Effect = "Allow", Action = "lambda:InvokeFunction", Resource = var.deployment.assessment_alias_arn },
       { Sid = "NoObjectStorageOrRoleChaining", Effect = "Deny", Action = ["s3:*", "ssm:*", "sts:AssumeRole"], Resource = "*" }
-    ]
+      ], local.url_qualification_configured ? [
+      { Sid = "ReadUrlCleanupControl", Effect = "Allow", Action = "dynamodb:GetItem", Resource = var.url_qualification.table_arn,
+      Condition = { "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["CONTROL"] } } },
+      { Sid = "AtomicUrlAdmissionBudget", Effect = "Allow", Action = "dynamodb:UpdateItem", Resource = var.url_qualification.table_arn,
+      Condition = { "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["RUN#${jsondecode(var.url_qualification.manifest_json).runId}"] }, "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] } } }
+    ] : [])
   })
   lifecycle {
     precondition {
@@ -105,6 +110,14 @@ resource "aws_lambda_function" "runtime" {
   s3_object_version              = local.runtime_artifacts[each.key].object_version
   source_code_hash               = local.runtime_artifacts[each.key].source_hash
   publish                        = true
+  lifecycle {
+    postcondition {
+      condition = sum([for key, value in self.environment[0].variables :
+        length(base64encode("${key}${value}")) * 3 / 4 - length(regexall("=", base64encode("${key}${value}")))
+      ]) <= 4096
+      error_message = "The complete UTF-8 Lambda environment must fit the 4096-byte service limit."
+    }
+  }
   # Only configured/empty is public; the encoded subject value stays sensitive.
   environment {
     variables = merge({
@@ -112,7 +125,7 @@ resource "aws_lambda_function" "runtime" {
       AUTHORITY_TABLE_NAME = split("/", local.authority_arn)[1]
       }, contains(["consumer", "entitlements"], each.key) ? {
       CONSUMER_ENABLED                   = tostring(var.activate_engineering)
-      AUTHORITY_ENABLED                  = tostring(each.key == "entitlements" ? local.entitlements_service_active : var.activate_engineering)
+      AUTHORITY_ENABLED                  = tostring(each.key == "entitlements" ? local.entitlements_service_active : (var.activate_engineering || local.url_qualification_active))
       V1_ENTITLEMENTS_ENABLED            = tostring(each.key == "entitlements" ? local.entitlements_service_active : var.activate_engineering)
       TRIAL_AUTHORITY_RETENTION_APPROVED = tostring(each.key == "entitlements" ? (var.activate_engineering || var.activate_trial_engineering || length(var.governed_trial_subjects) > 0) : var.activate_engineering)
       USERS_TABLE_NAME                   = split("/", var.deployment.users_table_arn)[1]
@@ -148,7 +161,7 @@ resource "aws_lambda_function" "runtime" {
       COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON = jsonencode(local.complimentary_operator_active ? [local.complimentary_operator_role_arn] : [])
       } : {}, each.key == "entitlements" && nonsensitive(length(var.dev_access_snapshot_extra_subjects) > 0) ? {
       DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON = jsonencode(sort(tolist(var.dev_access_snapshot_extra_subjects)))
-    } : {}, each.key == "consumer" ? { URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn } : {})
+    } : {}, each.key == "consumer" ? { URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn } : {}, each.key == "consumer" ? local.url_qualification_environment : {})
   }
   depends_on = [aws_iam_role_policy.consumer, aws_iam_role_policy.recovery, aws_iam_role_policy.entitlements, aws_iam_role_policy.deletion]
   tags       = var.tags

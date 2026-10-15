@@ -115,6 +115,13 @@ jobs:
           terraform validate
           terraform test
 
+      - name: Validate default-off synthetic URL qualification
+        working-directory: terraform/url-qualification
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          terraform test
+
       - name: Validate V1 URL consumer candidate
         working-directory: terraform/url-consumer
         run: |

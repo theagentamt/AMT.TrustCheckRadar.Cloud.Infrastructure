@@ -23,12 +23,19 @@ resource "aws_iam_role_policy" "runtime" {
   role  = aws_iam_role.assessment[0].id
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+    Statement = concat([
       { Sid = "OwnLogs", Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.assessment[0].arn}:*" },
       { Sid = "ReadOneProviderCredential", Effect = "Allow", Action = "secretsmanager:GetSecretValue", Resource = var.secret_arn },
       { Sid = "InvokeResolverAlias", Effect = "Allow", Action = "lambda:InvokeFunction", Resource = var.resolver_alias_arn },
-      { Sid = "NoConsumerStorageOrRoleChaining", Effect = "Deny", Action = ["dynamodb:*", "s3:*", "ssm:*", "sts:AssumeRole"], Resource = "*" }
-    ]
+      { Sid = "NoConsumerStorageOrRoleChaining", Effect = "Deny", Action = concat(local.url_qualification_configured ? [] : ["dynamodb:*"], ["s3:*", "ssm:*", "sts:AssumeRole"]), Resource = "*" }
+      ], jsondecode(local.url_qualification_configured ? jsonencode([
+        { Sid = "ReadCleanupControl", Effect = "Allow", Action = "dynamodb:GetItem", Resource = var.url_qualification.table_arn,
+        Condition = { "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["CONTROL"] } } },
+        { Sid = "OwnSyntheticRun", Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:ConditionCheckItem"], Resource = var.url_qualification.table_arn,
+        Condition = { "ForAllValues:StringEquals" = { "dynamodb:LeadingKeys" = ["RUN#${jsondecode(var.url_qualification.manifest_json).runId}"] } } },
+        { Sid = "DenyEveryOtherTable", Effect = "Deny", Action = "dynamodb:*", NotResource = var.url_qualification.table_arn },
+        { Sid = "NoScanQueryBackupsOrBulkWrites", Effect = "Deny", Action = ["dynamodb:Scan", "dynamodb:Query", "dynamodb:BatchWriteItem", "dynamodb:CreateBackup", "dynamodb:ExportTableToPointInTime", "backup:*"], Resource = "*" }
+    ]) : "[]"))
   })
   lifecycle {
     precondition {
@@ -52,12 +59,20 @@ resource "aws_lambda_function" "assessment" {
   s3_object_version              = var.artifact.object_version
   source_code_hash               = var.artifact.source_hash
   publish                        = true
+  lifecycle {
+    postcondition {
+      condition = sum([for key, value in self.environment[0].variables :
+        length(base64encode("${key}${value}")) * 3 / 4 - length(regexall("=", base64encode("${key}${value}")))
+      ]) <= 4096
+      error_message = "The complete UTF-8 Lambda environment must fit the 4096-byte service limit."
+    }
+  }
   environment {
-    variables = {
+    variables = merge({
       STAGE                     = var.environment
       WEB_RISK_SECRET_ARN       = var.secret_arn
       URL_RESOLVER_FUNCTION_ARN = var.resolver_alias_arn
-    }
+    }, local.url_qualification_environment)
   }
   depends_on = [aws_iam_role_policy.runtime]
   tags       = var.tags
