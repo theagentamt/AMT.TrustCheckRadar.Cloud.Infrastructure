@@ -1,6 +1,7 @@
 # SEC233: offline implementation and future scoped Dev qualification
 
-Status: local feature implementation; not deployed, activated, published or Done.
+Status: tested feature implementation; not deployed, activated, integrated or Done.
+Exact branch publication/readback is recorded in the source-story checkpoint.
 Owner approval covers offline fixture/Moto/mock work. The later request to explain
 synthetic/mocked data was not retention or live-provider approval. All new gates
 remain false and no environment tfvars, account, binding, allowance, subscription
@@ -19,8 +20,9 @@ QR live testing remains owner-held; this implementation adds no QR activation.
 
 Infrastructure feature: `codex/sec233-scoped-url-qualification`, based on published
 release-V01 plus a local merge of published main. Lambda uses the same feature
-name in its separate repository. Neither feature has been merged or pushed by
-this work. Local incorporation of main is not a promotion into main.
+name in its separate repository. Neither feature is authorized to merge into main/release. Publication state and
+exact source heads are recorded in the tracker; a local or remote feature commit
+is not release integration. Local incorporation of main is not a promotion into main.
 
 Infrastructure changes are opt-in modules, configuration, IAM and offline guards.
 Lambda changes are owned by the Lambda agent, including the cleanup handler and
