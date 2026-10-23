@@ -249,7 +249,10 @@ def review(plan, baseline, captured, revision, mode, replacements=None):
                 prepare.digest(prepare.artifact(before)) == captured['functions'][n]['artifactInputsSha256'] and
                 prepare.digest(prepare.environment(before)) == captured['functions'][n]['environmentSha256'], 'Captured function binding mismatch.', resource=resource_category(address))
         suffix = 'message-' + n if mode == 'message-history' else {'consumer': 'url-consumer', 'entitlements': 'v1-entitlements', 'recovery': 'url-lease-recovery', 'deletion': 'v1-authority-deletion'}[n]
-        handler = ('message_' + n + '.app.lambda_handler') if mode == 'message-history' else 'v1_entitlements.app.lambda_handler' if n == 'entitlements' else 'app.lambda_handler'
+        handlers = {'consumer': 'app.lambda_handler', 'recovery': 'app.lambda_handler',
+                    'entitlements': 'v1_entitlements.app.lambda_handler',
+                    'deletion': 'v1_authority_deletion.app.lambda_handler'}
+        handler = ('message_' + n + '.app.lambda_handler') if mode == 'message-history' else handlers[n]
         timeout = (29 if n == 'consumer' else 23) if mode == 'message-history' else {'consumer': 29, 'entitlements': 10, 'recovery': 15, 'deletion': 30}[n]
         require(all(before.get(k) == v for k, v in {
             'function_name': prepare.PREFIX + '-' + suffix, 'runtime': 'python3.14', 'architectures': ['arm64'],
