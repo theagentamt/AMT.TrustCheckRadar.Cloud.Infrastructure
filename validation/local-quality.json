@@ -1,0 +1,11 @@
+{
+  "cloudOrMobileActions": false,
+  "credentialsOrProviderRead": false,
+  "dependencyFilesChanged": false,
+  "sourceBehaviorChangedAfterFinalSourceReview": false,
+  "terraformFmtChangedFiles": "PASS",
+  "terraformMessageMockPassed": 22,
+  "terraformUrlMockPassed": 71,
+  "tfvarsWorkflowIAMChanged": false,
+  "whitespaceCheck": "PASS"
+}

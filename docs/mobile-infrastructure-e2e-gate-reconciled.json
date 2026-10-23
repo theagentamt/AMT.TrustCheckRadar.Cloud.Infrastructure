@@ -1,0 +1,1257 @@
+{
+  "approvalStages": [
+    {
+      "scope": "Selective main reconciliation complete locally. No push or promotion/deployment authorized here. Other artifacts/new bytes require exact qualification.",
+      "stage": "source-package",
+      "status": "LOCAL_SOURCE_AND_MESSAGE_RUNTIME_PASS_PUBLICATION_PENDING"
+    },
+    {
+      "scope": "Existing Dev worker/rule/alerts; due rows across retained HMAC account partitions; zero-charge recovery and irreversible minimized-row expiry. No identity/provider permission expansion.",
+      "stage": "shared-maintenance",
+      "status": "EXPLICIT_SHARED_ROLLOUT_SCOPE_REQUIRED"
+    },
+    {
+      "scope": "Resume only after parent lifts hold and exact artifacts/readiness/security-policy-time bounds verified; preserve one fixed durable allowance.",
+      "stage": "one-message-ai",
+      "status": "PREVIOUSLY_BOUNDED_AUTHORITY_OPERATIONALLY_HELD"
+    },
+    {
+      "scope": "OCR/share variants and URL/QR targets cannot consume a nonmatching fixed Message exception; local-only tests distinct.",
+      "stage": "other-journeys",
+      "status": "SEPARATE_PRECISE_SCENARIO_PROVIDER_BUDGET_SCOPE_REQUIRED"
+    }
+  ],
+  "assessmentScope": "Dated read-only AWS metadata plus completed local source reconciliation and exact Message runtime qualification. No new AWS/device/provider activity.",
+  "authorizers": [
+    {
+      "AuthorizerId": "itms4b",
+      "AuthorizerType": "JWT",
+      "IdentitySource": [
+        "$request.header.Authorization"
+      ],
+      "JwtConfiguration": {
+        "Audience": [
+          "5kvl9a8jo4fr1qqnci27tdabk4"
+        ],
+        "Issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzN0wUSdQ"
+      },
+      "Name": "trustcheckradar-dev-v1-checks-jwt"
+    },
+    {
+      "AuthorizerId": "jmi5hk",
+      "AuthorizerType": "JWT",
+      "IdentitySource": [
+        "$request.header.Authorization"
+      ],
+      "JwtConfiguration": {
+        "Audience": [
+          "5kvl9a8jo4fr1qqnci27tdabk4"
+        ],
+        "Issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzN0wUSdQ"
+      },
+      "Name": "trustcheckradar-dev-cognito-jwt"
+    }
+  ],
+  "decision": "HOLD_NO_CURRENT_E2E_READY_RECEIPT",
+  "deployedFunctionMetadata": {
+    "age-attestation": {
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "GIxLSZ2egFTrPr/zH9FLMPdCkoGzeW7o3UTQ37fY8sU=",
+      "Handler": "app.lambda_handler",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-age-attestation-role",
+      "Runtime": "python3.14",
+      "Timeout": 10,
+      "Version": "$LATEST",
+      "aliasVersion": null,
+      "aliasWeighted": false,
+      "booleanSettings": {},
+      "environmentFingerprint": "3c1f56c803c6cf0284728f9366f1222843a9d125dc222efe2a1898cf3a7d5831",
+      "eventSourceMappings": [],
+      "numericSettings": {},
+      "policySettings": {},
+      "secretReferenceConfigured": {},
+      "targets": {
+        "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger",
+        "USERS_TABLE_NAME": "trustcheckradar-dev-users"
+      }
+    },
+    "device-registration": {
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "444P9ooO3cfqGUMlIGFEVXIh2YzuRkVxlaw7edHjheY=",
+      "Handler": "app.lambda_handler",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-device-registration-role",
+      "Runtime": "python3.13",
+      "Timeout": 15,
+      "Version": "$LATEST",
+      "aliasVersion": null,
+      "aliasWeighted": false,
+      "booleanSettings": {},
+      "environmentFingerprint": "19eeda6463e3a202e21eacc3ee563fe10ab766d51d027f933b901047dc4ef438",
+      "eventSourceMappings": [],
+      "numericSettings": {},
+      "policySettings": {},
+      "secretReferenceConfigured": {},
+      "targets": {
+        "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger",
+        "DEVICE_BINDINGS_TABLE_NAME": "trustcheckradar-dev-device-bindings",
+        "USERS_TABLE_NAME": "trustcheckradar-dev-users"
+      }
+    },
+    "governed-history": {
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "TN03cp7kk/cbTOJYn9W6V+wl3zGz866UD/xzzLgDJxE=",
+      "Handler": "governed_history.app.lambda_handler",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-governed-history-execution",
+      "Runtime": "python3.14",
+      "Timeout": 23,
+      "Version": "3",
+      "aliasVersion": "3",
+      "aliasWeighted": false,
+      "booleanSettings": {
+        "AUTHORITY_ENABLED": "true",
+        "GOVERNED_HISTORY_DETAIL_ENABLED": "true",
+        "GOVERNED_HISTORY_LIST_ENABLED": "true"
+      },
+      "environmentFingerprint": "3631addef883ddb90b37265e1ac6fcb63270667ba6c4818eff20923e523a4a28",
+      "eventSourceMappings": [],
+      "numericSettings": {
+        "ATTEMPTS_PER_WINDOW": 20,
+        "ATTEMPT_WINDOW_SECONDS": 60,
+        "COUNTER_RETENTION_SECONDS": 604800,
+        "GOVERNED_HISTORY_CURSOR_TTL_SECONDS": 900,
+        "GOVERNED_HISTORY_RETENTION_SECONDS": 604800,
+        "MAX_INFLIGHT": 2,
+        "OPERATION_VALIDITY_SECONDS": 300,
+        "RECEIPT_RETENTION_SECONDS": 604800,
+        "RECONCILIATION_SECONDS": 3600,
+        "WORKER_SETTLEMENT_SECONDS": 60
+      },
+      "policySettings": {
+        "AUTHORITY_POLICY_VERSION": "owner-2026-09-20-v1",
+        "STAGE": "dev"
+      },
+      "secretReferenceConfigured": {
+        "AUTHORITY_HMAC_SECRET_ARN": true
+      },
+      "targets": {
+        "AUTHORITY_TABLE_NAME": "trustcheckradar-dev-purchase-entitlements",
+        "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger",
+        "DEVICE_BINDINGS_TABLE_NAME": "trustcheckradar-dev-device-bindings",
+        "USERS_TABLE_NAME": "trustcheckradar-dev-users"
+      }
+    },
+    "message-consumer": {
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "UbXMvj46spsxhd2P0rPATFWiqjGUbti4rv0fCALa2Xo=",
+      "Handler": "message_consumer.app.lambda_handler",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-message-consumer-execution",
+      "Runtime": "python3.14",
+      "Timeout": 29,
+      "Version": "8",
+      "aliasVersion": "8",
+      "aliasWeighted": false,
+      "booleanSettings": {
+        "AUTHORITY_ENABLED": "true",
+        "GOVERNED_HISTORY_SETTLEMENT_ENABLED": "true",
+        "MESSAGE_AI_ENABLED": "false",
+        "MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED": "true",
+        "MESSAGE_CONSUMER_ENABLED": "true",
+        "MESSAGE_PROVIDER_CIRCUIT_OPEN": "true"
+      },
+      "environmentFingerprint": "f7c0c38c434469c96db625ec519b4181ca6ec88ea9a7189c2c1a4f27b4b2ad47",
+      "eventSourceMappings": [],
+      "numericSettings": {
+        "ATTEMPTS_PER_WINDOW": 20,
+        "ATTEMPT_WINDOW_SECONDS": 60,
+        "COUNTER_RETENTION_SECONDS": 604800,
+        "MAX_INFLIGHT": 2,
+        "MESSAGE_PROVIDER_ATTEMPTS_PER_WINDOW": 20,
+        "MESSAGE_PROVIDER_FAILURES_PER_WINDOW": 5,
+        "MESSAGE_PROVIDER_WINDOW_SECONDS": 3600,
+        "OPERATION_VALIDITY_SECONDS": 300,
+        "RECEIPT_RETENTION_SECONDS": 604800,
+        "RECONCILIATION_SECONDS": 3600,
+        "WORKER_SETTLEMENT_SECONDS": 60
+      },
+      "policySettings": {
+        "AUTHORITY_POLICY_VERSION": "owner-2026-09-20-v1",
+        "MESSAGE_AI_POLICY_APPROVAL_SHA256": "d6e9fff12225540bef9ba7833cce457cca4b9c791af3b49dd8a4f1601d204349",
+        "MESSAGE_AI_POLICY_VERSION": "message-ai-2026-09-21-v1",
+        "MESSAGE_POLICY_APPROVAL_SHA256": "0367140fbdbaef36dd59ba81030f3e35e04e78dbbed4129277c9cb0758971a80",
+        "MESSAGE_POLICY_VERSION": "message-rules-2026-09-20-v1",
+        "STAGE": "dev"
+      },
+      "secretReferenceConfigured": {
+        "AUTHORITY_HMAC_SECRET_ARN": true
+      },
+      "targets": {
+        "AUTHORITY_TABLE_NAME": "trustcheckradar-dev-purchase-entitlements",
+        "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger",
+        "DEVICE_BINDINGS_TABLE_NAME": "trustcheckradar-dev-device-bindings",
+        "MESSAGE_EVALUATOR_FUNCTION_ARN": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-message-evaluator:live",
+        "USERS_TABLE_NAME": "trustcheckradar-dev-users"
+      }
+    },
+    "message-evaluator": {
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "4t6hHXE5RybaI7o4qTFqcWZgK0TaOdnN1uAZ+nctBj0=",
+      "Handler": "message_evaluator.app.lambda_handler",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-message-evaluator-execution",
+      "Runtime": "python3.14",
+      "Timeout": 23,
+      "Version": "7",
+      "aliasVersion": "7",
+      "aliasWeighted": false,
+      "booleanSettings": {
+        "MESSAGE_AI_ENABLED": "false",
+        "MESSAGE_AI_QUALIFIED": "false",
+        "MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED": "true",
+        "MESSAGE_EVALUATOR_ENABLED": "true",
+        "MESSAGE_PROPOSER_ENABLED": "false"
+      },
+      "environmentFingerprint": "a1e3ef06f56240bcfa5f7479a442fa1d2f1e55f7536ffd22d7d6780535c636cd",
+      "eventSourceMappings": [],
+      "numericSettings": {},
+      "policySettings": {
+        "MESSAGE_AI_POLICY_APPROVAL_SHA256": "d6e9fff12225540bef9ba7833cce457cca4b9c791af3b49dd8a4f1601d204349",
+        "MESSAGE_AI_POLICY_VERSION": "message-ai-2026-09-21-v1",
+        "MESSAGE_POLICY_APPROVAL_SHA256": "0367140fbdbaef36dd59ba81030f3e35e04e78dbbed4129277c9cb0758971a80",
+        "MESSAGE_POLICY_VERSION": "message-rules-2026-09-20-v1",
+        "STAGE": "dev"
+      },
+      "secretReferenceConfigured": {},
+      "targets": {
+        "URL_ASSESSMENT_FUNCTION_ARN": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-assessment:live"
+      }
+    },
+    "url-assessment": {
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "ZR2IfD7e51zdXQPhdA1rCp0KzD4gdYLK7VlHRTUQaVA=",
+      "Handler": "app.lambda_handler",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-url-assessment-execution",
+      "Runtime": "python3.14",
+      "Timeout": 35,
+      "Version": "3",
+      "aliasVersion": "3",
+      "aliasWeighted": false,
+      "booleanSettings": {},
+      "environmentFingerprint": "4950853297b970583272f3dfcf4b5eeb8ecb03fa77a0ccec3f83735e7955b64f",
+      "eventSourceMappings": [],
+      "numericSettings": {},
+      "policySettings": {
+        "STAGE": "dev"
+      },
+      "secretReferenceConfigured": {
+        "WEB_RISK_SECRET_ARN": true
+      },
+      "targets": {
+        "URL_RESOLVER_FUNCTION_ARN": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-resolver:live"
+      }
+    },
+    "url-consumer": {
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "UZGXzwy/TqyybWVl6js5NJ8YH8syJciQeYpmebBY3Is=",
+      "Handler": "app.lambda_handler",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-url-consumer-execution",
+      "Runtime": "python3.14",
+      "Timeout": 29,
+      "Version": "9",
+      "aliasVersion": "9",
+      "aliasWeighted": false,
+      "booleanSettings": {
+        "AUTHORITY_ENABLED": "false",
+        "CONSUMER_ENABLED": "false",
+        "TRIAL_AUTHORITY_RETENTION_APPROVED": "false",
+        "V1_ENTITLEMENTS_ENABLED": "false"
+      },
+      "environmentFingerprint": "82b67304f3d58e82f2cebb19ae98b1ee1bdb2b53fff5b1b5725c8d5d73d05dfa",
+      "eventSourceMappings": [],
+      "numericSettings": {
+        "ATTEMPTS_PER_WINDOW": 20,
+        "ATTEMPT_WINDOW_SECONDS": 60,
+        "COUNTER_RETENTION_SECONDS": 604800,
+        "MAX_INFLIGHT": 2,
+        "OPERATION_VALIDITY_SECONDS": 300,
+        "RECEIPT_RETENTION_SECONDS": 604800,
+        "RECONCILIATION_SECONDS": 3600,
+        "WORKER_SETTLEMENT_SECONDS": 60
+      },
+      "policySettings": {
+        "AUTHORITY_POLICY_VERSION": "owner-2026-09-20-v1",
+        "STAGE": "dev"
+      },
+      "secretReferenceConfigured": {
+        "AUTHORITY_HMAC_SECRET_ARN": true
+      },
+      "targets": {
+        "AUTHORITY_TABLE_NAME": "trustcheckradar-dev-purchase-entitlements",
+        "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger",
+        "DEVICE_BINDINGS_TABLE_NAME": "trustcheckradar-dev-device-bindings",
+        "URL_ASSESSMENT_FUNCTION_ARN": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-assessment:live",
+        "USERS_TABLE_NAME": "trustcheckradar-dev-users"
+      }
+    },
+    "url-lease-recovery": {
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "a5uouU5vy1ZJMuWpjQY4GUQ236d4jpRS23yTmaP5K+Y=",
+      "Handler": "app.lambda_handler",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-url-lease-recovery-execution",
+      "Runtime": "python3.14",
+      "Timeout": 15,
+      "Version": "11",
+      "aliasVersion": "11",
+      "aliasWeighted": false,
+      "booleanSettings": {
+        "LEASE_SWEEP_ENABLED": "false"
+      },
+      "environmentFingerprint": "fb00d062d90a6781b11512643832dcdf4d1771075fc6edfdc66374a62ac7273c",
+      "eventSourceMappings": [],
+      "numericSettings": {},
+      "policySettings": {
+        "STAGE": "dev"
+      },
+      "secretReferenceConfigured": {},
+      "targets": {
+        "AUTHORITY_TABLE_NAME": "trustcheckradar-dev-purchase-entitlements"
+      }
+    },
+    "url-resolver": {
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "0QeYi0QSW0hfQ5Z4stNK5968KHovT00yoXq1MrBmbmw=",
+      "Handler": "app.lambda_handler",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-url-resolver-execution",
+      "Runtime": "python3.14",
+      "Timeout": 12,
+      "Version": "2",
+      "aliasVersion": "2",
+      "aliasWeighted": false,
+      "booleanSettings": {},
+      "environmentFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "eventSourceMappings": [],
+      "numericSettings": {},
+      "policySettings": {},
+      "secretReferenceConfigured": {},
+      "targets": {}
+    },
+    "v1-authority-deletion": {
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "RR6Qd3aM1ap/hSs6mihSKxjDSjivTKK7tcnfoSOMi5w=",
+      "Handler": "v1_authority_deletion.app.lambda_handler",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-v1-authority-deletion-execution",
+      "Runtime": "python3.14",
+      "Timeout": 30,
+      "Version": "24",
+      "aliasVersion": "24",
+      "aliasWeighted": false,
+      "booleanSettings": {
+        "V1_AUTHORITY_DELETION_ENABLED": "true"
+      },
+      "environmentFingerprint": "bdd2fbcce08001cabf33c1bcce0eb54083e06510e390153545ff9028b059c4c5",
+      "eventSourceMappings": [],
+      "numericSettings": {
+        "DELETION_RECEIPT_RETENTION_SECONDS": 10368000
+      },
+      "policySettings": {
+        "STAGE": "dev"
+      },
+      "secretReferenceConfigured": {
+        "AUTHORITY_HMAC_SECRET_ARN": true
+      },
+      "targets": {
+        "AUTHORITY_TABLE_NAME": "trustcheckradar-dev-purchase-entitlements",
+        "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger"
+      }
+    },
+    "v1-entitlements": {
+      "Architectures": [
+        "arm64"
+      ],
+      "CodeSha256": "up0e++Jc3y5oVOQ9oaPB3w10RioidfPVg1UDilJVhlo=",
+      "Handler": "v1_entitlements.app.lambda_handler",
+      "Role": "arn:aws:iam::107827791950:role/trustcheckradar-dev-v1-entitlements-execution",
+      "Runtime": "python3.14",
+      "Timeout": 10,
+      "Version": "18",
+      "aliasVersion": "18",
+      "aliasWeighted": false,
+      "booleanSettings": {
+        "AUTHORITY_ENABLED": "true",
+        "COMPLIMENTARY_OPERATOR_ENABLED": "true",
+        "CONSUMER_ENABLED": "false",
+        "TRIAL_AUTHORITY_RETENTION_APPROVED": "true",
+        "V1_ENTITLEMENTS_ENABLED": "true"
+      },
+      "environmentFingerprint": "761342bd857c9f90944bb09f535cf3fcf0cc0e59ccf753a33b5fa00e514cbbf2",
+      "eventSourceMappings": [],
+      "numericSettings": {
+        "ATTEMPTS_PER_WINDOW": 20,
+        "ATTEMPT_WINDOW_SECONDS": 60,
+        "COMPLIMENTARY_AUDIT_RETENTION_SECONDS": 31536000,
+        "COUNTER_RETENTION_SECONDS": 604800,
+        "MAX_INFLIGHT": 2,
+        "OPERATION_VALIDITY_SECONDS": 300,
+        "RECEIPT_RETENTION_SECONDS": 604800,
+        "RECONCILIATION_SECONDS": 3600,
+        "WORKER_SETTLEMENT_SECONDS": 60
+      },
+      "policySettings": {
+        "AUTHORITY_POLICY_VERSION": "owner-2026-09-20-v1",
+        "STAGE": "dev"
+      },
+      "secretReferenceConfigured": {
+        "AUTHORITY_HMAC_SECRET_ARN": true
+      },
+      "targets": {
+        "AUTHORITY_TABLE_NAME": "trustcheckradar-dev-purchase-entitlements",
+        "DELETION_LEDGER_TABLE_NAME": "trustcheckradar-dev-deletion-ledger",
+        "DEVICE_BINDINGS_TABLE_NAME": "trustcheckradar-dev-device-bindings",
+        "USERS_TABLE_NAME": "trustcheckradar-dev-users"
+      }
+    }
+  },
+  "historicalReport": {
+    "path": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/readiness-implementation-20261023/backend/docs/mobile-infrastructure-e2e-gate.md",
+    "sha256": "35edddb4758f1c58b693bd07c466e3ac65c1e044e05ccd14c2d2fff33968b499",
+    "status": "HISTORICAL_ONLY_SUPERSEDED_SOURCE_RUNTIME_BLOCKERS"
+  },
+  "journeys": [
+    {
+      "accountDeviceAccessRequired": "Supported current selected account/adult/nondeleting; exact current app ACTIVE binding; fresh eligible access, unchanged complimentary expiry/paid/trial state.",
+      "contract": "1.0.0-message-candidate.3 transport; closed outcome schema3; governed-History candidate1",
+      "decision": "HOLD",
+      "flagsAdmissionRequired": "Current consumer8 authority/History on; AI false, rules-only true, circuit open; evaluator7 AI/qualification/proposer false. Exact test path must remain separate from general qualification.",
+      "functionKeys": [
+        "message-consumer",
+        "message-evaluator",
+        "url-lease-recovery",
+        "governed-history",
+        "v1-entitlements"
+      ],
+      "iamRequired": "Consumer atomic authority/budget+HMAC/evaluator:live; evaluator only approved exact secret/one-use conditional reservation in temporary test path; no broad deny removal.",
+      "journey": "message-ai",
+      "liveAcceptancePerformedThisTask": false,
+      "observableCorrelationRequired": "One original operation/check/receipt; settled accounting/provenance/coverage; provider attempts/usage safely correlated; exact owned History result ID.",
+      "passedByLocalTests": false,
+      "prerequisiteGateIds": [
+        "sourcePackage",
+        "routesAuthorizers",
+        "iam",
+        "providers",
+        "flagsAdmission",
+        "maintenance",
+        "storage",
+        "accountDeviceAccess",
+        "runtimeQualification",
+        "correlation"
+      ],
+      "providerRequired": "AI currently not configured/enabled; approved fixed test exception only after lifted hold, exact model/message/identity, one generation/no count/no retries/max512 output/US$1.",
+      "recoverySchedulerRequired": "Exact shared worker11/rule currently disabled; enable/readback before admissions after shared-scope approval; preserve deletion24.",
+      "routes": [
+        "POST /v1/message-checks/prepare",
+        "POST /v1/message-checks",
+        "POST /v1/message-checks/reconcile",
+        "GET /v1/users/analysis-history",
+        "GET /v1/users/analysis-history/{resultId}"
+      ],
+      "runtimePackageRequired": "Exact chosen APK; dependency-complete consumer/evaluator ARM64 Python3.14/glibc ZIPs and source/dependency/schema hashes.",
+      "runtimeQualificationUpdate": "Exact consumer/evaluator ZIPs in linked runtime receipt pass only. No other component artifact, installed APK or E2E journey is passed by that result.",
+      "specificLimits": "Local recovered AI-primary is not deployed; all privacy/speaker/intent gates remain. No general AI quality claim from one synthetic result.",
+      "storageIndexesRequired": "Same authority users/device/deletion tables; canonical conditional receipt/counter state, GSI1 due recovery and GSI2 History projection; pending no TTL."
+    },
+    {
+      "accountDeviceAccessRequired": "Supported current selected account/adult/nondeleting; exact current app ACTIVE binding; fresh eligible access, unchanged complimentary expiry/paid/trial state.",
+      "contract": "1.0.0-message-candidate.3 transport; closed outcome schema3; governed-History candidate1",
+      "decision": "HOLD",
+      "flagsAdmissionRequired": "Current consumer8 authority/History on; AI false, rules-only true, circuit open; evaluator7 AI/qualification/proposer false. Exact test path must remain separate from general qualification.",
+      "functionKeys": [
+        "message-consumer",
+        "message-evaluator",
+        "url-lease-recovery",
+        "governed-history",
+        "v1-entitlements"
+      ],
+      "iamRequired": "Consumer atomic authority/budget+HMAC/evaluator:live; evaluator only approved exact secret/one-use conditional reservation in temporary test path; no broad deny removal.",
+      "journey": "ocr-to-message",
+      "liveAcceptancePerformedThisTask": false,
+      "observableCorrelationRequired": "One original operation/check/receipt; settled accounting/provenance/coverage; provider attempts/usage safely correlated; exact owned History result ID.",
+      "passedByLocalTests": false,
+      "prerequisiteGateIds": [
+        "sourcePackage",
+        "routesAuthorizers",
+        "iam",
+        "providers",
+        "flagsAdmission",
+        "maintenance",
+        "storage",
+        "accountDeviceAccess",
+        "runtimeQualification",
+        "correlation"
+      ],
+      "providerRequired": "AI currently not configured/enabled; approved fixed test exception only after lifted hold, exact model/message/identity, one generation/no count/no retries/max512 output/US$1.",
+      "recoverySchedulerRequired": "Exact shared worker11/rule currently disabled; enable/readback before admissions after shared-scope approval; preserve deletion24.",
+      "routes": [
+        "POST /v1/message-checks/prepare",
+        "POST /v1/message-checks",
+        "POST /v1/message-checks/reconcile",
+        "GET /v1/users/analysis-history",
+        "GET /v1/users/analysis-history/{resultId}"
+      ],
+      "runtimePackageRequired": "Exact chosen APK; dependency-complete consumer/evaluator ARM64 Python3.14/glibc ZIPs and source/dependency/schema hashes.; bundled Tesseract/ContentResolver/OS document provider qualification.",
+      "runtimeQualificationUpdate": "Exact consumer/evaluator ZIPs in linked runtime receipt pass only. No other component artifact, installed APK or E2E journey is passed by that result.",
+      "specificLimits": "No OCR upload service. Exact OS picker/120sec/recreate/repeated selection/edited masking review required. Fixed AI exception only permits sourceType pasted_text; OCR-source provider call needs separate bounded scope and guard, not a reused allowance.",
+      "storageIndexesRequired": "Same authority users/device/deletion tables; canonical conditional receipt/counter state, GSI1 due recovery and GSI2 History projection; pending no TTL."
+    },
+    {
+      "accountDeviceAccessRequired": "Supported current selected account/adult/nondeleting; exact current app ACTIVE binding; fresh eligible access, unchanged complimentary expiry/paid/trial state.",
+      "contract": "1.0.0-candidate.2 transport; URL assessment0.3.0-candidate.1; governed-History candidate1",
+      "decision": "HOLD",
+      "flagsAdmissionRequired": "consumer9 CONSUMER_ENABLED/AUTHORITY_ENABLED false, admission empty; separate scoped activation required; assessment3/resolver2 presence does not open admission.",
+      "functionKeys": [
+        "url-consumer",
+        "url-assessment",
+        "url-resolver",
+        "url-lease-recovery",
+        "governed-history",
+        "v1-entitlements"
+      ],
+      "iamRequired": "Consumer atomic authority/HMAC and only assessment:live invoke; assessment exact Web Risk secret/provider and only resolver:live invoke; resolver public-target limits; History read-only.",
+      "journey": "direct-url",
+      "liveAcceptancePerformedThisTask": false,
+      "observableCorrelationRequired": "Same original URL intent/proof/check/receipt, unchanged provider clocks/freshness, no duplicate provider replay, truthful coverage, exact owned History row.",
+      "passedByLocalTests": false,
+      "prerequisiteGateIds": [
+        "sourcePackage",
+        "routesAuthorizers",
+        "iam",
+        "providers",
+        "flagsAdmission",
+        "maintenance",
+        "storage",
+        "accountDeviceAccess",
+        "runtimeQualification",
+        "correlation"
+      ],
+      "providerRequired": "Configured Web Risk reference is presence only; approved exact Google project/credential version/host, target disclosure/retention, lookup/redirect caps and current provider validity not qualified.",
+      "recoverySchedulerRequired": "Exact shared worker11/rule currently disabled; enable/readback before admissions after shared-scope approval; preserve deletion24.",
+      "routes": [
+        "POST /v1/url-checks/prepare",
+        "POST /v1/url-checks",
+        "POST /v1/url-checks/reconcile",
+        "GET /v1/users/analysis-history",
+        "GET /v1/users/analysis-history/{resultId}"
+      ],
+      "runtimePackageRequired": "Exact chosen APK and dependency-complete consumer9 replacement/assessment3/resolver2/recovery packages as deployed or reviewed, ARM64 Python3.14/glibc and exact schema joins.",
+      "runtimeQualificationUpdate": "Exact consumer/evaluator ZIPs in linked runtime receipt pass only. No other component artifact, installed APK or E2E journey is passed by that result.",
+      "specificLimits": "Explicit scope review; DNS/redirect/SSRF public-IP checks. No-match/partial/stale is not safe. Legacy API is not a bypass.",
+      "storageIndexesRequired": "Same authority users/device/deletion tables; canonical conditional receipt/counter state, GSI1 due recovery and GSI2 History projection; pending no TTL."
+    },
+    {
+      "accountDeviceAccessRequired": "Supported current selected account/adult/nondeleting; exact current app ACTIVE binding; fresh eligible access, unchanged complimentary expiry/paid/trial state.",
+      "contract": "1.0.0-candidate.2 transport; URL assessment0.3.0-candidate.1; governed-History candidate1",
+      "decision": "HOLD",
+      "flagsAdmissionRequired": "consumer9 CONSUMER_ENABLED/AUTHORITY_ENABLED false, admission empty; separate scoped activation required; assessment3/resolver2 presence does not open admission.",
+      "functionKeys": [
+        "url-consumer",
+        "url-assessment",
+        "url-resolver",
+        "url-lease-recovery",
+        "governed-history",
+        "v1-entitlements"
+      ],
+      "iamRequired": "Consumer atomic authority/HMAC and only assessment:live invoke; assessment exact Web Risk secret/provider and only resolver:live invoke; resolver public-target limits; History read-only.",
+      "journey": "qr-to-url",
+      "liveAcceptancePerformedThisTask": false,
+      "observableCorrelationRequired": "Same original URL intent/proof/check/receipt, unchanged provider clocks/freshness, no duplicate provider replay, truthful coverage, exact owned History row.",
+      "passedByLocalTests": false,
+      "prerequisiteGateIds": [
+        "sourcePackage",
+        "routesAuthorizers",
+        "iam",
+        "providers",
+        "flagsAdmission",
+        "maintenance",
+        "storage",
+        "accountDeviceAccess",
+        "runtimeQualification",
+        "correlation"
+      ],
+      "providerRequired": "Configured Web Risk reference is presence only; approved exact Google project/credential version/host, target disclosure/retention, lookup/redirect caps and current provider validity not qualified.",
+      "recoverySchedulerRequired": "Exact shared worker11/rule currently disabled; enable/readback before admissions after shared-scope approval; preserve deletion24.",
+      "routes": [
+        "POST /v1/url-checks/prepare",
+        "POST /v1/url-checks",
+        "POST /v1/url-checks/reconcile",
+        "GET /v1/users/analysis-history",
+        "GET /v1/users/analysis-history/{resultId}"
+      ],
+      "runtimePackageRequired": "Exact chosen APK and dependency-complete consumer9 replacement/assessment3/resolver2/recovery packages as deployed or reviewed, ARM64 Python3.14/glibc and exact schema joins.; local ZXing and actual camera/document lifecycle.",
+      "runtimeQualificationUpdate": "Exact consumer/evaluator ZIPs in linked runtime receipt pass only. No other component artifact, installed APK or E2E journey is passed by that result.",
+      "specificLimits": "No QR Lambda; inert bounded local preview. Only explicit HTTP(S) handoff; no auto navigation/dial/pay. Non-URL QR remains unsupported/unassessed preview, no implied AI permission.",
+      "storageIndexesRequired": "Same authority users/device/deletion tables; canonical conditional receipt/counter state, GSI1 due recovery and GSI2 History projection; pending no TTL."
+    },
+    {
+      "accountDeviceAccessRequired": "Supported current selected account/adult/nondeleting; exact current app ACTIVE binding; fresh eligible access, unchanged complimentary expiry/paid/trial state.",
+      "contract": "1.0.0-message-candidate.3 transport; closed outcome schema3; governed-History candidate1 OR 1.0.0-candidate.2 transport; URL assessment0.3.0-candidate.1; governed-History candidate1",
+      "decision": "HOLD",
+      "flagsAdmissionRequired": "Current consumer8 authority/History on; AI false, rules-only true, circuit open; evaluator7 AI/qualification/proposer false. Exact test path must remain separate from general qualification. OR consumer9 CONSUMER_ENABLED/AUTHORITY_ENABLED false, admission empty; separate scoped activation required; assessment3/resolver2 presence does not open admission.",
+      "functionKeys": [
+        "message-consumer",
+        "message-evaluator",
+        "url-consumer",
+        "url-assessment",
+        "url-resolver",
+        "url-lease-recovery",
+        "governed-history",
+        "v1-entitlements"
+      ],
+      "iamRequired": "Consumer atomic authority/budget+HMAC/evaluator:live; evaluator only approved exact secret/one-use conditional reservation in temporary test path; no broad deny removal. OR Consumer atomic authority/HMAC and only assessment:live invoke; assessment exact Web Risk secret/provider and only resolver:live invoke; resolver public-target limits; History read-only.",
+      "journey": "share",
+      "liveAcceptancePerformedThisTask": false,
+      "observableCorrelationRequired": "One original operation/check/receipt; settled accounting/provenance/coverage; provider attempts/usage safely correlated; exact owned History result ID. OR Same original URL intent/proof/check/receipt, unchanged provider clocks/freshness, no duplicate provider replay, truthful coverage, exact owned History row.",
+      "passedByLocalTests": false,
+      "prerequisiteGateIds": [
+        "sourcePackage",
+        "routesAuthorizers",
+        "iam",
+        "providers",
+        "flagsAdmission",
+        "maintenance",
+        "storage",
+        "accountDeviceAccess",
+        "runtimeQualification",
+        "correlation"
+      ],
+      "providerRequired": "AI currently not configured/enabled; approved fixed test exception only after lifted hold, exact model/message/identity, one generation/no count/no retries/max512 output/US$1. OR Configured Web Risk reference is presence only; approved exact Google project/credential version/host, target disclosure/retention, lookup/redirect caps and current provider validity not qualified.",
+      "recoverySchedulerRequired": "Exact shared worker11/rule currently disabled; enable/readback before admissions after shared-scope approval; preserve deletion24.",
+      "routes": [
+        "POST /v1/message-checks/prepare",
+        "POST /v1/message-checks",
+        "POST /v1/message-checks/reconcile",
+        "POST /v1/url-checks/prepare",
+        "POST /v1/url-checks",
+        "POST /v1/url-checks/reconcile",
+        "GET /v1/users/analysis-history",
+        "GET /v1/users/analysis-history/{resultId}"
+      ],
+      "runtimePackageRequired": "Exact chosen APK; dependency-complete consumer/evaluator ARM64 Python3.14/glibc ZIPs and source/dependency/schema hashes. OR Exact chosen APK and dependency-complete consumer9 replacement/assessment3/resolver2/recovery packages as deployed or reviewed, ARM64 Python3.14/glibc and exact schema joins.",
+      "runtimeQualificationUpdate": "Exact consumer/evaluator ZIPs in linked runtime receipt pass only. No other component artifact, installed APK or E2E journey is passed by that result.",
+      "specificLimits": "text/plain only; actual sender/Chrome/Activity and ownership/privacy-clear behavior. Exact HTTP(S) destination routes separately; reject unsafe/attachment intents. Actual source/entryPoint must qualify fixed test exception; no blanket share allowance.",
+      "storageIndexesRequired": "Same authority users/device/deletion tables; canonical conditional receipt/counter state, GSI1 due recovery and GSI2 History projection; pending no TTL."
+    },
+    {
+      "accountDeviceAccessRequired": "For NEW upstream checks only, fresh selected owner/adult/ACTIVE/eligible access. Existing History requires owner/current-device fences but no funded allowance. Original-proof reconcile keeps original owner/proof/version without current-device or subscription admission. Preserve original accounting/grant/counters.",
+      "contract": "Original Message candidate3/schema3 OR URL candidate2; History candidate1",
+      "decision": "HOLD",
+      "flagsAdmissionRequired": "governed-history3 list/detail/authority true; same approved current actor/device scope; fresh readback pending.",
+      "functionKeys": [
+        "message-consumer",
+        "url-consumer",
+        "url-lease-recovery",
+        "governed-history",
+        "v1-entitlements"
+      ],
+      "iamRequired": "History canonical GetItem/constrained GSI2 Query/HMAC; no writes/Scan/provider invoke. Upstream reconciliation retains its authority permissions.",
+      "journey": "result-and-history",
+      "liveAcceptancePerformedThisTask": false,
+      "observableCorrelationRequired": "Exact gh1_<settledAtEpoch>_<receiptId> joined to original accounting receiptId. Cursor bound to owner/device/inventory,15min; original result7days.",
+      "passedByLocalTests": false,
+      "prerequisiteGateIds": [
+        "sourcePackage",
+        "routesAuthorizers",
+        "iam",
+        "providers",
+        "flagsAdmission",
+        "maintenance",
+        "storage",
+        "accountDeviceAccess",
+        "runtimeQualification",
+        "correlation"
+      ],
+      "providerRequired": "No provider on History or proof-only reconcile; never resubmit to refresh a saved result.",
+      "recoverySchedulerRequired": "Exact shared worker11/rule currently disabled; enable/readback before admissions after shared-scope approval; preserve deletion24.",
+      "routes": [
+        "POST /v1/message-checks/reconcile",
+        "POST /v1/url-checks/reconcile",
+        "GET /v1/users/analysis-history",
+        "GET /v1/users/analysis-history/{resultId}"
+      ],
+      "runtimePackageRequired": "Exact chosen APK and governed-history3 source/package/contract pins; new artifacts need matching Linux qualification.",
+      "runtimeQualificationUpdate": "Exact consumer/evaluator ZIPs in linked runtime receipt pass only. No other component artifact, installed APK or E2E journey is passed by that result.",
+      "specificLimits": "New record inherits upstream gates. Existing read-only History can be scoped independently. Conservative aged projection preserves original charge; no checkId/title/minute equivalence or provider replay.",
+      "storageIndexesRequired": "Same authority users/device/deletion tables; canonical conditional receipt/counter state, GSI1 due recovery and GSI2 History projection; pending no TTL."
+    }
+  ],
+  "localReconciliation": {
+    "path": "docs/authority-maintenance-reconciliation.json",
+    "sha256": "20eee30310b4857085f4c5d50e25b90cc58f8840663d60c3dd134a8667d75d3c"
+  },
+  "nextActionPacket": "docs/authority-maintenance-next-actions.md",
+  "noGuarantee": "Current metadata/compatibility cannot guarantee no future defects. Missing or drifted prerequisite keeps affected journey HOLD.",
+  "oneGenerationException": {
+    "budgetUsdMaximum": "1.00",
+    "conservativeReservationUsd": "0.4198496",
+    "currentStatus": "LOCAL_NOT_DEPLOYED_HELD",
+    "generationAttemptsMaximum": 1,
+    "intentEntryPoint": "message",
+    "language": "en",
+    "maxOutputTokens": 512,
+    "model": "gpt-4.1-mini-2025-04-14",
+    "noBroadQualificationClaim": true,
+    "ocrOrExtraVariantRequiresSeparateScope": true,
+    "remoteCountRequestsMaximum": 0,
+    "retriesMaximum": 0,
+    "runId": "dev-ai-e339c683-v1",
+    "secretAccessWindowSeconds": 3600,
+    "source": "src/shared_message_contract/dev_ai_test.py",
+    "sourceSha256": "42cf45dbd9506404b4bd768dafe0b4fee5a5d6fc7db449921edd9043d9ce9825",
+    "sourceType": "pasted_text",
+    "speakerRole": "other"
+  },
+  "prerequisites": {
+    "accountDeviceAccess": {
+      "evidence": "No current account/device/grant row read; retained grant expiry2026-10-27T22:09:34Z historical only.",
+      "requirement": "Route-specific owner/auth/proof predicates. New check admission requires approved visible owner/adult/nondeleted state, exact current app ACTIVE comparison and eligible access. History reads use owner/current-device fences without funded allowance. Original-proof reconcile uses original owner/proof/version without current-device or subscription admission. No implicit binding move.",
+      "status": "UNVERIFIED_CURRENT"
+    },
+    "correlation": {
+      "evidence": "API fields/requestId and logs/alarms exist; aggregate counts/title/minute insufficient. No journey invoked now.",
+      "requirement": "Original operation/check/receipt supported join, no repeated Submit, bounded safe route/outcome/accounting/usage, exact owned gh1_<settledAtEpoch>_<receiptId> History ID; no payload/token/proof logs.",
+      "status": "UNVERIFIED_CURRENT"
+    },
+    "flagsAdmission": {
+      "evidence": "Message rules-only; AI off/circuit open. URL consumer/authority false and empty admission.",
+      "requirement": "Approved exact profile, current actor scope, preserved authority/transport, no flag-only bypass; fresh post-change readback.",
+      "status": "BLOCKED"
+    },
+    "iam": {
+      "evidence": "Configured policies captured, not effective-permission proof. Evaluator currently explicitly denies Secrets Manager/DynamoDB and private URL invoke.",
+      "requirement": "Exact consumer atomic authority/counter/HMAC and private evaluator permissions; exact evaluator provider path or approved temporary exception; maintenance constrained GSI/atomic work; History canonical GetItem and GSI2 Query; no unexpected writes/Scan/invoke.",
+      "status": "METADATA_REVIEW_ONLY"
+    },
+    "maintenance": {
+      "evidence": "worker11 flag false, recovery rule DISABLED; deletion24 separate. Local contract default-off, no live guarantee.",
+      "requirement": "Exact shared worker/table/alias/version/code, enabled flag+one-minute rule, invoke/IAM, no async retry, heartbeat/overdue alarms/delivery and failure/expiry qualification.",
+      "status": "BLOCKED"
+    },
+    "providers": {
+      "evidence": "AI disabled/no AI reference/empty qualification registry. Web Risk reference exists; credential authentication and project validity untested.",
+      "requirement": "Presence/version metadata, authorized exact model/project/host, disclosure/retention, fixed request and cost/attempt caps; re-verify official model/context/pricing proof before rollout and stop on drift; do not expose credential values.",
+      "status": "BLOCKED_OR_UNVERIFIED"
+    },
+    "routesAuthorizers": {
+      "evidence": "Dated metadata only; no current token, endpoint or deployment permission test.",
+      "requirement": "Exact domain/API/stage, routes/authorizers/scopes/resource policy, unweighted aliases, code/config and APK auth joins.",
+      "status": "DATED_METADATA_COMPATIBLE_RECHECK_REQUIRED"
+    },
+    "runtimeQualification": {
+      "evidence": {
+        "architecture": "aarch64",
+        "consumerZipSha256": "11761fbab3be3760ee85d9eb3faf402c06d92f016b9cb367555d6e0eaaa67e04",
+        "evaluatorZipSha256": "9823ebc425a2d61fbc488e9b02f6cf210a296d992162cd11721e7aa14631415c",
+        "imageDigest": "sha256:fc4e15a5e09e2c9b6184810ea0fdc87afe1c1c734c98cbe27d739a35c3f15e7e",
+        "libc": "glibc2.34",
+        "manifestSha256": "0e3bd675a3b20739a2ae30fe9925f23c14808ce584760731327fb9b249e9c676",
+        "notOtherComponentsOrRebuiltPackages": true,
+        "outcome": "PASS_EXACT_PACKAGES_ONLY",
+        "packageBytesChanged": false,
+        "packet": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/runtime-qualification-314-20261023",
+        "python": "3.14.8",
+        "reviewSha256": "3feeac2f7cec5697865f8a1d3f215c24d1bf40fe6cb37f25ebbef1b1c1d571d9"
+      },
+      "requirement": "Exact dependency-complete final-package runtime qualification for each changed/selected artifact plus current exact APK/AVD qualification.",
+      "status": "PASS_EXACT_MESSAGE_ZIPS_ONLY_OTHER_ARTIFACTS_AND_APK_UNQUALIFIED_CURRENT"
+    },
+    "sourcePackage": {
+      "evidence": "Immutable backend release357be64e and infrastructure release353303b/mainf1c5d36 reconciled read-only; selective local maintenance port independently passed; no publication or deployment. See authority-maintenance-reconciliation.json.",
+      "requirement": "Reviewed release integration; exact per-component artifact/runtime/source manifest and fresh actual deployment/readback join.",
+      "status": "LOCAL_RECONCILIATION_PASS_PUBLICATION_AND_DEPLOYMENT_HELD"
+    },
+    "storage": {
+      "evidence": "Four tables ACTIVE/PAY_PER_REQUEST, PITR35days, authority GSI1/GSI2 ACTIVE; no rows/backlog inspected.",
+      "requirement": "ACTIVE users/device/authority/deletion tables, exact key/index projections, PITR, logical seven-day result expiry, pending-no-TTL and conditional settlement/fences.",
+      "status": "DATED_METADATA_COMPATIBLE_RECHECK_REQUIRED"
+    }
+  },
+  "publicEdge": {
+    "apiId": "icuak34th9",
+    "baseUrl": "https://api-dev.andmorethings.net",
+    "endpointType": "REGIONAL",
+    "mappingKey": "",
+    "stage": "$default",
+    "tls": "TLS_1_2"
+  },
+  "readOnlyCaptureAtUtc": "2026-10-23T11:22:30.760280+00:00",
+  "reportPath": "docs/authority-maintenance-reconciliation.md",
+  "reportSha256": "423d905c9255865dd0465a9869e7790bd8281e7a69ea31e37d8261b033b6fe32",
+  "rollbackOrder": [
+    "Close new admissions/test path",
+    "Preserve original operation/receipt, key/secret and seven-day complimentary access",
+    "Expire/remove exact temporary evaluator permissions and verify prior Dev config",
+    "Keep shared maintenance running until pending drains and retention checks qualify",
+    "Disable maintenance only after explicit safe drain/expiry decision; do not restore unsafe admission-without-maintenance snapshot"
+  ],
+  "routes": [
+    {
+      "authorizationScopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "authorizationType": "JWT",
+      "authorizerId": "itms4b",
+      "integrationTimeoutMs": 15000,
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-entitlements:live/invocations",
+      "payloadVersion": "2.0",
+      "route": "GET /v1/access"
+    },
+    {
+      "authorizationScopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "authorizationType": "JWT",
+      "authorizerId": "itms4b",
+      "integrationTimeoutMs": 29000,
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-governed-history:live/invocations",
+      "payloadVersion": "2.0",
+      "route": "GET /v1/users/analysis-history"
+    },
+    {
+      "authorizationScopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "authorizationType": "JWT",
+      "authorizerId": "itms4b",
+      "integrationTimeoutMs": 29000,
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-governed-history:live/invocations",
+      "payloadVersion": "2.0",
+      "route": "GET /v1/users/analysis-history/{resultId}"
+    },
+    {
+      "authorizationScopes": [],
+      "authorizationType": "JWT",
+      "authorizerId": "jmi5hk",
+      "integrationTimeoutMs": 15000,
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-device-registration/invocations",
+      "payloadVersion": "2.0",
+      "route": "POST /device-registration"
+    },
+    {
+      "authorizationScopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "authorizationType": "JWT",
+      "authorizerId": "itms4b",
+      "integrationTimeoutMs": 29000,
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-message-consumer:live/invocations",
+      "payloadVersion": "2.0",
+      "route": "POST /v1/message-checks"
+    },
+    {
+      "authorizationScopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "authorizationType": "JWT",
+      "authorizerId": "itms4b",
+      "integrationTimeoutMs": 29000,
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-message-consumer:live/invocations",
+      "payloadVersion": "2.0",
+      "route": "POST /v1/message-checks/prepare"
+    },
+    {
+      "authorizationScopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "authorizationType": "JWT",
+      "authorizerId": "itms4b",
+      "integrationTimeoutMs": 29000,
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-message-consumer:live/invocations",
+      "payloadVersion": "2.0",
+      "route": "POST /v1/message-checks/reconcile"
+    },
+    {
+      "authorizationScopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "authorizationType": "JWT",
+      "authorizerId": "itms4b",
+      "integrationTimeoutMs": 29000,
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-consumer:live/invocations",
+      "payloadVersion": "2.0",
+      "route": "POST /v1/url-checks"
+    },
+    {
+      "authorizationScopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "authorizationType": "JWT",
+      "authorizerId": "itms4b",
+      "integrationTimeoutMs": 29000,
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-consumer:live/invocations",
+      "payloadVersion": "2.0",
+      "route": "POST /v1/url-checks/prepare"
+    },
+    {
+      "authorizationScopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "authorizationType": "JWT",
+      "authorizerId": "itms4b",
+      "integrationTimeoutMs": 29000,
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-consumer:live/invocations",
+      "payloadVersion": "2.0",
+      "route": "POST /v1/url-checks/reconcile"
+    },
+    {
+      "authorizationScopes": [
+        "aws.cognito.signin.user.admin"
+      ],
+      "authorizationType": "JWT",
+      "authorizerId": "jmi5hk",
+      "integrationTimeoutMs": 10000,
+      "integrationUri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-age-attestation/invocations",
+      "payloadVersion": "2.0",
+      "route": "POST /v1/users/age-attestation"
+    }
+  ],
+  "runtimeQualificationEvidence": {
+    "architecture": "aarch64",
+    "consumerZipSha256": "11761fbab3be3760ee85d9eb3faf402c06d92f016b9cb367555d6e0eaaa67e04",
+    "evaluatorZipSha256": "9823ebc425a2d61fbc488e9b02f6cf210a296d992162cd11721e7aa14631415c",
+    "imageDigest": "sha256:fc4e15a5e09e2c9b6184810ea0fdc87afe1c1c734c98cbe27d739a35c3f15e7e",
+    "libc": "glibc2.34",
+    "manifestSha256": "0e3bd675a3b20739a2ae30fe9925f23c14808ce584760731327fb9b249e9c676",
+    "notOtherComponentsOrRebuiltPackages": true,
+    "outcome": "PASS_EXACT_PACKAGES_ONLY",
+    "packageBytesChanged": false,
+    "packet": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/runtime-qualification-314-20261023",
+    "python": "3.14.8",
+    "reviewSha256": "3feeac2f7cec5697865f8a1d3f215c24d1bf40fe6cb37f25ebbef1b1c1d571d9"
+  },
+  "scheduleCaptureAtUtc": "2026-10-23T11:26:53.972199+00:00",
+  "scheduledRules": [
+    {
+      "name": "trustcheckradar-dev-history-lifecycle-sweep",
+      "schedule": "rate(5 minutes)",
+      "state": "ENABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-history-lifecycle",
+          "deadLetterConfigured": false,
+          "retry": {
+            "MaximumEventAgeInSeconds": 300,
+            "MaximumRetryAttempts": 2
+          }
+        }
+      ]
+    },
+    {
+      "name": "trustcheckradar-dev-url-lease-recovery",
+      "schedule": "rate(1 minute)",
+      "state": "DISABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-lease-recovery:live",
+          "deadLetterConfigured": false,
+          "retry": {
+            "MaximumEventAgeInSeconds": 60,
+            "MaximumRetryAttempts": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "trustcheckradar-dev-v1-authority-deletion",
+      "schedule": "rate(1 minute)",
+      "state": "ENABLED",
+      "targets": [
+        {
+          "arn": "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-v1-authority-deletion:live",
+          "deadLetterConfigured": false,
+          "retry": {
+            "MaximumEventAgeInSeconds": 60,
+            "MaximumRetryAttempts": 0
+          }
+        }
+      ]
+    }
+  ],
+  "schemaJoins": {
+    "checkedFiles": 23,
+    "doesNotProveInstalledBuild": true,
+    "exactFilesMatched": 23,
+    "retainedCombinedSource": "975c307638693159376c674df2c09a505d751048",
+    "retainedReleaseSource": "2e441ff4dfcbe0b8cfa6f57f19dd949af953be47",
+    "runtimeFilesDiffer": 14
+  },
+  "schemaVersion": 1,
+  "sourceEvidence": {
+    "android-auth-resource-join.json": {
+      "path": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/readiness-review-20261023/android-auth-resource-join.json",
+      "sha256": "e85d7595f1ec228327304a5abb1d3f75e99798ee1896dca6308f558b6411836e"
+    },
+    "android-deployed-schema-join.json": {
+      "path": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/readiness-review-20261023/android-deployed-schema-join.json",
+      "sha256": "3741bdeb45d4783addb398b419d30a54858df5457a1afb8afa3f824654262813"
+    },
+    "android-reconciliation.json": {
+      "path": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/readiness-review-20261023/android-reconciliation.json",
+      "sha256": "0bb9ee994986c77052d6a2a91a3001495b413b759d12ed928df83c3aac2da2ac"
+    },
+    "authorization-and-operations.json": {
+      "path": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/readiness-review-20261023/authorization-and-operations.json",
+      "sha256": "9b59478652bae2969aa595f373f9db2e53bb5c0e78d9795a08baa9f4cc62b273"
+    },
+    "deployed-source-join.json": {
+      "path": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/readiness-review-20261023/deployed-source-join.json",
+      "sha256": "d1df1b216adb1b6dba98cdd947addbe9f324c3362e9f8b40b0bec03dca7a5add"
+    },
+    "edge-and-cleanup-schedules.json": {
+      "path": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/readiness-review-20261023/edge-and-cleanup-schedules.json",
+      "sha256": "327e63387b9d56e8f78399293d406c32f6a981af4de6f36fdc35d7eef3781b15"
+    },
+    "live-metadata.json": {
+      "path": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/readiness-review-20261023/live-metadata.json",
+      "sha256": "2ad4e73a4d39d4b62bc1bb0d11f7962460d7d059e8f25ebf105e294bec3b764a"
+    },
+    "runtime-preservation-manifest": {
+      "path": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/runtime-qualification-314-20261023/preservation-manifest.json",
+      "sha256": "0e3bd675a3b20739a2ae30fe9925f23c14808ce584760731327fb9b249e9c676"
+    }
+  },
+  "supersedes": {
+    "AWSObservationNotRefreshed": true,
+    "onlySourceAndExactMessageRuntimeGapsResolved": true,
+    "path": "/tmp/amt-backend-readiness-implementation/docs/mobile-infrastructure-e2e-gate.json",
+    "sha256": "e979e5e6e689efcb94d192e4f1a735c4a944fee4e02b530fa2ff3ee8f8e83209"
+  },
+  "tableMetadata": {
+    "trustcheckradar-dev-deletion-ledger": {
+      "billingMode": {
+        "BillingMode": "PAY_PER_REQUEST",
+        "LastUpdateToPayPerRequestDateTime": "2026-09-03T21:19:27.005000-05:00"
+      },
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "campaignRecoveryPartition",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "nextAttemptAtEpoch",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "CampaignRecoveryDueIndex",
+          "projection": {
+            "ProjectionType": "KEYS_ONLY"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "pitr": {
+        "EarliestRestorableDateTime": "2026-09-18T06:22:28.604000-05:00",
+        "LatestRestorableDateTime": "2026-10-23T06:17:28.604000-05:00",
+        "PointInTimeRecoveryStatus": "ENABLED",
+        "RecoveryPeriodInDays": 35
+      },
+      "status": "ACTIVE",
+      "streamEnabled": true,
+      "ttl": {
+        "TimeToLiveStatus": "DISABLED"
+      }
+    },
+    "trustcheckradar-dev-device-bindings": {
+      "billingMode": {
+        "BillingMode": "PAY_PER_REQUEST",
+        "LastUpdateToPayPerRequestDateTime": "2026-09-03T21:19:26.993000-05:00"
+      },
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "GSI1",
+          "projection": {
+            "ProjectionType": "ALL"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "pitr": {
+        "EarliestRestorableDateTime": "2026-09-18T06:22:28.606000-05:00",
+        "LatestRestorableDateTime": "2026-10-23T06:17:28.606000-05:00",
+        "PointInTimeRecoveryStatus": "ENABLED",
+        "RecoveryPeriodInDays": 35
+      },
+      "status": "ACTIVE",
+      "streamEnabled": false,
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    "trustcheckradar-dev-purchase-entitlements": {
+      "billingMode": {
+        "BillingMode": "PAY_PER_REQUEST",
+        "LastUpdateToPayPerRequestDateTime": "2026-09-03T21:19:26.999000-05:00"
+      },
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI2PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI2SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "GSI2",
+          "projection": {
+            "NonKeyAttributes": [
+              "governedHistory",
+              "expiresAt",
+              "recordType",
+              "state"
+            ],
+            "ProjectionType": "INCLUDE"
+          },
+          "status": "ACTIVE"
+        },
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "GSI1",
+          "projection": {
+            "ProjectionType": "ALL"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "pitr": {
+        "EarliestRestorableDateTime": "2026-09-18T06:22:28.601000-05:00",
+        "LatestRestorableDateTime": "2026-10-23T06:17:28.601000-05:00",
+        "PointInTimeRecoveryStatus": "ENABLED",
+        "RecoveryPeriodInDays": 35
+      },
+      "status": "ACTIVE",
+      "streamEnabled": false,
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    },
+    "trustcheckradar-dev-users": {
+      "billingMode": {
+        "BillingMode": "PAY_PER_REQUEST",
+        "LastUpdateToPayPerRequestDateTime": "2026-09-03T21:19:26.995000-05:00"
+      },
+      "indexes": [
+        {
+          "keySchema": [
+            {
+              "AttributeName": "GSI1PK",
+              "KeyType": "HASH"
+            },
+            {
+              "AttributeName": "GSI1SK",
+              "KeyType": "RANGE"
+            }
+          ],
+          "name": "GSI1",
+          "projection": {
+            "ProjectionType": "ALL"
+          },
+          "status": "ACTIVE"
+        }
+      ],
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "pitr": {
+        "EarliestRestorableDateTime": "2026-09-18T06:22:28.580000-05:00",
+        "LatestRestorableDateTime": "2026-10-23T06:17:28.580000-05:00",
+        "PointInTimeRecoveryStatus": "ENABLED",
+        "RecoveryPeriodInDays": 35
+      },
+      "status": "ACTIVE",
+      "streamEnabled": false,
+      "ttl": {
+        "AttributeName": "expiresAt",
+        "TimeToLiveStatus": "ENABLED"
+      }
+    }
+  }
+}

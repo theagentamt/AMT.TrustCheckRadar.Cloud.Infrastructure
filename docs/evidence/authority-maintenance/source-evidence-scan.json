@@ -1,0 +1,39 @@
+{
+  "candidateMatches": {
+    "apiKeyLike": 0,
+    "awsAccessKeyLike": 0,
+    "jwtLike": 0,
+    "privateKeyBlock": 0
+  },
+  "filePins": {
+    "docs/authority-maintenance-readiness.json": "1bfed619440a94aa6cca646d5566a858b2257b12a6b1c5e89312cbf89cda540d",
+    "docs/authority-maintenance-readiness.md": "301c7b33e3ffcb9da5d52f531b696b4dae874189b54019b7237b176f0d6cada1",
+    "docs/evidence/authority-maintenance/independent-handoff-review.json": "6f3c2ffac99075d6d2e512b7371e9815ff17b0b4252550da7e1a6b5c5f27cb69",
+    "docs/evidence/authority-maintenance/independent-review.json": "888633c7ffbaef11e97c5f3cf71fba1e556c398e58e8b7187f305a6c54bc0989",
+    "terraform/message-consumer/maintenance.tf": "c3ce3454d73499860e1aae371781e23bc9ab7ddc2c1594181c6b9102e758fd0c",
+    "terraform/message-consumer/tests/activation.tftest.hcl": "0fc77f6eaff2ca34a4780624b8d011595a8f73779d80f336da535c36f0730bbe",
+    "terraform/message-consumer/variables.tf": "54c5275f05d1992927d025236249d6bc1343c1e4de8fbd5152236a1c4d76148d",
+    "terraform/url-consumer/deletion.tf": "7946f948043d3118f55de7c4906acf23771a071a4316dbc75cd70ce8765b2059",
+    "terraform/url-consumer/main.tf": "1701634c68a292435af7968f77e911b53424b1208f8c4838e8a6d44ccef0a81b",
+    "terraform/url-consumer/maintenance.tf": "3e3f61384e957587721ea57df1f43df3520dcd7f86e7b6e5cbfee50ddea1619d",
+    "terraform/url-consumer/operations.tf": "096cea35fa327e6c2015051b9988dd4f6f4f84241749a42dc700e4d84c759673",
+    "terraform/url-consumer/outputs.tf": "c5f4d61b5d6306c30bb70d280f1d6becb6d3a8969e3b67c5e374a7b600ddce8c",
+    "terraform/url-consumer/tests/integration.tftest.hcl": "600a1aeaed0e4a315ba346ddfed85a5edeb350b769274d8b7fc4eb7e17b10ee7",
+    "validation/archived-diagnostic-logs.json": "cf6e6fe78811f48289a49eaa5bbf5e93a440a17cc83909721c778a2df8b1da43",
+    "validation/local-quality.json": "c1cc961fb7483bad8f72df66189569003208685f114e9bf5c55be8ea44566f31",
+    "validation/message-maintenance-tests-unsandboxed.log": "8bf543167595e9307355ea2bf78f08a2b43814698174183598c7bf02534ec9e5",
+    "validation/message-maintenance-tests.log.gz": "3fde12ab9ee12aad67be13730aebb0d960db9b851379acbc0f65b383d1f0c9dc",
+    "validation/url-maintenance-tests-final.log": "c108f7a85af689b1dfa834bb41d05475b8de723db49c2f6e3457e602d969334f",
+    "validation/url-maintenance-tests-unsandboxed.log": "d05082cbdd3b7da2327381662d27ffa3c723ea40dc2fe7543e40184ae593726d",
+    "validation/url-maintenance-tests.log.gz": "ec80d8076409bff7e494791e05b769e38fd1e8bcaa6de5928f57c641793f2420"
+  },
+  "limitations": "Bounded lexical check, not a guarantee that all secrets or personal data can be detected. Initial broad grep matched synthetic fixture labels; stricter credential-shape checks found no candidates.",
+  "patternClasses": [
+    "apiKeyLike",
+    "awsAccessKeyLike",
+    "privateKeyBlock",
+    "jwtLike"
+  ],
+  "scope": "Changed source/tests/docs and retained validation/review evidence only, staged or unstaged; gzip logs inspected after lossless decompression; scan record excluded from its own pins; no credential store or runtime data.",
+  "secretValuesPrinted": false
+}

@@ -1,0 +1,19 @@
+{
+  "architecture": "arm64",
+  "archiveSha256": "6b9ba8b94e6fcb564932e5a98d0638194436dfa7788e9452db7c9399a3f92be6",
+  "codeSha256Base64": "a5uouU5vy1ZJMuWpjQY4GUQ236d4jpRS23yTmaP5K+Y=",
+  "datedAWSObservationWindow": "2026-10-23T11:22:30Z/2026-10-23T11:26:53Z",
+  "handler": "app.lambda_handler",
+  "newerRetainedSourceIncludesOperationsRetirement": true,
+  "operationsRetirementInRetainedDeployedPackage": false,
+  "packageRuntimeQualifiedByMessageChecks": false,
+  "retainedAliasVersion": "11",
+  "runtime": "python3.14",
+  "schemaVersion": 1,
+  "scope": "offline retained deployed worker archive only; no new AWS read or runtime execution",
+  "sourcePins": {
+    "app.py": "6c427add1b5bec23f802a2475364d0a0af39880775600c555e0fd51eff47d254",
+    "shared_check_authority/expiry.py": "5bb4add8d112948b8aa64cbda7a6d9cb9eb515b68e36b4d561f653f5a4c7f58c",
+    "shared_check_authority/recovery.py": "4fbca309d675a6e722a950766c82c96e703f54421d5716da57b6e7c3b7733404"
+  }
+}

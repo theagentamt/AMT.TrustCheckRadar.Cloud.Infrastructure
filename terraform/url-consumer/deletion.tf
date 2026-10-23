@@ -72,7 +72,7 @@ resource "aws_cloudwatch_event_rule" "maintenance" {
   for_each            = local.schedules
   name                = "${local.prefix}-${each.value.suffix}"
   schedule_expression = "rate(1 minute)"
-  state               = (each.key == "deletion" ? local.authority_deletion_active : local.authority_engineering_active) ? "ENABLED" : "DISABLED"
+  state               = (each.key == "deletion" ? local.authority_deletion_active : local.authority_maintenance_active) ? "ENABLED" : "DISABLED"
   tags                = var.tags
 }
 resource "aws_cloudwatch_event_target" "maintenance" {

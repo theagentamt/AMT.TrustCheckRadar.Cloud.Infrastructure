@@ -1,0 +1,104 @@
+tests/consumer-artifact-override.tftest.hcl... in progress
+  run "null_preserves_all_artifacts"... pass
+  run "consumer_only_keeps_workers_and_gates"... pass
+  run "coexists_with_deletion_correction"... pass
+  run "reject_stale_hash"... pass
+  run "reject_stale_source"... pass
+  run "reject_stale_version"... pass
+  run "reject_same_source"... pass
+  run "reject_no_provenance"... pass
+  run "reject_traversal_provenance"... pass
+  run "reject_other_bucket"... pass
+  run "reject_other_function"... pass
+  run "reject_no_version"... pass
+  run "reject_null_version"... pass
+  run "reject_bad_hash"... pass
+  run "reject_without_enabled_dev"... pass
+tests/consumer-artifact-override.tftest.hcl... tearing down
+tests/consumer-artifact-override.tftest.hcl... pass
+tests/deletion-artifact-override.tftest.hcl... in progress
+  run "null_preserves_all_baseline_artifacts"... pass
+  run "patch_selects_only_deletion_without_activation"... pass
+  run "refuse_stale_base_hash"... pass
+  run "refuse_stale_base_source"... pass
+  run "refuse_wrong_bucket"... pass
+  run "refuse_wrong_function"... pass
+  run "refuse_missing_version"... pass
+  run "refuse_null_version"... pass
+  run "refuse_missing_provenance"... pass
+  run "refuse_bad_patch_source"... pass
+  run "refuse_non_dev"... pass
+  run "activation_requires_effective_patch_source"... pass
+  run "refuse_old_activation_source"... pass
+tests/deletion-artifact-override.tftest.hcl... tearing down
+tests/deletion-artifact-override.tftest.hcl... pass
+tests/entitlements-artifact-override.tftest.hcl... in progress
+  run "null_preserves_all_artifacts"... pass
+  run "entitlements_only_keeps_workers_and_gates"... pass
+  run "coexists_with_consumer_and_deletion_corrections"... pass
+  run "reject_stale_hash"... pass
+  run "reject_stale_source"... pass
+  run "reject_stale_version"... pass
+  run "reject_same_source"... pass
+  run "reject_no_provenance"... pass
+  run "reject_traversal_provenance"... pass
+  run "reject_other_bucket"... pass
+  run "reject_other_function"... pass
+  run "reject_no_version"... pass
+  run "reject_null_version"... pass
+  run "reject_bad_hash"... pass
+  run "reject_without_enabled_dev"... pass
+tests/entitlements-artifact-override.tftest.hcl... tearing down
+tests/entitlements-artifact-override.tftest.hcl... pass
+tests/integration.tftest.hcl... in progress
+  run "routes_and_cleanup_default_inactive"... pass
+  run "complimentary_operator_is_one_iam_route_with_no_data_permissions"... pass
+  run "complimentary_operator_can_be_provisioned_closed"... pass
+  run "complimentary_operator_rejects_cross_account_principal"... pass
+  run "complimentary_operator_rejects_wildcard_principal"... pass
+  run "inventory_markers_are_not_mutable"... pass
+  run "engineering_requires_subjects"... pass
+  run "engineering_restricted_and_policy_pinned"... pass
+  run "invalid_subject_rejected"... pass
+  run "access_only_requires_recorded_readiness_and_subject"... pass
+  run "access_only_rejects_missing_readiness"... pass
+  run "access_only_keeps_providers_and_trial_closed"... pass
+  run "access_only_and_full_modes_cannot_overlap"... pass
+  run "trial_only_requires_recorded_readiness_and_one_subject"... pass
+  run "trial_only_enables_entitlements_without_url_execution"... pass
+  run "trial_only_cannot_overlap_other_authority_modes"... pass
+  run "deletion_only_exact_subjects_keep_other_capabilities_closed"... pass
+  run "deletion_only_rejects_source_mismatch"... pass
+  run "deletion_only_rejects_empty_subjects"... pass
+  run "deletion_only_rejects_invalid_subject"... pass
+  run "deletion_only_rejects_too_many_subjects"... pass
+  run "deletion_only_rejects_missing_inventory_reference"... pass
+  run "deletion_only_rejects_missing_runtime_reference"... pass
+  run "deletion_only_rejects_missing_permissions_reference"... pass
+  run "deletion_only_rejects_non_dev"... pass
+  run "deletion_only_rejects_missing_alerting"... pass
+  run "deletion_activation_unions_existing_and_full_engineering_subjects"... pass
+  run "deletion_activation_unions_existing_and_trial_engineering_subjects"... pass
+  run "governed_trial_does_not_expand_deletion_or_maintenance"... pass
+  run "governed_trial_requires_existing_cleanup"... pass
+  run "governed_trial_rejects_wildcard"... pass
+  run "extra_snapshot_selection_preserves_trial_and_all_other_scope"... pass
+  run "extra_snapshot_sensitivity_stays_on_entitlements_only"... pass
+  run "extra_snapshot_requires_preserved_trial_mode"... pass
+  run "extra_snapshot_rejects_wildcard"... pass
+  run "extra_snapshot_rejects_multiple_subjects"... pass
+  run "maintenance_only_does_not_enable_customer_or_financial_capabilities"... pass
+  run "maintenance_without_review_reference_is_rejected"... pass
+  run "maintenance_without_alert_path_is_rejected"... pass
+  run "maintenance_with_snapshot_preserves_all_existing_admission_boundaries"... pass
+tests/integration.tftest.hcl... tearing down
+tests/integration.tftest.hcl... pass
+tests/security.tftest.hcl... in progress
+  run "disabled_creates_no_runtime_or_secret"... pass
+  run "candidate_is_isolated_and_inactive"... pass
+  run "uat_provisioning_rejected"... pass
+  run "missing_artifacts_rejected"... pass
+tests/security.tftest.hcl... tearing down
+tests/security.tftest.hcl... pass
+
+Success! 87 passed, 0 failed.

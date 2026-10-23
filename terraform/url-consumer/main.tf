@@ -105,15 +105,16 @@ resource "aws_lambda_function" "runtime" {
   s3_object_version              = local.runtime_artifacts[each.key].object_version
   source_code_hash               = local.runtime_artifacts[each.key].source_hash
   publish                        = true
+  # Only configured/empty is public; the encoded subject value stays sensitive.
   environment {
     variables = merge({
       STAGE                = var.environment
       AUTHORITY_TABLE_NAME = split("/", local.authority_arn)[1]
       }, contains(["consumer", "entitlements"], each.key) ? {
       CONSUMER_ENABLED                   = tostring(var.activate_engineering)
-      AUTHORITY_ENABLED                  = tostring(each.key == "entitlements" ? local.authority_engineering_active : var.activate_engineering)
-      V1_ENTITLEMENTS_ENABLED            = tostring(each.key == "entitlements" ? local.authority_engineering_active : var.activate_engineering)
-      TRIAL_AUTHORITY_RETENTION_APPROVED = tostring(!var.activate_access_engineering)
+      AUTHORITY_ENABLED                  = tostring(each.key == "entitlements" ? local.entitlements_service_active : var.activate_engineering)
+      V1_ENTITLEMENTS_ENABLED            = tostring(each.key == "entitlements" ? local.entitlements_service_active : var.activate_engineering)
+      TRIAL_AUTHORITY_RETENTION_APPROVED = tostring(each.key == "entitlements" ? (var.activate_engineering || var.activate_trial_engineering || length(var.governed_trial_subjects) > 0) : var.activate_engineering)
       USERS_TABLE_NAME                   = split("/", var.deployment.users_table_arn)[1]
       DEVICE_BINDINGS_TABLE_NAME         = split("/", var.deployment.devices_table_arn)[1]
       DELETION_LEDGER_TABLE_NAME         = split("/", var.deployment.deletion_table_arn)[1]
@@ -122,9 +123,9 @@ resource "aws_lambda_function" "runtime" {
       COGNITO_REQUIRED_SCOPE             = "aws.cognito.signin.user.admin"
       AUTHORITY_HMAC_SECRET_ARN          = aws_secretsmanager_secret.authority_hmac[0].arn
       AUTHORITY_POLICY_VERSION           = "owner-2026-09-20-v1"
-      DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(var.engineering_subjects)))
+      DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(each.key == "entitlements" ? setunion(var.engineering_subjects, var.governed_trial_subjects) : (var.activate_engineering ? var.engineering_subjects : toset([])))))
       } : each.key == "recovery" ? {
-      LEASE_SWEEP_ENABLED = tostring(local.authority_engineering_active)
+      LEASE_SWEEP_ENABLED = tostring(local.authority_maintenance_active)
       } : {
       V1_AUTHORITY_DELETION_ENABLED      = tostring(local.authority_deletion_active)
       DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(local.authority_deletion_subjects)))
@@ -141,6 +142,12 @@ resource "aws_lambda_function" "runtime" {
       ATTEMPT_WINDOW_SECONDS     = "60"
       ATTEMPTS_PER_WINDOW        = "20"
       MAX_INFLIGHT               = "2"
+      } : {}, each.key == "entitlements" ? {
+      COMPLIMENTARY_OPERATOR_ENABLED             = tostring(local.complimentary_operator_active)
+      COMPLIMENTARY_AUDIT_RETENTION_SECONDS      = "31536000"
+      COMPLIMENTARY_OPERATOR_PRINCIPAL_ARNS_JSON = jsonencode(local.complimentary_operator_active ? [local.complimentary_operator_role_arn] : [])
+      } : {}, each.key == "entitlements" && nonsensitive(length(var.dev_access_snapshot_extra_subjects) > 0) ? {
+      DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON = jsonencode(sort(tolist(var.dev_access_snapshot_extra_subjects)))
     } : {}, each.key == "consumer" ? { URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn } : {})
   }
   depends_on = [aws_iam_role_policy.consumer, aws_iam_role_policy.recovery, aws_iam_role_policy.entitlements, aws_iam_role_policy.deletion]

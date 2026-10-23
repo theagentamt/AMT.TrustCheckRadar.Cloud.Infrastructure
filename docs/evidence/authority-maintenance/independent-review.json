@@ -1,0 +1,83 @@
+{
+  "atUtc": "2026-10-23T11:59:14.552523+00:00",
+  "baseBackend": "33a1839a2a02c17d9795900e41a81ba39ac4b3b9",
+  "baseInfrastructure": "353303b657dfe3e44eda59cd8ed343284880cf69",
+  "blockingFindings": [],
+  "exactFilePins": {
+    "backend": {
+      "Makefile": "9fccb94e16b5dbe79e593c1003fbd0aad99ca76e9f22ce57c057b2337ab740fc",
+      "tests/message_consumer/test_shared_maintenance.py": "b3c6ecb429654d79bab505ac1352fa04817530e2a846bcfba166ee56a1f81ea3",
+      "tests/scripts/test_package_runtime_default.py": "e4241066fd0f20edbce8b64b6c4eaf2fdcf2abb7d0158873c06f405ff730abfa"
+    },
+    "infrastructure": {
+      "terraform/message-consumer/maintenance.tf": "c3ce3454d73499860e1aae371781e23bc9ab7ddc2c1594181c6b9102e758fd0c",
+      "terraform/message-consumer/tests/activation.tftest.hcl": "0fc77f6eaff2ca34a4780624b8d011595a8f73779d80f336da535c36f0730bbe",
+      "terraform/message-consumer/variables.tf": "54c5275f05d1992927d025236249d6bc1343c1e4de8fbd5152236a1c4d76148d",
+      "terraform/url-consumer/deletion.tf": "7946f948043d3118f55de7c4906acf23771a071a4316dbc75cd70ce8765b2059",
+      "terraform/url-consumer/main.tf": "1701634c68a292435af7968f77e911b53424b1208f8c4838e8a6d44ccef0a81b",
+      "terraform/url-consumer/maintenance.tf": "3e3f61384e957587721ea57df1f43df3520dcd7f86e7b6e5cbfee50ddea1619d",
+      "terraform/url-consumer/operations.tf": "096cea35fa327e6c2015051b9988dd4f6f4f84241749a42dc700e4d84c759673",
+      "terraform/url-consumer/outputs.tf": "c5f4d61b5d6306c30bb70d280f1d6becb6d3a8969e3b67c5e374a7b600ddce8c",
+      "terraform/url-consumer/tests/integration.tftest.hcl": "600a1aeaed0e4a315ba346ddfed85a5edeb350b769274d8b7fc4eb7e17b10ee7"
+    }
+  },
+  "operations": {
+    "cloudOrProviderCalls": false,
+    "credentialReads": false,
+    "networkOrDownloads": false,
+    "offlineTestsAndLocalReviewRecordOnly": true,
+    "publication": false,
+    "sourceEditsByReviewer": false
+  },
+  "outcome": "PASS_SOURCE_ONLY",
+  "remainingGates": [
+    "Configuration contract fields are not independent current version/hash/IAM/worker/schedule proof; future readback and transition-verifier integration must compare real observed state.",
+    "Retained release-base change must be reconciled with newer candidate3 transition verifier/runtime overlays before any rollout; no source-only READY claim.",
+    "Shared maintenance reaches due retained authority partitions, not only current tester; exact scope/approval and qualified key inventory/least-privilege IAM remain rollout gates.",
+    "Enable and verify maintenance before admission; close admission then drain/reconcile pending rows before stopping maintenance on rollback.",
+    "Matching LinuxARM64/glibc/Python3.14 dependency-complete package imports remain unperformed, as do provider/Google/mobile/live endpoint acceptance and remote publication.",
+    "No source-only component is marked Done; no push/deploy/credentials/cloud/activation permission is implied."
+  ],
+  "remoteFreshness": "Unverified; parent attempted one fetch, SSH publickey authentication failed. No credential/transport change.",
+  "resolvedFindings": [
+    {
+      "id": "R1",
+      "initialRecord": "/tmp/amt-readiness-implementation-independent-initial-review.json",
+      "initialRecordSha256": "033acad463d0a42525c58f227b6c03d8022bc3886c672e548a919275d55938ae",
+      "resolution": "Makefile defaults PYTHON_VERSION to empty and forwards --python-version only when explicitly set, preserving actual packager modern3.14 vs legacy3.13 selection."
+    }
+  ],
+  "reviewedChecks": [
+    "Maintenance activation is default-off and independently controls shared worker, one-minute rule, heartbeat/missing-data and expiry-overdue alarm.",
+    "Existing full/access engineering activation compatibility preserved via OR with independent maintenance; deletion activation remains separate.",
+    "No IAM policy/action/resource, workflow, lockfile, tfvars, API contract, provider, actor allowlist, URL/access/trial/grant or paid/trial mutation added.",
+    "Message activation rejects null/disabled/wrong-table/alias/unversioned/malformed-hash/provider-expansion maintenance contract.",
+    "Maintenance output pins configured table/alias/version/hash and distinguishes configuration from actual runtime/IAM readback.",
+    "Actual Moto process-loss tests prove shared Message recovery releases inflight/reservations once, preserves paid/trial/complimentary and trial-history rows, refuses deletion-fenced recovery, and explicitly expires receipt without deduction.",
+    "Packager wrapper fix preserves component runtimes rather than blanket migration; actual no-dependency build tests exercised both3.14 and3.13 targets."
+  ],
+  "schemaVersion": 1,
+  "scope": "Independent final review of bounded maintenance-readiness and per-component package-default correction only. Not a rollout or complete-feature acceptance.",
+  "tests": {
+    "independentlyExecutedBaselineRecoveryTests": {
+      "deselected": 64,
+      "passed": 34,
+      "seconds": 4.31
+    },
+    "independentlyExecutedFinalNewTests": {
+      "groups": [
+        "4 Moto Message/shared-maintenance process-loss tests",
+        "6 package Makefile/default/explicit-override/component-build tests"
+      ],
+      "passed": 10,
+      "seconds": 4.07
+    },
+    "parentExecutedMockTerraformEvidenceReviewed": {
+      "failed": 0,
+      "independentlyRerunByReviewer": false,
+      "message": 22,
+      "url": 71
+    },
+    "sourceWhitespaceDiffCheckPassed": true
+  }
+}

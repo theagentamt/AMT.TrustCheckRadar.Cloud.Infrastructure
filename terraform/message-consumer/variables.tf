@@ -103,9 +103,10 @@ variable "activate_rules_engineering" {
   validation {
     condition = !var.activate_rules_engineering || (
       var.enabled && var.environment == "dev" && length(var.engineering_subjects) > 0 &&
-      var.authority_configuration != null && var.provider_budget != null && var.api_gateway != null
+      var.authority_configuration != null && var.provider_budget != null && var.api_gateway != null &&
+      local.authority_maintenance_ready
     )
-    error_message = "Rules-only engineering activation requires provisioned Dev routes, exact subjects, authority horizons and provider caps."
+    error_message = "Message admission requires provisioned Dev routes, exact subjects, horizons/caps and same-table versioned shared maintenance with worker, schedule and heartbeat enabled."
   }
 }
 variable "deployment" {
@@ -145,5 +146,24 @@ variable "deployment" {
       can(regex("^https://cognito-idp\\.${var.aws_region}\\.amazonaws\\.com/${var.aws_region}_[A-Za-z0-9]+$", var.deployment.cognito_issuer)) &&
     can(regex("^[a-z0-9]+$", var.deployment.cognito_app_client_id)), false)
     error_message = "Use exact environment-scoped dependencies and message consumer/evaluator packages from one immutable release."
+  }
+}
+
+variable "candidate3_rules_only_enabled" {
+  description = "Trusted candidate.3 deterministic execution; AI, Google and the provider circuit remain closed."
+  type        = bool
+  default     = false
+  validation {
+    condition     = !var.candidate3_rules_only_enabled || (var.activate_rules_engineering && length(var.engineering_subjects) == 1)
+    error_message = "Candidate.3 rules-only requires explicitly activated Dev engineering for one exact subject."
+  }
+}
+variable "governed_history_settlement_enabled" {
+  description = "Project typed content-free History in the existing atomic receipt settlement; enable only after the index and source are qualified."
+  type        = bool
+  default     = false
+  validation {
+    condition     = !var.governed_history_settlement_enabled || var.candidate3_rules_only_enabled
+    error_message = "This Dev stage allows History settlement only with the trusted candidate.3 rules-only mode."
   }
 }

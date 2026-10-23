@@ -1,0 +1,140 @@
+{
+  "effects": {
+    "AWSReadsThisStep": false,
+    "cloudMutations": false,
+    "credentialAccess": false,
+    "downloads": false,
+    "mobileCalls": false,
+    "oneHourWindowStarted": false,
+    "paidTrialComplimentaryChanges": false,
+    "providerCalls": 0,
+    "pushOrDeploy": false,
+    "sevenDayGrantRevoked": false
+  },
+  "heldGates": [
+    "source publication/release-V01 integration",
+    "fresh actual Dev code/config/IAM/routes/schedule/artifact readback",
+    "shared due-row inventory and separate irreversible-expiry approval",
+    "matching runtime qualification for any changed worker or other component artifact",
+    "candidate.3/History existing rollout preservation plus separately reviewed one-use AI overlay",
+    "fresh secure key handoff if previously retained key remains unavailable",
+    "current selected tester/device/access and exact Android build/readiness",
+    "supported exact operation/receipt to History correlation",
+    "no live provider or mobile acceptance in this step"
+  ],
+  "operationalSnapshotVerification": "Current main snapshot preparation/plan/readback helpers are not reimplemented by this source increment. Require their exact reviewed main control separately.",
+  "preservedBoundaries": {
+    "APIContractChanged": false,
+    "GETSnapshotAdmissionSeparate": true,
+    "dependencyLockChanged": false,
+    "existingTrialConsumerDeletionSelectionsPreserved": true,
+    "maintenanceDefaultOff": true,
+    "newProviderOrIdentityPermissionInMaintenanceDiff": false,
+    "tfvarsChanged": false,
+    "workflowsImportedOrModified": false
+  },
+  "resolvedGaps": [
+    "immutable remote source identity",
+    "exact Message ZIP Linux Python3.14 ARM64 native ABI qualification",
+    "local selective main deployment-control reconciliation"
+  ],
+  "review": {
+    "outcome": "PASS_SOURCE_ONLY_LOCAL_RECONCILIATION",
+    "path": "docs/evidence/authority-maintenance/reconciled-source-review.json",
+    "sha256": "37b8bd51339adba8e679353f5cdd3ffe2e833abb61d07a5864938cfd35021b72"
+  },
+  "reviewCorrections": [
+    "legacy active and inactive no-op inventory runtime/environment/alias validation",
+    "unreviewed runtime attachments rejected",
+    "failed or unknown checks and inconsistent/no-op inventory rejected",
+    "maintenance prerequisite checked through both legacy and candidate.3 normalization"
+  ],
+  "rolloutReady": false,
+  "runtimeQualification": {
+    "architecture": "aarch64",
+    "consumerZipSha256": "11761fbab3be3760ee85d9eb3faf402c06d92f016b9cb367555d6e0eaaa67e04",
+    "evaluatorZipSha256": "9823ebc425a2d61fbc488e9b02f6cf210a296d992162cd11721e7aa14631415c",
+    "imageDigest": "sha256:fc4e15a5e09e2c9b6184810ea0fdc87afe1c1c734c98cbe27d739a35c3f15e7e",
+    "libc": "glibc2.34",
+    "manifestSha256": "0e3bd675a3b20739a2ae30fe9925f23c14808ce584760731327fb9b249e9c676",
+    "notOtherComponentsOrRebuiltPackages": true,
+    "outcome": "PASS_EXACT_PACKAGES_ONLY",
+    "packageBytesChanged": false,
+    "packet": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/runtime-qualification-314-20261023",
+    "python": "3.14.8",
+    "reviewSha256": "3feeac2f7cec5697865f8a1d3f215c24d1bf40fe6cb37f25ebbef1b1c1d571d9"
+  },
+  "schemaVersion": 1,
+  "source": {
+    "historyRewritten": false,
+    "immutableMain": "f1c5d36d565d1f6eb937d957605dc235f7867780",
+    "integrationTarget": "release-V01",
+    "mainTree": "57c0090b3c83abdfeb98da04766c307ddbb9e4ce",
+    "proposalParent": "5effcf9da623c5e67b8aa0b20d5bd8d1b5e1f2cb",
+    "releaseTreeEqualsMergeBase": true,
+    "remoteIdentitySource": "previously authorized read-only GitHub connector; retained Git object/tree joined; no SSH retry",
+    "selectiveMainIncomingFiles": 21,
+    "verifiedRelease": "353303b657dfe3e44eda59cd8ed343284880cf69",
+    "wholeMainMerged": false
+  },
+  "sourcePins": {
+    "docs/authority-maintenance-next-actions.md": "247bf7238aa4b9ff5c6f88896d17f7b9b9fcad184b41323019f8d9836d7f3ef2",
+    "docs/authority-maintenance-reconciliation.md": "423d905c9255865dd0465a9869e7790bd8281e7a69ea31e37d8261b033b6fe32",
+    "docs/evidence/authority-maintenance/current-main-import.json": "de5401bedf5a71735704d5c32c526bb1fe8df00d86dc7e0643ff8320143dab6a",
+    "docs/evidence/authority-maintenance/retained-worker-impact.json": "069e5085b54df583969b0daf7bc87c8c9a3a6c1b2bd5fb72a0e89aac249d4485",
+    "scripts/tests/test_candidate3_rules_plan.py": "2d847c72c72564ad3d6db463672ce16305f4cf5dc15a53238f72497310e95be4",
+    "scripts/tests/test_governed_history_plan.py": "8a09df49a4cf2a6fba30e16517055ce4c3dee6668852f564b93d4e2e26f5afd4",
+    "scripts/tests/test_message_consumer_release.py": "875a91c54408690d128b3c2c9b9334d02199b377217d97bd48c6188d935f400d",
+    "scripts/tests/test_message_consumer_transition.py": "6eb7b659bc8e360671b1d35c2801c8a5f43e37483c960b9bd334fc019a36653d",
+    "scripts/verify_candidate3_rules_plan.py": "4863f607fab0203f6b4eda7102a1abea27903fea5f74ba975a29e2ca47c8a4a6",
+    "scripts/verify_governed_history_plan.py": "e87c0015dafe3477d6cede436838174d72b73d52e0e0404f8404dcc59b57b343",
+    "scripts/verify_message_consumer_release.py": "c3f12f7ea05227a680be224eb61a088891d834ce4f4bb1d221c94f65b4d55284",
+    "scripts/verify_message_consumer_transition.py": "9eb66c4ba36e0322d99b38f124442b12c8e737fc97b82963f54db1598beeb49a",
+    "terraform/message-consumer/integration.tf": "a504427ad3172201e858d149164bf000229eb5735849ccec502c3f2af03d500d",
+    "terraform/message-consumer/main.tf": "546cef7103494ca2a0a88d40fb1cf0f86759e3b31fa26f2d0198240337c0ef99",
+    "terraform/message-consumer/maintenance.tf": "c3ce3454d73499860e1aae371781e23bc9ab7ddc2c1594181c6b9102e758fd0c",
+    "terraform/message-consumer/operations.tf": "347e3fe35fb6aa8ee7a6ac259b8ba147ba1cd102947a8d503de078e97c9f28f9",
+    "terraform/message-consumer/outputs.tf": "28b559507a01031cd483710836f7a72d48b20135300ff7d455907f7be4737153",
+    "terraform/message-consumer/tests/activation.tftest.hcl": "f5c2df48795434eccbea6e57d8cba5d7f330e4d0ba6fdd9db8ade7c104e905d3",
+    "terraform/message-consumer/tests/security.tftest.hcl": "7e33cd18fc3bf3ca0c36c7913969bebd19757d4fcce3c7d8238360cc205a88d3",
+    "terraform/message-consumer/variables.tf": "ad30ef15deb55b037c67842b1cf5841d9725c33320707a281f9b6ba249f0dcb7",
+    "terraform/message-consumer/versions.tf": "bcc46a905a5ffdc3237733b69e00e67b82d2ef164183a7e8568e3aee4c9a68da",
+    "terraform/url-consumer/complimentary-operator.tf": "631f844631c5a9f5215256caa8e064ab495647d9ff18c723dedb60b07736e64d",
+    "terraform/url-consumer/consumer-artifact-override.tf": "8b2795b006e0e55f476b7baee64f3fe98eb7d4fa0effa1c67a71061f404fd49b",
+    "terraform/url-consumer/deletion-activation.tf": "e77e741ba3dbdb4cda8a742cc1735a8617743a17f44cf8681c88741bb1eca1a6",
+    "terraform/url-consumer/deletion-artifact-override.tf": "fe7e6809a128464597d5c8f7f2270f0e971dc151d853078e4415ac2c4ad3bc54",
+    "terraform/url-consumer/deletion.tf": "7946f948043d3118f55de7c4906acf23771a071a4316dbc75cd70ce8765b2059",
+    "terraform/url-consumer/entitlements-artifact-override.tf": "82059409aba3ecdae77a464969ae80157bbe916b424ec12715b04aebdca0a0fb",
+    "terraform/url-consumer/entitlements.tf": "92d03b8d0b3f74d6c49dc573af6da7d44e7e14ad4ad5900a7acc06984077d1ee",
+    "terraform/url-consumer/integration.tf": "5caa731530e457f2165a1d45b1aab652cc8062f7ad5f6a640dd1bd521071d974",
+    "terraform/url-consumer/main.tf": "c1915a1fb36fb23349fdffcdf9416b9b5e8b80aa6b68764006bda9c0742162ac",
+    "terraform/url-consumer/maintenance.tf": "3e3f61384e957587721ea57df1f43df3520dcd7f86e7b6e5cbfee50ddea1619d",
+    "terraform/url-consumer/operations.tf": "096cea35fa327e6c2015051b9988dd4f6f4f84241749a42dc700e4d84c759673",
+    "terraform/url-consumer/outputs.tf": "b6c1dafa073c7a0d5a932302bb5d575e5d586b9a8205d84df093f8e057099d0a",
+    "terraform/url-consumer/tests/consumer-artifact-override.tftest.hcl": "3c4daf425a83d7e76edf37713322596133158808aad14d035a2205d2ad0231c5",
+    "terraform/url-consumer/tests/deletion-artifact-override.tftest.hcl": "b26822ed6aba46bf49093bfbf732507156fef3ed93f65326b15a5e12be3c67d9",
+    "terraform/url-consumer/tests/entitlements-artifact-override.tftest.hcl": "71af3823523ae458333fef76b4c4d2d5d331464e61314d03a958314c1bc914aa",
+    "terraform/url-consumer/tests/integration.tftest.hcl": "0d28ddb4ebaf19b6c90072290933610832d304a3e5b036b808f9e49c68058e88",
+    "terraform/url-consumer/tests/security.tftest.hcl": "a8cb49c2913e043e2d758e450d902c8922967305801f4c6cade14c3d42f2af7b",
+    "terraform/url-consumer/variables.tf": "fcf75af79e3084c95cbc5775cb0d678d5bd22d47b0566e2114f7cc702086e57e",
+    "terraform/url-consumer/versions.tf": "bcc46a905a5ffdc3237733b69e00e67b82d2ef164183a7e8568e3aee4c9a68da"
+  },
+  "status": "PASS_LOCAL_RECONCILIATION_NOT_PUBLISHED_OR_DEPLOYED",
+  "validation": {
+    "failuresFinal": 0,
+    "initialFailuresPreserved": [
+      "local test fixture NameError after broad replacement corrected",
+      "valid no-op fixture corrected to carry equal before/after",
+      "old release trial-retention expectation corrected to pinned main default false; source default not weakened"
+    ],
+    "logs": {
+      "validation/reconciled-message-terraform.log": "cf32ac107e20447ee30905435cc2e0ec07e6b72a2f41875f98793dd8d69d4892",
+      "validation/reconciled-url-terraform-final.log": "e66e033a4d8bef4da407e5d19508cc60fcfde97ddad4fc4535a53216ba03e170",
+      "validation/reconciled-url-terraform-initial-failure.log": "e93b68028c8349eca0dcb4e45220fc9d4e87c9c9a063da960bc9ca3fc5e5d657",
+      "validation/reconciled-verifier-tests.log": "a91f4cd7f798aa4746e8bb8c1993cb39713eacbe3383d9f957379fc8c9161a0c"
+    },
+    "pythonVerifierMethodsPassed": 30,
+    "terraformMessageMockPassed": 25,
+    "terraformURLMockPassed": 87
+  }
+}

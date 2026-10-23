@@ -1,0 +1,87 @@
+{
+  "atUtc": "2026-10-23T13:15:49.017261+00:00",
+  "blockingFindings": [],
+  "exactFilePins": {
+    "docs/authority-maintenance-next-actions.md": "247bf7238aa4b9ff5c6f88896d17f7b9b9fcad184b41323019f8d9836d7f3ef2",
+    "docs/authority-maintenance-reconciliation.json": "20eee30310b4857085f4c5d50e25b90cc58f8840663d60c3dd134a8667d75d3c",
+    "docs/authority-maintenance-reconciliation.md": "423d905c9255865dd0465a9869e7790bd8281e7a69ea31e37d8261b033b6fe32",
+    "docs/evidence/authority-maintenance/current-main-import.json": "de5401bedf5a71735704d5c32c526bb1fe8df00d86dc7e0643ff8320143dab6a",
+    "docs/evidence/authority-maintenance/retained-worker-impact.json": "069e5085b54df583969b0daf7bc87c8c9a3a6c1b2bd5fb72a0e89aac249d4485",
+    "docs/mobile-infrastructure-e2e-gate-reconciled.json": "a54f09cf8c7d5f677957e431f764360188a37ac1b68d1b62ae350be77066cfb1"
+  },
+  "outcome": "PASS_RECONCILED_HANDOFF_ONLY",
+  "remainingGates": [
+    "source publication/release-V01 integration",
+    "fresh actual Dev code/config/IAM/routes/schedule/artifact readback",
+    "shared due-row inventory and separate irreversible-expiry approval",
+    "matching runtime qualification for any changed worker or other component artifact",
+    "candidate.3/History existing rollout preservation plus separately reviewed one-use AI overlay",
+    "fresh secure key handoff if previously retained key remains unavailable",
+    "current selected tester/device/access and exact Android build/readiness",
+    "supported exact operation/receipt to History correlation",
+    "no live provider or mobile acceptance in this step"
+  ],
+  "resolvedHandoffCorrections": [
+    {
+      "id": "A1",
+      "resolution": "Current report points to reconciliation.md; earlier source/Linux-blocked report is explicitly historical and has its verified existing persistent path."
+    },
+    {
+      "id": "A2",
+      "resolution": "Allowed existing recovery rule/target change is distinguished from forbidden other schedules/targets; no source or workflow alteration."
+    }
+  ],
+  "reviewerActions": {
+    "cloudDockerMobileProviderNetworkCredentialCalls": false,
+    "localReadHashAndStaticArchiveInspectionOnly": true,
+    "newTests": false,
+    "publicationOrTrackerOperations": false,
+    "sourceEdits": false
+  },
+  "schemaVersion": 1,
+  "scope": "Bounded final consistency/effect review of current source-reconciliation, runtime-reference, retained-worker and next-action handoff. No live readiness or operational approval is implied.",
+  "sourceReview": {
+    "all25PriorSourcePinsUnchanged": true,
+    "outcome": "PASS_SOURCE_ONLY_LOCAL_RECONCILIATION",
+    "path": "/tmp/amt-infra-maintenance-reconciliation-review.json",
+    "sha256": "37b8bd51339adba8e679353f5cdd3ffe2e833abb61d07a5864938cfd35021b72"
+  },
+  "verified": {
+    "AIAndOtherScope": "Existing one-use pasted_text/Other/EN exact synthetic message/model/512output/no count/no retry/USD1 test remains operationally held. No general model qualification, provider readiness probe, OCR/share/URL allowance, key upload or one-hour window starts.",
+    "allSixJourneysRemainHold": true,
+    "cloudEvidence": "Original 2026-10-23 11:22:30 to11:26:53UTC snapshot remains dated/unrefreshed; current report does not pass AWS/IAM/actor/provider/mobile predicates.",
+    "counts": {
+      "independentPythonMethodsPreviouslyPassed": 30,
+      "newTestsInThisHandoffReview": 0,
+      "parentMessageMock": 25,
+      "parentURLMock": 87
+    },
+    "firstProposedCloudBoundary": "Only existing same-table recovery flag/numeric version+alias if required/one-minute rule+target/heartbeat+overdue alarms; no IAM, route, storage/index, actor, trial/operator/consumer or account-deletion changes. Any other planned resource change stops the proposal.",
+    "grant": "Retained complimentary expiry2026-10-27T22:09:34Z and paid/trial state preserved; no revoke after test/failure; not a current fresh access readback.",
+    "irreversibleScope": "Recovery plus expiry are inseparable in archived worker; shared HMAC due rows can cover other accounts. Conditional zero-charge settlement releases original holds; minimized receipt/History/preparation/attempt/purchase-usage expiry permanently deletes eligible rows. Current due-row counts/inventory/retention and separate owner decision remain held.",
+    "maintenanceObjectNotLiveProof": true,
+    "publicationWorkflow": "release-V01 is integration target. Main-only deployment ref guard mismatch is named; no main promotion, CI trigger change or release workflow dispatch is silently authorized.",
+    "retainedWorker": {
+      "archivePath": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/readiness-review-20261023/published-packages/url-lease-recovery.zip",
+      "archiveSha256": "6b9ba8b94e6fcb564932e5a98d0638194436dfa7788e9452db7c9399a3f92be6",
+      "archiveSourcePinsMatched": 3,
+      "codeSha256Base64": "a5uouU5vy1ZJMuWpjQY4GUQ236d4jpRS23yTmaP5K+Y=",
+      "datedAliasVersion": "11",
+      "inspectionWasStaticOnly": true,
+      "newerRetainedBackendHasAdditionalRetirementBehavior": true,
+      "operationsRetirementPresent": false,
+      "silentReplacementForbidden": true
+    },
+    "rollback": "Close new admissions first; preserve original counters/grant/key/receipt; keep maintenance while pending drains and review retention before disable; flag rollback does not restore deleted rows.",
+    "runtimeManifest": {
+      "entriesIndependentlyMatched": 25,
+      "path": "/Users/theaimachine/Documents/ChatGPT/AMT Backend Recovery/runtime-qualification-314-20261023/preservation-manifest.json",
+      "qualifiesOnly": "Exact consumer11761fba...67e04 and evaluator9823ebc4...415c ZIPs, no replacement worker/other components/rebuilds",
+      "reviewSha256": "3feeac2f7cec5697865f8a1d3f215c24d1bf40fe6cb37f25ebbef1b1c1d571d9",
+      "sha256": "0e3bd675a3b20739a2ae30fe9925f23c14808ce584760731327fb9b249e9c676"
+    },
+    "sourceAndLogPinsMatched": true,
+    "sourceIncomingManifestPinsMatchedPriorReview": true,
+    "summarySourcePins": 40
+  }
+}
