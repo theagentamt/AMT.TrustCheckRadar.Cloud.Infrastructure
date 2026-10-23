@@ -133,3 +133,34 @@ predicate cases, with the existing dependency-equipped interpreter. Terraform
 formatting, actionlint, campaign guardrails, Python compilation and whitespace
 checks passed. An initial host-interpreter run lacked boto3/botocore; that
 incomplete run is not counted as a pass and no dependencies were downloaded.
+
+## Finite verifier rejection diagnostics
+
+The verifier now emits a fixed JSON rejection record: phase, predicate code,
+resource category and allowlisted field categories. Every original safety
+condition is unchanged and evaluated once. A source-AST regression pins all
+43 conditions from main `f4ea3ada`; prior preservation tests remain applicable.
+Resource addresses, private selections, environment values, plan/state content,
+AWS command arguments/stderr and arbitrary exception text are never rendered.
+Unrecognized resource/field labels become fixed `OTHER` categories. Unexpected
+structure errors remain rejected and expose only a known schema-field label.
+
+Artifact account/read/version/hash failures have separate finite codes after the
+plan-review phase. Therefore a failed required S3 read cannot be mislabeled as an
+accepted five-resource plan or silently skipped. Public results contain no
+private plan, raw error or request payload. Adversarial rejection tests cover
+injected addresses, field names, exception text, command arguments and stderr.
+
+The exact rejection in run `40000744126` cannot be reconstructed from its generic
+message; its private files were correctly removed and no artifact remains. A new
+reviewed source revision and separately authorized plan-only diagnostic attempt
+are necessary to identify the boundary. This change does not retry a workflow,
+weaken a guard, authorize apply/expiry, or change IAM, runtime flags or contracts.
+
+Diagnostic source validation passed 490 Python tests, including eleven dedicated
+rejection/privacy cases and the unchanged 23 preservation cases. The prior PR187
+main CI passed all 33 steps before this change. These are source-validation
+results, not a successful live plan or connectivity claim.
+
+Argument-parser failures also use the finite rejection path; invalid options and
+choices cannot echo raw supplied arguments. Normal help remains available.
