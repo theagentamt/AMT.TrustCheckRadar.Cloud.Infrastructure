@@ -164,3 +164,35 @@ results, not a successful live plan or connectivity claim.
 
 Argument-parser failures also use the finite rejection path; invalid options and
 choices cannot echo raw supplied arguments. Normal help remains available.
+
+
+## Deletion handler pin correction
+
+The real diagnostic plan `40003812497` rejected `RUNTIME_IDENTITY` for
+`DELETION_FUNCTION`. A bounded read-only check at 2026-10-23T18:33:11Z confirmed
+that active unweighted live v24 uses
+`v1_authority_deletion.app.lambda_handler`, exactly as declared by
+`terraform/url-consumer/main.tf`. The verifier incorrectly assigned the generic
+`app.lambda_handler` entry point. All other comparable runtime/role/limit fields
+matched. The preservation fixture overwrote the correct existing deletion
+handler with that same wrong generic value, hiding the defect.
+
+The verifier now pins the exact packaged deletion handler; the fixture override
+is removed. The regression joins the actual sanitized metadata in
+`docs/evidence/deletion-handler-preservation.json`, the real IaC handler and the
+unmodified base fixture, accepts preservation as a no-op, and rejects wrong
+handlers for all four protected runtimes. Synthetic scope data in these source
+tests is not a live-plan acceptance claim. All other runtime identity, artifact,
+no-op, drift, IAM and activation predicates remain intact. No deployed Lambda
+handler or Terraform configuration is changed.
+
+The earlier generic run did not retain its exact rejection; this diagnostic
+establishes the current failed guard directly. It does not prove that later
+checks or the required artifact read will pass. A separately authorized corrected
+plan must use the new reviewed main revision. No apply or recovery/expiry
+activation is included in this correction.
+
+Local correction validation passed 492 Python cases, including the two new
+IaC/live-handler provenance and wrong-handler regressions. The fixed finite
+rejection/privacy tests and all other preservation checks also pass. Formatting,
+actionlint, campaign guardrails, compilation and whitespace checks passed.

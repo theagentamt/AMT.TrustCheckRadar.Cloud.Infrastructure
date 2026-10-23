@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-10-23T18:33:11.261126+00:00",
+  "readOnly": true,
+  "functionName": "trustcheckradar-dev-v1-authority-deletion",
+  "liveVersion": "24",
+  "activeUnweighted": true,
+  "latestSuccessfulAndMatchesLive": true,
+  "handler": "v1_authority_deletion.app.lambda_handler",
+  "runtime": "python3.14",
+  "architectures": [
+    "arm64"
+  ],
+  "memorySize": 256,
+  "timeout": 30,
+  "reservedConcurrency": 1,
+  "codeSha256": "RR6Qd3aM1ap/hSs6mihSKxjDSjivTKK7tcnfoSOMi5w=",
+  "sourceRevision": "778f401bd664d9559a180857cab296e4dca278d6",
+  "terraformSource": "terraform/url-consumer/main.tf:10",
+  "diagnosticRun": "https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/40003812497",
+  "observedFailureCode": "RUNTIME_IDENTITY",
+  "resourceCategory": "DELETION_FUNCTION",
+  "scope": "Sanitized retained actual metadata, not a new runtime selection or permission. All other comparable runtime properties matched. This source correction cannot change Lambda, activate maintenance or qualify later gates."
+}

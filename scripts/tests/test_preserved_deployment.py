@@ -3,6 +3,7 @@ import copy
 import importlib.util
 import json
 import os
+import re
 from pathlib import Path
 import stat
 import sys
@@ -59,7 +60,6 @@ def maintenance():
         row['provider_name'] = 'registry.terraform.io/hashicorp/aws'
         value = row['change']['after']; n = row['address'].split('"')[1]
         value['version'] = '11' if n == 'recovery' else '7'
-        if n == 'deletion': value['handler'] = 'app.lambda_handler'
         if n == 'recovery': value['source_code_hash'] = p.RECOVERY_SHA
         value['code_sha256'] = value['source_code_hash']
         if n == 'entitlements':
@@ -250,6 +250,38 @@ class PreservedDeploymentTests(unittest.TestCase):
         plan, baseline, observed = maintenance()
         p.inventory(plan)[p.ENT_FUNCTION]['change']['after_unknown'] = {'version': True}
         with self.assertRaises(ValueError): v.review(plan, baseline, observed, REVISION, 'maintenance')
+
+    def test_deletion_handler_matches_actual_metadata_and_real_iac(self):
+        root = Path(__file__).resolve().parents[2]
+        evidence = json.loads((root / 'docs/evidence/deletion-handler-preservation.json').read_text())
+        source = (root / 'terraform/url-consumer/main.tf').read_text()
+        iac = re.search(r'deletion\s*=\s*\{[^}]*handler\s*=\s*"([^"]+)"', source).group(1)
+        self.assertEqual(evidence['handler'], iac)
+        self.assertEqual(evidence['liveVersion'], '24')
+        self.assertTrue(evidence['readOnly'] and evidence['activeUnweighted'])
+        self.assertNotEqual(iac, 'app.lambda_handler')
+        plan, baseline, observed = maintenance()
+        for selected in (plan, baseline):
+            row = p.inventory(selected)['aws_lambda_function.runtime["deletion"]']
+            self.assertEqual(row['change']['before']['handler'], iac)
+            self.assertEqual(row['change']['after']['handler'], iac)
+        result, _ = v.review(plan, baseline, observed, REVISION, 'maintenance')
+        self.assertEqual(set(result['resourceAddresses']), v.MAINTENANCE)
+        self.assertEqual(p.inventory(plan)['aws_lambda_function.runtime["deletion"]']['change']['actions'], ['no-op'])
+
+    def test_wrong_handler_is_rejected_for_every_preserved_runtime(self):
+        for name in ('consumer', 'recovery', 'entitlements', 'deletion'):
+            plan, baseline, observed = maintenance()
+            address = f'aws_lambda_function.runtime["{name}"]'
+            correct = p.inventory(baseline)[address]['change']['before']['handler']
+            wrong = 'app.lambda_handler' if correct != 'app.lambda_handler' else 'v1_authority_deletion.app.lambda_handler'
+            for selected in (plan, baseline):
+                for direction in ('before', 'after'):
+                    p.inventory(selected)[address]['change'][direction]['handler'] = wrong
+            sync(plan)
+            with self.subTest(runtime=name), self.assertRaises(v.Rejection) as raised:
+                v.review(plan, baseline, observed, REVISION, 'maintenance')
+            self.assertEqual(raised.exception.code, 'RUNTIME_IDENTITY')
 
     def test_captured_artifact_marker_drift_rejected(self):
         plan, baseline, observed = maintenance()
