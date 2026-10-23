@@ -52,6 +52,23 @@ def artifact(value):
             'object_version': 's3_object_version', 'source_hash': 'source_code_hash'}.items()}
 
 
+def require_maintenance_alarm(alarm, active):
+    heartbeat = alarm['AlarmName'].endswith('-heartbeat')
+    # AWS uses EvaluationPeriods only when DatapointsToAlarm is absent.
+    datapoints = alarm.get('DatapointsToAlarm', alarm['EvaluationPeriods'])
+    destination = ['arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts']
+    require(alarm['ActionsEnabled'] is active and alarm['AlarmActions'] == alarm['OKActions'] == destination and
+            alarm['Namespace'] == 'AMT/TrustCheckRadar/V1/dev' and
+            alarm['MetricName'] == ('url-lease-recovery-heartbeat' if heartbeat else 'url-lease-recovery-expiry-overdue') and
+            alarm['Threshold'] == (1 if heartbeat else 300) and alarm['EvaluationPeriods'] == (2 if heartbeat else 1) and
+            alarm['Period'] == (300 if heartbeat else 60) and alarm['Statistic'] == ('Sum' if heartbeat else 'Maximum') and
+            alarm['ComparisonOperator'] == ('LessThanThreshold' if heartbeat else 'GreaterThanThreshold') and
+            type(alarm['EvaluationPeriods']) is int and type(datapoints) is int and
+            datapoints == (2 if heartbeat else 1) and
+            not any(alarm.get(k) for k in ('Dimensions', 'Metrics', 'ExtendedStatistic', 'InsufficientDataActions')) and
+            alarm['TreatMissingData'] == ('breaching' if active and heartbeat else 'notBreaching'), 'Existing alarm boundary changed.')
+
+
 def maintenance_readback(read, require_active=False):
     name = PREFIX + '-url-lease-recovery'
     table = PREFIX + '-purchase-entitlements'
@@ -101,17 +118,7 @@ def maintenance_readback(read, require_active=False):
     alarms = read('cloudwatch', 'describe-alarms', '--alarm-names', *alarm_names)['MetricAlarms']
     require(len(alarms) == 2 and {a['AlarmName'] for a in alarms} == set(alarm_names), 'Both existing alarms required.')
     for alarm in alarms:
-        heartbeat = alarm['AlarmName'].endswith('-heartbeat')
-        destination = ['arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts']
-        require(alarm['ActionsEnabled'] is active and alarm['AlarmActions'] == alarm['OKActions'] == destination and
-                alarm['Namespace'] == 'AMT/TrustCheckRadar/V1/dev' and
-                alarm['MetricName'] == ('url-lease-recovery-heartbeat' if heartbeat else 'url-lease-recovery-expiry-overdue') and
-                alarm['Threshold'] == (1 if heartbeat else 300) and alarm['EvaluationPeriods'] == (2 if heartbeat else 1) and
-                alarm['Period'] == (300 if heartbeat else 60) and alarm['Statistic'] == ('Sum' if heartbeat else 'Maximum') and
-                alarm['ComparisonOperator'] == ('LessThanThreshold' if heartbeat else 'GreaterThanThreshold') and
-                alarm['DatapointsToAlarm'] == (2 if heartbeat else 1) and
-                not any(alarm.get(k) for k in ('Dimensions', 'Metrics', 'ExtendedStatistic', 'InsufficientDataActions')) and
-                alarm['TreatMissingData'] == ('breaching' if active and heartbeat else 'notBreaching'), 'Existing alarm boundary changed.')
+        require_maintenance_alarm(alarm, active)
     return {'schema_version': 1, 'environment': 'dev',
         'authority_table_arn': 'arn:aws:dynamodb:us-east-1:107827791950:table/' + table,
         'recovery_alias_arn': expected_alias, 'recovery_version': alias['FunctionVersion'],

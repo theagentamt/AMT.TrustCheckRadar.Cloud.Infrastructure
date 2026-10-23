@@ -69,3 +69,18 @@ there was no mock-provider connectivity demonstration or live business submissio
 Independent review found and corrected incomplete maintenance binding and missing
 private umasks before publication. Main-push CI remains unchanged and must be
 observed after integration; absent PR checks are not passing checks.
+
+## Optional alarm metadata correction
+
+The first [plan-only run](https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/39993883611)
+stopped during private preparation; its precise rejection predicate was not retained.
+An independent actual read-only execution of the same checker reproduced a
+`DatapointsToAlarm` KeyError: the existing overdue alarm omits that optional field.
+[AWS documents](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-datapointstoalarm)
+that omission uses `EvaluationPeriods`. Only absence now inherits that value;
+explicit null, malformed, or incompatible datapoints remain rejected. All alarm
+timing, comparison, destinations and disabled/enabled controls remain exact.
+The pure alarm predicate has direct metadata regression coverage, without a mock
+AWS client or connectivity claim. No workflow, IAM, defaults or activation scope
+changes are included. A retry must use the reconciled new main revision, plan-only
+inputs, and the existing role; it does not authorize an apply.
