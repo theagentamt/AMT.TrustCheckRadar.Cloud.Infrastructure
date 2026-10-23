@@ -4,9 +4,10 @@ import argparse
 import json
 from pathlib import Path
 import re
+import subprocess
 
 import prepare_preserved_deployment as prepare
-from verify_governed_history_plan import changed_fields, require
+from verify_governed_history_plan import changed_fields
 from verify_message_consumer_transition import _expected_environment, verify_artifacts
 from billing_plan_digest import projection
 
@@ -17,6 +18,149 @@ HEARTBEAT = 'aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"]'
 OVERDUE = 'aws_cloudwatch_metric_alarm.expiry_overdue[0]'
 MAINTENANCE = {FUNCTION, ALIAS, RULE, HEARTBEAT, OVERDUE}
 PACKAGE = {'s3_bucket', 's3_key', 's3_object_version', 'source_code_hash'}
+
+
+
+# Only fixed code/category labels enter rejection output. Never render exception
+# text, resource addresses, unknown paths, plan values or AWS stderr/targets.
+PREDICATES = {
+    'Complete passing Terraform 1.12.1 plan required.': ('PLAN_STATUS', 'PLAN'),
+    'Complete planned inventory required.': ('PLAN_INVENTORY', 'PLAN'),
+    'Exact unweighted alias required.': ('ALIAS_IDENTITY', 'ALIAS'),
+    'Alias baseline drift.': ('ALIAS_BASELINE', 'ALIAS'),
+    'Exact main revision required.': ('REVISION_PIN', 'INPUT'),
+    'Baseline inventory changed.': ('BASELINE_INVENTORY', 'PLAN'),
+    'Private preservation inputs changed.': ('PRESERVED_INPUTS', 'INPUT'),
+    'Unexpected output.': ('PLAN_OUTPUTS', 'PLAN'),
+    'Nested unknown values are forbidden.': ('NESTED_UNKNOWNS', 'PLAN'),
+    'Unreviewed computed field.': ('UNREVIEWED_COMPUTED_FIELD', 'PLAN'),
+    'Post-plan inventory mismatch.': ('PLANNED_VALUE_MISMATCH', 'PLAN'),
+    'New alias version must bind the published reviewed function.': ('ALIAS_PUBLISHED_BINDING', 'ALIAS'),
+    'Alias version mismatch.': ('ALIAS_VERSION', 'ALIAS'),
+    'State changed after capture.': ('CAPTURED_BEFORE_CHANGED', 'PLAN'),
+    'No create, deletion or replacement permitted.': ('RESOURCE_ACTION', 'PLAN'),
+    'Captured function binding mismatch.': ('CAPTURED_FUNCTION', 'FUNCTION'),
+    'Pinned runtime identity required.': ('RUNTIME_IDENTITY', 'FUNCTION'),
+    'Protected entitlements alias changed.': ('ENTITLEMENTS_ALIAS', 'ENTITLEMENTS_ALIAS'),
+    'Maintenance transition must be complete or an exact no-op.': ('MAINTENANCE_CHANGE_SET', 'RECOVERY_CONTROLS'),
+    'Only existing worker11 bytes are allowed.': ('RECOVERY_CODE_PIN', 'RECOVERY_FUNCTION'),
+    'Worker artifact/role/runtime/limits must not change.': ('RECOVERY_PROTECTED_FIELDS', 'RECOVERY_FUNCTION'),
+    'Only worker gate may change.': ('RECOVERY_GATE', 'RECOVERY_FUNCTION'),
+    'Unknown mode.': ('MODE', 'INPUT'),
+    'Preserved URL/access/trial boundaries required.': ('MAINTENANCE_OUTPUT_BOUNDARY', 'PLAN'),
+    'Candidate.3/History output mismatch.': ('MESSAGE_OUTPUT_BOUNDARY', 'PLAN'),
+    'Deployed alias is not qualified.': ('DEPLOYED_ALIAS', 'FUNCTION'),
+    'Protected or known published version changed.': ('DEPLOYED_VERSION', 'FUNCTION'),
+    'Deployed limits/update state mismatch.': ('DEPLOYED_LIMITS', 'FUNCTION'),
+    'Deployed configuration mismatch.': ('DEPLOYED_CONFIGURATION', 'FUNCTION'),
+    'Protected maintenance metadata changed.': ('DEPLOYED_MAINTENANCE', 'RECOVERY_CONTROLS'),
+    'Protected History version/configuration changed.': ('DEPLOYED_HISTORY', 'HISTORY'),
+    'Exact reviewed plan digest is required before apply.': ('APPLY_DIGEST_REQUIRED', 'INPUT'),
+    'Fresh live pre-apply readback changed.': ('APPLY_FRESH_CAPTURE', 'PLAN'),
+    'Unrelated resource update; IAM/routes/admission must remain unchanged.': ('UNRELATED_RESOURCE_UPDATE', 'OTHER_MANAGED'),
+    'No-op inventory is not identical.': ('NOOP_NOT_IDENTICAL', 'PLAN'),
+    'Protected runtime must remain unchanged.': ('PROTECTED_RUNTIME_UPDATE', 'FUNCTION'),
+    'Entitlements must be a complete no-op.': ('ENTITLEMENTS_NOT_NOOP', 'ENTITLEMENTS_FUNCTION'),
+    'Maintenance control exceeds scope.': ('RECOVERY_CONTROL_FIELDS', 'RECOVERY_CONTROLS'),
+    'Message environment/role/runtime/limits/permissions must remain exact.': ('MESSAGE_PROTECTED_FIELDS', 'FUNCTION'),
+    'Candidate.3/History/AI-off configuration must remain exact.': ('MESSAGE_ENVIRONMENT', 'FUNCTION'),
+    'Artifact selection mismatch.': ('MESSAGE_ARTIFACT_SELECTION', 'ARTIFACT'),
+    'Reviewed Message runtime hash must bind its package.': ('MESSAGE_RUNTIME_HASH', 'ARTIFACT'),
+    'Plan digest mismatch.': ('PLAN_DIGEST', 'INPUT'),
+}
+RESOURCE_CATEGORIES = {
+    FUNCTION: 'RECOVERY_FUNCTION', ALIAS: 'RECOVERY_ALIAS', RULE: 'RECOVERY_SCHEDULE',
+    HEARTBEAT: 'RECOVERY_HEARTBEAT', OVERDUE: 'RECOVERY_OVERDUE',
+    prepare.ENT_FUNCTION: 'ENTITLEMENTS_FUNCTION', prepare.ENT_ALIAS: 'ENTITLEMENTS_ALIAS',
+    **{f'{kind}.runtime["{name}"]': name.upper() + '_' + suffix
+       for kind, suffix in (('aws_lambda_function', 'FUNCTION'), ('aws_lambda_alias', 'ALIAS'))
+       for name in ('consumer', 'evaluator', 'deletion')},
+}
+FIELD_CATEGORIES = frozenset({'code_sha256', 'source_code_size', 'version', 'last_modified',
+    'qualified_arn', 'qualified_invoke_arn', 'function_version', 'environment',
+    's3_bucket', 's3_key', 's3_object_version', 'source_code_hash', 'role', 'runtime',
+    'handler', 'timeout', 'memory_size', 'architectures', 'reserved_concurrent_executions',
+    'vpc_config', 'state', 'actions_enabled', 'treat_missing_data', 'before', 'after',
+    'after_unknown', 'resource_changes', 'planned_values', 'root_module', 'resources',
+    'variables', 'value', 'configuration', 'output_changes', 'candidate_contract',
+    'function_name', 'publish', 'name', 'artifact', 'source_hash', 'bucket', 'key',
+    'object_version', 'codeSha256', 'environmentSha256', 'artifactInputsSha256'})
+PHASES = frozenset({'INITIALIZE', 'INPUT_LOAD', 'PLAN_REVIEW', 'APPLY_BOUNDARY',
+                   'ARTIFACT_VERIFY', 'DEPLOYED_READBACK'})
+DEPENDENCIES = {code: (code, 'ENTITLEMENTS_FUNCTION') for code in (
+    'ENTITLEMENTS_RUNTIME_OR_INPUT_PIN_MISMATCH', 'ENTITLEMENTS_ENVIRONMENT_PIN_MISMATCH',
+    'UNREVIEWED_MANAGED_DRIFT', 'ENTITLEMENTS_DRIFT_BINDING_MISMATCH',
+    'ENTITLEMENTS_UNRELATED_DRIFT', 'ENTITLEMENTS_ALIAS_DRIFT_MISMATCH')}
+DEPENDENCIES.update({
+    'One complete environment is required.': ('BASELINE_ENVIRONMENT_SHAPE', 'FUNCTION'),
+    'Unique AWS inventory required.': ('AWS_INVENTORY', 'PLAN'),
+    'Canonical private scope required.': ('PRIVATE_SCOPE_SHAPE', 'INPUT'),
+    'Existing scope count changed.': ('PRIVATE_SCOPE_COUNT', 'INPUT'),
+    'Existing private scope changed.': ('PRIVATE_SCOPE_PIN', 'INPUT'),
+    'Pinned Dev root required.': ('DEV_ROOT_PIN', 'INPUT'),
+    'Captured baseline drift.': ('CAPTURED_BASELINE', 'PLAN'),
+    'Maintenance cannot select replacement code.': ('MAINTENANCE_REPLACEMENT', 'ARTIFACT'),
+    'GET scope must remain separate.': ('GET_SCOPE_ISOLATION', 'INPUT'),
+    'Billing plan caller identity cannot be qualified.': ('CALLER_IDENTITY_PROJECTION', 'PLAN'),
+})
+EXTRA_CODES = frozenset({'INPUT_INVALID', 'PLAN_STRUCTURE', 'VERIFIER_UNCLASSIFIED',
+    'ARTIFACT_STS_READ_FAILED', 'ARTIFACT_S3_READ_FAILED', 'ARTIFACT_READ_FAILED',
+    'ARTIFACT_ACCOUNT', 'ARTIFACT_HASH', 'ARTIFACT_VERSION', 'ARTIFACT_UNCLASSIFIED'})
+CODES = frozenset(code for code, _ in PREDICATES.values()) | {code for code, _ in DEPENDENCIES.values()} | EXTRA_CODES
+CATEGORIES = frozenset(RESOURCE_CATEGORIES.values()) | {category for _, category in PREDICATES.values()} | {'OTHER_MANAGED'}
+
+
+def resource_category(address):
+    return RESOURCE_CATEGORIES.get(address, 'OTHER_MANAGED')
+
+
+class Rejection(ValueError):
+    def __init__(self, code, category, fields=()):
+        self.code = code if code in CODES else 'VERIFIER_UNCLASSIFIED'
+        self.category = category if category in CATEGORIES else 'OTHER_MANAGED'
+        self.fields = sorted({f if f in FIELD_CATEGORIES else 'OTHER_FIELD' for f in fields})
+        super().__init__(self.code)
+
+
+class PrivateArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        raise Rejection('INPUT_INVALID', 'INPUT')
+
+
+def require(condition, message, *, resource=None, fields=()):
+    if not condition:
+        code, category = PREDICATES[message]
+        raise Rejection(code, resource or category, fields)
+
+
+def rejection_record(error, phase):
+    phase = phase if phase in PHASES else 'INITIALIZE'
+    if isinstance(error, Rejection):
+        rejection = error
+    elif phase == 'ARTIFACT_VERIFY':
+        code = 'ARTIFACT_UNCLASSIFIED'
+        if type(error) is subprocess.CalledProcessError:
+            operation = tuple(error.cmd[:3]) if type(error.cmd) is list else ()
+            code = {('aws', 'sts', 'get-caller-identity'): 'ARTIFACT_STS_READ_FAILED',
+                    ('aws', 's3api', 'get-object'): 'ARTIFACT_S3_READ_FAILED'}.get(operation, 'ARTIFACT_READ_FAILED')
+        elif type(error) is ValueError:
+            fixed = {'Unexpected AWS account; no artifact read performed.': 'ARTIFACT_ACCOUNT'}
+            for name in ('recovery', 'consumer', 'evaluator'):
+                fixed[f'Downloaded {name} artifact SHA256 does not match.'] = 'ARTIFACT_HASH'
+                fixed[f'Downloaded {name} artifact version does not match.'] = 'ARTIFACT_VERSION'
+            code = fixed.get(str(error), code)
+        rejection = Rejection(code, 'ARTIFACT')
+    elif type(error) is ValueError and str(error) in DEPENDENCIES:
+        rejection = Rejection(*DEPENDENCIES[str(error)])
+    elif phase == 'INPUT_LOAD':
+        rejection = Rejection('INPUT_INVALID', 'INPUT')
+    elif type(error) in (KeyError, TypeError, IndexError, AttributeError):
+        fields = error.args[:1] if type(error) is KeyError else ()
+        rejection = Rejection('PLAN_STRUCTURE', 'PLAN', fields)
+    else:
+        rejection = Rejection('VERIFIER_UNCLASSIFIED', 'PLAN')
+    return {'status': 'REJECTED', 'phase': phase, 'code': rejection.code,
+            'resourceCategory': rejection.category, 'fieldCategories': rejection.fields}
 
 
 def same(left, right):
@@ -58,8 +202,8 @@ def validate_plan(plan, mode):
             allowed = prepare.COMPUTED | ({'code_sha256', 'source_code_size'} if mode == 'message-history' else set())
         elif address.startswith('aws_lambda_alias.runtime['):
             allowed = {'function_version'}
-        require(paths <= {(k,) for k in allowed}, 'Unreviewed computed field.')
-        require(same(known(change['after'], paths), known(planned[address], paths)), 'Post-plan inventory mismatch.')
+        require(paths <= {(k,) for k in allowed}, 'Unreviewed computed field.', resource=resource_category(address), fields=(path[0] for path in paths if path))
+        require(same(known(change['after'], paths), known(planned[address], paths)), 'Post-plan inventory mismatch.', resource=resource_category(address), fields=changed_fields(known(change['after'], paths), known(planned[address], paths)))
     return rows
 
 
@@ -67,16 +211,16 @@ def alias_binding(row, function, plan):
     change = row['change']
     before, after = change['before'], change['after']
     require(before['name'] == after['name'] == 'live' and before['function_name'] == after['function_name'] == function['before']['function_name'] and
-            not before.get('routing_config') and not after.get('routing_config'), 'Exact unweighted alias required.')
-    require(before['function_version'] == function['before']['version'] and changed_fields(before, after) <= {'function_version'}, 'Alias baseline drift.')
+            not before.get('routing_config') and not after.get('routing_config'), 'Exact unweighted alias required.', resource=resource_category(row['address']))
+    require(before['function_version'] == function['before']['version'] and changed_fields(before, after) <= {'function_version'}, 'Alias baseline drift.', resource=resource_category(row['address']))
     if after.get('function_version') is None or function['after'].get('version') is None:
         config = next((r for r in plan['configuration']['root_module']['resources'] if r['address'] == 'aws_lambda_alias.runtime'), {})
         refs = config.get('expressions', {}).get('function_version', {}).get('references', [])
         require(change.get('after_unknown', {}).get('function_version') is True and
                 function.get('after_unknown', {}).get('version') is True and 'aws_lambda_function.runtime' in refs,
-                'New alias version must bind the published reviewed function.')
+                'New alias version must bind the published reviewed function.', resource=resource_category(row['address']))
     else:
-        require(re.fullmatch('[1-9][0-9]*', after['function_version']) and after['function_version'] == function['after']['version'], 'Alias version mismatch.')
+        require(re.fullmatch('[1-9][0-9]*', after['function_version']) and after['function_version'] == function['after']['version'], 'Alias version mismatch.', resource=resource_category(row['address']))
 
 
 def review(plan, baseline, captured, revision, mode, replacements=None):
@@ -91,19 +235,19 @@ def review(plan, baseline, captured, revision, mode, replacements=None):
     changed = []
     for address, row in rows.items():
         c = row['change']
-        require(same(c['before'], old[address]['change']['before']), 'State changed after capture.')
-        require(c['actions'] in (['no-op'], ['update']), 'No create, deletion or replacement permitted.')
+        require(same(c['before'], old[address]['change']['before']), 'State changed after capture.', resource=resource_category(address), fields=changed_fields(c['before'], old[address]['change']['before']))
+        require(c['actions'] in (['no-op'], ['update']), 'No create, deletion or replacement permitted.', resource=resource_category(address))
         if c['actions'] == ['update']:
-            require(address in allowed, 'Unrelated resource update; IAM/routes/admission must remain unchanged.')
+            require(address in allowed, 'Unrelated resource update; IAM/routes/admission must remain unchanged.', resource=resource_category(address), fields=changed_fields(c['before'], c['after']))
             changed.append(address)
         else:
-            require(same(c['before'], c['after']) and not unknowns(c.get('after_unknown', {})), 'No-op inventory is not identical.')
+            require(same(c['before'], c['after']) and not unknowns(c.get('after_unknown', {})), 'No-op inventory is not identical.', resource=resource_category(address), fields=changed_fields(c['before'], c['after']))
     for n in captured['functions']:
         address = f'aws_lambda_function.runtime["{n}"]'
         before, after = (rows[address]['change'][k] for k in ('before', 'after'))
         require(before['version'] == captured['functions'][n]['version'] and before['code_sha256'] == captured['functions'][n]['codeSha256'] and
                 prepare.digest(prepare.artifact(before)) == captured['functions'][n]['artifactInputsSha256'] and
-                prepare.digest(prepare.environment(before)) == captured['functions'][n]['environmentSha256'], 'Captured function binding mismatch.')
+                prepare.digest(prepare.environment(before)) == captured['functions'][n]['environmentSha256'], 'Captured function binding mismatch.', resource=resource_category(address))
         suffix = 'message-' + n if mode == 'message-history' else {'consumer': 'url-consumer', 'entitlements': 'v1-entitlements', 'recovery': 'url-lease-recovery', 'deletion': 'v1-authority-deletion'}[n]
         handler = ('message_' + n + '.app.lambda_handler') if mode == 'message-history' else 'v1_entitlements.app.lambda_handler' if n == 'entitlements' else 'app.lambda_handler'
         timeout = (29 if n == 'consumer' else 23) if mode == 'message-history' else {'consumer': 29, 'entitlements': 10, 'recovery': 15, 'deletion': 30}[n]
@@ -112,12 +256,12 @@ def review(plan, baseline, captured, revision, mode, replacements=None):
             'handler': handler, 'memory_size': 256, 'publish': True, 'timeout': timeout,
             'reserved_concurrent_executions': 1 if mode == 'maintenance' and n in ('recovery', 'deletion') else 2,
             'role': 'arn:aws:iam::107827791950:role/' + prepare.PREFIX + '-' + suffix + '-execution'}.items()),
-            'Pinned runtime identity required.')
+            'Pinned runtime identity required.', resource=resource_category(address))
         if mode == 'maintenance' and n != 'recovery':
-            require(rows[address]['change']['actions'] == ['no-op'], 'Protected runtime must remain unchanged.')
+            require(rows[address]['change']['actions'] == ['no-op'], 'Protected runtime must remain unchanged.', resource=resource_category(address))
     if mode == 'maintenance':
         for address in (prepare.ENT_FUNCTION, prepare.ENT_ALIAS):
-            require(rows[address]['change']['actions'] == ['no-op'], 'Entitlements must be a complete no-op.')
+            require(rows[address]['change']['actions'] == ['no-op'], 'Entitlements must be a complete no-op.', resource=resource_category(address))
         prepare.require_entitlements(rows[prepare.ENT_FUNCTION]['change']['after'])
         ent_alias = rows[prepare.ENT_ALIAS]['change']['after']
         require(ent_alias['name'] == 'live' and ent_alias['function_name'] == prepare.ENTITLEMENTS['functionName'] and
@@ -129,7 +273,7 @@ def review(plan, baseline, captured, revision, mode, replacements=None):
                 before['source_code_hash'] == after['source_code_hash'] ==
                 before['code_sha256'] == after['code_sha256'] == prepare.RECOVERY_SHA,
                 'Only existing worker11 bytes are allowed.')
-        require(changed_fields(before, after) <= prepare.COMPUTED | {'environment'}, 'Worker artifact/role/runtime/limits must not change.')
+        require(changed_fields(before, after) <= prepare.COMPUTED | {'environment'}, 'Worker artifact/role/runtime/limits must not change.', fields=changed_fields(before, after))
         require(prepare.environment(after) == dict(prepare.environment(before), LEASE_SWEEP_ENABLED='true') and
                 prepare.environment(before).get('LEASE_SWEEP_ENABLED') in ('false', 'true'), 'Only worker gate may change.')
         alias_binding(rows[ALIAS], c, plan)
@@ -139,7 +283,7 @@ def review(plan, baseline, captured, revision, mode, replacements=None):
             (OVERDUE, {'actions_enabled'}, {'actions_enabled': True}),
         ):
             a, b = (rows[address]['change'][k] for k in ('before', 'after'))
-            require(changed_fields(a, b) <= fields and all(b.get(k) == v for k, v in values.items()), 'Maintenance control exceeds scope.')
+            require(changed_fields(a, b) <= fields and all(b.get(k) == v for k, v in values.items()), 'Maintenance control exceeds scope.', resource=resource_category(address), fields=changed_fields(a, b))
         artifacts = {'recovery': prepare.artifact(after)}
     else:
         require(mode == 'message-history', 'Unknown mode.')
@@ -147,16 +291,16 @@ def review(plan, baseline, captured, revision, mode, replacements=None):
             c = rows[f'aws_lambda_function.runtime["{name}"]']['change']
             before, after = c['before'], c['after']
             require(changed_fields(before, after) <= prepare.COMPUTED | PACKAGE | {'code_sha256', 'source_code_size'},
-                    'Message environment/role/runtime/limits/permissions must remain exact.')
+                    'Message environment/role/runtime/limits/permissions must remain exact.', resource=resource_category(f'aws_lambda_function.runtime["{name}"]'), fields=changed_fields(before, after))
             environment = _expected_environment(name, expected, True)
             environment['MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED'] = 'true'
             if name == 'consumer':
                 environment.update(GOVERNED_HISTORY_SETTLEMENT_ENABLED='true', MESSAGE_PROVIDER_CIRCUIT_OPEN='true')
-            require(prepare.environment(before) == prepare.environment(after) == environment, 'Candidate.3/History/AI-off configuration must remain exact.')
-            require(prepare.artifact(after) == expected['deployment']['artifacts'][name], 'Artifact selection mismatch.')
+            require(prepare.environment(before) == prepare.environment(after) == environment, 'Candidate.3/History/AI-off configuration must remain exact.', resource=resource_category(f'aws_lambda_function.runtime["{name}"]'))
+            require(prepare.artifact(after) == expected['deployment']['artifacts'][name], 'Artifact selection mismatch.', resource=resource_category(f'aws_lambda_function.runtime["{name}"]'))
             require(after.get('code_sha256') == after['source_code_hash'] or
                     (after.get('code_sha256') is None and c.get('after_unknown', {}).get('code_sha256') is True and
-                     bool(changed_fields(before, after) & PACKAGE)), 'Reviewed Message runtime hash must bind its package.')
+                     bool(changed_fields(before, after) & PACKAGE)), 'Reviewed Message runtime hash must bind its package.', resource=resource_category(f'aws_lambda_function.runtime["{name}"]'))
             alias_binding(rows[f'aws_lambda_alias.runtime["{name}"]'], c, plan)
         artifacts = expected['deployment']['artifacts']
     require(set(plan.get('output_changes', {})) <= {'candidate_contract', 'authority_maintenance'}, 'Unexpected output.')
@@ -208,33 +352,41 @@ def verify_deployed(plan, baseline, captured, mode, read=prepare.aws):
 
 
 def main():
-    p = argparse.ArgumentParser(description=__doc__)
+    p = PrivateArgumentParser(description=__doc__)
     p.add_argument('plan', type=Path); p.add_argument('--baseline', type=Path, required=True)
     p.add_argument('--capture', type=Path, required=True); p.add_argument('--revision', required=True)
     p.add_argument('--mode', choices=('maintenance', 'message-history'), required=True)
     p.add_argument('--expected-digest'); p.add_argument('--apply', action='store_true')
     p.add_argument('--deployed', action='store_true')
     args = p.parse_args()
-    plan, baseline, captured = (json.loads(path.read_text()) for path in (args.plan, args.baseline, args.capture))
-    replacements = None
-    if args.mode == 'message-history':
-        replacements = plan['variables']['deployment']['value']['artifacts']
-    result, artifacts = review(plan, baseline, captured, args.revision, args.mode, replacements)
-    if args.apply:
-        require(re.fullmatch('[a-f0-9]{64}', args.expected_digest or '') and result['reviewedPlanDigest'] == args.expected_digest,
-                'Exact reviewed plan digest is required before apply.')
-        require(prepare.capture(baseline, args.mode) == captured, 'Fresh live pre-apply readback changed.')
-    elif args.expected_digest is not None:
-        require(result['reviewedPlanDigest'] == args.expected_digest, 'Plan digest mismatch.')
-    verify_artifacts(artifacts)
-    if args.deployed:
-        verify_deployed(plan, baseline, captured, args.mode)
-        result['actualDeployedConfigurationReadback'] = True
-    print(json.dumps(result))
+    phase = 'INPUT_LOAD'
+    try:
+        plan, baseline, captured = (json.loads(path.read_text()) for path in (args.plan, args.baseline, args.capture))
+        replacements = None
+        if args.mode == 'message-history':
+            replacements = plan['variables']['deployment']['value']['artifacts']
+        phase = 'PLAN_REVIEW'
+        result, artifacts = review(plan, baseline, captured, args.revision, args.mode, replacements)
+        phase = 'APPLY_BOUNDARY'
+        if args.apply:
+            require(re.fullmatch('[a-f0-9]{64}', args.expected_digest or '') and result['reviewedPlanDigest'] == args.expected_digest,
+                    'Exact reviewed plan digest is required before apply.')
+            require(prepare.capture(baseline, args.mode) == captured, 'Fresh live pre-apply readback changed.')
+        elif args.expected_digest is not None:
+            require(result['reviewedPlanDigest'] == args.expected_digest, 'Plan digest mismatch.')
+        phase = 'ARTIFACT_VERIFY'
+        verify_artifacts(artifacts)
+        if args.deployed:
+            phase = 'DEPLOYED_READBACK'
+            verify_deployed(plan, baseline, captured, args.mode)
+            result['actualDeployedConfigurationReadback'] = True
+        print(json.dumps(result))
+    except Exception as error:
+        raise SystemExit(json.dumps(rejection_record(error, phase), sort_keys=True)) from None
 
 
 if __name__ == '__main__':
     try:
         main()
-    except Exception:
-        raise SystemExit('Preserved deployment plan rejected; private plan values were not printed.') from None
+    except Exception as error:
+        raise SystemExit(json.dumps(rejection_record(error, 'INITIALIZE'), sort_keys=True)) from None
