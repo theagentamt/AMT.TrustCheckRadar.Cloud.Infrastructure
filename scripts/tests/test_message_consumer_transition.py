@@ -47,6 +47,14 @@ def fixture(mode="inactive", changes=True):
             "reconciliation_seconds": 3600,
             "counter_retention_seconds": 604800,
         },
+        "authority_maintenance": {
+            "schema_version": 1, "environment": "dev",
+            "authority_table_arn": f"arn:aws:dynamodb:{transition.REGION}:{transition.ACCOUNT}:table/{transition.PREFIX}-purchase-entitlements",
+            "recovery_alias_arn": f"arn:aws:lambda:{transition.REGION}:{transition.ACCOUNT}:function:{transition.PREFIX}-url-lease-recovery:live",
+            "recovery_version": "11", "recovery_code_sha256": "A" * 43 + "=",
+            "worker_enabled": True, "schedule_enabled": True, "heartbeat_enforced": True,
+            "provider_access_added": False,
+        },
         "provider_budget": {
             "window_seconds": 3600,
             "max_attempts_per_window": 20,
@@ -70,46 +78,46 @@ def fixture(mode="inactive", changes=True):
         },
     }
     resources = []
-    if changes:
-        for name in ("consumer", "evaluator"):
-            resources.append({
-                "mode": "managed",
-                "address": f'aws_lambda_function.runtime["{name}"]',
-                "change": {
-                    "actions": ["update"],
-                    "before": {},
-                    "after": {
-                        "function_name": f"{transition.PREFIX}-message-{name}",
-                        "runtime": "python3.14",
-                        "architectures": ["arm64"],
-                        "reserved_concurrent_executions": 2,
-                        "memory_size": 256,
-                        "timeout": 29 if name == "consumer" else 23,
-                        "handler": f"message_{name}.app.lambda_handler",
-                        "publish": True,
-                        "role": f"arn:aws:iam::{transition.ACCOUNT}:role/{transition.PREFIX}-message-{name}-execution",
-                        "s3_bucket": ARTIFACTS[name]["bucket"],
-                        "s3_key": ARTIFACTS[name]["key"],
-                        "s3_object_version": ARTIFACTS[name]["object_version"],
-                        "source_code_hash": ARTIFACTS[name]["source_hash"],
-                        "environment": [{"variables": transition._expected_environment(name, variables, active)}],
-                    },
+    for name in ("consumer", "evaluator"):
+        resources.append({
+            "mode": "managed",
+            "address": f'aws_lambda_function.runtime["{name}"]',
+            "change": {
+                "actions": ["update"] if changes else ["no-op"],
+                "before": {},
+                "after": {
+                    "function_name": f"{transition.PREFIX}-message-{name}",
+                    "runtime": "python3.14",
+                    "architectures": ["arm64"],
+                    "reserved_concurrent_executions": 2,
+                    "memory_size": 256,
+                    "timeout": 29 if name == "consumer" else 23,
+                    "handler": f"message_{name}.app.lambda_handler",
+                    "publish": True,
+                    "version": "7",
+                    "role": f"arn:aws:iam::{transition.ACCOUNT}:role/{transition.PREFIX}-message-{name}-execution",
+                    "s3_bucket": ARTIFACTS[name]["bucket"],
+                    "s3_key": ARTIFACTS[name]["key"],
+                    "s3_object_version": ARTIFACTS[name]["object_version"],
+                    "source_code_hash": ARTIFACTS[name]["source_hash"],
+                    "environment": [{"variables": transition._expected_environment(name, variables, active)}],
                 },
-            })
-            resources.append({
-                "mode": "managed",
-                "address": f'aws_lambda_alias.runtime["{name}"]',
-                "change": {
-                    "actions": ["update"],
-                    "before": {},
-                    "after": {
-                        "name": "live",
-                        "function_name": f"{transition.PREFIX}-message-{name}",
-                        "function_version": None,
-                        "routing_config": [],
-                    },
+            },
+        })
+        resources.append({
+            "mode": "managed",
+            "address": f'aws_lambda_alias.runtime["{name}"]',
+            "change": {
+                "actions": ["update"] if changes else ["no-op"],
+                "before": {},
+                "after": {
+                    "name": "live",
+                    "function_name": f"{transition.PREFIX}-message-{name}",
+                    "function_version": "7",
+                    "routing_config": [],
                 },
-            })
+            },
+        })
     contract = {
         "provisioned": True,
         "consumer_enabled": active,
@@ -123,7 +131,11 @@ def fixture(mode="inactive", changes=True):
         "secret_value_in_state": False,
         "daily_reporting_ready": False,
     }
+    for item in resources:
+        if item['change']['actions'] == ['no-op']:
+            item['change']['before'] = copy.deepcopy(item['change']['after'])
     return {
+        "planned_values": {"root_module": {"resources": [{"address": item['address'], "mode": "managed", "values": copy.deepcopy(item['change']['after'])} for item in resources]}},
         "complete": True,
         "errored": False,
         "terraform_version": "1.12.1",
@@ -199,6 +211,86 @@ class MessageConsumerTransitionTests(unittest.TestCase):
         for plan in (partial, unexpected, destructive):
             with self.subTest(), self.assertRaises(ValueError):
                 transition.review(plan, REVISION, "engineering")
+
+    def test_active_and_inactive_noop_runtime_alias_inventory_is_checked(self):
+        for mode in ("inactive", "engineering"):
+            for mutation in ("environment", "runtime", "handler", "weighted", "version", "missing", "duplicate", "drift"):
+                plan = fixture(mode, changes=False)
+                function, alias = plan["resource_changes"][:2]
+                if mutation == "environment": function["change"]["after"]["environment"][0]["variables"]["MESSAGE_AI_ENABLED"] = "true"
+                if mutation == "runtime": function["change"]["after"]["runtime"] = "python3.13"
+                if mutation == "handler": function["change"]["after"]["handler"] = "unreviewed.handler"
+                if mutation == "weighted": alias["change"]["after"]["routing_config"] = [{"additional_version_weights": {"8": 0.1}}]
+                if mutation == "version": alias["change"]["after"]["function_version"] = "8"
+                if mutation == "missing": plan["resource_changes"].pop()
+                if mutation == "duplicate": plan["resource_changes"].append(copy.deepcopy(function))
+                if mutation == "drift": plan["resource_drift"] = [{"mode": "managed", "change": {"actions": ["update"]}}]
+                if mutation in ("environment", "runtime", "handler", "weighted", "version"):
+                    for item in plan['resource_changes']:
+                        item['change']['before'] = copy.deepcopy(item['change']['after'])
+                    plan['planned_values']['root_module']['resources'] = [{'address': item['address'], 'mode': 'managed', 'values': copy.deepcopy(item['change']['after'])} for item in plan['resource_changes']]
+                with self.subTest(mode=mode, mutation=mutation), self.assertRaises(ValueError):
+                    transition.review(plan, REVISION, mode)
+
+    def test_maintenance_is_required_for_every_active_plan_even_noop(self):
+        for changes in (False, True):
+            for mutation in ("missing", "extra", "schema_bool", "env", "table", "alias", "version", "hash", "worker", "schedule", "heartbeat", "provider", "numeric", "text"):
+                plan = fixture("engineering", changes=changes)
+                contract = plan["variables"]["authority_maintenance"]["value"]
+                if mutation == "missing": plan["variables"].pop("authority_maintenance")
+                if mutation == "extra": contract["unqualified"] = True
+                if mutation == "schema_bool": contract["schema_version"] = True
+                if mutation == "env": contract["environment"] = "production"
+                if mutation == "table": contract["authority_table_arn"] += "-wrong"
+                if mutation == "alias": contract["recovery_alias_arn"] += "-wrong"
+                if mutation == "version": contract["recovery_version"] = "$LATEST"
+                if mutation == "hash": contract["recovery_code_sha256"] = "invalid"
+                if mutation == "worker": contract["worker_enabled"] = False
+                if mutation == "schedule": contract["schedule_enabled"] = False
+                if mutation == "heartbeat": contract["heartbeat_enforced"] = False
+                if mutation == "provider": contract["provider_access_added"] = True
+                if mutation == "numeric": contract["worker_enabled"] = 1
+                if mutation == "text": contract["worker_enabled"] = "true"
+                with self.subTest(changes=changes, mutation=mutation), self.assertRaises(ValueError):
+                    transition.review(plan, REVISION, "engineering")
+
+    def test_inactive_rollback_does_not_require_running_maintenance(self):
+        plan = fixture("inactive", changes=False)
+        plan["variables"].pop("authority_maintenance")
+        self.assertEqual(transition.review(plan, REVISION, "inactive")[3], 0)
+
+    def test_unknown_versions_require_both_unknown_markers_and_source_binding(self):
+        plan = fixture("engineering")
+        for item in plan["resource_changes"]:
+            field = "function_version" if "aws_lambda_alias." in item["address"] else "version"
+            item["change"]["after"][field] = None
+            item["change"]["after_unknown"] = {field: True}
+        plan["configuration"] = {"root_module": {"resources": [{"address": "aws_lambda_alias.runtime", "expressions": {"function_version": {"references": ["aws_lambda_function.runtime"]}}}]}}
+        plan['planned_values']['root_module']['resources'] = [{'address': item['address'], 'mode': 'managed', 'values': copy.deepcopy(item['change']['after'])} for item in plan['resource_changes']]
+        transition.review(plan, REVISION, "engineering")
+        for mutation in ("function_marker", "alias_marker", "source_binding"):
+            invalid = copy.deepcopy(plan)
+            if mutation == "function_marker": invalid["resource_changes"][0]["change"].pop("after_unknown")
+            if mutation == "alias_marker": invalid["resource_changes"][1]["change"].pop("after_unknown")
+            if mutation == "source_binding": invalid.pop("configuration")
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                transition.review(invalid, REVISION, "engineering")
+
+    def test_legacy_runtime_attachments_checks_and_inconsistent_inventory_rejected(self):
+        for mode in ('inactive', 'engineering'):
+            for mutation in ('layers', 'vpc_config', 'dead_letter_config', 'file_system_config', 'image_uri', 'check_fail', 'check_unknown', 'inconsistent_noop', 'missing_planned', 'mismatched_planned'):
+                plan = fixture(mode, changes=False)
+                if mutation in ('layers', 'vpc_config', 'dead_letter_config', 'file_system_config', 'image_uri'):
+                    plan['resource_changes'][0]['change']['after'][mutation] = ['unexpected']
+                    plan['resource_changes'][0]['change']['before'] = copy.deepcopy(plan['resource_changes'][0]['change']['after'])
+                    plan['planned_values']['root_module']['resources'][0]['values'] = copy.deepcopy(plan['resource_changes'][0]['change']['after'])
+                if mutation == 'check_fail': plan['checks'] = [{'status': 'fail'}]
+                if mutation == 'check_unknown': plan['checks'] = [{'status': 'unknown'}]
+                if mutation == 'inconsistent_noop': plan['resource_changes'][0]['change']['before'] = {}
+                if mutation == 'missing_planned': plan.pop('planned_values')
+                if mutation == 'mismatched_planned': plan['planned_values']['root_module']['resources'][0]['values']['runtime'] = 'python3.13'
+                with self.subTest(mode=mode, mutation=mutation), self.assertRaises(ValueError):
+                    transition.review(plan, REVISION, mode)
 
     def test_artifact_versions_and_bytes_are_verified(self):
         paths = []

@@ -1,0 +1,58 @@
+{
+  "base": "f1c5d36d565d1f6eb937d957605dc235f7867780",
+  "completeComponentFileJoins": 32,
+  "componentSourceExactMatchToPriorEvidence": true,
+  "currentValidation": {
+    "terraformFormatting": "PASS",
+    "messageStaticValidation": "PASS",
+    "urlStaticValidation": "PASS",
+    "pythonSyntax": "PASS",
+    "whitespace": "PASS",
+    "focusedPythonTests": 30,
+    "focusedPythonOutcome": "PASS",
+    "initialTestInvocation": "INCORRECT_MODULE_NAME_CORRECTED",
+    "newTerraformMockSuiteRun": false,
+    "liveServiceTestRun": false
+  },
+  "noRuntimeOrPermissionActivation": true,
+  "priorValidationOnly": {
+    "PythonVerifier": 30,
+    "TerraformMock": 112,
+    "notNewlyExecutedOrLiveAcceptance": true
+  },
+  "publishedSourceHead": "56a1c6181dc41cae6919e20effe59f6f1ed73b32",
+  "reviewedLocalSource": "2ff2140b021e096f1fcb35352368dbf075c3d8af",
+  "sourceFileHashes": {
+    "scripts/tests/test_candidate3_rules_plan.py": "2d847c72c72564ad3d6db463672ce16305f4cf5dc15a53238f72497310e95be4",
+    "scripts/tests/test_message_consumer_transition.py": "6eb7b659bc8e360671b1d35c2801c8a5f43e37483c960b9bd334fc019a36653d",
+    "scripts/verify_candidate3_rules_plan.py": "4863f607fab0203f6b4eda7102a1abea27903fea5f74ba975a29e2ca47c8a4a6",
+    "scripts/verify_message_consumer_transition.py": "9eb66c4ba36e0322d99b38f124442b12c8e737fc97b82963f54db1598beeb49a",
+    "terraform/message-consumer/maintenance.tf": "c3ce3454d73499860e1aae371781e23bc9ab7ddc2c1594181c6b9102e758fd0c",
+    "terraform/message-consumer/tests/activation.tftest.hcl": "f5c2df48795434eccbea6e57d8cba5d7f330e4d0ba6fdd9db8ade7c104e905d3",
+    "terraform/message-consumer/variables.tf": "ad30ef15deb55b037c67842b1cf5841d9725c33320707a281f9b6ba249f0dcb7",
+    "terraform/url-consumer/deletion.tf": "7946f948043d3118f55de7c4906acf23771a071a4316dbc75cd70ce8765b2059",
+    "terraform/url-consumer/main.tf": "c1915a1fb36fb23349fdffcdf9416b9b5e8b80aa6b68764006bda9c0742162ac",
+    "terraform/url-consumer/maintenance.tf": "3e3f61384e957587721ea57df1f43df3520dcd7f86e7b6e5cbfee50ddea1619d",
+    "terraform/url-consumer/operations.tf": "096cea35fa327e6c2015051b9988dd4f6f4f84241749a42dc700e4d84c759673",
+    "terraform/url-consumer/outputs.tf": "b6c1dafa073c7a0d5a932302bb5d575e5d586b9a8205d84df093f8e057099d0a",
+    "terraform/url-consumer/tests/integration.tftest.hcl": "0d28ddb4ebaf19b6c90072290933610832d304a3e5b036b808f9e49c68058e88"
+  },
+  "sourceFiles": [
+    "scripts/tests/test_candidate3_rules_plan.py",
+    "scripts/tests/test_message_consumer_transition.py",
+    "scripts/verify_candidate3_rules_plan.py",
+    "scripts/verify_message_consumer_transition.py",
+    "terraform/message-consumer/maintenance.tf",
+    "terraform/message-consumer/tests/activation.tftest.hcl",
+    "terraform/message-consumer/variables.tf",
+    "terraform/url-consumer/deletion.tf",
+    "terraform/url-consumer/main.tf",
+    "terraform/url-consumer/maintenance.tf",
+    "terraform/url-consumer/operations.tf",
+    "terraform/url-consumer/outputs.tf",
+    "terraform/url-consumer/tests/integration.tftest.hcl"
+  ],
+  "sourcePR": 183,
+  "status": "MAIN_BASED_SOURCE_PREPARATION",
+  "wholeReleaseMerged": false
+}

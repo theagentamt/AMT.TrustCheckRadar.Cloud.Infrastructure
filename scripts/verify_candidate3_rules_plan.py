@@ -49,6 +49,7 @@ def review(plan, revision, mode):
     changed = [v for v in managed.values() if v['change']['actions'] != ['no-op']]
     require(all(v['address'] in allowed and v['change']['actions'] == ['update'] for v in changed), 'Candidate.3 may update only existing message functions, aliases and evaluator IAM.')
     require(allowed <= set(managed), 'Both functions, aliases and evaluator policy post-plan inventory are required.')
+    require(all(v['change']['actions'] != ['no-op'] or v['change'].get('before') == v['change'].get('after') for v in managed.values()), 'No-op readback must remain unchanged.')
     planned = {v['address']: v.get('values') for v in plan.get('planned_values', {}).get('root_module', {}).get('resources', []) if v.get('mode') == 'managed'}
     require(set(planned) == set(managed) and all(planned[k] == v['change']['after'] for k, v in managed.items()), 'Complete consistent post-plan inventory required.')
     normalized = copy.deepcopy(plan)
@@ -88,6 +89,13 @@ def review(plan, revision, mode):
     output = normalized.get('output_changes', {}).get('candidate_contract', {}).get('after') or {}
     require(output.get('candidate3_rules_only_enabled') is active and output.get('governed_history_settlement_enabled') is history and output.get('provider_circuit_open') is True, 'Output activation posture does not match candidate.3.')
     output['provider_circuit_open'] = not active
+    for item in normalized['resource_changes']:
+        if item['change']['actions'] == ['no-op']:
+            item['change']['before'] = copy.deepcopy(item['change']['after'])
+    normalized['planned_values'] = {'root_module': {'resources': [
+        {'address': item['address'], 'mode': 'managed', 'values': copy.deepcopy(item['change']['after'])}
+        for item in normalized['resource_changes']
+    ]}}
     review_legacy(normalized, revision, 'engineering' if active else 'inactive')
     material = {k: plan.get(k) for k in ('terraform_version', 'variables', 'resource_changes', 'resource_drift', 'output_changes', 'checks', 'configuration')}
     material.update(revision=revision, mode=mode)

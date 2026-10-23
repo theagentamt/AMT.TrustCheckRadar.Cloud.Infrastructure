@@ -54,6 +54,30 @@ def _decode_hash(value):
         raise ValueError("Invalid artifact SHA256.")
 
 
+def _review_maintenance(variables):
+    """Validate configuration only; trusted runtime/IAM readback is a rollout gate."""
+    contract = variables.get("authority_maintenance")
+    fields = {
+        "schema_version", "environment", "authority_table_arn", "recovery_alias_arn",
+        "recovery_version", "recovery_code_sha256", "worker_enabled",
+        "schedule_enabled", "heartbeat_enforced", "provider_access_added",
+    }
+    if type(contract) is not dict or set(contract) != fields:
+        raise ValueError("Exact shared maintenance configuration is required before admission.")
+    if (
+        type(contract["schema_version"]) is not int or contract["schema_version"] != 1
+        or contract["environment"] != "dev"
+        or contract["authority_table_arn"] != variables["deployment"]["authority_table_arn"]
+        or contract["recovery_alias_arn"] != f"arn:aws:lambda:{REGION}:{ACCOUNT}:function:{PREFIX}-url-lease-recovery:live"
+        or not isinstance(contract["recovery_version"], str)
+        or not re.fullmatch(r"[1-9][0-9]*", contract["recovery_version"])
+        or any(contract[key] is not True for key in ("worker_enabled", "schedule_enabled", "heartbeat_enforced"))
+        or contract["provider_access_added"] is not False
+    ):
+        raise ValueError("Shared maintenance must be enabled, versioned, same-table and provider-free.")
+    _decode_hash(contract["recovery_code_sha256"])
+
+
 def _review_artifacts(deployment):
     artifacts = deployment.get("artifacts") or {}
     if set(artifacts) != {"consumer", "evaluator"}:
@@ -131,6 +155,8 @@ def review(plan, revision, mode):
         raise ValueError("A full reviewed Git commit SHA is required.")
     if plan.get("errored") or plan.get("complete") is not True:
         raise ValueError("Only a complete, successful plan can be reviewed.")
+    if any(check.get("status") != "pass" for check in plan.get("checks") or []):
+        raise ValueError("Plan checks must have passed; failed or unknown checks cannot be reviewed.")
 
     variables = _variables(plan)
     if any(_terraform_bool(variables.get(key, False)) for key in ("candidate3_rules_only_enabled", "governed_history_settlement_enabled")):
@@ -189,11 +215,25 @@ def review(plan, revision, mode):
     if deployment.get("cognito_issuer") != "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_wzN0wUSdQ" or deployment.get("cognito_app_client_id") != "5kvl9a8jo4fr1qqnci27tdabk4":
         raise ValueError("Transition must use the reviewed Dev Cognito authority.")
     artifacts, lambda_release = _review_artifacts(deployment)
+    if active:
+        _review_maintenance(variables)
 
+    inventory = [item for item in plan.get("resource_changes", []) if item.get("mode") == "managed"]
+    managed = {item["address"]: item for item in inventory}
+    if len(managed) != len(inventory) or not TRANSITION_ADDRESSES <= set(managed):
+        raise ValueError("Unique complete function and alias post-plan inventory is required.")
+    if any(item.get("change", {}).get("actions") == ["no-op"] and item["change"].get("before") != item["change"].get("after") for item in inventory):
+        raise ValueError("No-op readback must have identical before and after values.")
+    planned_inventory = [item for item in plan.get("planned_values", {}).get("root_module", {}).get("resources", []) if item.get("mode") == "managed"]
+    planned = {item["address"]: item.get("values") for item in planned_inventory}
+    if len(planned) != len(planned_inventory) or set(planned) != set(managed) or any(planned[address] != item["change"].get("after") for address, item in managed.items()):
+        raise ValueError("Complete consistent post-plan inventory is required.")
+    if any(item.get("mode") == "managed" and item.get("change", {}).get("actions") != ["no-op"]
+           for item in plan.get("resource_drift", [])):
+        raise ValueError("Resolve unreviewed managed drift before transition.")
     changes = {
-        item["address"]: item
-        for item in plan.get("resource_changes", [])
-        if item.get("mode") == "managed" and item.get("change", {}).get("actions") != ["no-op"]
+        address: item for address, item in managed.items()
+        if item.get("change", {}).get("actions") != ["no-op"]
     }
     if set(changes) not in (set(), TRANSITION_ADDRESSES):
         raise ValueError(f"Unexpected transition resource set: {sorted(changes)}.")
@@ -203,8 +243,8 @@ def review(plan, revision, mode):
 
     for name in ("consumer", "evaluator"):
         function_address = f'aws_lambda_function.runtime["{name}"]'
-        if function_address in changes:
-            function = changes[function_address]["change"]["after"]
+        if function_address in managed:
+            function = managed[function_address]["change"]["after"]
             artifact = artifacts[name]
             expected = {
                 "function_name": f"{PREFIX}-message-{name}",
@@ -223,16 +263,29 @@ def review(plan, revision, mode):
             }
             if any(function.get(key) != value for key, value in expected.items()):
                 raise ValueError(f"The planned {name} runtime exceeds the reviewed boundary.")
+            if any(function.get(key) for key in ("layers", "vpc_config", "dead_letter_config", "file_system_config", "image_uri")):
+                raise ValueError("Unreviewed runtime attachments are forbidden.")
             environment = function.get("environment", [{}])[0].get("variables", {})
             if environment != _expected_environment(name, variables, active):
                 raise ValueError(f"The planned {name} environment does not match the selected bounded mode.")
         alias_address = f'aws_lambda_alias.runtime["{name}"]'
-        if alias_address in changes:
-            alias = changes[alias_address]["change"]["after"]
+        if alias_address in managed:
+            alias = managed[alias_address]["change"]["after"]
             if alias.get("name") != "live" or alias.get("function_name") != f"{PREFIX}-message-{name}":
                 raise ValueError(f"The planned {name} alias is not the reviewed live alias.")
             if alias.get("routing_config") not in (None, []):
                 raise ValueError(f"The planned {name} alias may not use weighted routing.")
+            function_version, alias_version = function.get("version"), alias.get("function_version")
+            if function_version is not None and alias_version is not None:
+                if not isinstance(alias_version, str) or not re.fullmatch(r"[1-9][0-9]*", alias_version) or function_version != alias_version:
+                    raise ValueError("Alias must serve the exact reviewed published version.")
+            else:
+                configuration = {item["address"]: item for item in plan.get("configuration", {}).get("root_module", {}).get("resources", [])}
+                references = configuration.get("aws_lambda_alias.runtime", {}).get("expressions", {}).get("function_version", {}).get("references", [])
+                if (managed[alias_address]["change"].get("after_unknown", {}).get("function_version") is not True
+                    or managed[function_address]["change"].get("after_unknown", {}).get("version") is not True
+                    or not any(ref == "aws_lambda_function.runtime" or ref.startswith("aws_lambda_function.runtime.") or ref.startswith("aws_lambda_function.runtime[") for ref in references)):
+                    raise ValueError("Unknown alias version must bind the version published by the reviewed function.")
 
     contract = plan.get("output_changes", {}).get("candidate_contract", {}).get("after") or {}
     expected_contract = {

@@ -74,8 +74,8 @@ resource "aws_cloudwatch_metric_alarm" "worker_heartbeat" {
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = 2
   datapoints_to_alarm = 2
-  actions_enabled     = (each.key == "deletion" ? local.authority_deletion_active : local.authority_engineering_active)
-  treat_missing_data  = (each.key == "deletion" ? local.authority_deletion_active : local.authority_engineering_active) ? "breaching" : "notBreaching"
+  actions_enabled     = (each.key == "deletion" ? local.authority_deletion_active : local.authority_maintenance_active)
+  treat_missing_data  = (each.key == "deletion" ? local.authority_deletion_active : local.authority_maintenance_active) ? "breaching" : "notBreaching"
   alarm_actions       = [var.alert_topic_arn]
   ok_actions          = [var.alert_topic_arn]
   tags                = var.tags
@@ -157,7 +157,7 @@ resource "aws_cloudwatch_metric_alarm" "expiry_overdue" {
   threshold           = 300
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
-  actions_enabled     = local.authority_engineering_active
+  actions_enabled     = local.authority_maintenance_active
   treat_missing_data  = "notBreaching"
   alarm_actions       = [var.alert_topic_arn]
   ok_actions          = [var.alert_topic_arn]

@@ -644,3 +644,91 @@ run "extra_snapshot_rejects_multiple_subjects" {
   variables { dev_access_snapshot_extra_subjects = ["00000000-0000-4000-8000-000000000003", "00000000-0000-4000-8000-000000000004"] }
   expect_failures = [var.dev_access_snapshot_extra_subjects]
 }
+
+run "maintenance_only_does_not_enable_customer_or_financial_capabilities" {
+  command = apply
+  variables {
+    activate_authority_maintenance      = true
+    maintenance_qualification_reference = "docs/evidence/synthetic-maintenance.json"
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "true" &&
+      aws_cloudwatch_event_rule.maintenance["recovery"].state == "ENABLED" &&
+      aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"].actions_enabled &&
+      aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"].treat_missing_data == "breaching" &&
+      output.authority_maintenance.worker_enabled && output.authority_maintenance.schedule_enabled &&
+      output.authority_maintenance.heartbeat_enforced && !output.authority_maintenance.provider_access_added
+    )
+    error_message = "Maintenance worker, schedule and failure detection must be enabled together."
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["consumer"].environment[0].variables.CONSUMER_ENABLED == "false" &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.AUTHORITY_ENABLED == "false" &&
+      # Current main keeps the default trial-retention gate closed. Maintenance
+      # must preserve the selected configuration, not the older release value.
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == "[]" &&
+      !output.candidate_contract.consumer_enabled && !output.candidate_contract.access_enabled &&
+      !output.candidate_contract.trial_activation_enabled && output.candidate_contract.engineering_subject_count == 0
+    )
+    error_message = "Maintenance cannot enable URL/access/trial, union actor scopes or grant allowance."
+  }
+  assert {
+    condition = (
+      output.authority_maintenance.authority_table_arn == var.deployment.authority_table_arn &&
+      output.authority_maintenance.recovery_code_sha256 == var.deployment.artifacts.recovery.source_hash &&
+      output.authority_maintenance.recovery_version == "1" &&
+      aws_lambda_function.runtime["recovery"].s3_key == var.deployment.artifacts.recovery.key &&
+      aws_cloudwatch_event_target.maintenance["recovery"].retry_policy[0].maximum_retry_attempts == 0
+    )
+    error_message = "Maintenance must preserve exact worker artifact, authority and no-retry schedule."
+  }
+}
+
+run "maintenance_without_review_reference_is_rejected" {
+  command = plan
+  variables { activate_authority_maintenance = true }
+  expect_failures = [var.activate_authority_maintenance]
+}
+
+run "maintenance_without_alert_path_is_rejected" {
+  command = plan
+  variables {
+    activate_authority_maintenance      = true
+    maintenance_qualification_reference = "docs/evidence/synthetic-maintenance.json"
+    alert_topic_arn                     = null
+  }
+  expect_failures = [var.activate_authority_maintenance]
+}
+
+run "maintenance_with_snapshot_preserves_all_existing_admission_boundaries" {
+  command = apply
+  variables {
+    activate_authority_maintenance      = true
+    maintenance_qualification_reference = "synthetic reviewed shared-maintenance fixture"
+    governed_trial_subjects             = ["01997e3a-0000-7000-8000-000000000001"]
+    dev_access_snapshot_extra_subjects  = ["00000000-0000-4000-8000-000000000003"]
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic inventory evidence"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["01997e3a-0000-7000-8000-000000000001"]) &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON == jsonencode(["00000000-0000-4000-8000-000000000003"]) &&
+      aws_lambda_function.runtime["entitlements"].environment[0].variables.TRIAL_AUTHORITY_RETENTION_APPROVED == "true" &&
+      alltrue([for role in ["consumer", "recovery", "deletion"] : !contains(keys(aws_lambda_function.runtime[role].environment[0].variables), "DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON")]) &&
+      aws_lambda_function.runtime["deletion"].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000002"]) &&
+      aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "true" &&
+      output.authority_maintenance.worker_enabled && output.authority_maintenance.schedule_enabled &&
+      !output.candidate_contract.general_customer_access && !output.candidate_contract.consumer_enabled
+    )
+    error_message = "Explicit maintenance may enable only the shared worker; snapshot, trial, deletion and consumer scopes must retain their separate selections."
+  }
+}
