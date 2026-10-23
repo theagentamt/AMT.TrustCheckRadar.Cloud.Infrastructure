@@ -4,7 +4,8 @@ SECUR4ALL-242 supplies the isolated infrastructure dependency for ATCR-120 and
 SECUR4ALL-190/228/229/230. This root can provision the inactive Dev runtimes and
 the three authenticated message routes without activating message processing.
 Provisioning, rules-only engineering qualification and later qualified AI are
-separate gates. All checked-in environment files remain disabled.
+separate gates. The checked-in Dev configuration installs the candidate while
+all execution gates remain disabled; UAT and production remain disabled.
 
 ## Runtime and trust boundaries
 
@@ -46,11 +47,16 @@ separate gates. All checked-in environment files remain disabled.
 State is isolated at `trustcheckradar/dev/message-consumer.tfstate`. The provider
 is restricted to Dev account 107827791950. Inputs are exact environment-scoped
 same-account dependencies. UAT/production provisioning is rejected. CI validates
-this root, and the automatic deployment workflow explicitly excludes it.
+this root, and the automatic environment deployment excludes it. Installation is
+available only through the manually dispatched, main-only **Deploy infrastructure**
+workflow with `deployment_scope=message-consumer`.
 
 Before provisioning, pin the reviewed Lambda artifact pair, validate the actual
 Android contract against handler responses, supply the exact existing Dev API and
-shared JWT authorizer, and review a saved manual Dev plan. Provisioning creates
+shared JWT authorizer, and review the workflow's saved Dev plan. Applying requires
+the exact plan digest emitted for the same full `main` revision. The verifier
+downloads both exact S3 object versions and checks their SHA-256 values before it
+permits an apply. Provisioning creates
 only `POST /v1/message-checks/prepare`, `POST /v1/message-checks`, and
 `POST /v1/message-checks/reconcile`; every route requires the existing Cognito JWT
 scope and invokes the pinned `message-consumer:live` alias. Disabled handlers
@@ -61,6 +67,16 @@ synthetic Cognito subjects, explicit seven-day-bounded authority horizons and an
 aggregate provider budget. It closes the circuit only for candidate.1. Candidate.2
 and candidate.3 remain unavailable because AI flags stay false and evaluator IAM
 continues to deny every Secrets Manager action.
+
+The first connected SECUR4ALL-230 qualification narrows this further to exactly
+one synthetic subject. Dispatch the registered workflow with
+`deployment_scope=message-consumer-engineering`. The subject comes from the
+protected Dev environment secret `MESSAGE_ENGINEERING_SUBJECTS_JSON`; it is not
+committed or printed. The transition verifier permits only coordinated updates to
+the two immutable runtimes and their `live` aliases, requires the exact reviewed
+plan digest before apply, and suppresses Terraform plan/apply output that could
+contain the subject. Use `deployment_scope=message-consumer` to return to the
+checked-in inactive configuration.
 
 The route resources do not replace `/analysis`, add a Lambda URL, schedule work,
 or change URL-consumer IAM. The legacy endpoint remains retired. Authority and
@@ -152,6 +168,17 @@ for local validation with the mocked AWS provider. Tests cover no-op defaults,
 inactive runtimes, authority/evaluator isolation, immutable coordinated packages,
 wrong environment/account rejection and absent public endpoint output. These
 mocked applies create no AWS resources and are not a deployment report.
+
+For the Dev installation, dispatch **Deploy infrastructure** from the exact
+reviewed `main` revision with `environment=dev`,
+`deployment_scope=message-consumer`, and `execution_mode=plan`. Confirm the summary
+contains the bounded transition scope and the expected immutable Lambda release.
+The initial installation produced 25 creates; later inactive plans are no-op or
+coordinated runtime/alias updates. Then dispatch the same revision with
+`execution_mode=apply` and its exact `reviewedPlanDigest`. The workflow applies
+only that saved plan, verifies the selected inactive or one-subject engineering
+contract, and requires a zero-drift follow-up plan. A changed revision or state
+requires a new plan review.
 
 The 2026-09-21 proposer handoff passed `terraform fmt -check`, `terraform validate`
 and all 10 mocked runs, including the explicit disabled-provider/no-config

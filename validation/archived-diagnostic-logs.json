@@ -1,0 +1,20 @@
+{
+  "logs": [
+    {
+      "compressedPath": "validation/message-maintenance-tests.log.gz",
+      "compressedSha256": "3fde12ab9ee12aad67be13730aebb0d960db9b851379acbc0f65b383d1f0c9dc",
+      "decompressedBytesVerifiedEqual": true,
+      "originalPath": "validation/message-maintenance-tests.log",
+      "originalSha256": "fd1b558e5eadcf3d23f188f48b65afce6c374ae914c58426870ee96ef57171a0",
+      "reason": "Preserve original failed Terraform sandbox logs byte-for-byte, including original diagnostic trailing spaces, without introducing source whitespace defects."
+    },
+    {
+      "compressedPath": "validation/url-maintenance-tests.log.gz",
+      "compressedSha256": "ec80d8076409bff7e494791e05b769e38fd1e8bcaa6de5928f57c641793f2420",
+      "decompressedBytesVerifiedEqual": true,
+      "originalPath": "validation/url-maintenance-tests.log",
+      "originalSha256": "0c2d5f13bf6c4aea8a21b9d3e00f85de3027fe1378fae3a1b28df76fcce68f20",
+      "reason": "Preserve original failed Terraform sandbox logs byte-for-byte, including original diagnostic trailing spaces, without introducing source whitespace defects."
+    }
+  ]
+}

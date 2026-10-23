@@ -1,0 +1,30 @@
+tests/activation.tftest.hcl... in progress
+  run "inactive_candidate_publishes_authenticated_routes_but_executes_nothing"... pass
+  run "allowlisted_rules_engineering_activation_is_bounded_and_ai_stays_closed"... pass
+  run "engineering_activation_without_subjects_is_rejected"... pass
+  run "message_rejects_maintenance_missing_contract"... pass
+  run "message_rejects_maintenance_disabled_worker"... pass
+  run "message_rejects_maintenance_disabled_schedule"... pass
+  run "message_rejects_maintenance_missing_heartbeat"... pass
+  run "message_rejects_maintenance_wrong_table"... pass
+  run "message_rejects_maintenance_wrong_alias"... pass
+  run "message_rejects_maintenance_unversioned_worker"... pass
+  run "message_rejects_maintenance_wrong_hash"... pass
+  run "message_rejects_maintenance_added_provider_access"... pass
+tests/activation.tftest.hcl... tearing down
+tests/activation.tftest.hcl... pass
+tests/security.tftest.hcl... in progress
+  run "disabled_creates_no_runtime"... pass
+  run "candidate_is_isolated_and_inactive"... pass
+  run "uat_provisioning_rejected"... pass
+  run "prod_provisioning_rejected"... pass
+  run "missing_artifacts_rejected"... pass
+  run "wrong_hmac_environment_rejected"... pass
+  run "unqualified_assessment_rejected"... pass
+  run "mixed_release_artifacts_rejected"... pass
+  run "mutable_artifact_rejected"... pass
+  run "foreign_dependency_account_rejected"... pass
+tests/security.tftest.hcl... tearing down
+tests/security.tftest.hcl... pass
+
+Success! 22 passed, 0 failed.

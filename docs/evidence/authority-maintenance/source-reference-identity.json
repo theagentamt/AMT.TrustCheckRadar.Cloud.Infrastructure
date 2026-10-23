@@ -1,0 +1,23 @@
+{
+  "SSHRetried": false,
+  "currentImmutableRefsReconciled": {
+    "backendRelease": {
+      "commit": "357be64e7a43d809d21318dfa4e276d2587fac2c",
+      "commitObjectRehashed": true,
+      "tree": "882a90b88f82cedb63e4ce961cf914e83c5ee766"
+    },
+    "infrastructureMain": {
+      "commit": "f1c5d36d565d1f6eb937d957605dc235f7867780",
+      "commitObjectRehashed": true,
+      "tree": "57c0090b3c83abdfeb98da04766c307ddbb9e4ce"
+    },
+    "infrastructureRelease": {
+      "commit": "353303b657dfe3e44eda59cd8ed343284880cf69",
+      "commitObjectRehashed": true,
+      "tree": "f12519aefd05b2af860ef9cb819bf31c49e0b3be"
+    }
+  },
+  "freshRemoteRefReadThisStep": false,
+  "mainPromotionAuthorized": false,
+  "readOnlyConnectorReferenceWindow": "2026-10-23T12:30:00Z/2026-10-23T12:35:00Z"
+}

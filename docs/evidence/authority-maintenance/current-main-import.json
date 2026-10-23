@@ -1,0 +1,135 @@
+{
+  "main": "f1c5d36d565d1f6eb937d957605dc235f7867780",
+  "mainTree": "57c0090b3c83abdfeb98da04766c307ddbb9e4ce",
+  "base": "353303b657dfe3e44eda59cd8ed343284880cf69",
+  "releaseTreeEqualsMergeBase": true,
+  "importedFiles": [
+    {
+      "path": "terraform/message-consumer/README.md",
+      "mainGitBlob": "387b3f6deabbe84c99647119897a95ff25532e15",
+      "mainSha256": "8fadc534ef85780cc30bf42e44eed90700fcb975e8caa2a7511fd239f7a1c732",
+      "threeWayConflict": false
+    },
+    {
+      "path": "terraform/message-consumer/main.tf",
+      "mainGitBlob": "88269fa78de2325b1c12dd83f711b4b51801e0b5",
+      "mainSha256": "546cef7103494ca2a0a88d40fb1cf0f86759e3b31fa26f2d0198240337c0ef99",
+      "threeWayConflict": false
+    },
+    {
+      "path": "terraform/message-consumer/outputs.tf",
+      "mainGitBlob": "18e201fd8465aa862313a1942b22f144de56f0e9",
+      "mainSha256": "28b559507a01031cd483710836f7a72d48b20135300ff7d455907f7be4737153",
+      "threeWayConflict": false
+    },
+    {
+      "path": "terraform/message-consumer/tests/activation.tftest.hcl",
+      "mainGitBlob": "a69e064dbe415e1244e0211d1f1e61e8fd5cc02d",
+      "mainSha256": "e9bb316952173bcb162f4b4fdab9a21c6414f60ede7fa851f7b72271c6fefefb",
+      "threeWayConflict": true
+    },
+    {
+      "path": "terraform/message-consumer/variables.tf",
+      "mainGitBlob": "e31fc9f5b78e5e1d1f9059ec5c57e47fe7f97670",
+      "mainSha256": "3597e6472b966954d3f998e027da5b8d614da4662d0713c33cbe25ca5994bc99",
+      "threeWayConflict": false
+    },
+    {
+      "path": "terraform/url-consumer/README.md",
+      "mainGitBlob": "6cb5bee9e039b3bcc3a71082327a36d62b868c28",
+      "mainSha256": "66bf95fa04f6703d6863ab3c36c33c525eb02445a791b78ec052c567c247db49",
+      "threeWayConflict": false
+    },
+    {
+      "path": "terraform/url-consumer/complimentary-operator.tf",
+      "mainGitBlob": "aaecf1a2377c37586384ca7c6193ad6739f37744",
+      "mainSha256": "631f844631c5a9f5215256caa8e064ab495647d9ff18c723dedb60b07736e64d",
+      "threeWayConflict": false
+    },
+    {
+      "path": "terraform/url-consumer/deletion-activation.tf",
+      "mainGitBlob": "b9ac4b8f7e4a4addcc7ac2ca4c2220fb5ef50b62",
+      "mainSha256": "e77e741ba3dbdb4cda8a742cc1735a8617743a17f44cf8681c88741bb1eca1a6",
+      "threeWayConflict": false
+    },
+    {
+      "path": "terraform/url-consumer/integration.tf",
+      "mainGitBlob": "527bfc742fecf7b29d7810071e9732e913b95f43",
+      "mainSha256": "5caa731530e457f2165a1d45b1aab652cc8062f7ad5f6a640dd1bd521071d974",
+      "threeWayConflict": false
+    },
+    {
+      "path": "terraform/url-consumer/main.tf",
+      "mainGitBlob": "c93b46cfcf0d1d1176cc2051aeaccec4bf43ec31",
+      "mainSha256": "2edf1dd9d1e15497c69f82d896665dc7b604ab31f59be4e4f9ec6ff2ecc5e374",
+      "threeWayConflict": false
+    },
+    {
+      "path": "terraform/url-consumer/outputs.tf",
+      "mainGitBlob": "2dbe62531d54021ce3b398a9eca3184c8529d844",
+      "mainSha256": "06c5eee036198bf8d0e1a10981b842f3d5c4fdeb9155c903d7bee8af52c7a671",
+      "threeWayConflict": true
+    },
+    {
+      "path": "terraform/url-consumer/tests/integration.tftest.hcl",
+      "mainGitBlob": "62fd985aedfd04603cde12479af5d4cadf1daa68",
+      "mainSha256": "5b803ef2e10eca3c9d3cfab60d68c276c85d38224b9b76e5a0315562cef647f3",
+      "threeWayConflict": true
+    },
+    {
+      "path": "terraform/url-consumer/tests/security.tftest.hcl",
+      "mainGitBlob": "50e235ba581f4ca417d9cc5b6d1ef7c93857b75a",
+      "mainSha256": "a8cb49c2913e043e2d758e450d902c8922967305801f4c6cade14c3d42f2af7b",
+      "threeWayConflict": false
+    },
+    {
+      "path": "scripts/verify_candidate3_rules_plan.py",
+      "mainGitBlob": "319eabff908a89898b4f4540ac2d978617d48de8",
+      "mainSha256": "dc7981ec7fe24fc7256348da8c6c1c31073f08895ee88a6e6876259ca13fc37a",
+      "threeWayConflict": false
+    },
+    {
+      "path": "scripts/verify_message_consumer_release.py",
+      "mainGitBlob": "21c7d1be1c67c2ce10fb58334d984fdf93390a7f",
+      "mainSha256": "c3f12f7ea05227a680be224eb61a088891d834ce4f4bb1d221c94f65b4d55284",
+      "threeWayConflict": false
+    },
+    {
+      "path": "scripts/verify_message_consumer_transition.py",
+      "mainGitBlob": "5cceb2a5878e78363775388ddc8374cb90d7aade",
+      "mainSha256": "18bc94a12c28c0ffe0d9fac9db219dc126940fd94c570a87dba641c47a459f98",
+      "threeWayConflict": false
+    },
+    {
+      "path": "scripts/verify_governed_history_plan.py",
+      "mainGitBlob": "16e9893b1029376442dba557aeca8ceacaa635ea",
+      "mainSha256": "e87c0015dafe3477d6cede436838174d72b73d52e0e0404f8404dcc59b57b343",
+      "threeWayConflict": false
+    },
+    {
+      "path": "scripts/tests/test_candidate3_rules_plan.py",
+      "mainGitBlob": "ecfa9bd021b6233b794a85b5054d440a8fccf027",
+      "mainSha256": "ea798599150a9d033069294a18cfe76359ba0dd8243ea7c7d946468e2d5af944",
+      "threeWayConflict": false
+    },
+    {
+      "path": "scripts/tests/test_message_consumer_release.py",
+      "mainGitBlob": "5676bdb83efd0d6fbb13e5bd746a982e013b107d",
+      "mainSha256": "875a91c54408690d128b3c2c9b9334d02199b377217d97bd48c6188d935f400d",
+      "threeWayConflict": false
+    },
+    {
+      "path": "scripts/tests/test_message_consumer_transition.py",
+      "mainGitBlob": "654c47769724a3a49eab644ef067cdc51c747396",
+      "mainSha256": "33562c145f32080b9ececb17a5651d7b185035b2d9e10c81c9e71ddd515eb968",
+      "threeWayConflict": false
+    },
+    {
+      "path": "scripts/tests/test_governed_history_plan.py",
+      "mainGitBlob": "0e85143b2067018aa0defd2e043678b890e5c661",
+      "mainSha256": "8a09df49a4cf2a6fba30e16517055ce4c3dee6668852f564b93d4e2e26f5afd4",
+      "threeWayConflict": false
+    }
+  ],
+  "workflowsTfvarsAndUnrelatedComponentsImported": false
+}

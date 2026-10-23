@@ -1,0 +1,55 @@
+{
+  "APIContractsChanged": false,
+  "IAMStatementsChanged": false,
+  "base": "353303b657dfe3e44eda59cd8ed343284880cf69",
+  "cloudChanges": false,
+  "endToEndGateCompanion": {
+    "branch": "codex/backend-readiness-recovery",
+    "decision": "HOLD_NO_CURRENT_E2E_READY_RECEIPT",
+    "path": "docs/mobile-infrastructure-e2e-gate.json",
+    "sha256": "e979e5e6e689efcb94d192e4f1a735c4a944fee4e02b530fa2ff3ee8f8e83209"
+  },
+  "independentReview": {
+    "outcome": "PASS_SOURCE_ONLY",
+    "path": "docs/evidence/authority-maintenance/independent-review.json",
+    "sha256": "888633c7ffbaef11e97c5f3cf71fba1e556c398e58e8b7187f305a6c54bc0989"
+  },
+  "limits": [
+    "contract is not live readback",
+    "current candidate3 transition verifier integration missing from old release base",
+    "shared due-row scope must be explicitly approved",
+    "maintenance before admissions; drain before maintenance disable"
+  ],
+  "remoteFreshness": "unverified: GitHub publickey authentication blocked",
+  "rolloutReady": false,
+  "schemaVersion": 1,
+  "sourcePins": {
+    "docs/authority-maintenance-readiness.md": "301c7b33e3ffcb9da5d52f531b696b4dae874189b54019b7237b176f0d6cada1",
+    "terraform/message-consumer/maintenance.tf": "c3ce3454d73499860e1aae371781e23bc9ab7ddc2c1594181c6b9102e758fd0c",
+    "terraform/message-consumer/tests/activation.tftest.hcl": "0fc77f6eaff2ca34a4780624b8d011595a8f73779d80f336da535c36f0730bbe",
+    "terraform/message-consumer/variables.tf": "54c5275f05d1992927d025236249d6bc1343c1e4de8fbd5152236a1c4d76148d",
+    "terraform/url-consumer/deletion.tf": "7946f948043d3118f55de7c4906acf23771a071a4316dbc75cd70ce8765b2059",
+    "terraform/url-consumer/main.tf": "1701634c68a292435af7968f77e911b53424b1208f8c4838e8a6d44ccef0a81b",
+    "terraform/url-consumer/maintenance.tf": "3e3f61384e957587721ea57df1f43df3520dcd7f86e7b6e5cbfee50ddea1619d",
+    "terraform/url-consumer/operations.tf": "096cea35fa327e6c2015051b9988dd4f6f4f84241749a42dc700e4d84c759673",
+    "terraform/url-consumer/outputs.tf": "c5f4d61b5d6306c30bb70d280f1d6becb6d3a8969e3b67c5e374a7b600ddce8c",
+    "terraform/url-consumer/tests/integration.tftest.hcl": "600a1aeaed0e4a315ba346ddfed85a5edeb350b769274d8b7fc4eb7e17b10ee7"
+  },
+  "status": "LOCAL_DEFAULT_OFF_SOURCE_INCREMENT",
+  "tests": {
+    "command": "terraform test -no-color in each root; mock_provider, backend disabled; installed locked provider only",
+    "failures": 0,
+    "finalLogs": {
+      "validation/message-maintenance-tests-unsandboxed.log": "8bf543167595e9307355ea2bf78f08a2b43814698174183598c7bf02534ec9e5",
+      "validation/url-maintenance-tests-final.log": "c108f7a85af689b1dfa834bb41d05475b8de723db49c2f6e3457e602d969334f"
+    },
+    "initialFailuresPreserved": [
+      "sandbox plugin handshake",
+      "retention approval confused with trial activation"
+    ],
+    "messageTerraformMock": 22,
+    "provider": "cached locked aws6.65.0; mock provider; backend=false; synthetic credentials",
+    "urlTerraformMock": 71
+  },
+  "tfvarsOrWorkflowChanged": false
+}
