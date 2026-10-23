@@ -41,12 +41,11 @@ def known(value, paths):
     return result
 
 
-def validate_plan(plan):
+def validate_plan(plan, mode):
     require(plan.get('terraform_version') == '1.12.1' and plan.get('complete') is True and
             plan.get('errored') is False and all(c.get('status') == 'pass' for c in plan.get('checks', [])),
             'Complete passing Terraform 1.12.1 plan required.')
-    require(all(r.get('change', {}).get('actions') == ['no-op'] for r in plan.get('resource_drift', []) if r.get('mode') == 'managed'),
-            'Reconcile managed drift before this transition.')
+    prepare.require_entitlements_drift(plan, mode)
     rows = prepare.inventory(plan)
     values = [r for r in plan.get('planned_values', {}).get('root_module', {}).get('resources', []) if r.get('mode') == 'managed']
     planned = {r['address']: r['values'] for r in values}
@@ -54,7 +53,11 @@ def validate_plan(plan):
     for address, row in rows.items():
         change = row['change']
         paths = unknowns(change.get('after_unknown', {}))
-        allowed = prepare.COMPUTED if address.startswith('aws_lambda_function.runtime[') else {'function_version'} if address.startswith('aws_lambda_alias.runtime[') else set()
+        allowed = set()
+        if address.startswith('aws_lambda_function.runtime['):
+            allowed = prepare.COMPUTED | ({'code_sha256', 'source_code_size'} if mode == 'message-history' else set())
+        elif address.startswith('aws_lambda_alias.runtime['):
+            allowed = {'function_version'}
         require(paths <= {(k,) for k in allowed}, 'Unreviewed computed field.')
         require(same(known(change['after'], paths), known(planned[address], paths)), 'Post-plan inventory mismatch.')
     return rows
@@ -78,7 +81,8 @@ def alias_binding(row, function, plan):
 
 def review(plan, baseline, captured, revision, mode, replacements=None):
     require(re.fullmatch('[a-f0-9]{40}', revision or ''), 'Exact main revision required.')
-    rows, old = validate_plan(plan), prepare.inventory(baseline)
+    rows, old = validate_plan(plan, mode), prepare.inventory(baseline)
+    prepare.require_entitlements_drift(baseline, mode)
     require(set(rows) == set(old), 'Baseline inventory changed.')
     expected = {k: v['value'] for k, v in baseline['variables'].items()}
     expected.update(prepare.build(baseline, captured, mode, replacements))
@@ -97,7 +101,8 @@ def review(plan, baseline, captured, revision, mode, replacements=None):
     for n in captured['functions']:
         address = f'aws_lambda_function.runtime["{n}"]'
         before, after = (rows[address]['change'][k] for k in ('before', 'after'))
-        require(before['version'] == captured['functions'][n]['version'] and before['source_code_hash'] == captured['functions'][n]['codeSha256'] and
+        require(before['version'] == captured['functions'][n]['version'] and before['code_sha256'] == captured['functions'][n]['codeSha256'] and
+                prepare.digest(prepare.artifact(before)) == captured['functions'][n]['artifactInputsSha256'] and
                 prepare.digest(prepare.environment(before)) == captured['functions'][n]['environmentSha256'], 'Captured function binding mismatch.')
         suffix = 'message-' + n if mode == 'message-history' else {'consumer': 'url-consumer', 'entitlements': 'v1-entitlements', 'recovery': 'url-lease-recovery', 'deletion': 'v1-authority-deletion'}[n]
         handler = ('message_' + n + '.app.lambda_handler') if mode == 'message-history' else 'v1_entitlements.app.lambda_handler' if n == 'entitlements' else 'app.lambda_handler'
@@ -111,10 +116,18 @@ def review(plan, baseline, captured, revision, mode, replacements=None):
         if mode == 'maintenance' and n != 'recovery':
             require(rows[address]['change']['actions'] == ['no-op'], 'Protected runtime must remain unchanged.')
     if mode == 'maintenance':
+        for address in (prepare.ENT_FUNCTION, prepare.ENT_ALIAS):
+            require(rows[address]['change']['actions'] == ['no-op'], 'Entitlements must be a complete no-op.')
+        prepare.require_entitlements(rows[prepare.ENT_FUNCTION]['change']['after'])
+        ent_alias = rows[prepare.ENT_ALIAS]['change']['after']
+        require(ent_alias['name'] == 'live' and ent_alias['function_name'] == prepare.ENTITLEMENTS['functionName'] and
+                ent_alias['function_version'] == prepare.ENTITLEMENTS['current']['version'] and
+                not ent_alias.get('routing_config'), 'Protected entitlements alias changed.')
         require(set(changed) in (set(), MAINTENANCE), 'Maintenance transition must be complete or an exact no-op.')
         c = rows[FUNCTION]['change']; before, after = c['before'], c['after']
         require(before['function_name'] == after['function_name'] == prepare.PREFIX + '-url-lease-recovery' and
-                before['source_code_hash'] == after['source_code_hash'] == prepare.RECOVERY_SHA,
+                before['source_code_hash'] == after['source_code_hash'] ==
+                before['code_sha256'] == after['code_sha256'] == prepare.RECOVERY_SHA,
                 'Only existing worker11 bytes are allowed.')
         require(changed_fields(before, after) <= prepare.COMPUTED | {'environment'}, 'Worker artifact/role/runtime/limits must not change.')
         require(prepare.environment(after) == dict(prepare.environment(before), LEASE_SWEEP_ENABLED='true') and
@@ -133,7 +146,7 @@ def review(plan, baseline, captured, revision, mode, replacements=None):
         for name in ('consumer', 'evaluator'):
             c = rows[f'aws_lambda_function.runtime["{name}"]']['change']
             before, after = c['before'], c['after']
-            require(changed_fields(before, after) <= prepare.COMPUTED | PACKAGE,
+            require(changed_fields(before, after) <= prepare.COMPUTED | PACKAGE | {'code_sha256', 'source_code_size'},
                     'Message environment/role/runtime/limits/permissions must remain exact.')
             environment = _expected_environment(name, expected, True)
             environment['MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED'] = 'true'
@@ -141,6 +154,9 @@ def review(plan, baseline, captured, revision, mode, replacements=None):
                 environment.update(GOVERNED_HISTORY_SETTLEMENT_ENABLED='true', MESSAGE_PROVIDER_CIRCUIT_OPEN='true')
             require(prepare.environment(before) == prepare.environment(after) == environment, 'Candidate.3/History/AI-off configuration must remain exact.')
             require(prepare.artifact(after) == expected['deployment']['artifacts'][name], 'Artifact selection mismatch.')
+            require(after.get('code_sha256') == after['source_code_hash'] or
+                    (after.get('code_sha256') is None and c.get('after_unknown', {}).get('code_sha256') is True and
+                     bool(changed_fields(before, after) & PACKAGE)), 'Reviewed Message runtime hash must bind its package.')
             alias_binding(rows[f'aws_lambda_alias.runtime["{name}"]'], c, plan)
         artifacts = expected['deployment']['artifacts']
     require(set(plan.get('output_changes', {})) <= {'candidate_contract', 'authority_maintenance'}, 'Unexpected output.')
@@ -155,7 +171,7 @@ def review(plan, baseline, captured, revision, mode, replacements=None):
     material = {'plan': projection(plan), 'baseline': projection(baseline), 'capture': captured,
                 'revision': revision, 'mode': mode}
     return {'reviewedPlanDigest': prepare.digest(material), 'mode': mode, 'revision': revision,
-            'resourceUpdates': len(changed), 'providerCallsEnabled': False}, artifacts
+            'resourceUpdates': len(changed), 'resourceAddresses': sorted(changed), 'providerCallsEnabled': False}, artifacts
 
 
 def verify_deployed(plan, baseline, captured, mode, read=prepare.aws):
@@ -173,7 +189,9 @@ def verify_deployed(plan, baseline, captured, mode, read=prepare.aws):
         require(latest.get('LastUpdateStatus') == 'Successful' and latest.get('CodeSha256') == current['CodeSha256'] and
                 latest.get('Environment') == current.get('Environment') and
                 concurrency.get('ReservedConcurrentExecutions') == desired['reserved_concurrent_executions'], 'Deployed limits/update state mismatch.')
-        require(all(current[v] == desired[k] for k, v in {'source_code_hash': 'CodeSha256', 'function_name': 'FunctionName',
+        expected_hash = desired['source_code_hash'] if mode == 'message-history' else desired['code_sha256']
+        require(current['CodeSha256'] == expected_hash and
+                all(current[v] == desired[k] for k, v in {'function_name': 'FunctionName',
                 'runtime': 'Runtime', 'architectures': 'Architectures', 'handler': 'Handler', 'role': 'Role',
                 'timeout': 'Timeout', 'memory_size': 'MemorySize'}.items()) and
                 current['Environment']['Variables'] == prepare.environment(desired), 'Deployed configuration mismatch.')

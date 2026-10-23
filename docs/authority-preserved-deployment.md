@@ -84,3 +84,52 @@ The pure alarm predicate has direct metadata regression coverage, without a mock
 AWS client or connectivity claim. No workflow, IAM, defaults or activation scope
 changes are included. A retry must use the reconciled new main revision, plan-only
 inputs, and the existing role; it does not authorize an apply.
+
+## Entitlements v18 preservation correction
+
+Read-only reconciliation on 2026-10-23 identified the owning URL root state at
+serial 33 with entitlements function/alias v15, while the actual unweighted live
+alias and latest successful code are v18. The exact live ZIP was downloaded from
+Lambda and hashed independently; its two admission-diagnostics modules match the
+reviewed [PR126/127 source and deployment evidence](https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/pull/127).
+No v18 S3 publication coordinates were established or invented.
+
+The pinned AWS provider refreshes computed `code_sha256` from Lambda's
+`CodeSha256`, but retains `source_code_hash` and S3 coordinates as historical
+configuration inputs. These fields have different meanings. Capture now checks
+actual runtime identity with mandatory `code_sha256`, and independently binds
+all historical artifact inputs. The exact v18 bytes, version, code size/date,
+full environment, base trial selection and independent GET-only selection are
+pinned in `docs/evidence/entitlements18-preservation.json`. Private subjects are
+represented only by canonical selection digests. The old GET-only selection must
+never be restored; no trial or consumer scope is expanded.
+
+Only the complete known v15-to-v18 function-and-alias refresh may appear as
+read-only `resource_drift`. Its old/new runtime and environment pins, unchanged
+historical artifact inputs and every other field must match. Partial pairs,
+weighted aliases, different code, configuration changes, or other managed drift
+are rejected. Both final entitlements resources must independently be complete
+no-ops at v18 with no unknown values. Keeping the old deployment arguments inert
+is permitted only with that full no-op proof; any proposed reapplication or
+rollback is rejected. This does not import, rewrite or push Terraform state,
+ignore configuration changes, or establish reusable v18 S3 provenance.
+
+The final maintenance plan still permits only the existing five recovery
+resource updates, or an exact no-op when already active. All IAM, routes,
+admission and other runtimes remain unchanged. A minimized accepted result names
+only those permitted addresses and the reviewed plan digest. Source tests exercise
+saved-plan/compiler predicates with synthetic private selections; they are not
+live connectivity acceptance. The earlier plan rejection's exact predicate was
+not retained, so this correction does not claim to prove its unique cause.
+
+Workflow inputs, side effects, role permissions and Terraform configuration are
+unchanged. A new exact main revision and one separately authorized plan-only run
+are required. No apply or shared recovery/irreversible expiry activation is
+included. Main CI and the actual new plan outcome are recorded separately after
+source integration; local test success alone does not qualify a live plan.
+
+Local correction validation passed 479 Python cases, including 23 preservation
+predicate cases, with the existing dependency-equipped interpreter. Terraform
+formatting, actionlint, campaign guardrails, Python compilation and whitespace
+checks passed. An initial host-interpreter run lacked boto3/botocore; that
+incomplete run is not counted as a pass and no dependencies were downloaded.

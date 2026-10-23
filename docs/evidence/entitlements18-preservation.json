@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "functionName": "trustcheckradar-dev-v1-entitlements",
+  "historicalArtifactInputs": {
+    "bucket": "trustcheckradar-dev-107827791950-artifacts",
+    "key": "releases/8ecc79678fd1f87c575c43f7f4ffb856869db48d/v1_entitlements.zip",
+    "object_version": "y6ygRzfBxVX8Mv1S4RQieotbELdRQ9ab",
+    "source_hash": "kLAG3e5J4ZtX0vtfPSqciRN7RZPoN7ooTMVpWO5/9TE="
+  },
+  "historical": {
+    "version": "15",
+    "code_sha256": "kLAG3e5J4ZtX0vtfPSqciRN7RZPoN7ooTMVpWO5/9TE=",
+    "source_code_size": 62707,
+    "last_modified": "2026-10-09T17:57:53.000+0000",
+    "environmentSha256": "a82a94269e87fe74c20693403281449dc32cd4b59151b34ddfb57b7a91b2e0c0",
+    "extraSubjectsSha256": "2d3b7abe69a6937da0ffa6522faae2bef76d3fdac9ec84efe87f7a529cc61ed0"
+  },
+  "current": {
+    "version": "18",
+    "code_sha256": "up0e++Jc3y5oVOQ9oaPB3w10RioidfPVg1UDilJVhlo=",
+    "source_code_size": 65528,
+    "last_modified": "2026-10-17T03:20:45.000+0000",
+    "environmentSha256": "761342bd857c9f90944bb09f535cf3fcf0cc0e59ccf753a33b5fa00e514cbbf2",
+    "extraSubjectsSha256": "12ebad3b86c5232e066b8bb5c661564f04d945a1253a22bdfabb1094cf3e2d38"
+  },
+  "baseTrialSubjectsSha256": "9a09c77cd912d09418f5a541a904c68f238cf1cfab247aed3f3b3d5b58439882",
+  "liveZipSha256": "ba9d1efbe25cdf2e6854e43da1a3c1df0d74462a2275f3d58355038a5255865a",
+  "sourceRevision": "94f0f448661d69798f7621cb777262e029a8814e",
+  "deploymentEvidence": "https://github.com/theagentamt/AMT.TrustCheckRadar.Lambdas/pull/127",
+  "providerSemantics": "https://github.com/hashicorp/terraform-provider-aws/blob/v6.65.0/internal/service/lambda/function.go",
+  "observedAtUtc": "2026-10-23T17:52:22Z",
+  "scope": "Preservation only. Published v18 ZIP was read and hashed independently; no v18 S3 coordinates are asserted. Historical inputs must stay inert. Any planned entitlements update is rejected."
+}
