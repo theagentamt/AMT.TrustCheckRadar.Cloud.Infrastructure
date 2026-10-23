@@ -125,7 +125,7 @@ resource "aws_lambda_function" "runtime" {
       AUTHORITY_POLICY_VERSION           = "owner-2026-09-20-v1"
       DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(each.key == "entitlements" ? setunion(var.engineering_subjects, var.governed_trial_subjects) : (var.activate_engineering ? var.engineering_subjects : toset([])))))
       } : each.key == "recovery" ? {
-      LEASE_SWEEP_ENABLED = tostring(local.authority_engineering_active)
+      LEASE_SWEEP_ENABLED = tostring(local.authority_maintenance_active)
       } : {
       V1_AUTHORITY_DELETION_ENABLED      = tostring(local.authority_deletion_active)
       DEV_SUBJECT_ALLOWLIST_JSON         = jsonencode(sort(tolist(local.authority_deletion_subjects)))

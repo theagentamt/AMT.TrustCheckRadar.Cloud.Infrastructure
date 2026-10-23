@@ -103,9 +103,10 @@ variable "activate_rules_engineering" {
   validation {
     condition = !var.activate_rules_engineering || (
       var.enabled && var.environment == "dev" && length(var.engineering_subjects) > 0 &&
-      var.authority_configuration != null && var.provider_budget != null && var.api_gateway != null
+      var.authority_configuration != null && var.provider_budget != null && var.api_gateway != null &&
+      local.authority_maintenance_ready
     )
-    error_message = "Rules-only engineering activation requires provisioned Dev routes, exact subjects, authority horizons and provider caps."
+    error_message = "Message admission requires provisioned Dev routes, exact subjects, horizons/caps and same-table versioned shared maintenance with worker, schedule and heartbeat enabled."
   }
 }
 variable "deployment" {

@@ -42,6 +42,25 @@ class Candidate3RulesPlanTests(unittest.TestCase):
         for mode in ('inactive', 'rules-only', 'rules-only-history'):
             self.assertFalse(v.review(fixture(mode), f.REVISION, mode)['providerCallsEnabled'])
 
+    def test_active_maintenance_cannot_be_skipped_by_normalization_or_noop(self):
+        for mode in ('rules-only', 'rules-only-history'):
+            for noop in (False, True):
+                for mutation in ('missing', 'worker', 'schedule', 'provider', 'table'):
+                    plan = fixture(mode)
+                    if noop:
+                        for item in plan['resource_changes']:
+                            item['change']['actions'] = ['no-op']
+                            item['change']['before'] = copy.deepcopy(item['change']['after'])
+                    contract = plan['variables']['authority_maintenance']['value']
+                    if mutation == 'missing': plan['variables'].pop('authority_maintenance')
+                    if mutation == 'worker': contract['worker_enabled'] = False
+                    if mutation == 'schedule': contract['schedule_enabled'] = False
+                    if mutation == 'provider': contract['provider_access_added'] = True
+                    if mutation == 'table': contract['authority_table_arn'] += '-wrong'
+                    sync(plan)
+                    with self.subTest(mode=mode, noop=noop, mutation=mutation), self.assertRaises(ValueError):
+                        v.review(plan, f.REVISION, mode)
+
     def test_provider_permission_environment_alias_and_foreign_resources_are_rejected(self):
         for mutation in ('provider', 'env', 'alias', 'foreign', 'missing', 'numeric'):
             plan = fixture()
@@ -56,7 +75,9 @@ class Candidate3RulesPlanTests(unittest.TestCase):
 
     def test_noop_inventory_and_digest_are_verified(self):
         plan = fixture()
-        for item in plan['resource_changes']: item['change']['actions'] = ['no-op']
+        for item in plan['resource_changes']:
+            item['change']['actions'] = ['no-op']
+            item['change']['before'] = copy.deepcopy(item['change']['after'])
         result = v.review(plan, f.REVISION, 'rules-only')
         self.assertEqual(result['resourceChanges'], 0)
         self.assertEqual(len(result['reviewedPlanDigest']), 64)

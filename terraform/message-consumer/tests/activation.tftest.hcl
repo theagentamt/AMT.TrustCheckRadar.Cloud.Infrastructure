@@ -17,6 +17,18 @@ mock_provider "aws" {
 }
 
 variables {
+  authority_maintenance = {
+    schema_version        = 1
+    environment           = "dev"
+    authority_table_arn   = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
+    recovery_alias_arn    = "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-lease-recovery:live"
+    recovery_version      = "11"
+    recovery_code_sha256  = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    worker_enabled        = true
+    schedule_enabled      = true
+    heartbeat_enforced    = true
+    provider_access_added = false
+  }
   environment = "dev"
   enabled     = true
   deployment = {
@@ -170,4 +182,94 @@ run "history_settlement_cannot_enable_itself" {
   command = plan
   variables { governed_history_settlement_enabled = true }
   expect_failures = [var.governed_history_settlement_enabled]
+}
+
+run "message_rejects_maintenance_missing_contract" {
+  command = plan
+  variables {
+    activate_rules_engineering = true
+    engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
+    authority_maintenance      = null
+  }
+  expect_failures = [var.activate_rules_engineering]
+}
+
+run "message_rejects_maintenance_disabled_worker" {
+  command = plan
+  variables {
+    activate_rules_engineering = true
+    engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
+    authority_maintenance      = merge(var.authority_maintenance, { worker_enabled = false })
+  }
+  expect_failures = [var.activate_rules_engineering]
+}
+
+run "message_rejects_maintenance_disabled_schedule" {
+  command = plan
+  variables {
+    activate_rules_engineering = true
+    engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
+    authority_maintenance      = merge(var.authority_maintenance, { schedule_enabled = false })
+  }
+  expect_failures = [var.activate_rules_engineering]
+}
+
+run "message_rejects_maintenance_missing_heartbeat" {
+  command = plan
+  variables {
+    activate_rules_engineering = true
+    engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
+    authority_maintenance      = merge(var.authority_maintenance, { heartbeat_enforced = false })
+  }
+  expect_failures = [var.activate_rules_engineering]
+}
+
+run "message_rejects_maintenance_wrong_table" {
+  command = plan
+  variables {
+    activate_rules_engineering = true
+    engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
+    authority_maintenance      = merge(var.authority_maintenance, { authority_table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/unrelated" })
+  }
+  expect_failures = [var.activate_rules_engineering]
+}
+
+run "message_rejects_maintenance_wrong_alias" {
+  command = plan
+  variables {
+    activate_rules_engineering = true
+    engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
+    authority_maintenance      = merge(var.authority_maintenance, { recovery_alias_arn = "arn:aws:lambda:us-east-1:107827791950:function:unrelated:live" })
+  }
+  expect_failures = [var.activate_rules_engineering]
+}
+
+run "message_rejects_maintenance_unversioned_worker" {
+  command = plan
+  variables {
+    activate_rules_engineering = true
+    engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
+    authority_maintenance      = merge(var.authority_maintenance, { recovery_version = "$LATEST" })
+  }
+  expect_failures = [var.activate_rules_engineering]
+}
+
+run "message_rejects_maintenance_wrong_hash" {
+  command = plan
+  variables {
+    activate_rules_engineering = true
+    engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
+    authority_maintenance      = merge(var.authority_maintenance, { recovery_code_sha256 = "not-a-hash" })
+  }
+  expect_failures = [var.activate_rules_engineering]
+}
+
+run "message_rejects_maintenance_added_provider_access" {
+  command = plan
+  variables {
+    activate_rules_engineering = true
+    engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
+    authority_maintenance      = merge(var.authority_maintenance, { provider_access_added = true })
+  }
+  expect_failures = [var.activate_rules_engineering]
 }
