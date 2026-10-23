@@ -234,4 +234,53 @@ class PreservedDeploymentTests(unittest.TestCase):
             with self.assertRaises(FileExistsError): p.private_write(link, {})
 
 
+class MaintenanceAlarmMetadataTests(unittest.TestCase):
+    """Validate service-shaped metadata directly; no AWS clients are simulated."""
+
+    def alarm(self, heartbeat=False, active=False):
+        destination = ['arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts']
+        return {'AlarmName': p.PREFIX + '-url-lease-recovery-' + ('heartbeat' if heartbeat else 'expiry-overdue'),
+                'ActionsEnabled': active, 'AlarmActions': destination, 'OKActions': destination,
+                'Namespace': 'AMT/TrustCheckRadar/V1/dev',
+                'MetricName': 'url-lease-recovery-' + ('heartbeat' if heartbeat else 'expiry-overdue'),
+                'Threshold': 1 if heartbeat else 300, 'EvaluationPeriods': 2 if heartbeat else 1,
+                'Period': 300 if heartbeat else 60, 'Statistic': 'Sum' if heartbeat else 'Maximum',
+                'ComparisonOperator': 'LessThanThreshold' if heartbeat else 'GreaterThanThreshold',
+                'TreatMissingData': 'breaching' if active and heartbeat else 'notBreaching'}
+
+    def test_absent_datapoints_uses_actual_evaluation_periods(self):
+        for heartbeat in (False, True):
+            for active in (False, True):
+                with self.subTest(heartbeat=heartbeat, active=active):
+                    p.require_maintenance_alarm(self.alarm(heartbeat, active), active)
+
+    def test_explicit_same_datapoints_is_equivalent(self):
+        for heartbeat in (False, True):
+            alarm = self.alarm(heartbeat); alarm['DatapointsToAlarm'] = alarm['EvaluationPeriods']
+            p.require_maintenance_alarm(alarm, False)
+
+    def test_explicit_incompatible_or_malformed_datapoints_rejected(self):
+        for value in (None, False, True, 0, 2, 1.0, '1'):
+            alarm = self.alarm(); alarm['DatapointsToAlarm'] = value
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                p.require_maintenance_alarm(alarm, False)
+        alarm = self.alarm(True); alarm['DatapointsToAlarm'] = 1
+        with self.assertRaises(ValueError): p.require_maintenance_alarm(alarm, False)
+
+    def test_absence_cannot_conceal_wrong_evaluation_periods(self):
+        for value in (None, False, True, 0, 2, 1.0, '1'):
+            alarm = self.alarm(); alarm['EvaluationPeriods'] = value
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                p.require_maintenance_alarm(alarm, False)
+
+    def test_other_alarm_boundaries_remain_exact(self):
+        for field, value in (('Period', 300), ('Statistic', 'Sum'), ('ComparisonOperator', 'LessThanThreshold'),
+                             ('Threshold', 1), ('AlarmActions', ['other']), ('ActionsEnabled', True),
+                             ('TreatMissingData', 'breaching'), ('Dimensions', [{'Name': 'other', 'Value': 'other'}]),
+                             ('Metrics', [{}]), ('ExtendedStatistic', 'p99'), ('InsufficientDataActions', ['other'])):
+            alarm = self.alarm(); alarm[field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                p.require_maintenance_alarm(alarm, False)
+
+
 if __name__ == '__main__': unittest.main()
