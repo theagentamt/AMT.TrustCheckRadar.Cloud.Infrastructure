@@ -154,8 +154,11 @@ variable "candidate3_rules_only_enabled" {
   type        = bool
   default     = false
   validation {
-    condition     = !var.candidate3_rules_only_enabled || (var.activate_rules_engineering && length(var.engineering_subjects) == 1)
-    error_message = "Candidate.3 rules-only requires explicitly activated Dev engineering for one exact subject."
+    condition = !var.candidate3_rules_only_enabled || (var.activate_rules_engineering && (length(var.engineering_subjects) == 1 || (
+      length(var.engineering_subjects) == 2 &&
+      sha256(jsonencode(sort(tolist(var.engineering_subjects)))) == "7dfa1b8193c7721659824436665ce800edc740fe396b89547725df371aafc09c"
+    )))
+    error_message = "Candidate.3 requires one qualified subject or the exact existing two-subject Dev scope; no new cohort is admitted."
   }
 }
 variable "governed_history_settlement_enabled" {

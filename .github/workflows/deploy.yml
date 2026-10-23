@@ -28,6 +28,8 @@ on:
           - history-processing
           - message-consumer
           - message-consumer-engineering
+          - message-consumer-preserve-history
+          - authority-maintenance
           - trial-authority
           - trial-authority-engineering
           - research-plan-campaign-processing
@@ -61,7 +63,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main' && !startsWith(inputs.deployment_scope, 'message-consumer') && !startsWith(inputs.deployment_scope, 'trial-authority') && !startsWith(inputs.deployment_scope, 'research-')
+    if: github.ref == 'refs/heads/main' && !startsWith(inputs.deployment_scope, 'message-consumer') && inputs.deployment_scope != 'authority-maintenance' && !startsWith(inputs.deployment_scope, 'trial-authority') && !startsWith(inputs.deployment_scope, 'research-')
     name: Deploy ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -515,7 +517,7 @@ jobs:
 
   message-consumer:
     name: Bounded Dev message transition
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.environment == 'dev' && startsWith(inputs.deployment_scope, 'message-consumer')
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.environment == 'dev' && startsWith(inputs.deployment_scope, 'message-consumer') && inputs.deployment_scope != 'message-consumer-preserve-history'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment: dev
@@ -780,3 +782,133 @@ jobs:
         if: always()
         shell: bash
         run: rm -f "$RUNNER_TEMP"/research-init.log "$RUNNER_TEMP"/research-plan.log "$RUNNER_TEMP"/research.tfplan "$RUNNER_TEMP"/research-plan.json "$RUNNER_TEMP"/research-apply.log "$RUNNER_TEMP"/research-drift.log
+
+  preserved-dev:
+    name: Preserved Dev maintenance or candidate.3 transition
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.environment == 'dev' && (inputs.deployment_scope == 'authority-maintenance' || inputs.deployment_scope == 'message-consumer-preserve-history')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: dev
+    env:
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+      TF_STATE_KEY_PREFIX: ${{ vars.TF_STATE_KEY_PREFIX || 'trustcheckradar' }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      EXPECTED_REVISION: ${{ inputs.expected_revision }}
+      REVIEWED_PLAN_DIGEST: ${{ inputs.reviewed_plan_digest }}
+      EXECUTION_MODE: ${{ inputs.execution_mode }}
+      DEPLOY_SCOPE: ${{ inputs.deployment_scope }}
+      ARTIFACT_RELEASE: ${{ inputs.artifact_release }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+      - name: Install Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+      - name: Verify exact Dev source and selection
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$GITHUB_SHA" = "$EXPECTED_REVISION"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
+          test "$AWS_REGION" = us-east-1
+          test "$TF_STATE_BUCKET" = amt-trustcheckradar-107827791950-tfstate
+          test "$TF_STATE_KEY_PREFIX" = trustcheckradar
+          case "$EXECUTION_MODE" in plan|apply) ;; *) exit 1 ;; esac
+          if [[ "$EXECUTION_MODE" == apply ]]; then
+            [[ "$REVIEWED_PLAN_DIGEST" =~ ^[a-f0-9]{64}$ ]]
+          fi
+          case "$DEPLOY_SCOPE" in
+            authority-maintenance)
+              test -z "$ARTIFACT_RELEASE"
+              echo 'PRESERVED_MODE=maintenance' >> "$GITHUB_ENV"
+              echo 'PRESERVED_STACK=url-consumer' >> "$GITHUB_ENV"
+              ;;
+            message-consumer-preserve-history)
+              echo 'PRESERVED_MODE=message-history' >> "$GITHUB_ENV"
+              echo 'PRESERVED_STACK=message-consumer' >> "$GITHUB_ENV"
+              ;;
+            *) exit 1 ;;
+          esac
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+      - name: Configure existing Dev deployment credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+          allowed-account-ids: "107827791950"
+          role-session-name: preserved-dev-${{ github.run_id }}
+      - name: Prepare private baseline and live-preserving inputs
+        run: |
+          set -euo pipefail
+          umask 077
+          bash scripts/terraform.sh init dev "$PRESERVED_STACK"
+          if ! terraform -chdir="terraform/$PRESERVED_STACK" plan -input=false \
+            -var-file="../../environments/dev/$PRESERVED_STACK.tfvars" \
+            -out="$RUNNER_TEMP/preserved-baseline.tfplan" > "$RUNNER_TEMP/preserved-baseline.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/preserved-baseline.log"
+            exit 1
+          fi
+          terraform -chdir="terraform/$PRESERVED_STACK" show -json \
+            "$RUNNER_TEMP/preserved-baseline.tfplan" > "$RUNNER_TEMP/preserved-baseline.json"
+          args=(--baseline "$RUNNER_TEMP/preserved-baseline.json" --mode "$PRESERVED_MODE"
+            --output "$RUNNER_TEMP/preserved.tfvars.json" --capture "$RUNNER_TEMP/preserved-capture.json")
+          if [[ -n "$ARTIFACT_RELEASE" ]]; then args+=(--artifact-release "$ARTIFACT_RELEASE"); fi
+          python3 scripts/prepare_preserved_deployment.py "${args[@]}"
+      - name: Plan only the selected preserved root
+        run: |
+          set -euo pipefail
+          umask 077
+          if ! terraform -chdir="terraform/$PRESERVED_STACK" plan -input=false \
+            -var-file="../../environments/dev/$PRESERVED_STACK.tfvars" \
+            -var-file="$RUNNER_TEMP/preserved.tfvars.json" \
+            -out="$RUNNER_TEMP/preserved.tfplan" > "$RUNNER_TEMP/preserved-plan.log" 2>&1; then
+            python3 scripts/report_terraform_failure.py "$RUNNER_TEMP/preserved-plan.log"
+            exit 1
+          fi
+          terraform -chdir="terraform/$PRESERVED_STACK" show -json \
+            "$RUNNER_TEMP/preserved.tfplan" > "$RUNNER_TEMP/preserved-plan.json"
+      - name: Verify complete saved plan and fresh apply boundary
+        run: |
+          set -euo pipefail
+          umask 077
+          args=(--baseline "$RUNNER_TEMP/preserved-baseline.json" --capture "$RUNNER_TEMP/preserved-capture.json"
+            --revision "$EXPECTED_REVISION" --mode "$PRESERVED_MODE")
+          if [[ "$EXECUTION_MODE" == apply ]]; then args+=(--apply --expected-digest "$REVIEWED_PLAN_DIGEST"); fi
+          python3 scripts/verify_preserved_deployment.py "$RUNNER_TEMP/preserved-plan.json" "${args[@]}" \
+            | tee "$RUNNER_TEMP/preserved-review.json"
+          cat "$RUNNER_TEMP/preserved-review.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Apply only the exact approved saved plan
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          umask 077
+          terraform -chdir="terraform/$PRESERVED_STACK" apply -input=false \
+            "$RUNNER_TEMP/preserved.tfplan" > "$RUNNER_TEMP/preserved-apply.log" 2>&1
+      - name: Verify actual deployed alias and configuration
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 scripts/verify_preserved_deployment.py "$RUNNER_TEMP/preserved-plan.json" \
+            --baseline "$RUNNER_TEMP/preserved-baseline.json" --capture "$RUNNER_TEMP/preserved-capture.json" \
+            --revision "$EXPECTED_REVISION" --mode "$PRESERVED_MODE" --deployed
+      - name: Require zero managed drift after apply
+        if: inputs.execution_mode == 'apply'
+        run: |
+          set -euo pipefail
+          umask 077
+          terraform -chdir="terraform/$PRESERVED_STACK" plan -input=false -detailed-exitcode \
+            -var-file="../../environments/dev/$PRESERVED_STACK.tfvars" \
+            -var-file="$RUNNER_TEMP/preserved.tfvars.json" > "$RUNNER_TEMP/preserved-drift.log" 2>&1
+      - name: Remove owner-private plans and inputs
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP"/preserved-*.tfplan "$RUNNER_TEMP"/preserved-*.json \
+            "$RUNNER_TEMP"/preserved*.log "$RUNNER_TEMP/preserved.tfvars.json" "$RUNNER_TEMP/preserved.tfplan"

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "scope": "Existing Dev configuration preservation only",
+  "baseline": "6f69ab5093bb0d6338cf2ab94beb34d5a31a2812",
+  "currentMessageHistorySubjectsSha256": "7dfa1b8193c7721659824436665ce800edc740fe396b89547725df371aafc09c",
+  "currentMessageHistorySubjectCount": 2,
+  "workerCodeSha256": "a5uouU5vy1ZJMuWpjQY4GUQ236d4jpRS23yTmaP5K+Y=",
+  "provenance": "Artifact coordinates are taken from refreshed existing state only when the alias version, code hash and full environment match actual Lambda readback. This reference does not certify new code or replace artifact/runtime qualification.",
+  "sourceIntegrationDoesNotActivate": true,
+  "permissionOrAdmissionExpansion": false,
+  "sharedExpiryRequiresSeparateOwnerApproval": true,
+  "providerCallsAuthorizedByThisRecord": false
+}
