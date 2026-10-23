@@ -15,6 +15,10 @@ PREFIX = 'trustcheckradar-dev'
 SCOPE_SHA = '7dfa1b8193c7721659824436665ce800edc740fe396b89547725df371aafc09c'
 RECOVERY_SHA = 'a5uouU5vy1ZJMuWpjQY4GUQ236d4jpRS23yTmaP5K+Y='
 COMPUTED = {'last_modified', 'qualified_arn', 'qualified_invoke_arn', 'version'}
+ENTITLEMENTS = json.loads((Path(__file__).resolve().parents[1] /
+                          'docs/evidence/entitlements18-preservation.json').read_text())
+ENT_FUNCTION = 'aws_lambda_function.runtime["entitlements"]'
+ENT_ALIAS = 'aws_lambda_alias.runtime["entitlements"]'
 
 
 def digest(value):
@@ -50,6 +54,54 @@ def subjects(raw, count=None, sha=None):
 def artifact(value):
     return {out: value[src] for out, src in {'bucket': 's3_bucket', 'key': 's3_key',
             'object_version': 's3_object_version', 'source_hash': 'source_code_hash'}.items()}
+
+
+def require_entitlements(value, generation='current'):
+    """Pin observed bytes/config independently of retained provider code inputs."""
+    pin = ENTITLEMENTS[generation]
+    name = ENTITLEMENTS['functionName']
+    arn = 'arn:aws:lambda:us-east-1:107827791950:function:' + name + ':' + pin['version']
+    expected = {k: pin[k] for k in ('version', 'code_sha256', 'source_code_size', 'last_modified')}
+    expected.update(function_name=name, qualified_arn=arn,
+                    qualified_invoke_arn='arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/' + arn + '/invocations')
+    require(digest({k: value.get(k) for k in expected}) == digest(expected) and
+            artifact(value) == ENTITLEMENTS['historicalArtifactInputs'], 'ENTITLEMENTS_RUNTIME_OR_INPUT_PIN_MISMATCH')
+    env = environment(value)
+    require(digest(env) == pin['environmentSha256'], 'ENTITLEMENTS_ENVIRONMENT_PIN_MISMATCH')
+    subjects(env['DEV_SUBJECT_ALLOWLIST_JSON'], 1, ENTITLEMENTS['baseTrialSubjectsSha256'])
+    subjects(env['DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON'], 1, pin['extraSubjectsSha256'])
+
+def require_entitlements_drift(plan, mode):
+    """Recognize only the observed read-only v15->v18 refresh, never an apply."""
+    drift = [r for r in plan.get('resource_drift', []) if r.get('mode') == 'managed' and
+             r.get('change', {}).get('actions') != ['no-op']]
+    if not drift:
+        return
+    require(mode == 'maintenance' and len(drift) == 2 and
+            {r.get('address') for r in drift} == {ENT_FUNCTION, ENT_ALIAS},
+            'UNREVIEWED_MANAGED_DRIFT')
+    rows = {r['address']: r for r in drift}
+    refreshed = inventory(plan)
+    for address, row in rows.items():
+        c = row['change']
+        require(row.get('provider_name') == 'registry.terraform.io/hashicorp/aws' and
+                c['actions'] == ['update'] and not c.get('after_unknown') and
+                digest(c['after']) == digest(refreshed[address]['change']['before']), 'ENTITLEMENTS_DRIFT_BINDING_MISMATCH')
+    before, after = (rows[ENT_FUNCTION]['change'][k] for k in ('before', 'after'))
+    require_entitlements(before, 'historical')
+    require_entitlements(after)
+    fields = {'version', 'code_sha256', 'source_code_size', 'last_modified',
+              'qualified_arn', 'qualified_invoke_arn', 'environment'}
+    require(digest({k: v for k, v in before.items() if k not in fields}) ==
+            digest({k: v for k, v in after.items() if k not in fields}), 'ENTITLEMENTS_UNRELATED_DRIFT')
+    a, b = (rows[ENT_ALIAS]['change'][k] for k in ('before', 'after'))
+    require(a['name'] == b['name'] == 'live' and
+            a['function_name'] == b['function_name'] == ENTITLEMENTS['functionName'] and
+            not a.get('routing_config') and not b.get('routing_config') and
+            a['function_version'] == ENTITLEMENTS['historical']['version'] and
+            b['function_version'] == ENTITLEMENTS['current']['version'] and
+            digest({k: v for k, v in a.items() if k != 'function_version'}) ==
+            digest({k: v for k, v in b.items() if k != 'function_version'}), 'ENTITLEMENTS_ALIAS_DRIFT_MISMATCH')
 
 
 def require_maintenance_alarm(alarm, active):
@@ -129,6 +181,9 @@ def maintenance_readback(read, require_active=False):
 def capture(plan, mode, read=aws):
     require(read('sts', 'get-caller-identity').get('Account') == '107827791950', 'Dev account required.')
     rows = inventory(plan)
+    require_entitlements_drift(plan, mode)
+    if mode == 'maintenance':
+        require_entitlements(rows[ENT_FUNCTION]['change']['before'])
     names = ('consumer', 'entitlements', 'recovery', 'deletion') if mode == 'maintenance' else ('consumer', 'evaluator')
     result = {'functions': {}}
     for name in names:
@@ -146,7 +201,7 @@ def capture(plan, mode, read=aws):
                 concurrency.get('ReservedConcurrentExecutions') == before['reserved_concurrent_executions'],
                 'No pending configuration update or concurrency drift permitted.')
         require(before['version'] == alias['FunctionVersion'] == current['Version'] and
-                before['source_code_hash'] == current['CodeSha256'] and
+                before['code_sha256'] == current['CodeSha256'] and
                 environment(before) == current.get('Environment', {}).get('Variables'),
                 'State/live artifact, version or configuration drift; reconcile before planning.')
         require(all(before[k] == current[v] for k, v in {
@@ -155,6 +210,7 @@ def capture(plan, mode, read=aws):
             'Live runtime identity or limits drifted.')
         result['functions'][name] = {'version': current['Version'], 'codeSha256': current['CodeSha256'],
                                      'environmentSha256': digest(environment(before)),
+                                     'artifactInputsSha256': digest(artifact(before)),
                                      'concurrency': concurrency['ReservedConcurrentExecutions'], 'lastUpdateStatus': 'Successful'}
     result['maintenance'] = maintenance_readback(read, require_active=mode == 'message-history')
     if mode == 'maintenance':
@@ -180,17 +236,21 @@ def build(plan, captured, mode, replacements=None):
     require(variables.get('environment') == 'dev' and variables.get('aws_region') == 'us-east-1' and
             variables.get('project_name') == 'trustcheckradar' and variables.get('enabled') is True, 'Pinned Dev root required.')
     rows = inventory(plan)
+    require_entitlements_drift(plan, mode)
+    if mode == 'maintenance':
+        require_entitlements(rows[ENT_FUNCTION]['change']['before'])
     for name, observed in captured['functions'].items():
         before = rows[f'aws_lambda_function.runtime["{name}"]']['change']['before']
-        require(before['version'] == observed['version'] and before['source_code_hash'] == observed['codeSha256'] and
+        require(before['version'] == observed['version'] and before['code_sha256'] == observed['codeSha256'] and
+                digest(artifact(before)) == observed['artifactInputsSha256'] and
                 digest(environment(before)) == observed['environmentSha256'], 'Captured baseline drift.')
     if mode == 'maintenance':
         require(replacements is None, 'Maintenance cannot select replacement code.')
         values = {'activate_authority_maintenance': True,
                   'maintenance_qualification_reference': 'owner-reviewed shared recovery/expiry; exact saved-plan approval required'}
         ent = environment(rows['aws_lambda_function.runtime["entitlements"]']['change']['before'])
-        values['governed_trial_subjects'] = subjects(ent['DEV_SUBJECT_ALLOWLIST_JSON'], 1)
-        values['dev_access_snapshot_extra_subjects'] = subjects(ent['DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON'], 1)
+        values['governed_trial_subjects'] = subjects(ent['DEV_SUBJECT_ALLOWLIST_JSON'], 1, ENTITLEMENTS['baseTrialSubjectsSha256'])
+        values['dev_access_snapshot_extra_subjects'] = subjects(ent['DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON'], 1, ENTITLEMENTS['current']['extraSubjectsSha256'])
         require(not set(values['governed_trial_subjects']) & set(values['dev_access_snapshot_extra_subjects']), 'GET scope must remain separate.')
         for name in ('consumer', 'entitlements', 'deletion'):
             key = name + '_artifact_override'

@@ -28,7 +28,8 @@ def sync(plan):
 
 def capture(plan, maintenance):
     return {'functions': {r['address'].split('"')[1]: {
-        'version': r['change']['before']['version'], 'codeSha256': r['change']['before']['source_code_hash'],
+        'version': r['change']['before']['version'], 'codeSha256': r['change']['before']['code_sha256'],
+        'artifactInputsSha256': p.digest(p.artifact(r['change']['before'])),
         'environmentSha256': p.digest(p.environment(r['change']['before']))}
         for r in plan['resource_changes'] if r['address'].startswith('aws_lambda_function.runtime[')},
         'maintenance': maintenance}
@@ -60,7 +61,14 @@ def maintenance():
         value['version'] = '11' if n == 'recovery' else '7'
         if n == 'deletion': value['handler'] = 'app.lambda_handler'
         if n == 'recovery': value['source_code_hash'] = p.RECOVERY_SHA
+        value['code_sha256'] = value['source_code_hash']
         if n == 'entitlements':
+            pin = p.ENTITLEMENTS['current']
+            value.update({k: pin[k] for k in ('version', 'code_sha256', 'source_code_size', 'last_modified')})
+            value.update({{'bucket': 's3_bucket', 'key': 's3_key', 'object_version': 's3_object_version',
+                          'source_hash': 'source_code_hash'}[k]: v for k, v in p.ENTITLEMENTS['historicalArtifactInputs'].items()})
+            arn = 'arn:aws:lambda:us-east-1:107827791950:function:' + value['function_name'] + ':' + value['version']
+            value.update(qualified_arn=arn, qualified_invoke_arn='arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/' + arn + '/invocations')
             env = p.environment(value)
             env.update(DEV_SUBJECT_ALLOWLIST_JSON=json.dumps([SYNTHETIC[0]]),
                        DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON=json.dumps([SYNTHETIC[1]]),
@@ -84,6 +92,7 @@ def maintenance():
         'recovery_enabled': False, 'general_customer_access': False,
         'governed_trial_subject_count': 1, 'engineering_subject_count': 0}}}
     sync(base)
+    # Pure synthetic fixture scope is installed only by this test process.
     observed = capture(base, maintenance_contract(False))
     final = copy.deepcopy(base)
     for k, val in p.build(base, observed, 'maintenance').items(): final['variables'][k] = {'value': val}
@@ -106,6 +115,8 @@ def message():
         value = row['change']['after']
         if row['address'] == 'aws_lambda_function.runtime["consumer"]':
             p.environment(value)['DEV_SUBJECT_ALLOWLIST_JSON'] = json.dumps(SYNTHETIC, separators=(',', ':'))
+        if row['address'].startswith('aws_lambda_function.'):
+            value['code_sha256'] = value['source_code_hash']
         row['change'] = {'actions': ['no-op'], 'before': copy.deepcopy(value), 'after': value}
     base['variables']['authority_maintenance']['value'] = maintenance_contract(True)
     base['configuration'] = {'root_module': {'resources': [{'address': 'aws_lambda_alias.runtime',
@@ -131,12 +142,28 @@ def message():
 class PreservedDeploymentTests(unittest.TestCase):
     def setUp(self):
         self.original_scope = p.SCOPE_SHA
+        self.original_entitlements = copy.deepcopy(p.ENTITLEMENTS)
+        p.ENTITLEMENTS['baseTrialSubjectsSha256'] = p.digest([SYNTHETIC[0]])
+        p.ENTITLEMENTS['current']['extraSubjectsSha256'] = p.digest([SYNTHETIC[1]])
+        p.ENTITLEMENTS['historical']['extraSubjectsSha256'] = p.digest(['01997e3a-0000-7000-8000-000000000003'])
+        # Derive only environment hashes from a synthetic fixture, without calling build.
+        original_build = p.build
+        try:
+            p.build = lambda *args, **kwargs: {}
+            fixture, _, _ = maintenance()
+        finally:
+            p.build = original_build
+        env = p.environment(p.inventory(fixture)[p.ENT_FUNCTION]['change']['before'])
+        p.ENTITLEMENTS['current']['environmentSha256'] = p.digest(env)
+        old = dict(env, DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON=json.dumps(['01997e3a-0000-7000-8000-000000000003']))
+        p.ENTITLEMENTS['historical']['environmentSha256'] = p.digest(old)
         # Only the pure compiler test process uses a synthetic digest. The CLI,
         # checked-in Terraform and deployed scope remain pinned to the real hash.
         p.SCOPE_SHA = p.digest(SYNTHETIC)
 
     def tearDown(self):
         p.SCOPE_SHA = self.original_scope
+        p.ENTITLEMENTS = self.original_entitlements
 
     def test_complete_five_resource_transition(self):
         plan, baseline, observed = maintenance()
@@ -145,11 +172,108 @@ class PreservedDeploymentTests(unittest.TestCase):
         self.assertEqual(artifacts['recovery']['source_hash'], p.RECOVERY_SHA)
         self.assertFalse(result['providerCallsEnabled'])
 
+    def known_drift(self, plan):
+        rows = p.inventory(plan)
+        function = copy.deepcopy(rows[p.ENT_FUNCTION])
+        before = function['change']['before']
+        pin = p.ENTITLEMENTS['historical']
+        before.update({k: pin[k] for k in ('version', 'code_sha256', 'source_code_size', 'last_modified')})
+        before['qualified_arn'] = before['qualified_arn'].rsplit(':', 1)[0] + ':15'
+        before['qualified_invoke_arn'] = before['qualified_invoke_arn'].replace(':18/invocations', ':15/invocations')
+        p.environment(before)['DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON'] = json.dumps(['01997e3a-0000-7000-8000-000000000003'])
+        function['change'].update(actions=['update'])
+        alias = copy.deepcopy(rows[p.ENT_ALIAS])
+        alias['change']['before']['function_version'] = '15'
+        alias['change']['actions'] = ['update']
+        plan['resource_drift'] = [function, alias]
+        return plan
+
+    def test_known_refresh_pair_preserves_live18_and_old_input_marker(self):
+        plan, baseline, observed = maintenance()
+        self.known_drift(plan); self.known_drift(baseline)
+        result, _ = v.review(plan, baseline, observed, REVISION, 'maintenance')
+        self.assertEqual(set(result['resourceAddresses']), v.MAINTENANCE)
+        ent = p.inventory(plan)[p.ENT_FUNCTION]['change']
+        self.assertEqual(ent['actions'], ['no-op'])
+        self.assertNotEqual(ent['after']['source_code_hash'], ent['after']['code_sha256'])
+        self.assertEqual(ent['after']['version'], '18')
+
+    def test_no_drift_still_requires_exact_live18_and_independent_scopes(self):
+        for field, replacement in (('version', '15'), ('code_sha256', 'wrong'),
+                                   ('source_code_hash', p.ENTITLEMENTS['current']['code_sha256']),
+                                   ('s3_object_version', 'invented')):
+            plan, baseline, observed = maintenance()
+            for source in (plan, baseline):
+                for direction in ('before', 'after'):
+                    p.inventory(source)[p.ENT_FUNCTION]['change'][direction][field] = replacement
+            observed = capture(baseline, maintenance_contract(False)); sync(plan)
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                v.review(plan, baseline, observed, REVISION, 'maintenance')
+        for key in ('DEV_SUBJECT_ALLOWLIST_JSON', 'DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON'):
+            plan, baseline, observed = maintenance()
+            for source in (plan, baseline):
+                for direction in ('before', 'after'):
+                    p.environment(p.inventory(source)[p.ENT_FUNCTION]['change'][direction])[key] = json.dumps([SYNTHETIC[0]])
+            # The base replacement is identical; specifically swap to the other subject.
+            if key == 'DEV_SUBJECT_ALLOWLIST_JSON':
+                for source in (plan, baseline):
+                    for direction in ('before', 'after'):
+                        p.environment(p.inventory(source)[p.ENT_FUNCTION]['change'][direction])[key] = json.dumps([SYNTHETIC[1]])
+            observed = capture(baseline, maintenance_contract(False)); sync(plan)
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                v.review(plan, baseline, observed, REVISION, 'maintenance')
+
+    def test_drift_subset_unrelated_fields_and_real_rollback_rejected(self):
+        for mutation in ('partial', 'extra', 'role', 'network', 'marker', 'old-code', 'new-env', 'alias-route', 'binding', 'duplicate'):
+            plan, baseline, observed = maintenance(); self.known_drift(plan)
+            drift = plan['resource_drift']; before = drift[0]['change']['before']; after = drift[0]['change']['after']
+            if mutation == 'partial': drift.pop()
+            if mutation == 'extra': drift.append(copy.deepcopy(drift[0])); drift[-1]['address'] = 'aws_iam_role.other'
+            if mutation == 'role': before['role'] = 'other'
+            if mutation == 'network': before['vpc_config'] = [{}]
+            if mutation == 'marker': before['source_code_hash'] = 'other'
+            if mutation == 'old-code': before['code_sha256'] = 'other'
+            if mutation == 'new-env': p.environment(after)['AUTHORITY_ENABLED'] = 'false'
+            if mutation == 'alias-route': drift[1]['change']['after']['routing_config'] = [{'additional_version_weights': {'15': 0.1}}]
+            if mutation == 'binding': after['version'] = '19'
+            if mutation == 'duplicate': drift.append(copy.deepcopy(drift[0]))
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                v.review(plan, baseline, observed, REVISION, 'maintenance')
+
+    def test_entitlements_update_or_unknown_forbidden_despite_qualified_drift(self):
+        for address, field, value in ((p.ENT_FUNCTION, 'version', '15'), (p.ENT_ALIAS, 'function_version', '15'),
+                                      (p.ENT_FUNCTION, 'source_code_hash', 'wrong')):
+            plan, baseline, observed = maintenance(); self.known_drift(plan); self.known_drift(baseline)
+            row = p.inventory(plan)[address]; row['change']['actions'] = ['update']; row['change']['after'][field] = value; sync(plan)
+            with self.subTest(address=address, field=field), self.assertRaises(ValueError):
+                v.review(plan, baseline, observed, REVISION, 'maintenance')
+        plan, baseline, observed = maintenance()
+        p.inventory(plan)[p.ENT_FUNCTION]['change']['after_unknown'] = {'version': True}
+        with self.assertRaises(ValueError): v.review(plan, baseline, observed, REVISION, 'maintenance')
+
+    def test_captured_artifact_marker_drift_rejected(self):
+        plan, baseline, observed = maintenance()
+        observed['functions']['entitlements']['artifactInputsSha256'] = 'wrong'
+        with self.assertRaises(ValueError): v.review(plan, baseline, observed, REVISION, 'maintenance')
+
     def test_current_candidate3_history_preserves_two_subjects_and_iam(self):
         plan, baseline, observed, targets = message()
         result, _ = v.review(plan, baseline, observed, REVISION, 'message-history', targets)
         self.assertEqual(result['resourceUpdates'], 4)
         self.assertEqual(plan['variables']['engineering_subjects']['value'], SYNTHETIC)
+
+    def test_message_computed_hash_unknown_requires_reviewed_package_change(self):
+        plan, baseline, observed, targets = message()
+        row = p.inventory(plan)['aws_lambda_function.runtime["consumer"]']
+        row['change']['after']['code_sha256'] = None
+        row['change']['after_unknown'] = {'code_sha256': True}
+        sync(plan)
+        self.assertEqual(v.review(plan, baseline, observed, REVISION, 'message-history', targets)[0]['resourceUpdates'], 4)
+        row['change']['after_unknown'] = {}
+        with self.assertRaises(ValueError): v.review(plan, baseline, observed, REVISION, 'message-history', targets)
+        row['change']['after']['code_sha256'] = 'wrong'
+        sync(plan)
+        with self.assertRaises(ValueError): v.review(plan, baseline, observed, REVISION, 'message-history', targets)
 
     def test_unrelated_iam_route_and_untouched_runtime_drift_rejected(self):
         for address in ('aws_iam_role_policy.recovery[0]', 'aws_apigatewayv2_route.v1["access"]',
