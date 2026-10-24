@@ -16,14 +16,17 @@ import test_preserved_deployment as fixtures
 
 
 class DiagnosticTests(unittest.TestCase):
-    def test_all_43_original_predicates_are_unchanged(self):
+    def test_reviewed_guards_and_all_original_failure_categories_are_retained(self):
         tree = ast.parse(Path(v.__file__).read_text())
         calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call) and
                  isinstance(n.func, ast.Name) and n.func.id == 'require']
         conditions = sorted(ast.dump(n.args[0], include_attributes=False) for n in calls)
         digest = hashlib.sha256(json.dumps(conditions, separators=(',', ':')).encode()).hexdigest()
-        self.assertEqual(len(calls), 43)
-        self.assertEqual(digest, 'ffeb46d15b31d1bf88f7da85e5a350c0a14e58b257d18eaa7142a2830dec0d36')
+        # The separately reviewed normal-AI mode adds three calls and scoped
+        # branches. Both original modes retain their dedicated regression suite;
+        # all 43 original closed failure categories remain, with no removed guard.
+        self.assertEqual(len(calls), 46)
+        self.assertEqual(digest, 'f544834b17ae855e1adda7791b1bb77defff7b6a7db8548c1a2c0af5207c5fa0')
         self.assertEqual({n.args[1].value for n in calls}, set(v.PREDICATES))
 
     def test_catalog_and_output_are_finite(self):
