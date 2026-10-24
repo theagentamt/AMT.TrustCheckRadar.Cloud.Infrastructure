@@ -36,7 +36,7 @@
     "providerCalls": 0,
     "mobileTesting": false
   },
-  "monitoringBoundary": "Six native alarms qualified from the saved plan and fresh pre/post metadata. They do not detect handled provider/accounting failures. Controlled verification must inspect fixed diagnostics and reconcile same-operation receipt/budget, stopping on absent or uncertain evidence.",
+  "monitoringBoundary": "The verifier requires six native alarms to match the saved plan and fresh pre/post metadata. No live alarm readback or delivery acceptance was performed in this source batch. Native alarms do not detect handled provider/accounting failures. Controlled verification must inspect fixed diagnostics and reconcile the same-operation receipt/budget, stopping on absent or uncertain evidence.",
   "resolvedFindings": [
     "Alarm unit-filter drift now rejects; canonical unit absent/empty normalization and negative plan/live cases added.",
     "Terraform output comment formatting corrected before final quality check."
