@@ -156,10 +156,26 @@ state transition.
 
 Native alarms do not detect a fixed failure returned in a successful invocation,
 count completed checks, deduplicate retries, calculate model costs or produce the
-daily outcome report. Those SECUR4ALL-237/243 requirements, live alarm delivery
-qualification, provider quality/data-control/cost gates and a rollback exercise
-remain prerequisites for user traffic. `daily_reporting_ready=false` is explicit
-in the candidate output. No alarm or resource is created when `enabled=false`.
+daily outcome report. On 2026-10-24 the owner deferred daily summary delivery as
+a prerequisite to controlled Dev verification through the normal application.
+`daily_reporting_ready=false` remains explicit; no report service is activated or
+claimed ready. The preserved-plan verifier permits this only in the existing
+Dev account/region and exact two-subject Message/History admission scope. It
+checks all six existing native alarms against the plan and fresh pre/post
+readbacks, without changing them.
+
+Controlled verification must also inspect the application's fixed usage,
+rejection-stage and transaction-failure diagnostics and reconcile the same
+operation's authoritative outcome, budget reservation and customer accounting.
+Missing or uncertain evidence stops verification; a successful Lambda invocation,
+an OK alarm or absent log is not proof of a successful analysis or zero cost.
+Model qualification, privacy, hard monetary/attempt/failure limits, current device
+and access, maintenance, immutable artifacts, exact saved-plan approval and
+rollback remain mandatory. The deferral does not waive the SEC237/243 operational
+requirements for general user/production rollout or permit new subjects,
+providers, credentials or spending. See the dated amendment in
+[`V1-OPERATIONS-CONTRACT.md`](../../docs/V1-OPERATIONS-CONTRACT.md).
+No alarm or resource is created when `enabled=false`.
 
 ## Verification
 

@@ -9,6 +9,7 @@ import sys
 import tempfile
 import unittest
 import zipfile
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import message_ai_configuration as a
@@ -62,6 +63,35 @@ def qualification_zip(config):
         'evidenceSha256': config['qualification_evidence_sha256'], 'costPolicy': config['cost_policy'], 'status':'approved'}
     contents['message_evaluator/ai_qualifications.json'] = json.dumps({config['qualification_id']:record})
     return contents
+
+
+def alarm_rows():
+    """Closed fixture matching the existing operations.tf native alarms."""
+    rows=[]
+    topic='arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts'
+    for name,timeout in [('consumer',29),('evaluator',23)]:
+        function='trustcheckradar-dev-message-'+name
+        for suffix,metric,statistic,threshold in [('errors','Errors','Sum',1),('throttles','Throttles','Sum',1),('duration','Duration','Maximum',(timeout-3)*1000)]:
+            value={'alarm_name':function+'-'+suffix,'namespace':'AWS/Lambda','metric_name':metric,
+                'dimensions':{'FunctionName':function},'statistic':statistic,'period':300,'evaluation_periods':1,
+                'datapoints_to_alarm':1,'threshold':threshold,'comparison_operator':'GreaterThanOrEqualToThreshold',
+                'treat_missing_data':'notBreaching','alarm_actions':[topic],'ok_actions':[topic],'actions_enabled':True}
+            rows.append({'address':f'aws_cloudwatch_metric_alarm.runtime["{name}-{suffix}"]','mode':'managed',
+                'provider_name':'registry.terraform.io/hashicorp/aws','change':{'actions':['no-op'],'before':copy.deepcopy(value),'after':value}})
+    return rows
+
+
+def cloudwatch_alarms(rows):
+    mapping={'alarm_name':'AlarmName','namespace':'Namespace','metric_name':'MetricName','statistic':'Statistic',
+        'period':'Period','evaluation_periods':'EvaluationPeriods','datapoints_to_alarm':'DatapointsToAlarm',
+        'threshold':'Threshold','comparison_operator':'ComparisonOperator','treat_missing_data':'TreatMissingData',
+        'alarm_actions':'AlarmActions','ok_actions':'OKActions','actions_enabled':'ActionsEnabled'}
+    result=[]
+    for row in rows:
+        value=row['change']['before'];alarm={out:copy.deepcopy(value[key]) for key,out in mapping.items()}
+        alarm['Dimensions']=[{'Name':k,'Value':v} for k,v in value['dimensions'].items()]
+        result.append(alarm)
+    return result
 
 
 class ConfigurationTests(unittest.TestCase):
@@ -143,6 +173,7 @@ class NormalPlanTests(unittest.TestCase):
     def plan(self):
         final,baseline,captured,targets=fixtures.message()
         for plan in (final,baseline):
+            plan['resource_changes'].extend(alarm_rows())
             plan['variables'].update({k:{'value':val} for k,val in {
                 'message_ai_primary_enabled':False,'ai_configuration':None,'url_assessment_enabled':False}.items()})
             value={'name':'fenced-message-authority-and-private-evaluator','role':'trustcheckradar-dev-message-consumer-execution',
@@ -150,6 +181,7 @@ class NormalPlanTests(unittest.TestCase):
             plan['resource_changes'].append({'address':'aws_iam_role_policy.consumer[0]','mode':'managed',
                 'provider_name':'registry.terraform.io/hashicorp/aws','change':{'actions':['no-op'],'before':copy.deepcopy(value),'after':copy.deepcopy(value)}})
         captured['policies']={n:p.digest(json.loads(p.inventory(baseline)[f'aws_iam_role_policy.{n}[0]']['change']['before']['policy'])) for n in ('consumer','evaluator')}
+        captured['monitoring']={name:p.digest(value) for name,value in p.message_monitoring(p.inventory(baseline)).items()}
         for k,val in p.build(baseline,captured,'message-ai',targets,inactive()).items():final['variables'][k]={'value':val}
         final['output_changes']['candidate_contract']['after'].update(ai_primary_enabled=False,url_assessment_enabled=False,daily_reporting_ready=False)
         fixtures.sync(baseline);fixtures.sync(final)
@@ -171,9 +203,8 @@ class NormalPlanTests(unittest.TestCase):
             fixtures.sync(plan)
             with self.subTest(mutation=mutation),self.assertRaises(ValueError):v.review(plan,base,captured,fixtures.REVISION,'message-ai',targets,inactive())
 
-    def test_consistent_active_plan_reaches_reporting_hold(self):
-        # A pure compiler fixture proves the closed gate, not activation or
-        # model qualification. Do not replace it with a passing fake readiness.
+    def active_plan(self):
+        # A pure plan compiler fixture, not actual model qualification or AWS.
         plan,base,captured,targets=self.plan();desired=active();rows=p.inventory(plan)
         for key,value in p.build(base,captured,'message-ai',targets,desired).items():plan['variables'][key]={'value':value}
         for name in ('consumer','evaluator'):
@@ -188,6 +219,119 @@ class NormalPlanTests(unittest.TestCase):
         output.update({k:True for k in ['ai_enabled','ai_qualified','ai_primary_enabled','model_enabled']})
         output.update(candidate3_rules_only_enabled=False,provider_circuit_open=False,daily_reporting_ready=False)
         fixtures.sync(plan)
-        with self.assertRaisesRegex(ValueError,'^AI_OPERATIONAL_REPORTING_NOT_READY$') as error:
-            v.review(plan,base,captured,fixtures.REVISION,'message-ai',targets,desired)
-        self.assertEqual(v.rejection_record(error.exception,'PLAN_REVIEW')['code'],'AI_OPERATIONAL_REPORTING_NOT_READY')
+        return plan,base,captured,targets,desired
+
+    def test_dev_plan_defers_delivery_without_fabricating_readiness(self):
+        plan,base,captured,targets,desired=self.active_plan()
+        result,_=v.review(plan,base,captured,fixtures.REVISION,'message-ai',targets,desired)
+        self.assertTrue(result['providerCallsEnabled'])
+        self.assertEqual(result['resourceUpdates'],6)
+        self.assertIs(plan['output_changes']['candidate_contract']['after']['daily_reporting_ready'],False)
+
+    def test_missing_or_untruthful_reporting_state_is_rejected(self):
+        for value in (None,True,'false',0):
+            plan,base,captured,targets,desired=self.active_plan()
+            output=plan['output_changes']['candidate_contract']['after']
+            if value is None:output.pop('daily_reporting_ready')
+            else:output['daily_reporting_ready']=value
+            with self.subTest(value=value),self.assertRaisesRegex(ValueError,'^AI_REPORTING_STATE$'):
+                v.review(plan,base,captured,fixtures.REVISION,'message-ai',targets,desired)
+
+    def test_dev_deferral_cannot_expand_environment_or_subject_identity(self):
+        for field,value in [('environment','prod'),('environment','uat'),('aws_region','us-west-2'),
+            ('engineering_subjects',[fixtures.SYNTHETIC[0],'01997e3a-0000-7000-8000-000000000003'])]:
+            plan,base,captured,targets,desired=self.active_plan()
+            for source in (plan,base):source['variables'][field]={'value':value}
+            if field=='engineering_subjects':
+                for source in (plan,base):
+                    p.environment(p.inventory(source)['aws_lambda_function.runtime["consumer"]']['change']['before'])['DEV_SUBJECT_ALLOWLIST_JSON']=json.dumps(value)
+                captured['functions']['consumer']['environmentSha256']=p.digest(p.environment(p.inventory(base)['aws_lambda_function.runtime["consumer"]']['change']['before']))
+            fixtures.sync(plan);fixtures.sync(base)
+            with self.subTest(field=field,value=value),self.assertRaises(ValueError):
+                v.review(plan,base,captured,fixtures.REVISION,'message-ai',targets,desired)
+
+    def test_unqualified_budget_and_monitoring_cannot_use_delivery_deferral(self):
+        for mutation in ('money','output','qualification','capture','missing_alarm','disabled_alarm','changed_alarm'):
+            plan,base,captured,targets,desired=self.active_plan()
+            if mutation=='money':desired['ai_configuration']['max_nano_usd_per_window']=1
+            elif mutation=='output':desired['ai_configuration']['cost_policy']['maxOutputTokens']=513
+            elif mutation=='qualification':desired['ai_configuration']['qualification_id']=''
+            elif mutation=='capture':captured.pop('monitoring')
+            elif mutation=='missing_alarm':
+                for source in (plan,base):source['resource_changes']=[r for r in source['resource_changes'] if r['address']!='aws_cloudwatch_metric_alarm.runtime["consumer-errors"]']
+            elif mutation=='disabled_alarm':
+                for source in (plan,base):
+                    row=p.inventory(source)['aws_cloudwatch_metric_alarm.runtime["consumer-errors"]']
+                    for side in ('before','after'):row['change'][side]['actions_enabled']=False
+            else:
+                row=p.inventory(plan)['aws_cloudwatch_metric_alarm.runtime["consumer-errors"]']
+                row['change']['actions']=['update'];row['change']['after']['threshold']=99
+            fixtures.sync(plan);fixtures.sync(base)
+            with self.subTest(mutation=mutation),self.assertRaises(ValueError):
+                v.review(plan,base,captured,fixtures.REVISION,'message-ai',targets,desired)
+
+    def test_capture_and_post_readback_require_the_same_live_alarm_boundary(self):
+        _,base,_,_=self.plan();rows=p.inventory(base);calls=[];alarms=cloudwatch_alarms(alarm_rows())
+        history={'State':'Active','Version':'12','CodeSha256':'history-source','Environment':{'Variables':{
+            'AUTHORITY_ENABLED':'true','GOVERNED_HISTORY_LIST_ENABLED':'true','GOVERNED_HISTORY_DETAIL_ENABLED':'true',
+            'DEV_SUBJECT_ALLOWLIST_JSON':json.dumps(fixtures.SYNTHETIC)}}}
+        def read(service,operation,*args):
+            if service=='sts':return {'Account':'107827791950'}
+            if service=='cloudwatch':calls.append(operation);return {'MetricAlarms':copy.deepcopy(alarms)}
+            self.assertEqual(service,'lambda')
+            function=args[args.index('--function-name')+1]
+            if function.endswith('governed-history'):
+                return {'FunctionVersion':'12'} if operation=='get-alias' else history
+            name=function.rsplit('-',1)[1];value=rows[f'aws_lambda_function.runtime["{name}"]']['change']['before']
+            if operation=='get-alias':return {'FunctionVersion':value['version']}
+            if operation=='get-function-concurrency':return {'ReservedConcurrentExecutions':value['reserved_concurrent_executions']}
+            result={out:value[key] for key,out in {'function_name':'FunctionName','runtime':'Runtime','architectures':'Architectures',
+                'role':'Role','handler':'Handler','timeout':'Timeout','memory_size':'MemorySize','version':'Version','code_sha256':'CodeSha256'}.items()}
+            return result|{'State':'Active','LastUpdateStatus':'Successful','Environment':{'Variables':p.environment(value)}}
+        with patch.object(p,'maintenance_readback',return_value=fixtures.maintenance_contract(True)),patch.object(p,'message_policy_readback',return_value={}):
+            captured=p.capture(base,'message-ai',read)
+            self.assertEqual(len(captured['monitoring']),6)
+            v.verify_deployed(base,base,captured,'message-ai',read)
+            self.assertEqual(calls,['describe-alarms','describe-alarms'])
+            alarms[0]['ActionsEnabled']=False
+            with self.assertRaisesRegex(ValueError,'^AI_ESSENTIAL_MONITORING$'):
+                v.verify_deployed(base,base,captured,'message-ai',read)
+
+
+class MonitoringTests(unittest.TestCase):
+    def test_readback_matches_six_exact_native_alarms(self):
+        rows=alarm_rows();calls=[];alarms=cloudwatch_alarms(rows)
+        def read(*args):calls.append(args);return {'MetricAlarms':alarms}
+        expected={k:p.digest(v) for k,v in p.message_monitoring({r['address']:r for r in rows}).items()}
+        self.assertEqual(p.message_monitoring_readback({r['address']:r for r in rows},read),expected)
+        self.assertEqual(len(calls),1)
+        self.assertEqual(calls[0][:3],('cloudwatch','describe-alarms','--alarm-names'))
+        self.assertEqual(set(calls[0][3:]),set(expected))
+        for alarm in alarms:alarm.pop('DatapointsToAlarm')
+        self.assertEqual(p.message_monitoring_readback({r['address']:r for r in rows},read),expected)
+
+    def test_changed_missing_duplicate_or_malformed_live_alarms_rejected(self):
+        for mutation in ('missing','duplicate','disabled','destination','dimensions','threshold','bool_period','bool_datapoints','unit','expression'):
+            rows=alarm_rows();alarms=cloudwatch_alarms(rows)
+            if mutation=='missing':alarms.pop()
+            elif mutation=='duplicate':alarms[-1]=copy.deepcopy(alarms[0])
+            elif mutation=='disabled':alarms[0]['ActionsEnabled']=False
+            elif mutation=='destination':alarms[0]['AlarmActions']=['other']
+            elif mutation=='dimensions':alarms[0]['Dimensions'].append({'Name':'Account','Value':'unexpected'})
+            elif mutation=='threshold':alarms[0]['Threshold']=99
+            elif mutation=='bool_period':alarms[0]['EvaluationPeriods']=True
+            elif mutation=='bool_datapoints':alarms[0]['DatapointsToAlarm']=True
+            elif mutation=='unit':alarms[0]['Unit']='Seconds'
+            else:alarms[0]['Metrics']=[{}]
+            with self.subTest(mutation=mutation),self.assertRaisesRegex(ValueError,'^AI_ESSENTIAL_MONITORING$') as error:
+                p.message_monitoring_readback({r['address']:r for r in rows},lambda *args:{'MetricAlarms':alarms})
+            self.assertEqual(v.rejection_record(error.exception,'PLAN_REVIEW')['code'],'AI_ESSENTIAL_MONITORING')
+
+    def test_plan_unit_filter_cannot_be_hidden_by_delivery_deferral(self):
+        for unit in ('Seconds','None',False,0):
+            rows=alarm_rows();rows[0]['change']['before']['unit']=unit
+            with self.subTest(unit=unit),self.assertRaisesRegex(ValueError,'^AI_ESSENTIAL_MONITORING$'):
+                p.message_monitoring({r['address']:r for r in rows})
+        for unit in (None,''):
+            rows=alarm_rows();rows[0]['change']['before']['unit']=unit
+            self.assertEqual(len(p.message_monitoring({r['address']:r for r in rows})),6)

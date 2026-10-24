@@ -239,6 +239,7 @@ run "normal_ai_primary_config_does_not_open_url_or_storage" {
   assert {
     condition = (
       output.candidate_contract.ai_primary_enabled && !output.candidate_contract.url_assessment_enabled &&
+      !output.candidate_contract.daily_reporting_ready &&
       aws_lambda_function.runtime["consumer"].environment[0].variables.MESSAGE_AI_PRIMARY_ENABLED == "true" &&
       aws_lambda_function.runtime["consumer"].environment[0].variables.MESSAGE_PROVIDER_NANO_USD_PER_WINDOW == "5000000000" &&
       aws_lambda_function.runtime["consumer"].environment[0].variables.GOVERNED_HISTORY_SETTLEMENT_ENABLED == "true" &&
