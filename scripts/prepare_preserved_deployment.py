@@ -241,6 +241,7 @@ def capture(plan, mode, read=aws):
                              'environmentSha256': digest(history['Environment']['Variables'])}
     if mode == 'message-ai':
         result['policies'] = message_policy_readback(rows, read)
+        result['monitoring'] = message_monitoring_readback(rows, read)
     return result
 
 
@@ -262,6 +263,57 @@ def message_policy_readback(rows, read=aws, side='before'):
             and not trust.get('PermissionsBoundary'), 'AI_ROLE_TRUST')
         result[name] = digest(actual)
     return result
+
+
+def message_monitoring(rows, side='before'):
+    """Existing six native alarms remain essential when delivery is deferred."""
+    result = {}
+    topic = 'arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts'
+    for name, timeout in (('consumer', 29), ('evaluator', 23)):
+        function = PREFIX + '-message-' + name
+        for suffix, metric, statistic, threshold in (
+            ('errors', 'Errors', 'Sum', 1), ('throttles', 'Throttles', 'Sum', 1),
+            ('duration', 'Duration', 'Maximum', (timeout - 3) * 1000)):
+            address = f'aws_cloudwatch_metric_alarm.runtime["{name}-{suffix}"]'
+            value = rows.get(address, {}).get('change', {}).get(side, {})
+            expected = {'alarm_name': function + '-' + suffix, 'namespace': 'AWS/Lambda',
+                'metric_name': metric, 'dimensions': {'FunctionName': function}, 'statistic': statistic,
+                'period': 300, 'evaluation_periods': 1, 'datapoints_to_alarm': 1, 'threshold': threshold,
+                'comparison_operator': 'GreaterThanOrEqualToThreshold', 'treat_missing_data': 'notBreaching',
+                'alarm_actions': [topic], 'ok_actions': [topic], 'actions_enabled': True}
+            require(all(value.get(k) == v for k, v in expected.items())
+                    and value.get('actions_enabled') is True
+                    and all(type(value.get(k)) is int for k in ('period','evaluation_periods','datapoints_to_alarm'))
+                    and type(value.get('threshold')) in (int, float)
+                    and value.get('unit') in (None, '')
+                    and not any(value.get(k) for k in ('metric_query','extended_statistic','insufficient_data_actions')),
+                    'AI_ESSENTIAL_MONITORING')
+            result[expected['alarm_name']] = expected | {'unit': None}
+    return result
+
+
+def message_monitoring_readback(rows, read=aws, side='before'):
+    expected = message_monitoring(rows, side)
+    alarms = read('cloudwatch', 'describe-alarms', '--alarm-names', *sorted(expected)).get('MetricAlarms', [])
+    require(len(alarms) == len(expected) and {a.get('AlarmName') for a in alarms} == set(expected),
+            'AI_ESSENTIAL_MONITORING')
+    fields = {'alarm_name':'AlarmName','namespace':'Namespace','metric_name':'MetricName','statistic':'Statistic',
+        'period':'Period','evaluation_periods':'EvaluationPeriods','threshold':'Threshold',
+        'comparison_operator':'ComparisonOperator','treat_missing_data':'TreatMissingData',
+        'alarm_actions':'AlarmActions','ok_actions':'OKActions','actions_enabled':'ActionsEnabled'}
+    for alarm in alarms:
+        value = {k: alarm.get(v) for k, v in fields.items()}
+        dimensions = alarm.get('Dimensions', [])
+        require(len(dimensions) == 1 and set(dimensions[0]) == {'Name','Value'}, 'AI_ESSENTIAL_MONITORING')
+        value['dimensions'] = {dimensions[0]['Name']: dimensions[0]['Value']}
+        value['datapoints_to_alarm'] = alarm.get('DatapointsToAlarm', alarm.get('EvaluationPeriods'))
+        value['unit'] = None if alarm.get('Unit') in (None, '') else alarm['Unit']
+        require(value == expected[alarm['AlarmName']] and alarm.get('ActionsEnabled') is True
+                and all(type(value[k]) is int for k in ('period','evaluation_periods','datapoints_to_alarm'))
+                and type(value['threshold']) in (int, float)
+                and not any(alarm.get(k) for k in ('Metrics','ExtendedStatistic','InsufficientDataActions')),
+                'AI_ESSENTIAL_MONITORING')
+    return {name: digest(value) for name, value in expected.items()}
 
 
 def build(plan, captured, mode, replacements=None, configuration=None):

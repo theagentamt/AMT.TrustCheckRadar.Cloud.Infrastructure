@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "status": "SOURCE_VALIDATED_NOT_ACTIVATED",
+  "baseCommit": "0f684aedde7e6b87fe2f66d294a17ae51ba8dc3d",
+  "scope": "Owner-approved deferral of daily summary delivery for existing controlled Dev verification only",
+  "validation": {
+    "terraformVersion": "1.12.1",
+    "roots": 21,
+    "terraformSourceTests": 601,
+    "pythonCiUnittestTests": 508,
+    "pythonPytestRegularCases": 508,
+    "pythonSubtests": 875,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "dependencies": {
+      "boto3": "1.43.107",
+      "moto": "5.2.3",
+      "providers": "existing approved mirror; no downloads"
+    },
+    "network": "external Python sockets blocked; Terraform mocked providers and backend disabled",
+    "quality": "fmt, whitespace, shell syntax, guardrails and Python compile PASS"
+  },
+  "preserved": {
+    "dailyReportingReady": false,
+    "defaultAiEnabled": false,
+    "productionRequirementsUnchanged": true,
+    "exactExistingDevSubjectHashUnchanged": true,
+    "qualificationArchiveChecksUnchanged": true,
+    "privacyAndAccountingUnchanged": true,
+    "hardBudgetAndFailureCircuitUnchanged": true,
+    "sixNativeAlarmsUnchanged": true,
+    "iamOrResourceDeclarationsChanged": false,
+    "cloudApply": false,
+    "secretReads": 0,
+    "providerCalls": 0,
+    "mobileTesting": false
+  },
+  "monitoringBoundary": "The verifier requires six native alarms to match the saved plan and fresh pre/post metadata. No live alarm readback or delivery acceptance was performed in this source batch. Native alarms do not detect handled provider/accounting failures. Controlled verification must inspect fixed diagnostics and reconcile the same-operation receipt/budget, stopping on absent or uncertain evidence.",
+  "resolvedFindings": [
+    "Alarm unit-filter drift now rejects; canonical unit absent/empty normalization and negative plan/live cases added.",
+    "Terraform output comment formatting corrected before final quality check."
+  ],
+  "remainingGates": [
+    "Independent exact-file review and normal main integration/CI.",
+    "Fresh accepted model qualification; no consumed request budget reused.",
+    "Specific later secret-use, security, spending and exact deployment approvals; fresh monitoring and authenticated access/readback."
+  ],
+  "sourcePins": {
+    "docs/V1-OPERATIONS-CONTRACT.md": "6b559aff05cdf21447c00bd4b72f798ae103408a1ab2591a7698bfc2db0e8677",
+    "scripts/prepare_preserved_deployment.py": "820576524f290b9e371772157ccc10b0977465a7d7998c1072a19937690798ad",
+    "scripts/tests/test_message_ai_configuration.py": "b7af70666d8033e806f89bde472c64c7a6f693c8c667f80cbb993e8af656fbfa",
+    "scripts/verify_preserved_deployment.py": "02fd434d9b6ef542e0aba4b003e1438d32c4a632b9d3f7efddd6b82053be9a45",
+    "terraform/message-consumer/README.md": "4d107975db74370f7c0829df092d6f2ab3f57e59ea5945d4f673276037d17202",
+    "terraform/message-consumer/outputs.tf": "2e58b82f4d206a07c1cec997d9421baecb8a29d455f4b1f559eb658ffbd4b30d",
+    "terraform/message-consumer/tests/activation.tftest.hcl": "615e5e2e67187133bc0e11bdc91d490794d6a09d285a5fb51b563dd3b05b6987"
+  },
+  "claimBoundary": "Source policy only; no real provider, runtime, alarm delivery, reporting readiness or story Done claim."
+}

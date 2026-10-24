@@ -112,7 +112,8 @@ DEPENDENCIES.update({code: (code, 'MESSAGE_CONFIGURATION') for code in (
     'AI_PROVIDER_CONFIGURATION', 'AI_BUDGET_CONFIGURATION', 'AI_LEGACY_PROPOSER_NOT_DISABLED',
     'AI_BUDGET_POLICY_BASELINE', 'AI_URL_POLICY_BASELINE', 'AI_EVALUATOR_POLICY_BASELINE',
     'AI_PACKAGE_STRUCTURE', 'AI_QUALIFICATION_BINDING', 'AI_POLICY_IDENTITY', 'AI_POLICY_INVENTORY',
-    'AI_POLICY_READBACK', 'AI_ROLE_TRUST', 'AI_PROFILE_BASELINE', 'AI_OPERATIONAL_REPORTING_NOT_READY')})
+    'AI_POLICY_READBACK', 'AI_ROLE_TRUST', 'AI_PROFILE_BASELINE',
+    'AI_REPORT_DELIVERY_SCOPE', 'AI_REPORTING_STATE', 'AI_ESSENTIAL_MONITORING')})
 EXTRA_CODES = frozenset({'INPUT_INVALID', 'PLAN_STRUCTURE', 'VERIFIER_UNCLASSIFIED',
     'ARTIFACT_STS_READ_FAILED', 'ARTIFACT_S3_READ_FAILED', 'ARTIFACT_READ_FAILED',
     'ARTIFACT_ACCOUNT', 'ARTIFACT_HASH', 'ARTIFACT_VERSION', 'ARTIFACT_UNCLASSIFIED'})
@@ -323,6 +324,10 @@ def review(plan, baseline, captured, revision, mode, replacements=None, configur
             alias_binding(rows[f'aws_lambda_alias.runtime["{name}"]'], c, plan)
         artifacts = expected['deployment']['artifacts']
         if mode == 'message-ai':
+            monitoring = prepare.message_monitoring(rows)
+            prepare.require(captured.get('monitoring') == {name: prepare.digest(value) for name, value in monitoring.items()}
+                    and prepare.message_monitoring(rows, 'after') == monitoring,
+                    'AI_ESSENTIAL_MONITORING')
             before_policies = [json.loads(rows[f'aws_iam_role_policy.{n}[0]']['change']['before']['policy']) for n in ('consumer','evaluator')]
             desired = ai.policies(*before_policies, expected['deployment']['authority_table_arn'],
                 expected['deployment']['assessment_alias_arn'], configuration['message_ai_primary_enabled'],
@@ -348,7 +353,13 @@ def review(plan, baseline, captured, revision, mode, replacements=None, configur
                 contract['provider_circuit_open'] is expected['candidate3_rules_only_enabled'] and
                 contract['url_assessment_enabled'] is False and contract['engineering_subject_count'] == 2,
                 'Candidate.3/History output mismatch.')
-        prepare.require(not active or contract.get('daily_reporting_ready') is True, 'AI_OPERATIONAL_REPORTING_NOT_READY')
+        # Owner-approved MVP policy: daily delivery does not block the existing
+        # controlled Dev route. Never fabricate reporting readiness or extend
+        # this decision to another environment/admission boundary.
+        prepare.require(expected.get('environment') == 'dev' and expected.get('aws_region') == 'us-east-1'
+                        and expected.get('project_name') == 'trustcheckradar'
+                        and contract['engineering_subject_count'] == 2, 'AI_REPORT_DELIVERY_SCOPE')
+        prepare.require(contract.get('daily_reporting_ready') is False, 'AI_REPORTING_STATE')
     material = {'plan': projection(plan), 'baseline': projection(baseline), 'capture': captured,
                 'revision': revision, 'mode': mode}
     return {'reviewedPlanDigest': prepare.digest(material), 'mode': mode, 'revision': revision,
@@ -389,6 +400,8 @@ def verify_deployed(plan, baseline, captured, mode, read=prepare.aws):
                     'environmentSha256': prepare.digest(history['Environment']['Variables'])}, 'Protected History version/configuration changed.')
     if mode == 'message-ai':
         prepare.message_policy_readback(rows, read, side='after')
+        prepare.require(prepare.message_monitoring_readback(rows, read, side='after') == captured.get('monitoring'),
+                'AI_ESSENTIAL_MONITORING')
 
 
 def main():

@@ -20,6 +20,7 @@ output "candidate_contract" {
     function_aliases                    = { for name, function in aws_lambda_alias.runtime : name => function.arn }
     secret_value_in_state               = false
     runtime_alarm_names                 = [for alarm in aws_cloudwatch_metric_alarm.runtime : alarm.alarm_name]
-    daily_reporting_ready               = false
+    # Delivery is deferred only for controlled Dev verification; it is not ready.
+    daily_reporting_ready = false
   }
 }

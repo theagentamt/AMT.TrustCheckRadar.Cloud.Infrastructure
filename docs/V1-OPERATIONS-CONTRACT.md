@@ -115,6 +115,31 @@ This policy reconciles approved individual access (200 completed checks per mont
 On 2026-10-04 the owner approved Chicago 08:00, 7/14/90-day retention, the alert thresholds and recovery rules above, next-daily-report correction cadence, two retries, six hourly incident reminders, and the 30/hour and 100/day alert-attempt caps with critical notices prioritized. The seven-day operations store additionally requires tested deletion/restore integration before activation; policy approval alone cannot establish that implementation. No new production dollar cap, active-device/reset change or cloud deployment is authorized. Record this accepted policy version in SEC178 and update SEC237/243 before their implementation starts. Their runtime schema, source adapters, infrastructure configuration and actual Dev evidence remain separate work. Source-defined fixtures and offline design checks are not live notification or report evidence.
 
 
+## 2026-10-24 controlled Dev MVP sequencing amendment
+
+The owner approved deferring daily operational summary delivery as a prerequisite
+to controlled Dev verification through the permanent application paths. This is
+a release-sequencing decision, not reporting readiness, a temporary runtime path,
+or permission to activate a provider. `daily_reporting_ready` remains false.
+It applies only to the existing reviewed Dev account/region and exact admitted
+Message/History subjects; it does not relax general user or production release
+requirements, expand scope or authorize any additional spending.
+
+Existing real-time controls remain mandatory: qualified model/artifact binding,
+privacy review, hard currency/attempt/failure limits, access/device/receipt
+integrity, recovery and rollback. The six existing native Message alarms must
+remain unchanged and pass fresh pre/post readback. They do not cover handled
+provider failures or accounting: controlled verification must inspect the fixed
+usage/rejection/transaction-failure diagnostics and reconcile the same operation
+against the authoritative receipt and budget. Missing or uncertain evidence is a
+stop, never a successful analysis, a known zero cost or a permission to retry.
+
+This amendment does not activate the operations store, collection, aggregation or
+delivery. Their readiness, coverage and retention/erasure requirements remain
+unchanged and must be proved before those resources are activated. The daily
+delivery schedule, recipient and caps above remain the agreed deferred scope;
+no new reporting enhancement is introduced for MVP.
+
 ## Later release execution instructions (SEC180)
 
 Status: **pending**. This is the operational portion of the existing final release checklist, not evidence that a publisher, aggregator, delivery runner or deployed schedule exists. SEC237/243 must first complete their retained Dev implementation and automated acceptance. They must supply the actual runner entry points and commands; there is currently no operational-report HTTP endpoint or runnable cloud acceptance command to invent here.
