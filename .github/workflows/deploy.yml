@@ -29,6 +29,7 @@ on:
           - message-consumer
           - message-consumer-engineering
           - message-consumer-preserve-history
+          - message-consumer-ai
           - authority-maintenance
           - trial-authority
           - trial-authority-engineering
@@ -517,7 +518,7 @@ jobs:
 
   message-consumer:
     name: Bounded Dev message transition
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.environment == 'dev' && startsWith(inputs.deployment_scope, 'message-consumer') && inputs.deployment_scope != 'message-consumer-preserve-history'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.environment == 'dev' && (inputs.deployment_scope == 'message-consumer' || inputs.deployment_scope == 'message-consumer-engineering')
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment: dev
@@ -785,7 +786,7 @@ jobs:
 
   preserved-dev:
     name: Preserved Dev maintenance or candidate.3 transition
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.environment == 'dev' && (inputs.deployment_scope == 'authority-maintenance' || inputs.deployment_scope == 'message-consumer-preserve-history')
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.environment == 'dev' && (inputs.deployment_scope == 'authority-maintenance' || inputs.deployment_scope == 'message-consumer-preserve-history' || inputs.deployment_scope == 'message-consumer-ai')
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment: dev
@@ -830,6 +831,11 @@ jobs:
               echo 'PRESERVED_MODE=message-history' >> "$GITHUB_ENV"
               echo 'PRESERVED_STACK=message-consumer' >> "$GITHUB_ENV"
               ;;
+            message-consumer-ai)
+              echo 'PRESERVED_MODE=message-ai' >> "$GITHUB_ENV"
+              echo 'PRESERVED_STACK=message-consumer' >> "$GITHUB_ENV"
+              echo 'AI_CONFIGURATION_FILE=environments/dev/message-ai.json' >> "$GITHUB_ENV"
+              ;;
             *) exit 1 ;;
           esac
       - name: Install Terraform
@@ -860,6 +866,7 @@ jobs:
           args=(--baseline "$RUNNER_TEMP/preserved-baseline.json" --mode "$PRESERVED_MODE"
             --output "$RUNNER_TEMP/preserved.tfvars.json" --capture "$RUNNER_TEMP/preserved-capture.json")
           if [[ -n "$ARTIFACT_RELEASE" ]]; then args+=(--artifact-release "$ARTIFACT_RELEASE"); fi
+          if [[ "$PRESERVED_MODE" == message-ai ]]; then args+=(--ai-configuration "$AI_CONFIGURATION_FILE"); fi
           python3 scripts/prepare_preserved_deployment.py "${args[@]}"
       - name: Plan only the selected preserved root
         run: |
@@ -880,6 +887,7 @@ jobs:
           umask 077
           args=(--baseline "$RUNNER_TEMP/preserved-baseline.json" --capture "$RUNNER_TEMP/preserved-capture.json"
             --revision "$EXPECTED_REVISION" --mode "$PRESERVED_MODE")
+          if [[ "$PRESERVED_MODE" == message-ai ]]; then args+=(--ai-configuration "$AI_CONFIGURATION_FILE"); fi
           if [[ "$EXECUTION_MODE" == apply ]]; then args+=(--apply --expected-digest "$REVIEWED_PLAN_DIGEST"); fi
           python3 scripts/verify_preserved_deployment.py "$RUNNER_TEMP/preserved-plan.json" "${args[@]}" \
             | tee "$RUNNER_TEMP/preserved-review.json"
@@ -896,9 +904,10 @@ jobs:
         run: |
           set -euo pipefail
           umask 077
-          python3 scripts/verify_preserved_deployment.py "$RUNNER_TEMP/preserved-plan.json" \
-            --baseline "$RUNNER_TEMP/preserved-baseline.json" --capture "$RUNNER_TEMP/preserved-capture.json" \
-            --revision "$EXPECTED_REVISION" --mode "$PRESERVED_MODE" --deployed
+          args=(--baseline "$RUNNER_TEMP/preserved-baseline.json" --capture "$RUNNER_TEMP/preserved-capture.json"
+            --revision "$EXPECTED_REVISION" --mode "$PRESERVED_MODE" --deployed)
+          if [[ "$PRESERVED_MODE" == message-ai ]]; then args+=(--ai-configuration "$AI_CONFIGURATION_FILE"); fi
+          python3 scripts/verify_preserved_deployment.py "$RUNNER_TEMP/preserved-plan.json" "${args[@]}"
       - name: Require zero managed drift after apply
         if: inputs.execution_mode == 'apply'
         run: |

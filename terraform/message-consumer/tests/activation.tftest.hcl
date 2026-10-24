@@ -184,6 +184,80 @@ run "history_settlement_cannot_enable_itself" {
   expect_failures = [var.governed_history_settlement_enabled]
 }
 
+run "ai_primary_requires_explicit_configuration" {
+  command = plan
+  variables {
+    activate_rules_engineering = true
+    message_ai_primary_enabled = true
+    engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
+  }
+  expect_failures = [var.message_ai_primary_enabled]
+}
+
+run "paused_ai_does_not_enable_deterministic_fallback_or_clear_history" {
+  command = apply
+  variables {
+    activate_rules_engineering          = true
+    message_ai_primary_enabled          = false
+    candidate3_rules_only_enabled       = false
+    governed_history_settlement_enabled = true
+    engineering_subjects                = ["11111111-1111-4111-8111-111111111111"]
+  }
+  assert {
+    condition = (
+      !output.candidate_contract.ai_enabled && !output.candidate_contract.candidate3_rules_only_enabled &&
+      output.candidate_contract.governed_history_settlement_enabled &&
+      aws_lambda_function.runtime["evaluator"].environment[0].variables.MESSAGE_PROPOSER_ENABLED == "false" &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[1].Effect == "Deny"
+    )
+    error_message = "Pausing AI may preserve History configuration but cannot infer a deterministic profile, enable the legacy proposer or open URL invocation."
+  }
+}
+
+run "normal_ai_primary_config_does_not_open_url_or_storage" {
+  command = apply
+  variables {
+    activate_rules_engineering          = true
+    message_ai_primary_enabled          = true
+    governed_history_settlement_enabled = true
+    engineering_subjects                = ["11111111-1111-4111-8111-111111111111"]
+    ai_configuration = {
+      secret_arn                    = "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/openai-ABC123"
+      qualification_id              = "fixture-only-not-accepted-evidence"
+      qualification_evidence_sha256 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      timeout_ms                    = 8000
+      max_nano_usd_per_window       = 5000000000
+      cost_policy = {
+        model                 = "gpt-5.4-mini-2026-03-17"
+        contextTokens         = 400000
+        maxOutputTokens       = 512
+        inputNanoUsdPerToken  = 750
+        outputNanoUsdPerToken = 4500
+      }
+    }
+  }
+  assert {
+    condition = (
+      output.candidate_contract.ai_primary_enabled && !output.candidate_contract.url_assessment_enabled &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.MESSAGE_AI_PRIMARY_ENABLED == "true" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.MESSAGE_PROVIDER_NANO_USD_PER_WINDOW == "5000000000" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.GOVERNED_HISTORY_SETTLEMENT_ENABLED == "true" &&
+      jsondecode(aws_lambda_function.runtime["evaluator"].environment[0].variables.MESSAGE_AI_COST_POLICY).model == "gpt-5.4-mini-2026-03-17" &&
+      aws_lambda_function.runtime["evaluator"].environment[0].variables.MESSAGE_PROPOSER_ENABLED == "false" &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[1].Effect == "Deny" &&
+      !contains(jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[2].Action, "secretsmanager:*") &&
+      contains(jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[2].Action, "dynamodb:*") &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[3].Resource == var.ai_configuration.secret_arn &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[3].Condition.StringEquals["secretsmanager:VersionStage"] == "AWSCURRENT" &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[4].Effect == "Deny" &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[4].NotResource == var.ai_configuration.secret_arn &&
+      toset(jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition["ForAllValues:StringEquals"]["dynamodb:Attributes"]) ==
+      toset(["PK", "SK", "recordType", "revision", "windowStart", "attempts", "failures", "windowSeconds", "reservedNanoUsd", "unpricedAttempts"])
+    )
+    error_message = "Normal AI configuration must preserve URL denial, legacy proposer-off and evaluator storage denial, and narrowly bind currency attributes and current-secret reads. This source test does not qualify model evidence."
+  }
+}
+
 run "message_rejects_maintenance_missing_contract" {
   command = plan
   variables {

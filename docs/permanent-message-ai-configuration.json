@@ -1,0 +1,64 @@
+{
+  "sourceBase": "4caaa3ed1dbfecc63387ac24464cff57aad9d41d",
+  "sourceState": "default_off_full_local_gate_passed_not_applied",
+  "python": {
+    "pytestTests": 501,
+    "passingSubtests": 846,
+    "ciUnittestMethods": 501,
+    "installedBoto3": "1.43.107",
+    "repositoryPinnedBoto3": "1.43.107",
+    "moto": "5.2.3",
+    "externalNetwork": "blocked; synthetic AWS configuration",
+    "botocore": "1.43.118 (existing compatible dependency)",
+    "dependencyConsistency": "pip check PASS"
+  },
+  "terraform": {
+    "version": "1.12.1",
+    "validatedRoots": 21,
+    "passingLocalCases": 601,
+    "failedRoots": [],
+    "blockedLocalRoots": [],
+    "missingLocalProviders": [],
+    "lockfilesUnchanged": true,
+    "approvedSetupDownloads": [
+      "hashicorp/aws 6.66.0",
+      "hashicorp/random 3.9.1",
+      "boto3 1.43.107"
+    ],
+    "additionalUnapprovedDownloads": 0
+  },
+  "reviewedAffectedModules": {
+    "messageConsumerCases": 28,
+    "preservedUrlMaintenanceCases": 87
+  },
+  "baselineCi": {
+    "revision": "4caaa3ed1dbfecc63387ac24464cff57aad9d41d",
+    "url": "https://github.com/theagentamt/AMT.TrustCheckRadar.Cloud.Infrastructure/actions/runs/40005650174",
+    "terraformCases": 598,
+    "status": "success_historical_same_base"
+  },
+  "sourceReview": "Code review and pinned focused review PASS; final evidence addendum separately recorded",
+  "mergeSideEffects": {
+    "automatic": "existing main-only Terraform source CI with contents:read; no AWS authentication/apply job",
+    "deployWorkflow": "workflow_dispatch only, exact main/Dev/revision guards; no dispatch performed"
+  },
+  "operationalHolds": [
+    "No accepted model qualification; the six-request batch stopped and is not reused.",
+    "Daily operational reporting is not implemented; finite AI_OPERATIONAL_REPORTING_NOT_READY blocks enabling plans.",
+    "No approved ongoing application provider budget/model/period or ongoing exact-secret reader permission.",
+    "No live plan/apply authorization from this source publication."
+  ],
+  "urlQrReadback": {
+    "atUtc": "2026-10-24T05:25:24.495426Z",
+    "consumerLiveVersion": "9",
+    "consumerEnabled": false,
+    "authorityEnabled": false,
+    "privateAssessmentVersion": "3",
+    "resolverVersion": "2",
+    "businessInvocations": 0,
+    "secretValueReads": 0
+  },
+  "cloudRuntimeOrIamChanges": false,
+  "providerRequests": 0,
+  "paidQualificationReused": false
+}

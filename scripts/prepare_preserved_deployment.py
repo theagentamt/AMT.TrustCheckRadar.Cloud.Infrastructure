@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Prepare owner-private inputs for two manual Dev modes; never write AWS state."""
 import argparse
+import base64
 import copy
 import hashlib
 import json
@@ -10,6 +11,7 @@ import re
 
 from verify_governed_history_plan import require
 from verify_message_consumer_transition import aws, _review_artifacts, _review_maintenance, verify_artifacts
+import message_ai_configuration as ai
 
 PREFIX = 'trustcheckradar-dev'
 SCOPE_SHA = '7dfa1b8193c7721659824436665ce800edc740fe396b89547725df371aafc09c'
@@ -54,6 +56,15 @@ def subjects(raw, count=None, sha=None):
 def artifact(value):
     return {out: value[src] for out, src in {'bucket': 's3_bucket', 'key': 's3_key',
             'object_version': 's3_object_version', 'source_hash': 'source_code_hash'}.items()}
+
+
+def published_source_hash(head):
+    """Normal publisher records SHA256 in metadata; always hash exact GET bytes later."""
+    value = head.get('Metadata', {}).get('sha256')
+    require(type(value) is str and re.fullmatch('[a-f0-9]{64}', value), 'Published artifact checksum metadata required.')
+    encoded = base64.b64encode(bytes.fromhex(value)).decode()
+    require(head.get('ChecksumSHA256') in (None, encoded), 'Published artifact checksum metadata disagrees.')
+    return encoded
 
 
 def require_entitlements(value, generation='current'):
@@ -212,10 +223,10 @@ def capture(plan, mode, read=aws):
                                      'environmentSha256': digest(environment(before)),
                                      'artifactInputsSha256': digest(artifact(before)),
                                      'concurrency': concurrency['ReservedConcurrentExecutions'], 'lastUpdateStatus': 'Successful'}
-    result['maintenance'] = maintenance_readback(read, require_active=mode == 'message-history')
+    result['maintenance'] = maintenance_readback(read, require_active=mode in ('message-history', 'message-ai'))
     if mode == 'maintenance':
         require(result['maintenance']['recovery_version'] == result['functions']['recovery']['version'], 'Worker changed during capture.')
-    if mode == 'message-history':
+    if mode in ('message-history', 'message-ai'):
         history = read('lambda', 'get-function-configuration', '--function-name', PREFIX + '-governed-history', '--qualifier', 'live')
         history_alias = read('lambda', 'get-alias', '--function-name', PREFIX + '-governed-history', '--name', 'live')
         require(history['Version'] == history_alias['FunctionVersion'] and history['State'] == 'Active' and
@@ -228,10 +239,32 @@ def capture(plan, mode, read=aws):
                 'Message and History scope must remain identical.')
         result['history'] = {'version': history['Version'], 'codeSha256': history['CodeSha256'],
                              'environmentSha256': digest(history['Environment']['Variables'])}
+    if mode == 'message-ai':
+        result['policies'] = message_policy_readback(rows, read)
     return result
 
 
-def build(plan, captured, mode, replacements=None):
+def message_policy_readback(rows, read=aws, side='before'):
+    result = {}
+    for name in ('consumer', 'evaluator'):
+        value = rows[f'aws_iam_role_policy.{name}[0]']['change'][side]
+        role = PREFIX + '-message-' + name + '-execution'
+        expected_name = {'consumer': 'fenced-message-authority-and-private-evaluator',
+                         'evaluator': 'private-message-evaluation-only'}[name]
+        require(value['role'] == role and value['name'] == expected_name, 'AI_POLICY_IDENTITY')
+        require(read('iam', 'list-role-policies', '--role-name', role)['PolicyNames'] == [expected_name]
+                and read('iam', 'list-attached-role-policies', '--role-name', role)['AttachedPolicies'] == [], 'AI_POLICY_INVENTORY')
+        actual = read('iam', 'get-role-policy', '--role-name', role, '--policy-name', expected_name)['PolicyDocument']
+        require(digest(actual) == digest(json.loads(value['policy'])), 'AI_POLICY_READBACK')
+        trust = read('iam', 'get-role', '--role-name', role)['Role']
+        require(trust['AssumeRolePolicyDocument'] == {'Version': '2012-10-17', 'Statement': [
+            {'Effect': 'Allow', 'Action': 'sts:AssumeRole', 'Principal': {'Service': 'lambda.amazonaws.com'}}]}
+            and not trust.get('PermissionsBoundary'), 'AI_ROLE_TRUST')
+        result[name] = digest(actual)
+    return result
+
+
+def build(plan, captured, mode, replacements=None, configuration=None):
     variables = {k: v['value'] for k, v in plan['variables'].items()}
     require(variables.get('environment') == 'dev' and variables.get('aws_region') == 'us-east-1' and
             variables.get('project_name') == 'trustcheckradar' and variables.get('enabled') is True, 'Pinned Dev root required.')
@@ -263,13 +296,32 @@ def build(plan, captured, mode, replacements=None):
         deletion['subjects'] = subjects(environment(rows['aws_lambda_function.runtime["deletion"]']['change']['before'])['DEV_SUBJECT_ALLOWLIST_JSON'])
         values['deletion_activation'] = deletion
         return values
-    require(mode == 'message-history', 'Unknown preservation mode.')
+    require(mode in ('message-history', 'message-ai'), 'Unknown preservation mode.')
     consumer = environment(rows['aws_lambda_function.runtime["consumer"]']['change']['before'])
     require(all(consumer.get(k) == 'true' for k in ('AUTHORITY_ENABLED', 'MESSAGE_CONSUMER_ENABLED',
-            'MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED', 'GOVERNED_HISTORY_SETTLEMENT_ENABLED')) and
-            consumer.get('MESSAGE_AI_ENABLED') == 'false' and consumer.get('MESSAGE_PROVIDER_CIRCUIT_OPEN') == 'true',
-            'Current candidate.3/History gates must be preserved.')
-    values = {'activate_rules_engineering': True, 'candidate3_rules_only_enabled': True,
+            'GOVERNED_HISTORY_SETTLEMENT_ENABLED')), 'Current candidate.3/History gates must be preserved.')
+    if mode == 'message-history':
+        require(configuration is None and consumer.get('MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED') == 'true' and
+                consumer.get('MESSAGE_AI_ENABLED') == 'false' and consumer.get('MESSAGE_PROVIDER_CIRCUIT_OPEN') == 'true',
+                'Current candidate.3/History gates must be preserved.')
+    else:
+        ai.validate(configuration)
+        evaluator = environment(rows['aws_lambda_function.runtime["evaluator"]']['change']['before'])
+        require(consumer.get('MESSAGE_AI_ENABLED') in ('true', 'false') and
+                evaluator.get('MESSAGE_AI_ENABLED') == evaluator.get('MESSAGE_AI_QUALIFIED') == consumer['MESSAGE_AI_ENABLED'] and
+                consumer.get('MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED') in ('true', 'false') and
+                evaluator.get('MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED') == consumer['MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED'] and
+                consumer.get('MESSAGE_PROVIDER_CIRCUIT_OPEN') in ('true', 'false') and evaluator.get('MESSAGE_PROPOSER_ENABLED') == 'false',
+                'AI_PROFILE_BASELINE')
+        if consumer['MESSAGE_AI_ENABLED'] == 'true':
+            require(consumer.get('MESSAGE_AI_PRIMARY_ENABLED') == evaluator.get('MESSAGE_AI_PRIMARY_ENABLED') == 'true'
+                    and consumer['MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED'] == 'false'
+                    and consumer['MESSAGE_PROVIDER_CIRCUIT_OPEN'] == 'false'
+                    and json.loads(consumer['MESSAGE_AI_COST_POLICY']) == json.loads(evaluator['MESSAGE_AI_COST_POLICY']), 'AI_PROFILE_BASELINE')
+        for name in ('consumer', 'evaluator'):
+            require(captured['policies'][name] == digest(json.loads(rows[f'aws_iam_role_policy.{name}[0]']['change']['before']['policy'])),
+                    'AI_POLICY_READBACK')
+    values = {'activate_rules_engineering': True, 'candidate3_rules_only_enabled': consumer['MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED'] == 'true',
               'governed_history_settlement_enabled': True,
               'engineering_subjects': subjects(consumer['DEV_SUBJECT_ALLOWLIST_JSON'], 2, SCOPE_SHA),
               'authority_maintenance': captured['maintenance']}
@@ -277,6 +329,16 @@ def build(plan, captured, mode, replacements=None):
     deployment['artifacts'] = replacements or {n: artifact(rows[f'aws_lambda_function.runtime["{n}"]']['change']['before']) for n in ('consumer', 'evaluator')}
     _review_artifacts(deployment)
     values['deployment'] = deployment
+    if mode == 'message-ai':
+        active = configuration['message_ai_primary_enabled']
+        rules = configuration['candidate3_rules_only_enabled']
+        values.update(message_ai_primary_enabled=active, ai_configuration=configuration['ai_configuration'], url_assessment_enabled=False)
+        if rules is not None:
+            values['candidate3_rules_only_enabled'] = rules
+        values['provider_budget'] = configuration['provider_budget'] if active else {
+            k: int(consumer[v]) for k, v in {'window_seconds': 'MESSAGE_PROVIDER_WINDOW_SECONDS',
+            'max_attempts_per_window': 'MESSAGE_PROVIDER_ATTEMPTS_PER_WINDOW',
+            'max_failures_per_window': 'MESSAGE_PROVIDER_FAILURES_PER_WINDOW'}.items()}
     _review_maintenance(dict(variables, **values))
     return values
 
@@ -290,25 +352,29 @@ def private_write(path, value):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--baseline', type=Path, required=True)
-    parser.add_argument('--mode', choices=('maintenance', 'message-history'), required=True)
+    parser.add_argument('--mode', choices=('maintenance', 'message-history', 'message-ai'), required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--capture', type=Path, required=True)
     parser.add_argument('--artifact-release')
+    parser.add_argument('--ai-configuration', type=Path)
     args = parser.parse_args()
     plan = json.loads(args.baseline.read_text())
     observed = capture(plan, args.mode)
     replacements = None
     if args.artifact_release:
-        require(args.mode == 'message-history' and re.fullmatch('[a-f0-9]{40}', args.artifact_release), 'Exact Message release required.')
+        require(args.mode in ('message-history', 'message-ai') and re.fullmatch('[a-f0-9]{40}', args.artifact_release), 'Exact Message release required.')
         replacements = {}
         for n in ('consumer', 'evaluator'):
             key = f'releases/{args.artifact_release}/message_{n}.zip'
             head = aws('s3api', 'head-object', '--bucket', PREFIX + '-107827791950-artifacts', '--key', key, '--checksum-mode', 'ENABLED')
             replacements[n] = {'bucket': PREFIX + '-107827791950-artifacts', 'key': key,
-                               'object_version': head['VersionId'], 'source_hash': head['ChecksumSHA256']}
-    values = build(plan, observed, args.mode, replacements)
-    if args.mode == 'message-history':
-        verify_artifacts(values['deployment']['artifacts'])
+                               'object_version': head['VersionId'], 'source_hash': published_source_hash(head)}
+    require((args.ai_configuration is not None) == (args.mode == 'message-ai'), 'AI_CONFIGURATION_SHAPE')
+    configuration = json.loads(args.ai_configuration.read_text(), object_pairs_hook=ai.unique_pairs) if args.ai_configuration else None
+    values = build(plan, observed, args.mode, replacements, configuration)
+    if args.mode in ('message-history', 'message-ai'):
+        verify_artifacts(values['deployment']['artifacts'], review_archive=(
+            lambda name, path: ai.archive(name, path, configuration)) if args.mode == 'message-ai' else None)
     private_write(args.output, values)
     private_write(args.capture, observed)
     print('Private preserved inputs prepared; no activation or permission changed.')

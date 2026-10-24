@@ -41,7 +41,7 @@ resource "aws_iam_role_policy" "consumer" {
         Condition = {
           "ForAllValues:StringEquals" = {
             "dynamodb:LeadingKeys" = ["V1#CONTROL"]
-            "dynamodb:Attributes"  = ["PK", "SK", "recordType", "revision", "windowStart", "attempts", "failures"]
+            "dynamodb:Attributes"  = concat(["PK", "SK", "recordType", "revision", "windowStart", "attempts", "failures"], var.message_ai_primary_enabled ? ["windowSeconds", "reservedNanoUsd", "unpricedAttempts"] : [])
           }
           "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] }
         }
@@ -65,11 +65,18 @@ resource "aws_iam_role_policy" "evaluator" {
   role  = aws_iam_role.runtime["evaluator"].id
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+    Statement = concat([
       { Sid = "OwnLogs", Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.runtime["evaluator"].arn}:*" },
-      { Sid = "OneReviewedUrlAssessmentAlias", Effect = var.candidate3_rules_only_enabled ? "Deny" : "Allow", Action = "lambda:InvokeFunction", Resource = var.deployment.assessment_alias_arn },
-      { Sid = "NoConsumerStorageSecretsOrRoleChaining", Effect = "Deny", Action = ["dynamodb:*", "secretsmanager:*", "s3:*", "ssm:*", "sts:AssumeRole"], Resource = "*" }
-    ]
+      { Sid = "OneReviewedUrlAssessmentAlias", Effect = var.url_assessment_enabled ? "Allow" : "Deny", Action = "lambda:InvokeFunction", Resource = var.deployment.assessment_alias_arn },
+      { Sid = "NoConsumerStorageSecretsOrRoleChaining", Effect = "Deny", Action = concat(["dynamodb:*"], var.message_ai_primary_enabled ? [] : ["secretsmanager:*"], ["s3:*", "ssm:*", "sts:AssumeRole"]), Resource = "*" }
+      ], jsondecode(var.message_ai_primary_enabled ? jsonencode([
+        { Sid = "OneQualifiedProviderSecret", Effect = "Allow", Action = "secretsmanager:GetSecretValue", Resource = var.ai_configuration.secret_arn,
+        Condition = { StringEquals = { "secretsmanager:VersionStage" = "AWSCURRENT" } } },
+        { Sid = "NoOtherSecrets", Effect = "Deny", Action = "secretsmanager:*", NotResource = var.ai_configuration.secret_arn },
+        { Sid = "NoProviderSecretMutation", Effect = "Deny", NotAction = "secretsmanager:GetSecretValue", Resource = var.ai_configuration.secret_arn },
+        { Sid = "NoOtherProviderSecretStage", Effect = "Deny", Action = "secretsmanager:GetSecretValue", Resource = var.ai_configuration.secret_arn,
+        Condition = { StringNotEquals = { "secretsmanager:VersionStage" = "AWSCURRENT" } } }
+    ]) : "[]"))
   })
 }
 resource "aws_lambda_function" "runtime" {
@@ -92,7 +99,7 @@ resource "aws_lambda_function" "runtime" {
       STAGE                                 = var.environment
       MESSAGE_POLICY_VERSION                = "message-rules-2026-09-20-v1"
       MESSAGE_POLICY_APPROVAL_SHA256        = "0367140fbdbaef36dd59ba81030f3e35e04e78dbbed4129277c9cb0758971a80"
-      MESSAGE_AI_ENABLED                    = "false"
+      MESSAGE_AI_ENABLED                    = tostring(var.message_ai_primary_enabled)
       MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED = tostring(var.candidate3_rules_only_enabled)
       MESSAGE_AI_POLICY_VERSION             = "message-ai-2026-09-21-v1"
       MESSAGE_AI_POLICY_APPROVAL_SHA256     = "d6e9fff12225540bef9ba7833cce457cca4b9c791af3b49dd8a4f1601d204349"
@@ -115,7 +122,7 @@ resource "aws_lambda_function" "runtime" {
       } : {
       MESSAGE_EVALUATOR_ENABLED   = tostring(var.activate_rules_engineering)
       MESSAGE_PROPOSER_ENABLED    = "false"
-      MESSAGE_AI_QUALIFIED        = "false"
+      MESSAGE_AI_QUALIFIED        = tostring(var.message_ai_primary_enabled)
       URL_ASSESSMENT_FUNCTION_ARN = var.deployment.assessment_alias_arn
       }, each.key == "consumer" && var.authority_configuration != null ? {
       OPERATION_VALIDITY_SECONDS = tostring(var.authority_configuration.operation_validity_seconds)
@@ -130,6 +137,17 @@ resource "aws_lambda_function" "runtime" {
       MESSAGE_PROVIDER_WINDOW_SECONDS      = tostring(var.provider_budget.window_seconds)
       MESSAGE_PROVIDER_ATTEMPTS_PER_WINDOW = tostring(var.provider_budget.max_attempts_per_window)
       MESSAGE_PROVIDER_FAILURES_PER_WINDOW = tostring(var.provider_budget.max_failures_per_window)
+      } : {}, var.message_ai_primary_enabled ? {
+      MESSAGE_AI_PRIMARY_ENABLED = "true"
+      MESSAGE_AI_COST_POLICY     = jsonencode(var.ai_configuration.cost_policy)
+      } : {}, var.message_ai_primary_enabled && each.key == "consumer" ? {
+      MESSAGE_PROVIDER_NANO_USD_PER_WINDOW = tostring(var.ai_configuration.max_nano_usd_per_window)
+      } : {}, var.message_ai_primary_enabled && each.key == "evaluator" ? {
+      MESSAGE_AI_QUALIFICATION_ID        = var.ai_configuration.qualification_id
+      MESSAGE_PROPOSER_MODEL             = var.ai_configuration.cost_policy.model
+      MESSAGE_PROPOSER_SECRET_ARN        = var.ai_configuration.secret_arn
+      MESSAGE_PROPOSER_TIMEOUT_MS        = tostring(var.ai_configuration.timeout_ms)
+      MESSAGE_PROPOSER_MAX_OUTPUT_TOKENS = tostring(var.ai_configuration.cost_policy.maxOutputTokens)
     } : {})
   }
   depends_on = [aws_iam_role_policy.consumer, aws_iam_role_policy.evaluator]

@@ -97,7 +97,7 @@ variable "api_gateway" {
 }
 
 variable "activate_rules_engineering" {
-  description = "Allowlisted Dev candidate.1 qualification only. It never enables candidate.2/3 AI or general customer traffic."
+  description = "Existing allowlisted Dev route admission. AI execution requires its separate default-off qualified configuration."
   type        = bool
   default     = false
   validation {
@@ -166,7 +166,72 @@ variable "governed_history_settlement_enabled" {
   type        = bool
   default     = false
   validation {
-    condition     = !var.governed_history_settlement_enabled || var.candidate3_rules_only_enabled
-    error_message = "This Dev stage allows History settlement only with the trusted candidate.3 rules-only mode."
+    condition     = !var.governed_history_settlement_enabled || var.activate_rules_engineering
+    error_message = "History settlement requires existing authority admission/maintenance. Its configuration may remain while AI is paused so settled/reconciling receipts retain History semantics; it never enables an execution profile."
+  }
+}
+
+variable "message_ai_primary_enabled" {
+  description = "Normal AI-primary application behavior; default off. Activation, spending and secret/IAM application need separate approval."
+  type        = bool
+  default     = false
+  validation {
+    condition = !var.message_ai_primary_enabled || (
+      var.activate_rules_engineering && !var.candidate3_rules_only_enabled && var.ai_configuration != null &&
+      (length(var.engineering_subjects) == 1 || (length(var.engineering_subjects) == 2 &&
+      sha256(jsonencode(sort(tolist(var.engineering_subjects)))) == "7dfa1b8193c7721659824436665ce800edc740fe396b89547725df371aafc09c"))
+    )
+    error_message = "AI-primary needs explicit complete configuration, existing admission/maintenance, no rules-only conflict and the unchanged qualified subject scope."
+  }
+}
+
+variable "ai_configuration" {
+  description = "Nonsecret normal provider configuration. No model, monetary budget or qualification is chosen by default; artifacts must independently contain the matching accepted qualification evidence."
+  type = object({
+    secret_arn                    = string
+    qualification_id              = string
+    qualification_evidence_sha256 = string
+    timeout_ms                    = number
+    max_nano_usd_per_window       = number
+    cost_policy = object({
+      model                 = string
+      contextTokens         = number
+      maxOutputTokens       = number
+      inputNanoUsdPerToken  = number
+      outputNanoUsdPerToken = number
+    })
+  })
+  default = null
+  validation {
+    condition = var.ai_configuration == null ? true : (
+      can(regex("^arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/openai-[A-Za-z0-9]{6}$", var.ai_configuration.secret_arn)) &&
+      can(regex("^[A-Za-z0-9_-]{1,64}$", var.ai_configuration.qualification_id)) &&
+      can(regex("^[a-f0-9]{64}$", var.ai_configuration.qualification_evidence_sha256)) &&
+      can(regex("^[A-Za-z0-9._-]+-20[0-9]{2}-[0-9]{2}-[0-9]{2}$", var.ai_configuration.cost_policy.model)) &&
+      alltrue([for n in [var.ai_configuration.timeout_ms, var.ai_configuration.max_nano_usd_per_window,
+        var.ai_configuration.cost_policy.contextTokens, var.ai_configuration.cost_policy.maxOutputTokens,
+      var.ai_configuration.cost_policy.inputNanoUsdPerToken, var.ai_configuration.cost_policy.outputNanoUsdPerToken] : n == floor(n)]) &&
+      var.ai_configuration.timeout_ms >= 250 && var.ai_configuration.timeout_ms <= 8000 &&
+      var.ai_configuration.cost_policy.contextTokens >= 1 && var.ai_configuration.cost_policy.contextTokens <= 2000000 &&
+      var.ai_configuration.cost_policy.maxOutputTokens >= 128 && var.ai_configuration.cost_policy.maxOutputTokens <= 512 &&
+      var.ai_configuration.cost_policy.maxOutputTokens <= var.ai_configuration.cost_policy.contextTokens &&
+      var.ai_configuration.cost_policy.inputNanoUsdPerToken >= 1 && var.ai_configuration.cost_policy.inputNanoUsdPerToken <= 1000000000 &&
+      var.ai_configuration.cost_policy.outputNanoUsdPerToken >= 1 && var.ai_configuration.cost_policy.outputNanoUsdPerToken <= 1000000000 &&
+      var.ai_configuration.max_nano_usd_per_window >= (
+        var.ai_configuration.cost_policy.contextTokens * var.ai_configuration.cost_policy.inputNanoUsdPerToken +
+      var.ai_configuration.cost_policy.maxOutputTokens * var.ai_configuration.cost_policy.outputNanoUsdPerToken) &&
+      var.ai_configuration.max_nano_usd_per_window <= 1000000000000000000
+    )
+    error_message = "Supply exact same-account secret metadata, accepted evidence identity, dated model, bounded integral cost/timeout values and enough currency for one full-context reservation."
+  }
+}
+
+variable "url_assessment_enabled" {
+  description = "Independent URL invocation permission. Message AI never opens this gate; default deny."
+  type        = bool
+  default     = false
+  validation {
+    condition     = !var.url_assessment_enabled || (var.activate_rules_engineering && !var.candidate3_rules_only_enabled)
+    error_message = "URL access requires its separate reviewed admission; rules-only mode cannot invoke it."
   }
 }

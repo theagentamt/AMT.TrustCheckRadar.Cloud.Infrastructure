@@ -323,7 +323,7 @@ def aws(*args):
     return json.loads(result.stdout)
 
 
-def verify_artifacts(artifacts, read=aws):
+def verify_artifacts(artifacts, read=aws, review_archive=None):
     if read("sts", "get-caller-identity").get("Account") != ACCOUNT:
         raise ValueError("Unexpected AWS account; no artifact read performed.")
     with tempfile.TemporaryDirectory(prefix="message-transition-") as directory:
@@ -338,6 +338,8 @@ def verify_artifacts(artifacts, read=aws):
             actual = base64.b64encode(hashlib.sha256(path.read_bytes()).digest()).decode()
             if actual != artifact["source_hash"]:
                 raise ValueError(f"Downloaded {name} artifact SHA256 does not match.")
+            if review_archive is not None:
+                review_archive(name, path)
 
 
 def main():

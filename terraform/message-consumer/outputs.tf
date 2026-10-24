@@ -5,9 +5,11 @@ output "candidate_contract" {
     governed_history_settlement_enabled = var.governed_history_settlement_enabled
     consumer_enabled                    = var.activate_rules_engineering
     evaluator_enabled                   = var.activate_rules_engineering
-    model_enabled                       = false
-    ai_enabled                          = false
-    ai_qualified                        = false
+    model_enabled                       = var.message_ai_primary_enabled
+    ai_enabled                          = var.message_ai_primary_enabled
+    ai_qualified                        = var.message_ai_primary_enabled
+    ai_primary_enabled                  = var.message_ai_primary_enabled
+    url_assessment_enabled              = var.url_assessment_enabled
     ai_policy_version                   = "message-ai-2026-09-21-v1"
     ai_policy_approval_sha256           = "d6e9fff12225540bef9ba7833cce457cca4b9c791af3b49dd8a4f1601d204349"
     consumer_routes                     = sort([for route in aws_apigatewayv2_route.message : route.route_key])
