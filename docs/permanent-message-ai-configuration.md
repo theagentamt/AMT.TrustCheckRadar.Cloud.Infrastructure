@@ -95,20 +95,21 @@ separate rollout; Message source changes do not authorize it.
 ## Validation state
 
 All Python helpers pass 501 tests and 846 subtests; the CI unittest command passes
-501 methods with external networking blocked. Installed boto3 is 1.43.118 versus
-the repository CI pin 1.43.107; Moto matches 5.2.3. These are source checks, not
-live service results.
+501 methods with external networking blocked. Installed boto3 matches the repository CI pin 1.43.107; Moto matches 5.2.3.
+The existing compatible botocore 1.43.118 satisfies the package dependency range.
+These are source checks, not live service results.
 
-All 21 CI Terraform roots were inventoried. Eighteen validate and their 508 cases
-pass with Terraform1.12.1 and exact cached providers. Three unchanged roots could
-not run locally: history-processing, campaign-processing and campaign-api require
-uncached AWS6.66.0; campaign-api also requires Random3.9.1. No version was changed
-or downloaded. Baseline main CI4caaa3ed passed all598 Terraform cases. Exact new
-main CI must rerun the complete repository suite before aggregate completion is
-claimed. Local dependency-download approval remains pending.
+All 21 CI Terraform roots validate and all 601 cases pass with Terraform 1.12.1
+and the exact locked providers. The owner-approved AWS 6.66.0, Random 3.9.1 and
+boto3 1.43.107 downloads were installed only into isolated task caches/targets
+from the official Registry/PyPI. Provider installation verified lock checksums;
+the boto3 wheel matches its official PyPI digest. No repository lock changed,
+other package was upgraded, or existing qualification environment was modified.
+Backend initialization was disabled; tests use mock providers and synthetic
+credentials. Exact new main CI remains required after source integration.
 
 Formatting, helper shell syntax, campaign guardrails, Python compilation and YAML
-parse pass. The focused Message28 and preserved URL/maintenance87 cases pass.
+parse pass. The focused Message 28 and preserved URL/maintenance 87 cases pass.
 The independent 12-file review passed; final evidence/format review and source
 publication are recorded separately. No Terraform apply, IAM/secret mutation, activation,
 provider call, mobile test or qualification retry occurred.

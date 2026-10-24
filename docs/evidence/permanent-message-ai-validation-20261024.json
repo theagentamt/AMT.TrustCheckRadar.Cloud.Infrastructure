@@ -1,0 +1,312 @@
+{
+  "sourceParentCommit": "542401bd078d91253dfa7765535d1bff503db6b4",
+  "sourceBase": "4caaa3ed1dbfecc63387ac24464cff57aad9d41d",
+  "scope": "permanent default-off Message configuration; no apply/activation",
+  "terraformVersion": "1.12.1",
+  "terraformRoots": [
+    {
+      "root": "bootstrap/state-bucket",
+      "status": "PASS",
+      "casesPassed": 0,
+      "providers": [
+        [
+          "aws",
+          "5.100.0"
+        ]
+      ]
+    },
+    {
+      "root": "bootstrap/access",
+      "status": "PASS",
+      "casesPassed": 10,
+      "providers": [
+        [
+          "aws",
+          "5.100.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/foundation",
+      "status": "PASS",
+      "casesPassed": 14,
+      "providers": [
+        [
+          "aws",
+          "5.100.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/campaign-data",
+      "status": "PASS",
+      "casesPassed": 5,
+      "providers": [
+        [
+          "aws",
+          "5.100.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/api",
+      "status": "PASS",
+      "casesPassed": 221,
+      "providers": [
+        [
+          "aws",
+          "6.65.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/history-data",
+      "status": "PASS",
+      "casesPassed": 19,
+      "providers": [
+        [
+          "aws",
+          "5.100.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/history-processing",
+      "status": "PASS",
+      "casesPassed": 23,
+      "providers": [
+        [
+          "aws",
+          "6.66.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/campaign-processing",
+      "status": "PASS",
+      "casesPassed": 67,
+      "providers": [
+        [
+          "aws",
+          "6.66.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/campaign-api",
+      "status": "PASS",
+      "casesPassed": 3,
+      "providers": [
+        [
+          "aws",
+          "6.66.0"
+        ],
+        [
+          "random",
+          "3.9.1"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/edge",
+      "status": "PASS",
+      "casesPassed": 0,
+      "providers": [
+        [
+          "aws",
+          "5.100.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/url-resolver",
+      "status": "PASS",
+      "casesPassed": 14,
+      "providers": [
+        [
+          "aws",
+          "6.65.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/url-assessment",
+      "status": "PASS",
+      "casesPassed": 5,
+      "providers": [
+        [
+          "aws",
+          "6.65.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/url-consumer",
+      "status": "PASS",
+      "casesPassed": 87,
+      "providers": [
+        [
+          "aws",
+          "6.65.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/message-consumer",
+      "status": "PASS",
+      "casesPassed": 28,
+      "providers": [
+        [
+          "aws",
+          "6.65.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/governed-history",
+      "status": "PASS",
+      "casesPassed": 8,
+      "providers": [
+        [
+          "aws",
+          "6.65.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/recovery-consumer",
+      "status": "PASS",
+      "casesPassed": 11,
+      "providers": [
+        [
+          "aws",
+          "6.65.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/result-feedback",
+      "status": "PASS",
+      "casesPassed": 10,
+      "providers": [
+        [
+          "aws",
+          "6.65.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/play-verification",
+      "status": "PASS",
+      "casesPassed": 22,
+      "providers": [
+        [
+          "aws",
+          "6.65.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/play-lifecycle",
+      "status": "PASS",
+      "casesPassed": 41,
+      "providers": [
+        [
+          "aws",
+          "6.65.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/url-resolver/acceptance-fixture",
+      "status": "PASS",
+      "casesPassed": 3,
+      "providers": [
+        [
+          "aws",
+          "5.100.0"
+        ]
+      ]
+    },
+    {
+      "root": "terraform/identity-workflows",
+      "status": "PASS",
+      "casesPassed": 10,
+      "providers": [
+        [
+          "aws",
+          "6.65.0"
+        ]
+      ]
+    }
+  ],
+  "terraformCases": 601,
+  "terraformValidatedRoots": 21,
+  "terraformLockfilesUnchanged": true,
+  "python": {
+    "boto3": "1.43.107",
+    "moto": "5.2.3",
+    "botocore": "1.43.118 (existing compatible dependency)",
+    "pytestMethods": 501,
+    "pytestPassingSubtests": 846,
+    "ciUnittestMethods": 501,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "dependencySetup": {
+    "providers": [
+      {
+        "provider": "aws",
+        "version": "6.66.0",
+        "platform": "darwin_arm64",
+        "binarySha256": "b01e69d4115a11677dcca162ae787babdff0ca81924f9bc9aa4c879e09125217",
+        "installation": "official Terraform Registry; repository lock read-only"
+      },
+      {
+        "provider": "random",
+        "version": "3.9.1",
+        "platform": "darwin_arm64",
+        "binarySha256": "da30c0d672eab28e3676894d78d69556059e764ec15905455707d4a4a324ad6d",
+        "installation": "official Terraform Registry; repository lock read-only"
+      }
+    ],
+    "boto3": {
+      "package": "boto3",
+      "version": "1.43.107",
+      "filename": "boto3-1.43.107-py3-none-any.whl",
+      "sha256": "632a4f8298725b94144c8cd383cbdacb34624daa73221e954c3d33ac6e2528d6",
+      "officialPyPiDigestMatches": true,
+      "yanked": false,
+      "scope": "isolated task target; existing venv unchanged"
+    },
+    "locksChanged": false,
+    "otherUpgrades": false
+  },
+  "validationReportSha256": {
+    "terraformAggregate": "21f7c675b142c544cda7a8ebd2eb941d5b7a711a1dcb72bc1e64dbb7387c1182",
+    "pythonJunit": "73a9f19c294eec95fb2ab3ff0494c23bda3f3df3727c2f3a96441c6fa4d0636a",
+    "ciUnittestLog": "205b78026025a108edd1f79089a2a3fe0f930a1c614897cc991021a97214f176"
+  },
+  "reviews": {
+    "sourceReviewSha256": "f17ae0f5379d6cc5ec1dbc172bc4d2d9512af6d17ee9cf9fe100194486f77c59",
+    "pinnedFocusedReviewSha256": "aefa8d7ff3e38edc6ff08fd4f2032767a34262bcad6f067fd3f6136d9ac39c68"
+  },
+  "preserved": [
+    "maintenance worker/alias/schedule/alarms",
+    "URL invocation deny and three existing routes",
+    "History/admission/GET-only access isolation",
+    "paid/trial records and complimentary access"
+  ],
+  "cloudApply": false,
+  "liveIamOrSecretChanges": false,
+  "providerCalls": 0,
+  "paidQualificationReused": false,
+  "activationReady": false,
+  "remainingRuntimeGates": [
+    "accepted model qualification",
+    "daily operational reporting implementation/qualification",
+    "explicit ongoing model/period/currency limits and exact-secret/IAM approval",
+    "fresh exact Dev plan/apply approval and readback"
+  ]
+}
