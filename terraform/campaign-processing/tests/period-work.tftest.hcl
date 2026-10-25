@@ -127,12 +127,12 @@ run "period_work_closed_and_least_privilege" {
   }
   assert {
     condition = (
-      aws_cloudwatch_metric_alarm.period_lifecycle["stalled"].metric_name == null &&
-      one([for q in aws_cloudwatch_metric_alarm.period_lifecycle["stalled"].metric_query : q.expression if q.return_data]) == "IF(overdue>0,age,0)" &&
-      toset([for q in aws_cloudwatch_metric_alarm.period_lifecycle["stalled"].metric_query : q.id]) == toset(["observed_overdue_age", "age", "overdue"]) &&
-      alltrue([for q in aws_cloudwatch_metric_alarm.period_lifecycle["stalled"].metric_query : alltrue([for m in q.metric : m.period == 300 && m.dimensions.Environment == "dev"])]) &&
-      aws_cloudwatch_metric_alarm.period_lifecycle["unverified"].metric_name == "LifecycleWorkUnverified" &&
-      aws_cloudwatch_metric_alarm.period_lifecycle["heartbeat"].treat_missing_data == "breaching"
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.period_lifecycle["stalled"].metric_name == null) : (length(aws_cloudwatch_metric_alarm.period_lifecycle) == 0)) &&
+      (var.environment == "prod" ? (one([for q in aws_cloudwatch_metric_alarm.period_lifecycle["stalled"].metric_query : q.expression if q.return_data]) == "IF(overdue>0,age,0)") : (length(aws_cloudwatch_metric_alarm.period_lifecycle) == 0)) &&
+      (var.environment == "prod" ? (toset([for q in aws_cloudwatch_metric_alarm.period_lifecycle["stalled"].metric_query : q.id]) == toset(["observed_overdue_age", "age", "overdue"])) : (length(aws_cloudwatch_metric_alarm.period_lifecycle) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for q in aws_cloudwatch_metric_alarm.period_lifecycle["stalled"].metric_query : alltrue([for m in q.metric : m.period == 300 && m.dimensions.Environment == "dev"])])) : (length(aws_cloudwatch_metric_alarm.period_lifecycle) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.period_lifecycle["unverified"].metric_name == "LifecycleWorkUnverified") : (length(aws_cloudwatch_metric_alarm.period_lifecycle) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.period_lifecycle["heartbeat"].treat_missing_data == "breaching") : (length(aws_cloudwatch_metric_alarm.period_lifecycle) == 0))
     )
     error_message = "Future-only backlog must not trigger aged-overdue alarms; poison and missed-heartbeat signals remain independent."
   }
@@ -206,11 +206,13 @@ run "period_work_closed_and_least_privilege" {
     error_message = "Preparation cannot enable work, pretend to qualify table identities, or retire keys."
   }
   assert {
-    condition = (aws_scheduler_schedule.period_lifecycle[0].state == "DISABLED" &&
+    condition = (
+      aws_scheduler_schedule.period_lifecycle[0].state == "DISABLED" &&
       aws_scheduler_schedule.period_lifecycle[0].schedule_expression == "rate(5 minutes)" &&
       jsondecode(aws_scheduler_schedule.period_lifecycle[0].target[0].input).operation == "reconcile_periods" &&
-      alltrue([for name, a in aws_cloudwatch_metric_alarm.period_lifecycle : !a.actions_enabled && (name == "stalled" || a.dimensions == tomap({ Environment = "dev" }))]) &&
-    aws_cloudwatch_metric_alarm.period_lifecycle["heartbeat"].treat_missing_data == "breaching")
+      (var.environment == "prod" ? (alltrue([for name, a in aws_cloudwatch_metric_alarm.period_lifecycle : !a.actions_enabled && (name == "stalled" || a.dimensions == tomap({ Environment = "dev" }))])) : (length(aws_cloudwatch_metric_alarm.period_lifecycle) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.period_lifecycle["heartbeat"].treat_missing_data == "breaching") : (length(aws_cloudwatch_metric_alarm.period_lifecycle) == 0))
+    )
     error_message = "The new disabled schedule must use the exact handler contract; monitoring detects missing heartbeat without enabling preparation alerts."
   }
   assert {

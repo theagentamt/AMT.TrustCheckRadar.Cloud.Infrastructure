@@ -18,7 +18,14 @@ variables {
 run "disabled_creates_no_runtime" {
   command = plan
   assert {
-    condition     = length(aws_lambda_function.runtime) == 0 && length(aws_iam_role.runtime) == 0 && length(aws_iam_role_policy.consumer) == 0 && length(aws_iam_role_policy.evaluator) == 0 && length(aws_cloudwatch_metric_alarm.runtime) == 0 && length(output.candidate_contract.consumer_routes) == 0
+    condition = (
+      length(aws_lambda_function.runtime) == 0 &&
+      length(aws_iam_role.runtime) == 0 &&
+      length(aws_iam_role_policy.consumer) == 0 &&
+      length(aws_iam_role_policy.evaluator) == 0 &&
+      length(aws_cloudwatch_metric_alarm.runtime) == 0 &&
+      length(output.candidate_contract.consumer_routes) == 0
+    )
     error_message = "Default configuration must create nothing and advertise no endpoint."
   }
 }
@@ -83,16 +90,16 @@ run "candidate_is_isolated_and_inactive" {
   }
   assert {
     condition = (
-      length(aws_cloudwatch_metric_alarm.runtime) == 6 &&
-      alltrue([for alarm in aws_cloudwatch_metric_alarm.runtime :
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.runtime) == 6) : (length(aws_cloudwatch_metric_alarm.runtime) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.runtime :
         alarm.namespace == "AWS/Lambda" &&
         alarm.alarm_actions == toset(["arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"]) &&
         alarm.ok_actions == alarm.alarm_actions &&
         toset(keys(alarm.dimensions)) == toset(["FunctionName"]) &&
         alarm.period == 300 && alarm.datapoints_to_alarm == 1
-      ]) &&
-      aws_cloudwatch_metric_alarm.runtime["consumer-duration"].threshold == 26000 &&
-      aws_cloudwatch_metric_alarm.runtime["evaluator-duration"].threshold == 20000
+      ])) : (length(aws_cloudwatch_metric_alarm.runtime) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.runtime["consumer-duration"].threshold == 26000) : (length(aws_cloudwatch_metric_alarm.runtime) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.runtime["evaluator-duration"].threshold == 20000) : (length(aws_cloudwatch_metric_alarm.runtime) == 0))
     )
     error_message = "Native runtime alarms must use bounded function dimensions and the existing confirmed support alert path."
   }

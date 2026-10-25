@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 
+from nonproduction_alarms import require_absent_readback
 from verify_governed_history_plan import require
 from verify_message_consumer_transition import aws, _review_artifacts, _review_maintenance, verify_artifacts
 import message_ai_configuration as ai
@@ -178,15 +179,13 @@ def maintenance_readback(read, require_active=False):
     role_policy = read('iam', 'get-role-policy', '--role-name', role_name, '--policy-name', names[0])['PolicyDocument']
     require(digest(role_policy) == 'f556674acec46576caf4e2e1afb102984a42b67457c5d27a3bcbd9daa1918f77', 'Recovery permission baseline changed.')
     alarm_names = [name + '-heartbeat', name + '-expiry-overdue']
-    alarms = read('cloudwatch', 'describe-alarms', '--alarm-names', *alarm_names)['MetricAlarms']
-    require(len(alarms) == 2 and {a['AlarmName'] for a in alarms} == set(alarm_names), 'Both existing alarms required.')
-    for alarm in alarms:
-        require_maintenance_alarm(alarm, active)
-    return {'schema_version': 1, 'environment': 'dev',
+    require_absent_readback(read('cloudwatch', 'describe-alarms', '--alarm-types', 'MetricAlarm',
+                                 'CompositeAlarm', '--alarm-names', *alarm_names))
+    return {'schema_version': 2, 'alarm_policy': 'dev-uat-disabled-v1', 'environment': 'dev',
         'authority_table_arn': 'arn:aws:dynamodb:us-east-1:107827791950:table/' + table,
         'recovery_alias_arn': expected_alias, 'recovery_version': alias['FunctionVersion'],
         'recovery_code_sha256': worker['CodeSha256'], 'worker_enabled': active,
-        'schedule_enabled': active, 'heartbeat_enforced': active, 'provider_access_added': False}
+        'schedule_enabled': active, 'heartbeat_enforced': False, 'provider_access_added': False}
 
 
 def capture(plan, mode, read=aws):
@@ -266,53 +265,32 @@ def message_policy_readback(rows, read=aws, side='before'):
 
 
 def message_monitoring(rows, side='before'):
-    """Existing six native alarms remain essential when delivery is deferred."""
-    result = {}
-    topic = 'arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts'
-    for name, timeout in (('consumer', 29), ('evaluator', 23)):
-        function = PREFIX + '-message-' + name
-        for suffix, metric, statistic, threshold in (
-            ('errors', 'Errors', 'Sum', 1), ('throttles', 'Throttles', 'Sum', 1),
-            ('duration', 'Duration', 'Maximum', (timeout - 3) * 1000)):
-            address = f'aws_cloudwatch_metric_alarm.runtime["{name}-{suffix}"]'
-            value = rows.get(address, {}).get('change', {}).get(side, {})
-            expected = {'alarm_name': function + '-' + suffix, 'namespace': 'AWS/Lambda',
-                'metric_name': metric, 'dimensions': {'FunctionName': function}, 'statistic': statistic,
-                'period': 300, 'evaluation_periods': 1, 'datapoints_to_alarm': 1, 'threshold': threshold,
-                'comparison_operator': 'GreaterThanOrEqualToThreshold', 'treat_missing_data': 'notBreaching',
-                'alarm_actions': [topic], 'ok_actions': [topic], 'actions_enabled': True}
-            require(all(value.get(k) == v for k, v in expected.items())
-                    and value.get('actions_enabled') is True
-                    and all(type(value.get(k)) is int for k in ('period','evaluation_periods','datapoints_to_alarm'))
-                    and type(value.get('threshold')) in (int, float)
-                    and value.get('unit') in (None, '')
-                    and not any(value.get(k) for k in ('metric_query','extended_statistic','insufficient_data_actions')),
-                    'AI_ESSENTIAL_MONITORING')
-            result[expected['alarm_name']] = expected | {'unit': None}
+    """Preserve content-free runtime logs while Dev alarm resources are absent."""
+    require(not any(address.startswith('aws_cloudwatch_metric_alarm.') or
+                    address.startswith('aws_cloudwatch_composite_alarm.') for address in rows),
+            'NONPRODUCTION_ALARM_MIGRATION_REQUIRED')
+    result = {'alarm_policy': {'policy': 'dev-uat-disabled-v1'}}
+    for name in ('consumer', 'evaluator'):
+        value = rows.get(f'aws_cloudwatch_log_group.runtime["{name}"]', {}).get('change', {}).get(side) or {}
+        expected_name = '/aws/lambda/' + PREFIX + '-message-' + name
+        require(value.get('name') == expected_name and type(value.get('retention_in_days')) is int
+                and value['retention_in_days'] > 0, 'AI_ESSENTIAL_MONITORING')
+        result[name] = {key: value.get(key) for key in ('name', 'retention_in_days', 'kms_key_id')}
     return result
 
 
 def message_monitoring_readback(rows, read=aws, side='before'):
     expected = message_monitoring(rows, side)
-    alarms = read('cloudwatch', 'describe-alarms', '--alarm-names', *sorted(expected)).get('MetricAlarms', [])
-    require(len(alarms) == len(expected) and {a.get('AlarmName') for a in alarms} == set(expected),
-            'AI_ESSENTIAL_MONITORING')
-    fields = {'alarm_name':'AlarmName','namespace':'Namespace','metric_name':'MetricName','statistic':'Statistic',
-        'period':'Period','evaluation_periods':'EvaluationPeriods','threshold':'Threshold',
-        'comparison_operator':'ComparisonOperator','treat_missing_data':'TreatMissingData',
-        'alarm_actions':'AlarmActions','ok_actions':'OKActions','actions_enabled':'ActionsEnabled'}
-    for alarm in alarms:
-        value = {k: alarm.get(v) for k, v in fields.items()}
-        dimensions = alarm.get('Dimensions', [])
-        require(len(dimensions) == 1 and set(dimensions[0]) == {'Name','Value'}, 'AI_ESSENTIAL_MONITORING')
-        value['dimensions'] = {dimensions[0]['Name']: dimensions[0]['Value']}
-        value['datapoints_to_alarm'] = alarm.get('DatapointsToAlarm', alarm.get('EvaluationPeriods'))
-        value['unit'] = None if alarm.get('Unit') in (None, '') else alarm['Unit']
-        require(value == expected[alarm['AlarmName']] and alarm.get('ActionsEnabled') is True
-                and all(type(value[k]) is int for k in ('period','evaluation_periods','datapoints_to_alarm'))
-                and type(value['threshold']) in (int, float)
-                and not any(alarm.get(k) for k in ('Metrics','ExtendedStatistic','InsufficientDataActions')),
-                'AI_ESSENTIAL_MONITORING')
+    names = [PREFIX + '-message-' + name + '-' + metric
+             for name in ('consumer', 'evaluator') for metric in ('errors', 'throttles', 'duration')]
+    require_absent_readback(read('cloudwatch', 'describe-alarms', '--alarm-types', 'MetricAlarm',
+                                 'CompositeAlarm', '--alarm-names', *names))
+    for name in ('consumer', 'evaluator'):
+        value = expected[name]
+        response = read('logs', 'describe-log-groups', '--log-group-name-prefix', value['name'])
+        groups = [g for g in response.get('logGroups', []) if g.get('logGroupName') == value['name']]
+        require(len(groups) == 1 and groups[0].get('retentionInDays') == value['retention_in_days']
+                and groups[0].get('kmsKeyId') == value['kms_key_id'], 'AI_ESSENTIAL_MONITORING')
     return {name: digest(value) for name, value in expected.items()}
 
 

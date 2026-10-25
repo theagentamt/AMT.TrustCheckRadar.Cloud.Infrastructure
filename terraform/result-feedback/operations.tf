@@ -10,7 +10,7 @@ locals {
 }
 
 resource "aws_cloudwatch_metric_alarm" "runtime" {
-  for_each            = local.runtime_alarms
+  for_each            = { for alarm_key, alarm_value in(local.runtime_alarms) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.prefix}-feedback-${each.key}"
   alarm_description   = "Inactive Dev candidate runtime ${each.value.metric}; retry the same report after uncertain delivery. Native runtime metrics do not count accepted feedback or rejected requests."
   namespace           = "AWS/Lambda"

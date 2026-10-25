@@ -131,10 +131,12 @@ run "work_compatibility_keeps_cleanup_schedule_closed" {
   }
 
   assert {
-    condition = (alltrue([for alarm in aws_cloudwatch_metric_alarm.aggregate_expiry : alarm.actions_enabled == false]) &&
+    condition = (
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.aggregate_expiry : alarm.actions_enabled == false])) : (length(aws_cloudwatch_metric_alarm.aggregate_expiry) == 0)) &&
       aws_lambda_function.worker["lifecycle"].environment[0].variables.CAMPAIGN_AGGREGATE_TABLE_ID == "44444444-4444-4444-8444-444444444444" &&
       one([for st in data.aws_iam_policy_document.aggregate_expiry[0].statement : st if st.sid == "DiscoverExpiredAnonymousAggregates"]).actions == toset(["dynamodb:Query"]) &&
-    one([for st in data.aws_iam_policy_document.aggregate_expiry[0].statement : st if st.sid == "DiscoverExpiredAnonymousAggregates"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence/index/ExpirationIndex"]))
+      one([for st in data.aws_iam_policy_document.aggregate_expiry[0].statement : st if st.sid == "DiscoverExpiredAnonymousAggregates"]).resources == toset(["arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-campaign-intelligence/index/ExpirationIndex"])
+    )
     error_message = "Compatibility alone cannot activate aggregate alarms; expiry discovery stays on the exact aggregate index."
   }
   assert {
@@ -185,7 +187,14 @@ run "lifecycle_can_run_without_key_retirement" {
   }
 
   assert {
-    condition     = aws_scheduler_schedule.period_lifecycle[0].state == "ENABLED" && alltrue([for a in aws_cloudwatch_metric_alarm.period_lifecycle : a.actions_enabled]) && aws_lambda_function.worker["lifecycle"].environment[0].variables.CAMPAIGN_PERIOD_RETIREMENT_ENABLED == "false" && !aws_lambda_event_source_mapping.publisher[0].enabled && !aws_lambda_event_source_mapping.cluster[0].enabled && alltrue([for s in aws_scheduler_schedule.lifecycle : s.state == "DISABLED"])
+    condition = (
+      aws_scheduler_schedule.period_lifecycle[0].state == "ENABLED" &&
+      (var.environment == "prod" ? (alltrue([for a in aws_cloudwatch_metric_alarm.period_lifecycle : a.actions_enabled])) : (length(aws_cloudwatch_metric_alarm.period_lifecycle) == 0)) &&
+      aws_lambda_function.worker["lifecycle"].environment[0].variables.CAMPAIGN_PERIOD_RETIREMENT_ENABLED == "false" &&
+      !aws_lambda_event_source_mapping.publisher[0].enabled &&
+      !aws_lambda_event_source_mapping.cluster[0].enabled &&
+      alltrue([for s in aws_scheduler_schedule.lifecycle : s.state == "DISABLED"])
+    )
     error_message = "New lifecycle scheduling must be independent of key retirement and keep research/legacy schedules closed."
   }
 }

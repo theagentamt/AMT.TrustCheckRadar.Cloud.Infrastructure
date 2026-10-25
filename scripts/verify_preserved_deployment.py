@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Fence saved Dev plans to maintenance-only or existing candidate.3/History."""
+from nonproduction_alarms import require_alarm_free_plan
+
 import argparse
 import json
 from pathlib import Path
@@ -17,7 +19,7 @@ ALIAS = 'aws_lambda_alias.runtime["recovery"]'
 RULE = 'aws_cloudwatch_event_rule.maintenance["recovery"]'
 HEARTBEAT = 'aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"]'
 OVERDUE = 'aws_cloudwatch_metric_alarm.expiry_overdue[0]'
-MAINTENANCE = {FUNCTION, ALIAS, RULE, HEARTBEAT, OVERDUE}
+MAINTENANCE = {FUNCTION, ALIAS, RULE}
 PACKAGE = {'s3_bucket', 's3_key', 's3_object_version', 'source_code_hash'}
 
 
@@ -94,6 +96,8 @@ DEPENDENCIES = {code: (code, 'ENTITLEMENTS_FUNCTION') for code in (
     'UNREVIEWED_MANAGED_DRIFT', 'ENTITLEMENTS_DRIFT_BINDING_MISMATCH',
     'ENTITLEMENTS_UNRELATED_DRIFT', 'ENTITLEMENTS_ALIAS_DRIFT_MISMATCH')}
 DEPENDENCIES.update({
+    'NONPRODUCTION_ALARM_MIGRATION_REQUIRED': ('NONPRODUCTION_ALARM_MIGRATION_REQUIRED', 'PLAN'),
+    'NONPRODUCTION_ALARMS_STILL_PRESENT_OR_INCOMPLETE': ('NONPRODUCTION_ALARMS_STILL_PRESENT_OR_INCOMPLETE', 'RECOVERY_CONTROLS'),
     'One complete environment is required.': ('BASELINE_ENVIRONMENT_SHAPE', 'FUNCTION'),
     'Unique AWS inventory required.': ('AWS_INVENTORY', 'PLAN'),
     'Canonical private scope required.': ('PRIVATE_SCOPE_SHAPE', 'INPUT'),
@@ -235,6 +239,7 @@ def alias_binding(row, function, plan):
 
 
 def review(plan, baseline, captured, revision, mode, replacements=None, configuration=None):
+    require_alarm_free_plan(plan)
     require(re.fullmatch('[a-f0-9]{40}', revision or ''), 'Exact main revision required.')
     rows, old = validate_plan(plan, mode), prepare.inventory(baseline)
     prepare.require_entitlements_drift(baseline, mode)
@@ -295,8 +300,6 @@ def review(plan, baseline, captured, revision, mode, replacements=None, configur
         alias_binding(rows[ALIAS], c, plan)
         for address, fields, values in (
             (RULE, {'state'}, {'state': 'ENABLED'}),
-            (HEARTBEAT, {'actions_enabled', 'treat_missing_data'}, {'actions_enabled': True, 'treat_missing_data': 'breaching'}),
-            (OVERDUE, {'actions_enabled'}, {'actions_enabled': True}),
         ):
             a, b = (rows[address]['change'][k] for k in ('before', 'after'))
             require(changed_fields(a, b) <= fields and all(b.get(k) == v for k, v in values.items()), 'Maintenance control exceeds scope.', resource=resource_category(address), fields=changed_fields(a, b))

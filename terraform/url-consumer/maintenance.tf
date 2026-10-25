@@ -28,7 +28,8 @@ locals {
 output "authority_maintenance" {
   description = "Same-root configuration contract. A later consumer rollout must pair this with actual version/IAM/worker/schedule readback."
   value = var.enabled ? {
-    schema_version        = 1
+    schema_version        = 2
+    alarm_policy          = var.environment == "prod" ? "required" : "dev-uat-disabled-v1"
     environment           = var.environment
     authority_table_arn   = local.authority_arn
     recovery_alias_arn    = aws_lambda_alias.runtime["recovery"].arn
@@ -36,7 +37,7 @@ output "authority_maintenance" {
     recovery_code_sha256  = local.runtime_artifacts["recovery"].source_hash
     worker_enabled        = local.authority_maintenance_active
     schedule_enabled      = try(aws_cloudwatch_event_rule.maintenance["recovery"].state == "ENABLED", false)
-    heartbeat_enforced    = local.authority_maintenance_active && var.alert_topic_arn != null
+    heartbeat_enforced    = local.authority_maintenance_active && var.alert_topic_arn != null && var.environment == "prod"
     provider_access_added = false
   } : null
 }

@@ -45,10 +45,14 @@ run "disabled_creates_nothing" {
   variables { deployment = null }
   assert {
     condition = (
-      length(aws_lambda_function.runtime) == 0 && length(aws_iam_role.runtime) == 0 &&
-      length(aws_iam_role_policy.consumer) == 0 && length(aws_iam_role_policy.evaluator) == 0 &&
-      length(aws_lambda_alias.runtime) == 0 && length(aws_cloudwatch_log_group.runtime) == 0 &&
-      length(aws_cloudwatch_metric_alarm.runtime) == 0 && !output.candidate_contract.provisioned &&
+      length(aws_lambda_function.runtime) == 0 &&
+      length(aws_iam_role.runtime) == 0 &&
+      length(aws_iam_role_policy.consumer) == 0 &&
+      length(aws_iam_role_policy.evaluator) == 0 &&
+      length(aws_lambda_alias.runtime) == 0 &&
+      length(aws_cloudwatch_log_group.runtime) == 0 &&
+      length(aws_cloudwatch_metric_alarm.runtime) == 0 &&
+      !output.candidate_contract.provisioned &&
       output.candidate_contract.consumer_endpoint == null
     )
     error_message = "Default recovery root must create no resources or endpoint."
@@ -122,15 +126,17 @@ run "dev_is_private_inactive_and_bounded" {
   }
   assert {
     condition = (
-      length(aws_cloudwatch_metric_alarm.runtime) == 6 &&
-      alltrue([for alarm in aws_cloudwatch_metric_alarm.runtime :
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.runtime) == 6) : (length(aws_cloudwatch_metric_alarm.runtime) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.runtime :
         alarm.alarm_actions == toset(["arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"]) &&
         alarm.ok_actions == alarm.alarm_actions && toset(keys(alarm.dimensions)) == toset(["FunctionName"])
-      ]) &&
-      aws_cloudwatch_metric_alarm.runtime["consumer-duration"].threshold == 26000 &&
-      aws_cloudwatch_metric_alarm.runtime["evaluator-duration"].threshold == 20000 &&
-      output.candidate_contract.consumer_endpoint == null && output.candidate_contract.authority_reused &&
-      !output.candidate_contract.secret_value_in_state && !output.candidate_contract.daily_reporting_ready
+      ])) : (length(aws_cloudwatch_metric_alarm.runtime) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.runtime["consumer-duration"].threshold == 26000) : (length(aws_cloudwatch_metric_alarm.runtime) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.runtime["evaluator-duration"].threshold == 20000) : (length(aws_cloudwatch_metric_alarm.runtime) == 0)) &&
+      output.candidate_contract.consumer_endpoint == null &&
+      output.candidate_contract.authority_reused &&
+      !output.candidate_contract.secret_value_in_state &&
+      !output.candidate_contract.daily_reporting_ready
     )
     error_message = "Existing support alarms must expose no payload dimensions or claim full reporting/activation."
   }

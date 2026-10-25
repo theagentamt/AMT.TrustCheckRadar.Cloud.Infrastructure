@@ -98,7 +98,12 @@ override_data {
 run "null_preserves_closed_workers" {
   command = plan
   assert {
-    condition     = !aws_lambda_event_source_mapping.deletion[0].enabled && aws_scheduler_schedule.recovery[0].state == "DISABLED" && aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_COMPLETION_ENABLED == "false" && alltrue([for alarm in aws_cloudwatch_metric_alarm.recovery : !alarm.actions_enabled])
+    condition = (
+      !aws_lambda_event_source_mapping.deletion[0].enabled &&
+      aws_scheduler_schedule.recovery[0].state == "DISABLED" &&
+      aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_COMPLETION_ENABLED == "false" &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.recovery : !alarm.actions_enabled])) : (length(aws_cloudwatch_metric_alarm.recovery) == 0))
+    )
     error_message = "Default must preserve closed workers and alarms."
   }
 }
@@ -118,7 +123,14 @@ run "only_deletion_can_run_with_research_paused" {
     encryption_reference          = "synthetic-encryption-not-approval"
   } }
   assert {
-    condition     = aws_lambda_event_source_mapping.deletion[0].enabled && aws_scheduler_schedule.recovery[0].state == "ENABLED" && alltrue([for alarm in aws_cloudwatch_metric_alarm.recovery : alarm.actions_enabled]) && aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_COMPLETION_ENABLED == "true" && aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_PERIOD_ADMISSION_GENERATION == "11111111-1111-4111-8111-111111111111" && aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_RECOVERY_ENABLED == "true"
+    condition = (
+      aws_lambda_event_source_mapping.deletion[0].enabled &&
+      aws_scheduler_schedule.recovery[0].state == "ENABLED" &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.recovery : alarm.actions_enabled])) : (length(aws_cloudwatch_metric_alarm.recovery) == 0)) &&
+      aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_COMPLETION_ENABLED == "true" &&
+      aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_PERIOD_ADMISSION_GENERATION == "11111111-1111-4111-8111-111111111111" &&
+      aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_RECOVERY_ENABLED == "true"
+    )
     error_message = "Deletion needs durable stream, recovery, completion and alarms."
   }
   assert {

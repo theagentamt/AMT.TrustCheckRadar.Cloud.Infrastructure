@@ -60,12 +60,12 @@ resource "aws_iam_role_policy_attachment" "aggregate_expiry" {
   policy_arn = aws_iam_policy.aggregate_expiry[0].arn
 }
 resource "aws_cloudwatch_metric_alarm" "aggregate_expiry" {
-  for_each = local.period_work_prepared ? {
+  for_each = { for alarm_key, alarm_value in(local.period_work_prepared ? {
     heartbeat  = { metric = "AggregateHeartbeat", statistic = "Sum", threshold = 1, comparison = "LessThanThreshold", periods = 3, missing = "breaching" }
     failures   = { metric = "AggregateFailures", statistic = "Sum", threshold = 0, comparison = "GreaterThanThreshold", periods = 1, missing = "notBreaching" }
     unverified = { metric = "AggregateWorkUnverified", statistic = "Sum", threshold = 0, comparison = "GreaterThanThreshold", periods = 1, missing = "notBreaching" }
     full_pass  = { metric = "AggregateFullPassAgeSeconds", statistic = "Maximum", threshold = 7200, comparison = "GreaterThanOrEqualToThreshold", periods = 1, missing = "notBreaching" }
-  } : {}
+  } : {}) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.name_prefix}-aggregate-${replace(each.key, "_", "-")}"
   alarm_description   = "Anonymous aggregate expiry ${each.key}; no erasure or historical-copy claim."
   namespace           = "TrustCheckRadar/Campaign"

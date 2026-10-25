@@ -5,6 +5,7 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+from nonproduction_alarms import require_alarm_free_plan
 from verify_message_consumer_transition import review as review_legacy, _expected_environment, TRANSITION_ADDRESSES, ACCOUNT, REGION, PREFIX
 from verify_governed_history_plan import require, flag, changed_fields, owned_inline_policy_readback
 
@@ -37,6 +38,7 @@ def evaluator_computed_drift(plan, item):
 
 
 def review(plan, revision, mode):
+    require_alarm_free_plan(plan)
     require(mode in {'inactive', 'rules-only', 'rules-only-history'}, 'Unknown candidate.3 mode.')
     require(plan.get('terraform_version') == '1.12.1', 'Pinned Terraform version required.')
     active = mode != 'inactive'

@@ -52,7 +52,7 @@ def fixture(scope='handoff', mode='verification'):
         alias_after = {'name': 'live', 'function_name': function, 'function_version': '2', 'routing_config': []}
         changes.append({'address': 'aws_lambda_alias.' + suffix, 'type': 'aws_lambda_alias', 'mode': 'managed', 'provider_name': 'registry.terraform.io/hashicorp/aws', 'change': {'actions': ['update'], 'before': dict(alias_after, function_version='1'), 'after': alias_after}})
     if scope == 'lifecycle':
-        for address, after, field, old in [('aws_scheduler_schedule.lifecycle["worker"]', {'state': 'ENABLED' if mode == 'background' else 'DISABLED'}, 'state', 'DISABLED'), ('aws_cloudwatch_metric_alarm.operational["worker-heartbeat"]', {'actions_enabled': mode == 'background'}, 'actions_enabled', False)]:
+        for address, after, field, old in [('aws_scheduler_schedule.lifecycle["worker"]', {'state': 'ENABLED' if mode == 'background' else 'DISABLED'}, 'state', 'DISABLED')]:
             changes.append({'address': address, 'mode': 'managed', 'provider_name': 'registry.terraform.io/hashicorp/aws', 'change': {'actions': ['update'] if mode == 'background' else ['no-op'], 'before': dict(after, **{field: old}), 'after': after}})
     if scope == 'lifecycle':
         table = f'arn:aws:dynamodb:us-east-1:{prepare.ACCOUNT}:table/trustcheckradar-dev-play-tokens'
@@ -155,7 +155,7 @@ class PlanTests(ProvenanceCase):
                 artifacts, digest, updates, subjects = guard.review(fixture(scope, mode), REVISION, scope, mode)
                 self.assertEqual(subjects, 1)
                 self.assertEqual(len(digest), 64)
-                self.assertEqual(updates, 7 if mode == 'background' else 5 if scope == 'lifecycle' else 2)
+                self.assertEqual(updates, 6 if mode == 'background' else 5 if scope == 'lifecycle' else 2)
 
     def test_reject_unrelated_writes_deletes_and_replacements(self):
         for address, actions in [('aws_iam_role_policy.writer', ['update']), ('aws_lambda_function.export', ['update']), ('aws_lambda_function.runtime[0]', ['delete', 'create'])]:

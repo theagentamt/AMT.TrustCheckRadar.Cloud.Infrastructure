@@ -104,9 +104,9 @@ run "installed_candidate_is_closed" {
   assert {
     condition = (
       aws_cloudwatch_log_group.demographic_research[0].retention_in_days == 14 &&
-      length(aws_cloudwatch_metric_alarm.demographic_research_runtime) == 2 &&
-      length(aws_cloudwatch_metric_alarm.demographic_research_internal_error) == 5 &&
-      alltrue([for alarm in aws_cloudwatch_metric_alarm.demographic_research_internal_error : alarm.namespace == "TrustCheckRadar/DemographicResearch" && alarm.metric_name == "InternalError"])
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.demographic_research_runtime) == 2) : (length(aws_cloudwatch_metric_alarm.demographic_research_runtime) == 0)) &&
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.demographic_research_internal_error) == 5) : (length(aws_cloudwatch_metric_alarm.demographic_research_internal_error) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.demographic_research_internal_error : alarm.namespace == "TrustCheckRadar/DemographicResearch" && alarm.metric_name == "InternalError"])) : (length(aws_cloudwatch_metric_alarm.demographic_research_internal_error) == 0))
     )
     error_message = "The candidate needs content-free 14-day logs and low-cardinality support alarms."
   }

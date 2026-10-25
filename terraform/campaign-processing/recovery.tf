@@ -152,7 +152,7 @@ resource "aws_lambda_function_event_invoke_config" "recovery" {
   maximum_retry_attempts       = 0
 }
 resource "aws_cloudwatch_metric_alarm" "recovery" {
-  for_each = local.recovery_prepared ? {
+  for_each = { for alarm_key, alarm_value in(local.recovery_prepared ? {
     budget      = { metric = "RecoveryBudgetExhausted", statistic = "Sum", threshold = 0, comparison = "GreaterThanThreshold", periods = 1, missing = "notBreaching" }
     truncated   = { metric = "RecoveryShardTruncated", statistic = "Sum", threshold = 0, comparison = "GreaterThanThreshold", periods = 1, missing = "notBreaching" }
     heartbeat   = { metric = "RecoveryTicks", statistic = "Sum", threshold = 1, comparison = "LessThanThreshold", periods = 3, missing = "breaching" }
@@ -161,7 +161,7 @@ resource "aws_cloudwatch_metric_alarm" "recovery" {
     schema      = { metric = "SidecarSchemaFailures", statistic = "Sum", threshold = 0, comparison = "GreaterThanThreshold", periods = 1, missing = "notBreaching" }
     pending_age = { metric = "ObservedPendingAgeSeconds", statistic = "Maximum", threshold = 72000, comparison = "GreaterThanOrEqualToThreshold", periods = 1, missing = "notBreaching" }
     overdue     = { metric = "ObservedOverdueCommands", statistic = "Sum", threshold = 0, comparison = "GreaterThanThreshold", periods = 1, missing = "notBreaching" }
-  } : {}
+  } : {}) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.name_prefix}-recovery-${replace(each.key, "_", "-")}"
   alarm_description   = "Campaign recovery ${each.key}; observed work only, not full coverage or completed erasure. Actions follow reviewed deletion-only activation."
   namespace           = "TrustCheckRadar/Campaign"

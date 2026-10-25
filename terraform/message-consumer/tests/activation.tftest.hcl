@@ -18,7 +18,8 @@ mock_provider "aws" {
 
 variables {
   authority_maintenance = {
-    schema_version        = 1
+    schema_version        = 2
+    alarm_policy          = "dev-uat-disabled-v1"
     environment           = "dev"
     authority_table_arn   = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements"
     recovery_alias_arn    = "arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-lease-recovery:live"
@@ -26,7 +27,7 @@ variables {
     recovery_code_sha256  = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
     worker_enabled        = true
     schedule_enabled      = true
-    heartbeat_enforced    = true
+    heartbeat_enforced    = false
     provider_access_added = false
   }
   environment = "dev"
@@ -289,12 +290,12 @@ run "message_rejects_maintenance_disabled_schedule" {
   expect_failures = [var.activate_rules_engineering]
 }
 
-run "message_rejects_maintenance_missing_heartbeat" {
+run "message_rejects_maintenance_old_alarm_policy" {
   command = plan
   variables {
     activate_rules_engineering = true
     engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
-    authority_maintenance      = merge(var.authority_maintenance, { heartbeat_enforced = false })
+    authority_maintenance      = merge(var.authority_maintenance, { heartbeat_enforced = true })
   }
   expect_failures = [var.activate_rules_engineering]
 }

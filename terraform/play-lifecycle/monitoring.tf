@@ -25,7 +25,7 @@ resource "aws_cloudwatch_log_metric_filter" "operational" {
   }
 }
 resource "aws_cloudwatch_metric_alarm" "operational" {
-  for_each            = { for key, metric in local.operational_metrics : key => metric if key != "ingress-heartbeat" }
+  for_each            = { for alarm_key, alarm_value in({ for key, metric in local.operational_metrics : key => metric if key != "ingress-heartbeat" }) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.prefix}-play-${each.key}"
   namespace           = "TrustCheckRadar/dev/PlayLifecycle"
   metric_name         = aws_cloudwatch_log_metric_filter.operational[each.key].metric_transformation[0].name

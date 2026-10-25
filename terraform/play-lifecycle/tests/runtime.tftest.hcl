@@ -58,7 +58,10 @@ run "closed_runtimes_and_cleanup" {
     error_message = "KMS must use fixed privacy-safe purpose/environment and exact key."
   }
   assert {
-    condition     = length(aws_cloudwatch_metric_alarm.runtime) == 6 && alltrue([for a in aws_cloudwatch_metric_alarm.runtime : a.alarm_actions == toset([var.alert_topic_arn])])
+    condition = (
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.runtime) == 6) : (length(aws_cloudwatch_metric_alarm.runtime) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for a in aws_cloudwatch_metric_alarm.runtime : a.alarm_actions == toset([var.alert_topic_arn])])) : (length(aws_cloudwatch_metric_alarm.runtime) == 0))
+    )
     error_message = "Every runtime must report native errors and throttles to existing support alerts."
   }
   assert {
@@ -66,7 +69,11 @@ run "closed_runtimes_and_cleanup" {
     error_message = "Cleanup continuation needs sub-five-minute cadence; stream batches must fit the handler limit."
   }
   assert {
-    condition     = !contains(keys(aws_cloudwatch_metric_alarm.operational), "ingress-heartbeat") && !aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled && !aws_cloudwatch_metric_alarm.operational["deletion-heartbeat"].actions_enabled
+    condition = (
+      (var.environment == "prod" ? (!contains(keys(aws_cloudwatch_metric_alarm.operational), "ingress-heartbeat")) : (length(aws_cloudwatch_metric_alarm.operational) == 0)) &&
+      (var.environment == "prod" ? (!aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.operational) == 0)) &&
+      (var.environment == "prod" ? (!aws_cloudwatch_metric_alarm.operational["deletion-heartbeat"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.operational) == 0))
+    )
     error_message = "Event-driven ingress has no expected heartbeat; scheduled heartbeats stay disarmed while schedules are disabled."
   }
   assert {
@@ -120,8 +127,8 @@ run "deletion_only_exact_subjects_keep_provider_and_worker_closed" {
       aws_lambda_function.runtime["deletion"].s3_key == "releases/${var.deletion_activation.source_sha}/play_token_deletion.zip" &&
       aws_lambda_event_source_mapping.deletion[0].enabled &&
       aws_scheduler_schedule.lifecycle["deletion"].state == "ENABLED" &&
-      aws_cloudwatch_metric_alarm.operational["deletion-heartbeat"].actions_enabled &&
-      aws_cloudwatch_metric_alarm.operational["deletion-heartbeat"].treat_missing_data == "breaching" &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.operational["deletion-heartbeat"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.operational) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.operational["deletion-heartbeat"].treat_missing_data == "breaching") : (length(aws_cloudwatch_metric_alarm.operational) == 0)) &&
       jsondecode(aws_scheduler_schedule.lifecycle["deletion"].target[0].input) == { schemaVersion = 1, operation = "reconcile-play-token-deletion" }
     )
     error_message = "Cleanup selection must bind exact source and sorted subjects, enable its stream/reconciliation and arm deletion heartbeat."
@@ -131,8 +138,9 @@ run "deletion_only_exact_subjects_keep_provider_and_worker_closed" {
       alltrue([for function in aws_lambda_function.runtime : alltrue([for gate in ["PLAY_LIFECYCLE_ENABLED", "PLAY_CHECKPOINT_POLICY_APPROVED", "PLAY_PREPARATION_ENABLED", "AUTHORITY_ENABLED"] : function.environment[0].variables[gate] == "false"])]) &&
       alltrue([for role in ["ingress", "worker"] : aws_lambda_function.runtime[role].environment[0].variables.PLAY_TOKEN_CLEANUP_ENABLED == "false" && aws_lambda_function.runtime[role].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == "[]"]) &&
       aws_scheduler_schedule.lifecycle["worker"].state == "DISABLED" &&
-      !aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled &&
-      length(aws_apigatewayv2_api.notification) == 0 && !output.candidate_contract.lifecycle_active &&
+      (var.environment == "prod" ? (!aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.operational) == 0)) &&
+      length(aws_apigatewayv2_api.notification) == 0 &&
+      !output.candidate_contract.lifecycle_active &&
       !output.candidate_contract.google_transport_provisioned &&
       !contains(keys(aws_lambda_function.runtime["deletion"].environment[0].variables), "GOOGLE_PLAY_SERVICE_ACCOUNT_SECRET_ARN")
     )
@@ -294,7 +302,13 @@ run "one_account_ingress_keeps_global_worker_closed" {
     error_message = "Ingress must use only the billing selection."
   }
   assert {
-    condition     = aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "false" && aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_TOKEN_CLEANUP_ENABLED == "false" && aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_CHECKPOINT_POLICY_APPROVED == "false" && aws_scheduler_schedule.lifecycle["worker"].state == "DISABLED" && !aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled
+    condition = (
+      aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "false" &&
+      aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_TOKEN_CLEANUP_ENABLED == "false" &&
+      aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_CHECKPOINT_POLICY_APPROVED == "false" &&
+      aws_scheduler_schedule.lifecycle["worker"].state == "DISABLED" &&
+      (var.environment == "prod" ? (!aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.operational) == 0))
+    )
     error_message = "Ingress must not enable the global worker, cleanup traversal or checkpoint policy."
   }
   assert {
@@ -418,7 +432,13 @@ run "one_account_direct_head_worker_has_no_global_access" {
     error_message = "Ingress must use only the billing selection."
   }
   assert {
-    condition     = aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "true" && aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_TOKEN_CLEANUP_ENABLED == "false" && aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_CHECKPOINT_POLICY_APPROVED == "false" && aws_scheduler_schedule.lifecycle["worker"].state == "ENABLED" && aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled
+    condition = (
+      aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "true" &&
+      aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_TOKEN_CLEANUP_ENABLED == "false" &&
+      aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_CHECKPOINT_POLICY_APPROVED == "false" &&
+      aws_scheduler_schedule.lifecycle["worker"].state == "ENABLED" &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.operational) == 0))
+    )
     error_message = "Scoped scheduled work must not enable global cleanup traversal or checkpoint policy."
   }
   assert {
@@ -443,7 +463,13 @@ run "closed_worker_pin_retains_scope_denies_without_schedule" {
     }
   }
   assert {
-    condition     = aws_scheduler_schedule.lifecycle["worker"].state == "DISABLED" && !aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled && aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "false" && alltrue([for statement in jsondecode(aws_iam_role_policy.runtime["worker"].policy).Statement : !contains(["DueTokenKeys", "LifecycleCheckpointRead", "LifecycleCheckpointWrite"], statement.Sid)]) && anytrue([for statement in jsondecode(aws_iam_role_policy.runtime["worker"].policy).Statement : statement.Sid == "NoScopedTokenEnumeration" && statement.Effect == "Deny"])
+    condition = (
+      aws_scheduler_schedule.lifecycle["worker"].state == "DISABLED" &&
+      (var.environment == "prod" ? (!aws_cloudwatch_metric_alarm.operational["worker-heartbeat"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.operational) == 0)) &&
+      aws_lambda_function.runtime["worker"].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "false" &&
+      alltrue([for statement in jsondecode(aws_iam_role_policy.runtime["worker"].policy).Statement : !contains(["DueTokenKeys", "LifecycleCheckpointRead", "LifecycleCheckpointWrite"], statement.Sid)]) &&
+      anytrue([for statement in jsondecode(aws_iam_role_policy.runtime["worker"].policy).Statement : statement.Sid == "NoScopedTokenEnumeration" && statement.Effect == "Deny"])
+    )
     error_message = "Stopping scoped work must preserve its enumeration/checkpoint denials without enabling any schedule."
   }
 }

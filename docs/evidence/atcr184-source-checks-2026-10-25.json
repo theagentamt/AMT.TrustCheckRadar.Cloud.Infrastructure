@@ -1,0 +1,530 @@
+{
+  "issue": "ATCR-184",
+  "releaseEpic": "ATCR-180",
+  "followUpEpic": "ATCR-186",
+  "base": "5c6281be23009d88c4b65df6788ae094528e097e",
+  "branch": "codex/atcr184-dev-uat-alarm-policy",
+  "stage": "local-source-prepared-not-integrated-or-deployed",
+  "sourceReview": {
+    "base": "5c6281be23009d88c4b65df6788ae094528e097e",
+    "alarm_declarations": 40,
+    "stacks": 13,
+    "non_alarm_resource_blocks_identical": 402,
+    "alarm_fields_and_production_cardinality_preserved": true,
+    "dev_uat_alarm_cardinality_zero_by_source": true,
+    "all_environment_tfvars_unchanged": true,
+    "iam_bootstrap_and_ci_workflows_unchanged": true
+  },
+  "checks": {
+    "terraformVersion": "1.12.1",
+    "terraformValidateStacksPassed": 13,
+    "terraformMockedUnitFunctionalTests": {
+      "passed": 551,
+      "failed": 0,
+      "liveAcceptance": false
+    },
+    "pythonUnitFunctionalTests": {
+      "passed": 515,
+      "failed": 0,
+      "skipped": 0,
+      "liveAcceptance": false
+    },
+    "terraformFmt": "passed",
+    "gitDiffCheck": "passed",
+    "campaignGuardrails": "passed",
+    "shellSyntax": "passed",
+    "changedPythonSyntax": "passed",
+    "terraformDetails": [
+      {
+        "stack": "api",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 76.75,
+        "summary": [
+          "Success! 221 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "api",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.13,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      },
+      {
+        "stack": "campaign-api",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 1.74,
+        "summary": [
+          "Success! 3 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "campaign-api",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.3,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      },
+      {
+        "stack": "campaign-processing",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 18.96,
+        "summary": [
+          "Success! 67 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "campaign-processing",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.08,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      },
+      {
+        "stack": "history-data",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 5.01,
+        "summary": [
+          "Success! 19 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "history-data",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 3.89,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      },
+      {
+        "stack": "history-processing",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 6.98,
+        "summary": [
+          "Success! 23 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "history-processing",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.05,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      },
+      {
+        "stack": "message-consumer",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 8.72,
+        "summary": [
+          "Success! 28 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "message-consumer",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.05,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      },
+      {
+        "stack": "play-lifecycle",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 11.25,
+        "summary": [
+          "Success! 41 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "play-lifecycle",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.06,
+        "summary": [
+          "Success! The configuration is valid, but there were some validation warnings"
+        ]
+      },
+      {
+        "stack": "play-verification",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 7.06,
+        "summary": [
+          "Success! 22 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "play-verification",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.05,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      },
+      {
+        "stack": "recovery-consumer",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 3.81,
+        "summary": [
+          "Success! 11 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "recovery-consumer",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.04,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      },
+      {
+        "stack": "result-feedback",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 3.57,
+        "summary": [
+          "Success! 10 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "result-feedback",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.05,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      },
+      {
+        "stack": "url-assessment",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 2.48,
+        "summary": [
+          "Success! 5 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "url-assessment",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.04,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      },
+      {
+        "stack": "url-consumer",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 25.03,
+        "summary": [
+          "Success! 87 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "url-consumer",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.06,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      },
+      {
+        "stack": "url-resolver",
+        "operation": "test",
+        "exit_code": 0,
+        "seconds": 5.32,
+        "summary": [
+          "Success! 14 passed, 0 failed."
+        ]
+      },
+      {
+        "stack": "url-resolver",
+        "operation": "validate",
+        "exit_code": 0,
+        "seconds": 1.07,
+        "summary": [
+          "Success! The configuration is valid."
+        ]
+      }
+    ]
+  },
+  "dependencies": {
+    "newInstalls": false,
+    "lockfilesChanged": false,
+    "awsProviderVersions": [
+      "5.100.0",
+      "6.65.0",
+      "6.66.0"
+    ],
+    "randomProviderVersion": "3.9.1",
+    "pythonExistingPackages": {
+      "boto3": "1.43.107",
+      "botocore": "1.43.118",
+      "moto": "5.2.3"
+    },
+    "cloudCredentialsAndConfigRemovedFromValidationChildProcesses": true
+  },
+  "historicalFailures": [
+    {
+      "scope": "initial Terraform assertion adaptation",
+      "result": "failed formatting: multiline conjunction lost its outer parentheses",
+      "disposition": "corrected; formatting and all affected Terraform suites subsequently passed"
+    },
+    {
+      "scope": "initial focused Python checks",
+      "result": "isolated imports lacked the scripts path; three stale assertions still expected removed alarm updates",
+      "disposition": "corrected; targeted suites and full 515-test run subsequently passed"
+    },
+    {
+      "scope": "first full Python run without optional dependency paths",
+      "result": {
+        "ran": 509,
+        "errors": 8,
+        "skipped": 6,
+        "cause": "boto3/botocore unavailable on default Python path"
+      },
+      "disposition": "reused existing approved dependency directories; no installation; full 515-test run passed"
+    },
+    {
+      "scope": "first Terraform plugin start",
+      "result": "sandbox prevented local provider handshake",
+      "disposition": "bounded offline checks succeeded after reviewed local execution escalation"
+    },
+    {
+      "scope": "campaign-api, campaign-processing, history-processing provider loading",
+      "result": "locked cached versions absent from initial local provider path",
+      "disposition": "reused existing 6.66.0/3.9.1 cache; all three validate/test pairs passed"
+    }
+  ],
+  "attemptCounters": {
+    "assertionAdaptation": {
+      "failedSolFixAttempts": 1,
+      "resolved": true
+    },
+    "unresolvedImplementationBugs": 0,
+    "astraAttempts": 0,
+    "operationalAccessOrDependencyFailuresConsumeReasoningAttempts": false
+  },
+  "notRun": [
+    "live Terraform plan or refresh",
+    "Terraform apply",
+    "alarm deletion or SNS change",
+    "AWS runtime readback",
+    "provider or paid batch requests",
+    "Dev or UAT end-to-end acceptance",
+    "emulator or device work",
+    "GitHub push, PR creation or merge"
+  ],
+  "resourceSlots": {
+    "heavySlot2": "released after Terraform checks",
+    "emulator": "not used"
+  },
+  "remainingBlockers": [
+    "parent-reviewed main integration slot",
+    "separately authorized alarm-only saved plan and deletion/apply",
+    "Dev then UAT real provider/end-to-end evidence",
+    "UAT account/state/identity/endpoint/provider/artifact configuration gaps documented in handoff"
+  ],
+  "retainedLocalLogs": [
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-api-test.log",
+      "sha256": "38175a67584ed3b00e9b7e642432fc1415c21e813cb3175bdf1d57745c660fcc"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-api-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-campaign-api-test.log",
+      "sha256": "e92331bd6f302b67eaecf1255dcd192233afa3a316353b96b1ffddb997a5fa46"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-campaign-api-validate-cache-missing.log",
+      "sha256": "7eb2b246590273f865fdfef55dfe582350c6250e5db2bba8a7c9ac2904063260"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-campaign-api-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-campaign-processing-test.log",
+      "sha256": "ba4b4bee0a29a06e63fc11ee60c626e4963f33b135f2e15d0983454b5a70036d"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-campaign-processing-validate-cache-missing.log",
+      "sha256": "0e7acb0148e434a374708ff4a306fa96476624a554a1d3b6e3b7e43ad1767b8d"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-campaign-processing-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-format-repair.log",
+      "sha256": "010d662d39ed336adce6fe943ceaa8dec9d3191b5bbfb9cbe515c3255363b13f"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-helper-regressions-existing-deps.log",
+      "sha256": "0af0efb21dee5917ff3d4265e71fe66ae467391380ba66ed7753c55204f81782"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-helper-regressions.log",
+      "sha256": "30bf633975ea095734e19b25a818d4efd64347e62bebaecb52fe9ecfa232e247"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-history-data-test.log",
+      "sha256": "05098b7951dd54f132b60ecbb098d75ea2572af518c57e6de2655a1c396c029d"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-history-data-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-history-processing-test.log",
+      "sha256": "42c4ff032f650699aa381526e59e81d8e1e83dff9a3949a6bcd61c9c0fac8d2d"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-history-processing-validate-cache-missing.log",
+      "sha256": "0e7acb0148e434a374708ff4a306fa96476624a554a1d3b6e3b7e43ad1767b8d"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-history-processing-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-message-consumer-test.log",
+      "sha256": "18efc86763eb74bad78e7252098580f2758484effbbc667b354fa0b0aef0948f"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-message-consumer-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-nonproduction-alarms-unit.log",
+      "sha256": "83166b089fbcb82fac63f22522fa6ae99bb5e46368cd35d756277fd463dd6346"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-play-lifecycle-test.log",
+      "sha256": "ae5da52be199942df865beb900856fc1ed2fe6910a331ce7eed5b2c503e273a1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-play-lifecycle-validate.log",
+      "sha256": "a03fcdd4a60a6fcd93d52d885b9cfca9d49c6e724605eb7af0e365f5822ffc77"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-play-verification-test.log",
+      "sha256": "d00146028314f09553def56938dd02bae29cbf4ecc6b83b20c4404eb4ccedf50"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-play-verification-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-preserved-diagnostics-unit.log",
+      "sha256": "6c6b2c8cd1661adf9dc5a3a8480278dd55967f487a3f57db19f5b216e85887d8"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-recovery-consumer-test.log",
+      "sha256": "08eabf988ac4448a27aa55cd49d57dc477d4ebcf9ab4597bff5fe0c2df8131f8"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-recovery-consumer-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-result-feedback-test.log",
+      "sha256": "8bafbe808d34249206388eb6c51839419af0c22ab466c2e482800766cabc9a5c"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-result-feedback-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-source-review.json",
+      "sha256": "6a430af5ed0f16f62a6adaf220d279756c9cb555275314f709c60232a7051b4e"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-terraform-provider-retry-results.json",
+      "sha256": "b0ac7747f928306ac9dbc78676c370e802df1cee3230b31807d1fd243c430dbf"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-terraform-results.json",
+      "sha256": "77feb4dbcafb53c31c42c5568d3374bb12fa7fae7eca9f5b2fd6875164851fd0"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-test_billing_dev_transition.py.log",
+      "sha256": "5ca384e55f3dde15a44ad84ea96878f9504e0d56280c131876454cc84f4c823a"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-test_candidate3_rules_plan.py.log",
+      "sha256": "b6a161abed43b9a0dba9259cd451b39b20b10425ac13cc14786554c0e6fac7f1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-test_message_ai_configuration.py.log",
+      "sha256": "12be2192df9700849283d9dfb1068e1a3ad6cc14b2021e7ef6c118c48871eb47"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-test_message_consumer_release.py.log",
+      "sha256": "d03ce458f2a6cd2b4f27522f3aacad03ce1872c028853507c3ad02ca621bdcad"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-test_message_consumer_transition.py.log",
+      "sha256": "1b54e7bd3e4f0557cdf06d1076b6ef63ce21d6c17ecec62d2881ac93eafe1fed"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-test_preserved_deployment.py.log",
+      "sha256": "eccb296f0b722a2fb19fba47f02ed739ad4f1cd3bdb24b0208dd71cc7b5e6868"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-test_trial_authority_transition.py.log",
+      "sha256": "603db52fd0016ca5cdcf83b2588160ae92bde08c66ba4c61dfc8a2a74cdb95c9"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-url-assessment-test.log",
+      "sha256": "6df1778d9bb77b98c4a1baadcc817a3fb4bc5d26773b58ad1cac8f82a39f48a2"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-url-assessment-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-url-consumer-test.log",
+      "sha256": "e66e033a4d8bef4da407e5d19508cc60fcfde97ddad4fc4535a53216ba03e170"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-url-consumer-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-url-resolver-test.log",
+      "sha256": "eba5a8e2c468ac41046807cbcccbfbf3d3d7bf24816557c370f1d5504ef2b33f"
+    },
+    {
+      "path": "/Users/theaimachine/Documents/Codex/2026-10-25/task-4/validation/atcr184-url-resolver-validate.log",
+      "sha256": "f7997225125835fdd14060ac776d273f394b874f9a481b9e2122c83dc8adc5c1"
+    }
+  ],
+  "publicDeployment": "prohibited"
+}

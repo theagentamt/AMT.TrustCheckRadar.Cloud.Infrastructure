@@ -28,7 +28,7 @@ locals {
 }
 
 resource "aws_cloudwatch_metric_alarm" "storage_throttles" {
-  for_each = local.throttle_metrics
+  for_each = { for alarm_key, alarm_value in(local.throttle_metrics) : alarm_key => alarm_value if var.environment == "prod" }
 
   alarm_name          = "${var.project_name}-${var.environment}-history-${each.key}-throttles"
   alarm_description   = "History table/index throttling. Inspect the History storage dashboard and runbook; never raise caps or replay scans automatically."

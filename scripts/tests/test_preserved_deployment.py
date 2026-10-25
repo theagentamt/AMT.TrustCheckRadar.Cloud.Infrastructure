@@ -37,11 +37,11 @@ def capture(plan, maintenance):
 
 
 def maintenance_contract(active):
-    return {'schema_version': 1, 'environment': 'dev',
+    return {'schema_version': 2, 'alarm_policy': 'dev-uat-disabled-v1', 'environment': 'dev',
         'authority_table_arn': 'arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-purchase-entitlements',
         'recovery_alias_arn': 'arn:aws:lambda:us-east-1:107827791950:function:trustcheckradar-dev-url-lease-recovery:live',
         'recovery_version': '11', 'recovery_code_sha256': p.RECOVERY_SHA,
-        'worker_enabled': active, 'schedule_enabled': active, 'heartbeat_enforced': active, 'provider_access_added': False}
+        'worker_enabled': active, 'schedule_enabled': active, 'heartbeat_enforced': False, 'provider_access_added': False}
 
 
 def maintenance():
@@ -79,8 +79,6 @@ def maintenance():
             'provider_name': 'registry.terraform.io/hashicorp/aws',
             'change': {'actions': ['no-op'], 'before': copy.deepcopy(alias), 'after': alias}})
     for address, value in ((v.RULE, {'state': 'DISABLED', 'schedule_expression': 'rate(1 minute)'}),
-                           (v.HEARTBEAT, {'actions_enabled': False, 'treat_missing_data': 'notBreaching'}),
-                           (v.OVERDUE, {'actions_enabled': False}),
                            ('aws_iam_role_policy.recovery[0]', {'policy': 'unchanged'}),
                            ('aws_apigatewayv2_route.v1["access"]', {'route_key': 'GET /v1/access'})):
         extra.append({'address': address, 'mode': 'managed', 'provider_name': 'registry.terraform.io/hashicorp/aws',
@@ -102,8 +100,6 @@ def maintenance():
     p.environment(rows[v.FUNCTION]['change']['after'])['LEASE_SWEEP_ENABLED'] = 'true'
     rows[v.ALIAS]['change']['after']['function_version'] = '12'
     rows[v.RULE]['change']['after']['state'] = 'ENABLED'
-    rows[v.HEARTBEAT]['change']['after'].update(actions_enabled=True, treat_missing_data='breaching')
-    rows[v.OVERDUE]['change']['after']['actions_enabled'] = True
     final['output_changes']['candidate_contract']['after']['recovery_enabled'] = True
     return sync(final), base, observed
 
@@ -165,10 +161,10 @@ class PreservedDeploymentTests(unittest.TestCase):
         p.SCOPE_SHA = self.original_scope
         p.ENTITLEMENTS = self.original_entitlements
 
-    def test_complete_five_resource_transition(self):
+    def test_complete_three_resource_transition(self):
         plan, baseline, observed = maintenance()
         result, artifacts = v.review(plan, baseline, observed, REVISION, 'maintenance')
-        self.assertEqual(result['resourceUpdates'], 5)
+        self.assertEqual(result['resourceUpdates'], 3)
         self.assertEqual(artifacts['recovery']['source_hash'], p.RECOVERY_SHA)
         self.assertFalse(result['providerCallsEnabled'])
 
@@ -324,11 +320,14 @@ class PreservedDeploymentTests(unittest.TestCase):
         with self.assertRaises(ValueError): v.review(plan, baseline, observed, REVISION, 'maintenance')
 
     def test_partial_maintenance_and_alarm_destination_changes_rejected(self):
-        for address in (v.HEARTBEAT, v.OVERDUE, v.RULE):
+        for address in (v.RULE,):
             plan, baseline, observed = maintenance(); c = p.inventory(plan)[address]['change']
             c['actions'] = ['no-op']; c['after'] = copy.deepcopy(c['before']); sync(plan)
             with self.subTest(address=address), self.assertRaises(ValueError): v.review(plan, baseline, observed, REVISION, 'maintenance')
-        plan, baseline, observed = maintenance(); p.inventory(plan)[v.HEARTBEAT]['change']['after']['alarm_actions'] = ['other']; sync(plan)
+        plan, baseline, observed = maintenance()
+        plan['resource_changes'].append({'address': v.HEARTBEAT, 'mode': 'managed',
+            'change': {'actions': ['create'], 'before': None, 'after': {'alarm_actions': ['other']}}})
+        sync(plan)
         with self.assertRaises(ValueError): v.review(plan, baseline, observed, REVISION, 'maintenance')
 
     def test_snapshot_and_existing_private_scope_cannot_change(self):
@@ -365,7 +364,7 @@ class PreservedDeploymentTests(unittest.TestCase):
         for r in plan['planned_values']['root_module']['resources']:
             if r['address'] == v.FUNCTION: r['values'].pop('version')
             if r['address'] == v.ALIAS: r['values'].pop('function_version')
-        self.assertEqual(v.review(plan, baseline, observed, REVISION, 'maintenance')[0]['resourceUpdates'], 5)
+        self.assertEqual(v.review(plan, baseline, observed, REVISION, 'maintenance')[0]['resourceUpdates'], 3)
         rows[v.FUNCTION]['change']['after_unknown'] = {}
         with self.assertRaises(ValueError): v.review(plan, baseline, observed, REVISION, 'maintenance')
 

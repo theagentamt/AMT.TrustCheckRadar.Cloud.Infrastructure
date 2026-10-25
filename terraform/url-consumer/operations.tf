@@ -8,7 +8,7 @@ locals {
   )
 }
 resource "aws_cloudwatch_metric_alarm" "runtime" {
-  for_each            = local.runtime_alarms
+  for_each            = { for alarm_key, alarm_value in(local.runtime_alarms) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.prefix}-${each.key}"
   alarm_description   = "V1 Dev ${each.value.metric}; inspect fixed diagnostic counts, preserve deletion fences and reconcile uncertain checks."
   namespace           = "AWS/Lambda"
@@ -49,7 +49,7 @@ resource "aws_cloudwatch_log_metric_filter" "worker_heartbeat" {
   }
 }
 resource "aws_cloudwatch_metric_alarm" "worker_failure" {
-  for_each            = local.worker_monitors
+  for_each            = { for alarm_key, alarm_value in(local.worker_monitors) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.prefix}-${each.value.suffix}-failed-items"
   namespace           = "AMT/TrustCheckRadar/V1/dev"
   metric_name         = aws_cloudwatch_log_metric_filter.worker_failure[each.key].metric_transformation[0].name
@@ -64,7 +64,7 @@ resource "aws_cloudwatch_metric_alarm" "worker_failure" {
   tags                = var.tags
 }
 resource "aws_cloudwatch_metric_alarm" "worker_heartbeat" {
-  for_each            = local.worker_monitors
+  for_each            = { for alarm_key, alarm_value in(local.worker_monitors) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.prefix}-${each.value.suffix}-heartbeat"
   namespace           = "AMT/TrustCheckRadar/V1/dev"
   metric_name         = aws_cloudwatch_log_metric_filter.worker_heartbeat[each.key].metric_transformation[0].name
@@ -93,7 +93,7 @@ resource "aws_cloudwatch_log_metric_filter" "deletion_overdue" {
   }
 }
 resource "aws_cloudwatch_metric_alarm" "deletion_overdue" {
-  count               = length(aws_cloudwatch_log_metric_filter.deletion_overdue)
+  count               = var.environment == "prod" ? (length(aws_cloudwatch_log_metric_filter.deletion_overdue)) : 0
   alarm_name          = "${local.prefix}-v1-authority-deletion-overdue"
   namespace           = "AMT/TrustCheckRadar/V1/dev"
   metric_name         = "v1-authority-deletion-overdue"
@@ -120,7 +120,7 @@ resource "aws_cloudwatch_log_metric_filter" "deletion_full_pass_age" {
   }
 }
 resource "aws_cloudwatch_metric_alarm" "deletion_full_pass_age" {
-  count               = length(aws_cloudwatch_log_metric_filter.deletion_full_pass_age)
+  count               = var.environment == "prod" ? (length(aws_cloudwatch_log_metric_filter.deletion_full_pass_age)) : 0
   alarm_name          = "${local.prefix}-v1-authority-deletion-full-pass-age"
   namespace           = "AMT/TrustCheckRadar/V1/dev"
   metric_name         = "v1-authority-deletion-full-pass-age"
@@ -148,7 +148,7 @@ resource "aws_cloudwatch_log_metric_filter" "expiry_overdue" {
   }
 }
 resource "aws_cloudwatch_metric_alarm" "expiry_overdue" {
-  count               = length(aws_cloudwatch_log_metric_filter.expiry_overdue)
+  count               = var.environment == "prod" ? (length(aws_cloudwatch_log_metric_filter.expiry_overdue)) : 0
   alarm_name          = "${local.prefix}-url-lease-recovery-expiry-overdue"
   namespace           = "AMT/TrustCheckRadar/V1/dev"
   metric_name         = "url-lease-recovery-expiry-overdue"

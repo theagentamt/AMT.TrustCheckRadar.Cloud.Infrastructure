@@ -153,7 +153,9 @@ run "pause_all_selected_cleanup" {
   }
 
   assert {
-    condition     = (alltrue([for alarm in concat(values(aws_cloudwatch_metric_alarm.period_lifecycle), values(aws_cloudwatch_metric_alarm.aggregate_expiry)) : alarm.actions_enabled == false]))
+    condition = (
+      (var.environment == "prod" ? (alltrue([for alarm in concat(values(aws_cloudwatch_metric_alarm.period_lifecycle), values(aws_cloudwatch_metric_alarm.aggregate_expiry)) : alarm.actions_enabled == false])) : (length(aws_cloudwatch_metric_alarm.aggregate_expiry) == 0 && length(aws_cloudwatch_metric_alarm.period_lifecycle) == 0))
+    )
     error_message = "New cleanup alarms must follow the effective lifecycle gate."
   }
 
@@ -188,7 +190,9 @@ run "restore_same_selected_cleanup" {
   }
 
   assert {
-    condition     = (alltrue([for alarm in concat(values(aws_cloudwatch_metric_alarm.period_lifecycle), values(aws_cloudwatch_metric_alarm.aggregate_expiry)) : alarm.actions_enabled == true]))
+    condition = (
+      (var.environment == "prod" ? (alltrue([for alarm in concat(values(aws_cloudwatch_metric_alarm.period_lifecycle), values(aws_cloudwatch_metric_alarm.aggregate_expiry)) : alarm.actions_enabled == true])) : (length(aws_cloudwatch_metric_alarm.aggregate_expiry) == 0 && length(aws_cloudwatch_metric_alarm.period_lifecycle) == 0))
+    )
     error_message = "New cleanup alarms must follow the effective lifecycle gate."
   }
 

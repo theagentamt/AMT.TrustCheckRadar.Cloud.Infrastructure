@@ -115,7 +115,7 @@ run "security_boundary" {
       length(aws_iam_role_policy.caller) == 1 &&
       jsondecode(aws_iam_role_policy.caller["test-resolver-caller"].policy).Statement[0].Resource == output.downstream_contract.invoke_arn &&
       jsondecode(aws_iam_role_policy.caller["test-resolver-caller"].policy).Statement[0].Action == "lambda:InvokeFunction" &&
-      contains(aws_cloudwatch_metric_alarm.partial[0].alarm_actions, output.downstream_contract.alert_topic_arn) &&
+      (var.environment == "prod" ? (contains(aws_cloudwatch_metric_alarm.partial[0].alarm_actions, output.downstream_contract.alert_topic_arn)) : (length(aws_cloudwatch_metric_alarm.partial) == 0)) &&
       !output.downstream_contract.email_subscription_configured
     )
     error_message = "Caller grant must target only the resolver alias; alarms must target the dedicated topic without inventing an email subscriber."

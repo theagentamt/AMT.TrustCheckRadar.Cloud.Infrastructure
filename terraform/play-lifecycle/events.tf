@@ -59,7 +59,7 @@ resource "aws_lambda_event_source_mapping" "deletion" {
   }
 }
 resource "aws_cloudwatch_metric_alarm" "runtime" {
-  for_each            = { for pair in setproduct(keys(local.functions), ["Errors", "Throttles"]) : "${pair[0]}-${lower(pair[1])}" => { function = pair[0], metric = pair[1] } }
+  for_each            = { for alarm_key, alarm_value in({ for pair in setproduct(keys(local.functions), ["Errors", "Throttles"]) : "${pair[0]}-${lower(pair[1])}" => { function = pair[0], metric = pair[1] } }) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.prefix}-${local.functions[each.value.function].suffix}-${lower(each.value.metric)}"
   namespace           = "AWS/Lambda"
   metric_name         = each.value.metric

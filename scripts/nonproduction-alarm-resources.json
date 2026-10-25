@@ -1,0 +1,68 @@
+{
+  "api": [
+    "aws_cloudwatch_metric_alarm.account_data_function",
+    "aws_cloudwatch_metric_alarm.account_data_reconciliation",
+    "aws_cloudwatch_metric_alarm.account_data_stream_failure",
+    "aws_cloudwatch_metric_alarm.account_export_runtime",
+    "aws_cloudwatch_metric_alarm.account_export_unavailable",
+    "aws_cloudwatch_metric_alarm.age_attestation_lambda",
+    "aws_cloudwatch_metric_alarm.age_attestation_api_5xx",
+    "aws_cloudwatch_metric_alarm.demographic_research_runtime",
+    "aws_cloudwatch_metric_alarm.demographic_research_internal_error"
+  ],
+  "campaign-api": [
+    "aws_cloudwatch_metric_alarm.api_errors",
+    "aws_cloudwatch_metric_alarm.api_throttles"
+  ],
+  "campaign-processing": [
+    "aws_cloudwatch_metric_alarm.aggregate_expiry",
+    "aws_cloudwatch_metric_alarm.worker_errors",
+    "aws_cloudwatch_metric_alarm.queue_age",
+    "aws_cloudwatch_metric_alarm.dead_letter",
+    "aws_cloudwatch_metric_alarm.dynamodb_throttles",
+    "aws_cloudwatch_metric_alarm.privacy_deadline",
+    "aws_cloudwatch_metric_alarm.period_lifecycle",
+    "aws_cloudwatch_metric_alarm.recovery"
+  ],
+  "history-data": [
+    "aws_cloudwatch_metric_alarm.storage_throttles"
+  ],
+  "history-processing": [
+    "aws_cloudwatch_metric_alarm.account_deletion",
+    "aws_cloudwatch_metric_alarm.lifecycle",
+    "aws_cloudwatch_metric_alarm.function",
+    "aws_cloudwatch_metric_alarm.account_reconciliation"
+  ],
+  "message-consumer": [
+    "aws_cloudwatch_metric_alarm.runtime"
+  ],
+  "play-lifecycle": [
+    "aws_cloudwatch_metric_alarm.runtime",
+    "aws_cloudwatch_metric_alarm.operational"
+  ],
+  "play-verification": [
+    "aws_cloudwatch_metric_alarm.runtime"
+  ],
+  "recovery-consumer": [
+    "aws_cloudwatch_metric_alarm.runtime"
+  ],
+  "result-feedback": [
+    "aws_cloudwatch_metric_alarm.runtime"
+  ],
+  "url-assessment": [
+    "aws_cloudwatch_metric_alarm.dependency_failures",
+    "aws_cloudwatch_metric_alarm.runtime"
+  ],
+  "url-consumer": [
+    "aws_cloudwatch_metric_alarm.runtime",
+    "aws_cloudwatch_metric_alarm.worker_failure",
+    "aws_cloudwatch_metric_alarm.worker_heartbeat",
+    "aws_cloudwatch_metric_alarm.deletion_overdue",
+    "aws_cloudwatch_metric_alarm.deletion_full_pass_age",
+    "aws_cloudwatch_metric_alarm.expiry_overdue"
+  ],
+  "url-resolver": [
+    "aws_cloudwatch_metric_alarm.partial",
+    "aws_cloudwatch_metric_alarm.runtime"
+  ]
+}

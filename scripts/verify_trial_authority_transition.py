@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Validate the bounded Dev trial-authority transition used by SECUR4ALL-230."""
 
+from nonproduction_alarms import require_alarm_free_plan
+
 import argparse
 import base64
 import hashlib
@@ -27,8 +29,6 @@ TRANSITION_ADDRESSES = {
     *(f'aws_lambda_function.runtime["{name}"]' for name in FUNCTIONS),
     *(f'aws_lambda_alias.runtime["{name}"]' for name in FUNCTIONS),
     'aws_cloudwatch_event_rule.maintenance["recovery"]',
-    'aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"]',
-    'aws_cloudwatch_metric_alarm.expiry_overdue[0]',
 }
 
 
@@ -140,6 +140,7 @@ def _expected_environment(name, variables, active, secret_arn):
 
 
 def review(plan, revision, mode):
+    require_alarm_free_plan(plan)
     if mode not in {"inactive", "trial"}:
         raise ValueError("Unknown transition mode.")
     if not re.fullmatch(r"[0-9a-f]{40}", revision):
@@ -265,8 +266,6 @@ def review(plan, revision, mode):
 
     desired = {
         'aws_cloudwatch_event_rule.maintenance["recovery"]': {"state": "ENABLED" if active else "DISABLED"},
-        'aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"]': {"actions_enabled": active, "treat_missing_data": "breaching" if active else "notBreaching"},
-        'aws_cloudwatch_metric_alarm.expiry_overdue[0]': {"actions_enabled": active},
     }
     for address, expected in desired.items():
         if address in changes and any(changes[address]["change"]["after"].get(key) != value for key, value in expected.items()):

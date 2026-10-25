@@ -13,7 +13,7 @@ variable "demographic_research_monitoring" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "demographic_research_runtime" {
-  for_each            = var.demographic_research_monitoring == null || var.demographic_research_deployment == null ? toset([]) : toset(["Errors", "Throttles"])
+  for_each            = { for alarm_key, alarm_value in(var.demographic_research_monitoring == null || var.demographic_research_deployment == null ? toset([]) : toset(["Errors", "Throttles"])) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.demographic_research_name}-${lower(each.key)}"
   alarm_description   = "Demographic-research runtime failure; investigate without logging, copying or replaying profile values."
   namespace           = "AWS/Lambda"
@@ -32,7 +32,7 @@ resource "aws_cloudwatch_metric_alarm" "demographic_research_runtime" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "demographic_research_internal_error" {
-  for_each            = var.demographic_research_monitoring == null || var.demographic_research_deployment == null ? toset([]) : toset(["get", "enroll", "update", "withdraw", "unknown"])
+  for_each            = { for alarm_key, alarm_value in(var.demographic_research_monitoring == null || var.demographic_research_deployment == null ? toset([]) : toset(["get", "enroll", "update", "withdraw", "unknown"])) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.demographic_research_name}-${each.key}-internal-error"
   alarm_description   = "Demographic-research ${each.key} reported an internal error. The metric contains no account or demographic dimension."
   namespace           = "TrustCheckRadar/DemographicResearch"

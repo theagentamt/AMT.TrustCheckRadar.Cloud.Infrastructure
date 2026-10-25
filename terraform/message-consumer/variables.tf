@@ -106,7 +106,7 @@ variable "activate_rules_engineering" {
       var.authority_configuration != null && var.provider_budget != null && var.api_gateway != null &&
       local.authority_maintenance_ready
     )
-    error_message = "Message admission requires provisioned Dev routes, exact subjects, horizons/caps and same-table versioned shared maintenance with worker, schedule and heartbeat enabled."
+    error_message = "Message admission requires provisioned Dev routes, exact subjects, horizons/caps and same-table versioned shared maintenance with worker and schedule enabled and the explicit Dev alarm-removal policy."
   }
 }
 variable "deployment" {

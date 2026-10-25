@@ -89,12 +89,17 @@ run "disabled_creates_no_resources_or_remote_dependencies" {
   }
   assert {
     condition = (
-      !output.lifecycle_contract.deployed && !output.lifecycle_contract.active &&
+      !output.lifecycle_contract.deployed &&
+      !output.lifecycle_contract.active &&
       length(data.terraform_remote_state.upstream) == 0 &&
-      length(aws_lambda_function.lifecycle) == 0 && length(aws_iam_role.lifecycle) == 0 &&
-      length(aws_lambda_function.account_deletion) == 0 && length(aws_lambda_event_source_mapping.account_deletion) == 0 &&
-      length(aws_cloudwatch_log_group.lifecycle) == 0 && length(aws_cloudwatch_event_rule.sweep) == 0 &&
-      length(aws_cloudwatch_metric_alarm.lifecycle) == 0 && length(aws_cloudwatch_metric_alarm.function) == 0
+      length(aws_lambda_function.lifecycle) == 0 &&
+      length(aws_iam_role.lifecycle) == 0 &&
+      length(aws_lambda_function.account_deletion) == 0 &&
+      length(aws_lambda_event_source_mapping.account_deletion) == 0 &&
+      length(aws_cloudwatch_log_group.lifecycle) == 0 &&
+      length(aws_cloudwatch_event_rule.sweep) == 0 &&
+      length(aws_cloudwatch_metric_alarm.lifecycle) == 0 &&
+      length(aws_cloudwatch_metric_alarm.function) == 0
     )
     error_message = "Disabled environments must create no paid resources, IAM, schedules or remote-state dependencies."
   }
@@ -215,19 +220,19 @@ run "reconciliation_alarms_cover_missing_first_pass_and_stalled_progress" {
   }
   assert {
     condition = (
-      length(aws_cloudwatch_metric_alarm.account_reconciliation) == 4 &&
-      aws_cloudwatch_metric_alarm.account_reconciliation["heartbeat"].metric_name == "AccountDeletionReconciliationSuccess" &&
-      aws_cloudwatch_metric_alarm.account_reconciliation["heartbeat"].treat_missing_data == "breaching" &&
-      aws_cloudwatch_metric_alarm.account_reconciliation["heartbeat"].evaluation_periods == 3 &&
-      aws_cloudwatch_metric_alarm.account_reconciliation["no_full_pass"].metric_name == "AccountDeletionReconciliationFullPassCompleted" &&
-      aws_cloudwatch_metric_alarm.account_reconciliation["no_full_pass"].period == 21600 &&
-      aws_cloudwatch_metric_alarm.account_reconciliation["no_full_pass"].treat_missing_data == "breaching" &&
-      aws_cloudwatch_metric_alarm.account_reconciliation["stale_full_pass"].metric_name == "AccountDeletionReconciliationFullPassAgeSeconds" &&
-      aws_cloudwatch_metric_alarm.account_reconciliation["stale_full_pass"].threshold == 21600 &&
-      alltrue([for alarm in aws_cloudwatch_metric_alarm.account_reconciliation :
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.account_reconciliation) == 4) : (length(aws_cloudwatch_metric_alarm.account_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_reconciliation["heartbeat"].metric_name == "AccountDeletionReconciliationSuccess") : (length(aws_cloudwatch_metric_alarm.account_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_reconciliation["heartbeat"].treat_missing_data == "breaching") : (length(aws_cloudwatch_metric_alarm.account_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_reconciliation["heartbeat"].evaluation_periods == 3) : (length(aws_cloudwatch_metric_alarm.account_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_reconciliation["no_full_pass"].metric_name == "AccountDeletionReconciliationFullPassCompleted") : (length(aws_cloudwatch_metric_alarm.account_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_reconciliation["no_full_pass"].period == 21600) : (length(aws_cloudwatch_metric_alarm.account_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_reconciliation["no_full_pass"].treat_missing_data == "breaching") : (length(aws_cloudwatch_metric_alarm.account_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_reconciliation["stale_full_pass"].metric_name == "AccountDeletionReconciliationFullPassAgeSeconds") : (length(aws_cloudwatch_metric_alarm.account_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_reconciliation["stale_full_pass"].threshold == 21600) : (length(aws_cloudwatch_metric_alarm.account_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.account_reconciliation :
         alarm.namespace == "AMT/TrustCheckRadar/History" && alarm.dimensions == tomap({ Environment = "dev" }) &&
         toset(alarm.alarm_actions) == toset([var.alarm_topic_arn])
-      ])
+      ])) : (length(aws_cloudwatch_metric_alarm.account_reconciliation) == 0))
     )
     error_message = "Reconciliation requires privacy-safe heartbeat, failure and full-pass alarms, including the never-completed-first-pass case."
   }
@@ -462,18 +467,19 @@ run "active_schedule_has_exact_input_and_observable_failures" {
   }
   assert {
     condition = (
-      length(aws_cloudwatch_metric_alarm.lifecycle) == 6 && length(aws_cloudwatch_metric_alarm.function) == 2 &&
-      aws_cloudwatch_metric_alarm.lifecycle["heartbeat"].treat_missing_data == "breaching" &&
-      aws_cloudwatch_metric_alarm.lifecycle["heartbeat"].evaluation_periods == 2 &&
-      aws_cloudwatch_metric_alarm.lifecycle["heartbeat"].threshold == 1 &&
-      aws_cloudwatch_metric_alarm.lifecycle["expiry_sla"].unit == "Seconds" &&
-      aws_cloudwatch_metric_alarm.lifecycle["expiry_sla"].threshold == 86400 &&
-      alltrue([for alarm in aws_cloudwatch_metric_alarm.lifecycle :
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.lifecycle) == 6) : (length(aws_cloudwatch_metric_alarm.lifecycle) == 0)) &&
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.function) == 2) : (length(aws_cloudwatch_metric_alarm.function) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.lifecycle["heartbeat"].treat_missing_data == "breaching") : (length(aws_cloudwatch_metric_alarm.lifecycle) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.lifecycle["heartbeat"].evaluation_periods == 2) : (length(aws_cloudwatch_metric_alarm.lifecycle) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.lifecycle["heartbeat"].threshold == 1) : (length(aws_cloudwatch_metric_alarm.lifecycle) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.lifecycle["expiry_sla"].unit == "Seconds") : (length(aws_cloudwatch_metric_alarm.lifecycle) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.lifecycle["expiry_sla"].threshold == 86400) : (length(aws_cloudwatch_metric_alarm.lifecycle) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.lifecycle :
         alarm.namespace == "AMT/TrustCheckRadar/History" && alarm.period == 300 &&
         alarm.dimensions == tomap({ Environment = "dev" }) &&
         toset(alarm.alarm_actions) == toset([var.alarm_topic_arn]) &&
         toset(alarm.ok_actions) == toset([var.alarm_topic_arn])
-      ])
+      ])) : (length(aws_cloudwatch_metric_alarm.lifecycle) == 0))
     )
     error_message = "Heartbeat, backlog, SLA and Lambda failures must alert without personal metric dimensions."
   }

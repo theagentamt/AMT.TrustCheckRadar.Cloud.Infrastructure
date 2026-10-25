@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Validate the inactive Dev message-consumer installation plan."""
 
+from nonproduction_alarms import require_alarm_free_plan
+
 import argparse
 import base64
 import hashlib
@@ -23,12 +25,6 @@ EXPECTED_ADDRESSES = {
     'aws_apigatewayv2_route.message["submit"]',
     'aws_cloudwatch_log_group.runtime["consumer"]',
     'aws_cloudwatch_log_group.runtime["evaluator"]',
-    'aws_cloudwatch_metric_alarm.runtime["consumer-duration"]',
-    'aws_cloudwatch_metric_alarm.runtime["consumer-errors"]',
-    'aws_cloudwatch_metric_alarm.runtime["consumer-throttles"]',
-    'aws_cloudwatch_metric_alarm.runtime["evaluator-duration"]',
-    'aws_cloudwatch_metric_alarm.runtime["evaluator-errors"]',
-    'aws_cloudwatch_metric_alarm.runtime["evaluator-throttles"]',
     'aws_iam_role.runtime["consumer"]',
     'aws_iam_role.runtime["evaluator"]',
     "aws_iam_role_policy.consumer[0]",
@@ -65,6 +61,7 @@ def _decode_hash(value):
 
 
 def review(plan, revision):
+    require_alarm_free_plan(plan)
     if not re.fullmatch(r"[0-9a-f]{40}", revision):
         raise ValueError("A full reviewed Git commit SHA is required.")
     if plan.get("errored") or plan.get("complete") is not True:

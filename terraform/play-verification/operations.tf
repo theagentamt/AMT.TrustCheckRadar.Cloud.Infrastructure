@@ -8,7 +8,7 @@ variable "alert_topic_arn" {
   }
 }
 resource "aws_cloudwatch_metric_alarm" "runtime" {
-  for_each            = var.enabled && var.alert_topic_arn != null ? toset(["Errors", "Throttles"]) : toset([])
+  for_each            = { for alarm_key, alarm_value in(var.enabled && var.alert_topic_arn != null ? toset(["Errors", "Throttles"]) : toset([])) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.name}-${lower(each.value)}"
   alarm_description   = "Inactive Play candidate runtime ${each.value}; does not measure business denials, provider outcomes or subscription reconciliation."
   namespace           = "AWS/Lambda"

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Review only existing Dev billing runtime updates; reject unrelated changes."""
+from nonproduction_alarms import require_alarm_free_plan
+
 import argparse
 import hashlib
 import json
@@ -65,6 +67,7 @@ def declared_handoff_policy_mirror(plan, scope):
 
 
 def review(plan, revision, scope, mode):
+    require_alarm_free_plan(plan)
     require(scope in MODES and mode in MODES[scope] and re.fullmatch(r'[a-f0-9]{40}', revision or ''), 'Reviewed main source and valid billing selection required.')
     require(plan.get('complete') is True and not plan.get('errored') and plan.get('terraform_version') == '1.12.1', 'Complete Terraform 1.12.1 plan required.')
     require(declared_handoff_policy_mirror(plan, scope), 'Reconcile drift before billing activation.')
@@ -99,9 +102,9 @@ def review(plan, revision, scope, mode):
     targets = {name: 'runtime[0]' if name == 'handoff' else f'runtime["{name}"]' for name in names}
     allowed = {f'{kind}.{suffix}' for suffix in targets.values() for kind in ('aws_lambda_function', 'aws_lambda_alias')}
     if scope == 'lifecycle':
-        allowed |= {'aws_scheduler_schedule.lifecycle["worker"]', 'aws_cloudwatch_metric_alarm.operational["worker-heartbeat"]', 'aws_iam_role_policy.runtime["worker"]'}
+        allowed |= {'aws_scheduler_schedule.lifecycle["worker"]', 'aws_iam_role_policy.runtime["worker"]'}
     changed = [x for x in managed if x['change']['actions'] != ['no-op']]
-    require(all(x['address'] in allowed and x['change']['actions'] == ['update'] for x in changed), 'Only selected existing billing functions/aliases and scoped-worker schedule/heartbeat may update.')
+    require(all(x['address'] in allowed and x['change']['actions'] == ['update'] for x in changed), 'Only selected existing billing functions/aliases and scoped-worker schedule may update.')
     for name, suffix in targets.items():
         address = 'aws_lambda_function.' + suffix
         require(address in inventory, 'Complete selected function inventory required.')
@@ -157,8 +160,6 @@ def review(plan, revision, scope, mode):
         require(after_statements['NoScopedCheckpointAccess'] == {'Sid': 'NoScopedCheckpointAccess', 'Effect': 'Deny', 'Action': ['dynamodb:GetItem', 'dynamodb:ConditionCheckItem', 'dynamodb:PutItem', 'dynamodb:UpdateItem', 'dynamodb:DeleteItem'], 'Resource': table, 'Condition': {'ForAnyValue:StringEquals': {'dynamodb:LeadingKeys': ['PLAY#CONTROL']}}}, 'Exact global checkpoint deny required.')
         schedule = inventory['aws_scheduler_schedule.lifecycle["worker"]']['change']
         require(schedule['after'].get('state') == ('ENABLED' if mode == 'background' else 'DISABLED') and changed_fields(schedule['before'], schedule['after']) <= {'state'}, 'Only existing worker schedule admission may change.')
-        heartbeat = inventory['aws_cloudwatch_metric_alarm.operational["worker-heartbeat"]']['change']
-        require(heartbeat['after'].get('actions_enabled') is (mode == 'background') and changed_fields(heartbeat['before'], heartbeat['after']) <= {'actions_enabled'}, 'Only existing worker heartbeat admission may change.')
     contract = plan.get('output_changes', {}).get('candidate_contract', {}).get('after', {})
     require(contract.get('billing_subject_count') == len(subjects), 'Output subject count mismatch.')
     if scope == 'handoff':
