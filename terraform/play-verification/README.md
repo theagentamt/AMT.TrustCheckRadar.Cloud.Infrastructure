@@ -7,10 +7,21 @@ selects an immutable package and authenticated route for closed-gate qualificati
 An explicitly selected immutable Dev package can provision a Python 3.14/ARM64
 `v1_play_handoff.app.lambda_handler` behind a `live` alias. The candidate has
 29-second timeout, concurrency two and no asynchronous retries. Both
-`PLAY_HANDOFF_ENABLED` and `AUTHORITY_ENABLED` are hardcoded false; the synthetic
+`PLAY_HANDOFF_ENABLED` and `AUTHORITY_ENABLED` default false; the synthetic
 subject allowlist is empty, catalog qualification is explicitly recorded, and real purchases
 are rejected by the required test-purchase setting. No caller-supplied environment
-map or activation switch can override those controls.
+map can override those controls. Separately reviewed one-account Dev activation
+is described in [the activation runbook](../../docs/BILLING-DEV-ACTIVATION.md).
+
+In verification mode, `billing_activation.foreground_lifecycle_enabled` defaults
+to `true`, preserving the existing encrypted token-retention and verified
+access-extension behavior. Explicit `false` keeps `PLAY_LIFECYCLE_ENABLED=false`
+while handoff, preparation and authority remain enabled for the selected test
+subject. Preparation and inactive modes always keep foreground lifecycle support
+closed. This flag does not admit notifications or schedule background work;
+`play-lifecycle` owns those separate gates. Background activation still requires
+the foreground retention gate to be qualified and enabled. Changing this input
+requires its own reviewed plan and does not authorize live configuration changes.
 
 The role uses existing Users, device bindings, deletion ledger and purchase
 authority tables. It can read identity/control fences and commit only

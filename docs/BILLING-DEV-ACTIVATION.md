@@ -37,9 +37,21 @@ subjects are never printed in summaries or newly committed here.
 | Root / mode | Enabled work | Boundaries |
 | --- | --- | --- |
 | play-verification / preparation | Authenticated account/device binding preparation | No Google call, paid grant, purchase verification or trial reset |
-| play-verification / verification | Preparation and foreground verification of a Google-confirmed license-test purchase; encrypted retention of its token | Exact package/product/P1M base plan; one account; test purchases required |
+| play-verification / verification | Preparation and foreground verification of a Google-confirmed license-test purchase; foreground lifecycle support enabled by default | Exact package/product/P1M base plan; one account; test purchases required |
 | play-lifecycle / ingress | Authenticated Google notifications for an already-owned purchase head | Unknown, other-account and deleted-account purchases cannot initiate a provider discovery call |
 | play-lifecycle / background | Ingress plus one-account scheduled current-head reconciliation | One selected head per invocation; no token-table Query/Scan, global checkpoint or global expiry sweep |
+
+For handoff verification, the optional Boolean
+`billing_activation.foreground_lifecycle_enabled` defaults to `true` to preserve
+existing inputs. It controls the handoff runtime's encrypted token retention and
+verified access extensions together; it does not start background work. An
+explicit `false` represents separately approved handoff-only qualification such
+as Handoff10, without forcing lifecycle support on to preserve handoff admission.
+The private input, runtime gate and `candidate_contract.token_retention_enabled`
+must agree. The ordinary configuration helper retains its existing default;
+any explicit override needs its own reviewed inputs and exact plan. This does
+not relax the enabled foreground retention prerequisite for later lifecycle
+activation, change IAM, or authorize a deployment. UAT/Production remain closed.
 
 The scoped worker requires `PLAY_SCOPED_LIFECYCLE_WORKER_ENABLED=true` and
 `PLAY_SCOPED_OWNED_HEAD_ONLY_ENABLED=true`. Global `PLAY_TOKEN_CLEANUP_ENABLED`
