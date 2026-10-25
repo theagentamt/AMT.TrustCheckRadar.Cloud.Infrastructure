@@ -81,6 +81,11 @@ def review(plan, revision, scope, mode):
     require(type(subjects) is list and len(subjects) == int(active) and all(re.fullmatch(r'[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}', s) for s in subjects), 'Exact single subject required.')
     if active:
         require(activation.get('mode') == mode and all(isinstance(activation.get(k), str) and activation[k].strip() for k in ('inventory_reference', 'runtime_reference', 'permissions_reference')), 'Activation evidence/mode mismatch.')
+    handoff_lifecycle_active = False
+    if scope == 'handoff' and active:
+        foreground_lifecycle = activation.get('foreground_lifecycle_enabled', True)
+        require(type(foreground_lifecycle) is bool, 'Foreground lifecycle selection must be a Boolean.')
+        handoff_lifecycle_active = mode == 'verification' and foreground_lifecycle
     names = ['handoff'] if scope == 'handoff' else ['ingress', 'worker']
     pins = {'handoff': variables.get('billing_artifact_override')} if scope == 'handoff' else variables.get('billing_artifact_overrides', {})
     require(type(pins) is dict and set(pins) == set(names), 'Only selected billing artifact overrides permitted.')
@@ -123,7 +128,8 @@ def review(plan, revision, scope, mode):
         selected_active = active and (name != 'worker' or mode == 'background')
         expected = {'AUTHORITY_ENABLED': selected_active, 'PLAY_LIFECYCLE_ENABLED': selected_active and (name != 'handoff' or mode == 'verification')}
         if name == 'handoff':
-            expected |= {'PLAY_HANDOFF_ENABLED': mode == 'verification', 'PLAY_PREPARATION_ENABLED': active}
+            expected |= {'PLAY_HANDOFF_ENABLED': mode == 'verification', 'PLAY_PREPARATION_ENABLED': active,
+                         'PLAY_LIFECYCLE_ENABLED': handoff_lifecycle_active}
         else:
             expected |= {'PLAY_PREPARATION_ENABLED': False, 'PLAY_TOKEN_CLEANUP_ENABLED': False, 'PLAY_CHECKPOINT_POLICY_APPROVED': False}
             require(env.get('PLAY_SCOPED_OWNED_HEAD_ONLY_ENABLED', 'false') == str(selected_active).lower(), 'Owned-head-only scope required.')
@@ -164,6 +170,7 @@ def review(plan, revision, scope, mode):
     require(contract.get('billing_subject_count') == len(subjects), 'Output subject count mismatch.')
     if scope == 'handoff':
         require(contract.get('general_customer_access') is False and contract.get('play_handoff_enabled') is (mode == 'verification') and contract.get('preparation_enabled') is active, 'Handoff output mismatch.')
+        require(contract.get('token_retention_enabled') is handoff_lifecycle_active, 'Foreground token-retention output mismatch.')
     else:
         require(contract.get('lifecycle_active') is active and contract.get('scheduled_worker_active') is (mode == 'background') and contract.get('google_transport_provisioned') is False, 'Lifecycle output mismatch.')
     projected = projection(plan)

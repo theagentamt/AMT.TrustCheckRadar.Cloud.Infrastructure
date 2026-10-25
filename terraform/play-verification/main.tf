@@ -71,7 +71,7 @@ resource "aws_lambda_function" "runtime" {
       STAGE                                  = var.environment
       PLAY_HANDOFF_ENABLED                   = tostring(local.billing_verification_active)
       PLAY_PREPARATION_ENABLED               = tostring(local.billing_preparation_active)
-      PLAY_LIFECYCLE_ENABLED                 = tostring(local.billing_verification_active)
+      PLAY_LIFECYCLE_ENABLED                 = tostring(local.billing_foreground_lifecycle_active)
       AUTHORITY_ENABLED                      = tostring(local.billing_preparation_active)
       DEV_SUBJECT_ALLOWLIST_JSON             = var.billing_activation == null ? "[]" : jsonencode(sort(tolist(var.billing_activation.subjects)))
       PLAY_CATALOG_P1M_VERIFIED              = tostring(var.catalog_p1m_verified)

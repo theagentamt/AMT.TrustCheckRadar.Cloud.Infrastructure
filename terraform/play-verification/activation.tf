@@ -1,12 +1,13 @@
 variable "billing_activation" {
-  description = "Separately reviewed one-account Dev preparation or test-purchase verification. Null keeps billing closed."
+  description = "Separately reviewed one-account Dev preparation or test-purchase verification. Foreground lifecycle support controls encrypted token retention and verified access extensions independently of handoff; its default preserves existing verification behavior. Null keeps billing closed."
   type = object({
-    mode                  = string
-    source_sha            = string
-    subjects              = set(string)
-    inventory_reference   = string
-    runtime_reference     = string
-    permissions_reference = string
+    mode                         = string
+    source_sha                   = string
+    subjects                     = set(string)
+    inventory_reference          = string
+    runtime_reference            = string
+    permissions_reference        = string
+    foreground_lifecycle_enabled = optional(bool, true)
   })
   default = null
   validation {
@@ -25,8 +26,9 @@ variable "billing_activation" {
   }
 }
 locals {
-  billing_preparation_active  = var.billing_activation != null
-  billing_verification_active = var.billing_activation == null ? false : var.billing_activation.mode == "verification"
+  billing_preparation_active          = var.billing_activation != null
+  billing_verification_active         = var.billing_activation == null ? false : var.billing_activation.mode == "verification"
+  billing_foreground_lifecycle_active = local.billing_verification_active && try(var.billing_activation.foreground_lifecycle_enabled, false)
 }
 variable "billing_artifact_override" {
   description = "Immutable reviewed billing runtime independent of its retained deployment baseline. Does not activate billing."

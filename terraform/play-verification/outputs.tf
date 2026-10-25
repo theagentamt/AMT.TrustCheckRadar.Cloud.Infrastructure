@@ -3,7 +3,7 @@ output "candidate_contract" {
     provisioned              = var.enabled
     play_handoff_enabled     = local.billing_verification_active
     preparation_enabled      = local.billing_preparation_active
-    token_retention_enabled  = local.billing_verification_active
+    token_retention_enabled  = local.billing_foreground_lifecycle_active
     authority_enabled        = local.billing_preparation_active
     billing_subject_count    = var.billing_activation == null ? 0 : length(var.billing_activation.subjects)
     catalog_verified         = var.catalog_p1m_verified

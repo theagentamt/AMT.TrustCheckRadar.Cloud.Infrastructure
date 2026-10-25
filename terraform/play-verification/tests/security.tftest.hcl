@@ -263,6 +263,43 @@ run "scoped_verification_has_exact_gates" {
     condition     = aws_lambda_function.runtime[0].environment[0].variables.PLAY_PREPARATION_ENABLED == "true" && aws_lambda_function.runtime[0].environment[0].variables.AUTHORITY_ENABLED == "true" && aws_lambda_function.runtime[0].environment[0].variables.PLAY_HANDOFF_ENABLED == "true" && aws_lambda_function.runtime[0].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "true" && aws_lambda_function.runtime[0].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000001"]) && aws_lambda_function.runtime[0].environment[0].variables.PLAY_REQUIRE_TEST_PURCHASES == "true" && output.candidate_contract.billing_subject_count == 1 && !output.candidate_contract.general_customer_access
     error_message = "Scoped preparation must not enable purchase verification; verification must retain only verified test purchases for the one selected account."
   }
+  assert {
+    condition     = output.candidate_contract.token_retention_enabled
+    error_message = "Existing verification inputs must retain their foreground lifecycle default."
+  }
+}
+run "scoped_verification_can_keep_foreground_lifecycle_closed" {
+  command = apply
+  variables {
+    enabled              = true
+    catalog_p1m_verified = true
+    alert_topic_arn      = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
+    lifecycle_storage    = { table_arn = "arn:aws:dynamodb:us-east-1:107827791950:table/trustcheckradar-dev-play-tokens", kms_key_arn = "arn:aws:kms:us-east-1:107827791950:key/11111111-1111-1111-1111-111111111111" }
+    api_gateway          = { api_id = "icuak34th9", execution_arn = "arn:aws:execute-api:us-east-1:107827791950:icuak34th9", stage_name = "$default" }
+    billing_activation = {
+      mode                         = "verification"
+      source_sha                   = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      subjects                     = ["00000000-0000-4000-8000-000000000001"]
+      inventory_reference          = "synthetic no-copy qualification"
+      runtime_reference            = "synthetic runtime qualification"
+      permissions_reference        = "synthetic IAM qualification"
+      foreground_lifecycle_enabled = false
+    }
+  }
+  assert {
+    condition = (
+      aws_lambda_function.runtime[0].environment[0].variables.PLAY_HANDOFF_ENABLED == "true" &&
+      aws_lambda_function.runtime[0].environment[0].variables.PLAY_PREPARATION_ENABLED == "true" &&
+      aws_lambda_function.runtime[0].environment[0].variables.AUTHORITY_ENABLED == "true" &&
+      aws_lambda_function.runtime[0].environment[0].variables.PLAY_LIFECYCLE_ENABLED == "false" &&
+      aws_lambda_function.runtime[0].environment[0].variables.PLAY_REQUIRE_TEST_PURCHASES == "true" &&
+      aws_lambda_function.runtime[0].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == jsonencode(["00000000-0000-4000-8000-000000000001"]) &&
+      output.candidate_contract.play_handoff_enabled &&
+      !output.candidate_contract.token_retention_enabled &&
+      !output.candidate_contract.general_customer_access
+    )
+    error_message = "Foreground verification must support separately reviewed closed lifecycle support without widening admission or claiming token retention."
+  }
 }
 run "scoped_activation_rejects_empty_subjects" {
   command = plan

@@ -69,7 +69,7 @@ def fixture(scope='handoff', mode='verification'):
         ]
         changes.append({'address': 'aws_iam_role_policy.runtime["worker"]', 'mode': 'managed', 'provider_name': 'registry.terraform.io/hashicorp/aws', 'change': {'actions': ['update'], 'before': {'role': 'worker-execution', 'policy': json.dumps({'Version': '2012-10-17', 'Statement': before_statements})}, 'after': {'role': 'worker-execution', 'policy': json.dumps({'Version': '2012-10-17', 'Statement': after_statements})}}})
     contract = {'billing_subject_count': len(selected_subjects)}
-    if scope == 'handoff': contract.update(general_customer_access=False, play_handoff_enabled=mode == 'verification', preparation_enabled=active)
+    if scope == 'handoff': contract.update(general_customer_access=False, play_handoff_enabled=mode == 'verification', preparation_enabled=active, token_retention_enabled=mode == 'verification')
     else: contract.update(lifecycle_active=active, scheduled_worker_active=mode == 'background', google_transport_provisioned=False)
     return {'complete': True, 'terraform_version': '1.12.1', 'variables': {k: {'value': v} for k, v in variables.items()}, 'resource_changes': changes, 'resource_drift': [], 'checks': [{'status': 'pass'}], 'output_changes': {'candidate_contract': {'after': contract}}}
 
@@ -156,6 +156,41 @@ class PlanTests(ProvenanceCase):
                 self.assertEqual(subjects, 1)
                 self.assertEqual(len(digest), 64)
                 self.assertEqual(updates, 6 if mode == 'background' else 5 if scope == 'lifecycle' else 2)
+
+    def test_foreground_lifecycle_selection_is_independent_and_digest_bound(self):
+        plan = fixture()
+        legacy_digest = guard.review(plan, REVISION, 'handoff', 'verification')[1]
+        plan['variables']['billing_activation']['value']['foreground_lifecycle_enabled'] = False
+        plan['resource_changes'][0]['change']['after']['environment'][0]['variables']['PLAY_LIFECYCLE_ENABLED'] = 'false'
+        plan['output_changes']['candidate_contract']['after']['token_retention_enabled'] = False
+        self.assertNotEqual(legacy_digest, guard.review(plan, REVISION, 'handoff', 'verification')[1])
+        self.assertEqual(plan['resource_changes'][0]['change']['after']['environment'][0]['variables']['PLAY_HANDOFF_ENABLED'], 'true')
+
+    def test_foreground_lifecycle_input_runtime_and_output_must_agree(self):
+        for selection, runtime, retention in ((False, 'true', False), (True, 'false', False),
+                                              (False, 'false', True), ('false', 'false', False),
+                                              (None, 'false', False)):
+            plan = fixture()
+            plan['variables']['billing_activation']['value']['foreground_lifecycle_enabled'] = selection
+            plan['resource_changes'][0]['change']['after']['environment'][0]['variables']['PLAY_LIFECYCLE_ENABLED'] = runtime
+            plan['output_changes']['candidate_contract']['after']['token_retention_enabled'] = retention
+            with self.subTest(selection=selection, runtime=runtime, retention=retention), self.assertRaises(ValueError):
+                guard.review(plan, REVISION, 'handoff', 'verification')
+
+    def test_foreground_lifecycle_legacy_default_and_explicit_true_are_retained(self):
+        for explicit in (False, True):
+            plan = fixture()
+            if explicit:
+                plan['variables']['billing_activation']['value']['foreground_lifecycle_enabled'] = True
+            guard.review(plan, REVISION, 'handoff', 'verification')
+
+    def test_preparation_cannot_enable_foreground_lifecycle(self):
+        plan = fixture('handoff', 'preparation')
+        plan['variables']['billing_activation']['value']['foreground_lifecycle_enabled'] = True
+        guard.review(plan, REVISION, 'handoff', 'preparation')
+        plan['resource_changes'][0]['change']['after']['environment'][0]['variables']['PLAY_LIFECYCLE_ENABLED'] = 'true'
+        with self.assertRaises(ValueError):
+            guard.review(plan, REVISION, 'handoff', 'preparation')
 
     def test_reject_unrelated_writes_deletes_and_replacements(self):
         for address, actions in [('aws_iam_role_policy.writer', ['update']), ('aws_lambda_function.export', ['update']), ('aws_lambda_function.runtime[0]', ['delete', 'create'])]:
@@ -287,6 +322,15 @@ class ReadbackTests(ProvenanceCase):
                 if operation == 'get-alias' and mutation == 'routing': data['RoutingConfig'] = {'AdditionalVersionWeights': {'99': .5}}
                 return data
             with self.subTest(mutation=mutation), self.assertRaises(ValueError): readback.handoff_prerequisite(plan, manifest, read=changed)
+
+    def test_background_requires_foreground_token_retention(self):
+        def retention_disabled(service, operation, *args):
+            data = self.handoff_read(service, operation, *args)
+            if operation == 'get-function-configuration':
+                data['Environment']['Variables']['PLAY_LIFECYCLE_ENABLED'] = 'false'
+            return data
+        with self.assertRaisesRegex(ValueError, 'token-retention gates'):
+            readback.handoff_prerequisite(fixture('lifecycle', 'background'), dict(PROVENANCE), read=retention_disabled)
 
     def test_protected_snapshot_reads_metadata_only_and_detects_changes(self):
         def metadata(service, operation, *args):
