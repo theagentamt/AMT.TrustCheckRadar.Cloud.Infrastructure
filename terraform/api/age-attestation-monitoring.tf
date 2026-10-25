@@ -3,7 +3,7 @@ locals {
 }
 
 resource "aws_cloudwatch_metric_alarm" "age_attestation_lambda" {
-  for_each            = local.age_attestation_monitoring_enabled ? toset(["Errors", "Throttles"]) : toset([])
+  for_each            = { for alarm_key, alarm_value in(local.age_attestation_monitoring_enabled ? toset(["Errors", "Throttles"]) : toset([])) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.lambda_name}-${lower(each.key)}"
   alarm_description   = "Age-attestation ${lower(each.key)} detected. Investigate with bounded operational metadata; never include tokens, phone numbers or attestation payloads in notifications."
   namespace           = "AWS/Lambda"
@@ -22,7 +22,7 @@ resource "aws_cloudwatch_metric_alarm" "age_attestation_lambda" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "age_attestation_api_5xx" {
-  count             = local.age_attestation_monitoring_enabled ? 1 : 0
+  count             = var.environment == "prod" ? (local.age_attestation_monitoring_enabled ? 1 : 0) : 0
   alarm_name        = "${local.name_prefix}-age-attestation-api-5xx"
   alarm_description = "The age-attestation route returned a 5xx response. Investigate without logging or replaying user payloads."
   namespace         = "AWS/ApiGateway"

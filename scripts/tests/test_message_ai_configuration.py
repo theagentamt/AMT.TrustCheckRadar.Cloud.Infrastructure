@@ -94,6 +94,26 @@ def cloudwatch_alarms(rows):
     return result
 
 
+def log_rows():
+    rows=[]
+    for name in ('consumer','evaluator'):
+        value={'name':'/aws/lambda/trustcheckradar-dev-message-'+name,'retention_in_days':30,'kms_key_id':None}
+        rows.append({'address':f'aws_cloudwatch_log_group.runtime["{name}"]','mode':'managed',
+            'provider_name':'registry.terraform.io/hashicorp/aws',
+            'change':{'actions':['no-op'],'before':copy.deepcopy(value),'after':value}})
+    return rows
+
+
+def monitoring_read(rows, alarms=None):
+    def read(service, operation, *args):
+        if service=='cloudwatch':
+            return {'MetricAlarms':[] if alarms is None else alarms,'CompositeAlarms':[]}
+        name=args[args.index('--log-group-name-prefix')+1]
+        value=next(r['change']['before'] for r in rows if r['change']['before']['name']==name)
+        return {'logGroups':[{'logGroupName':name,'retentionInDays':value['retention_in_days']}]}
+    return read
+
+
 class ConfigurationTests(unittest.TestCase):
     def test_normal_publisher_metadata_requires_exact_byte_verification(self):
         sha=hashlib.sha256(b'unit artifact').hexdigest()
@@ -173,7 +193,7 @@ class NormalPlanTests(unittest.TestCase):
     def plan(self):
         final,baseline,captured,targets=fixtures.message()
         for plan in (final,baseline):
-            plan['resource_changes'].extend(alarm_rows())
+            plan['resource_changes'].extend(log_rows())
             plan['variables'].update({k:{'value':val} for k,val in {
                 'message_ai_primary_enabled':False,'ai_configuration':None,'url_assessment_enabled':False}.items()})
             value={'name':'fenced-message-authority-and-private-evaluator','role':'trustcheckradar-dev-message-consumer-execution',
@@ -251,33 +271,33 @@ class NormalPlanTests(unittest.TestCase):
                 v.review(plan,base,captured,fixtures.REVISION,'message-ai',targets,desired)
 
     def test_unqualified_budget_and_monitoring_cannot_use_delivery_deferral(self):
-        for mutation in ('money','output','qualification','capture','missing_alarm','disabled_alarm','changed_alarm'):
+        for mutation in ('money','output','qualification','capture','missing_log','changed_log','recreated_alarm'):
             plan,base,captured,targets,desired=self.active_plan()
             if mutation=='money':desired['ai_configuration']['max_nano_usd_per_window']=1
             elif mutation=='output':desired['ai_configuration']['cost_policy']['maxOutputTokens']=513
             elif mutation=='qualification':desired['ai_configuration']['qualification_id']=''
             elif mutation=='capture':captured.pop('monitoring')
-            elif mutation=='missing_alarm':
-                for source in (plan,base):source['resource_changes']=[r for r in source['resource_changes'] if r['address']!='aws_cloudwatch_metric_alarm.runtime["consumer-errors"]']
-            elif mutation=='disabled_alarm':
+            elif mutation=='missing_log':
+                for source in (plan,base):source['resource_changes']=[r for r in source['resource_changes'] if r['address']!='aws_cloudwatch_log_group.runtime["consumer"]']
+            elif mutation=='changed_log':
                 for source in (plan,base):
-                    row=p.inventory(source)['aws_cloudwatch_metric_alarm.runtime["consumer-errors"]']
-                    for side in ('before','after'):row['change'][side]['actions_enabled']=False
+                    row=p.inventory(source)['aws_cloudwatch_log_group.runtime["consumer"]']
+                    for side in ('before','after'):row['change'][side]['retention_in_days']=0
             else:
-                row=p.inventory(plan)['aws_cloudwatch_metric_alarm.runtime["consumer-errors"]']
-                row['change']['actions']=['update'];row['change']['after']['threshold']=99
+                plan['resource_changes'].extend(alarm_rows())
             fixtures.sync(plan);fixtures.sync(base)
             with self.subTest(mutation=mutation),self.assertRaises(ValueError):
                 v.review(plan,base,captured,fixtures.REVISION,'message-ai',targets,desired)
 
-    def test_capture_and_post_readback_require_the_same_live_alarm_boundary(self):
-        _,base,_,_=self.plan();rows=p.inventory(base);calls=[];alarms=cloudwatch_alarms(alarm_rows())
+    def test_capture_and_post_readback_require_logs_and_no_dev_alarms(self):
+        _,base,_,_=self.plan();rows=p.inventory(base);calls=[];alarms=[]
         history={'State':'Active','Version':'12','CodeSha256':'history-source','Environment':{'Variables':{
             'AUTHORITY_ENABLED':'true','GOVERNED_HISTORY_LIST_ENABLED':'true','GOVERNED_HISTORY_DETAIL_ENABLED':'true',
             'DEV_SUBJECT_ALLOWLIST_JSON':json.dumps(fixtures.SYNTHETIC)}}}
         def read(service,operation,*args):
             if service=='sts':return {'Account':'107827791950'}
-            if service=='cloudwatch':calls.append(operation);return {'MetricAlarms':copy.deepcopy(alarms)}
+            if service=='cloudwatch':calls.append(operation);return {'MetricAlarms':copy.deepcopy(alarms),'CompositeAlarms':[]}
+            if service=='logs':return monitoring_read(log_rows())(service,operation,*args)
             self.assertEqual(service,'lambda')
             function=args[args.index('--function-name')+1]
             if function.endswith('governed-history'):
@@ -290,29 +310,24 @@ class NormalPlanTests(unittest.TestCase):
             return result|{'State':'Active','LastUpdateStatus':'Successful','Environment':{'Variables':p.environment(value)}}
         with patch.object(p,'maintenance_readback',return_value=fixtures.maintenance_contract(True)),patch.object(p,'message_policy_readback',return_value={}):
             captured=p.capture(base,'message-ai',read)
-            self.assertEqual(len(captured['monitoring']),6)
+            self.assertEqual(len(captured['monitoring']),3)
             v.verify_deployed(base,base,captured,'message-ai',read)
             self.assertEqual(calls,['describe-alarms','describe-alarms'])
-            alarms[0]['ActionsEnabled']=False
-            with self.assertRaisesRegex(ValueError,'^AI_ESSENTIAL_MONITORING$'):
+            alarms.append(cloudwatch_alarms(alarm_rows())[0])
+            with self.assertRaisesRegex(ValueError,'^NONPRODUCTION_ALARMS_STILL_PRESENT_OR_INCOMPLETE$'):
                 v.verify_deployed(base,base,captured,'message-ai',read)
 
 
 class MonitoringTests(unittest.TestCase):
-    def test_readback_matches_six_exact_native_alarms(self):
-        rows=alarm_rows();calls=[];alarms=cloudwatch_alarms(rows)
-        def read(*args):calls.append(args);return {'MetricAlarms':alarms}
-        expected={k:p.digest(v) for k,v in p.message_monitoring({r['address']:r for r in rows}).items()}
-        self.assertEqual(p.message_monitoring_readback({r['address']:r for r in rows},read),expected)
-        self.assertEqual(len(calls),1)
-        self.assertEqual(calls[0][:3],('cloudwatch','describe-alarms','--alarm-names'))
-        self.assertEqual(set(calls[0][3:]),set(expected))
-        for alarm in alarms:alarm.pop('DatapointsToAlarm')
-        self.assertEqual(p.message_monitoring_readback({r['address']:r for r in rows},read),expected)
+    def test_readback_matches_runtime_logs_and_explicit_alarm_absence(self):
+        rows=log_rows();inventory={r['address']:r for r in rows}
+        expected={k:p.digest(v) for k,v in p.message_monitoring(inventory).items()}
+        self.assertEqual(p.message_monitoring_readback(inventory,monitoring_read(rows)),expected)
+        self.assertEqual(len(expected),3)
 
-    def test_changed_missing_duplicate_or_malformed_live_alarms_rejected(self):
+    def test_legacy_alarm_variants_are_all_rejected_by_absence_policy(self):
         for mutation in ('missing','duplicate','disabled','destination','dimensions','threshold','bool_period','bool_datapoints','unit','expression'):
-            rows=alarm_rows();alarms=cloudwatch_alarms(rows)
+            rows=log_rows();alarms=cloudwatch_alarms(alarm_rows())
             if mutation=='missing':alarms.pop()
             elif mutation=='duplicate':alarms[-1]=copy.deepcopy(alarms[0])
             elif mutation=='disabled':alarms[0]['ActionsEnabled']=False
@@ -323,15 +338,11 @@ class MonitoringTests(unittest.TestCase):
             elif mutation=='bool_datapoints':alarms[0]['DatapointsToAlarm']=True
             elif mutation=='unit':alarms[0]['Unit']='Seconds'
             else:alarms[0]['Metrics']=[{}]
-            with self.subTest(mutation=mutation),self.assertRaisesRegex(ValueError,'^AI_ESSENTIAL_MONITORING$') as error:
-                p.message_monitoring_readback({r['address']:r for r in rows},lambda *args:{'MetricAlarms':alarms})
-            self.assertEqual(v.rejection_record(error.exception,'PLAN_REVIEW')['code'],'AI_ESSENTIAL_MONITORING')
+            with self.subTest(mutation=mutation),self.assertRaisesRegex(ValueError,'^NONPRODUCTION_ALARMS_STILL_PRESENT_OR_INCOMPLETE$'):
+                p.message_monitoring_readback({r['address']:r for r in rows},monitoring_read(rows,alarms))
 
-    def test_plan_unit_filter_cannot_be_hidden_by_delivery_deferral(self):
-        for unit in ('Seconds','None',False,0):
-            rows=alarm_rows();rows[0]['change']['before']['unit']=unit
-            with self.subTest(unit=unit),self.assertRaisesRegex(ValueError,'^AI_ESSENTIAL_MONITORING$'):
+    def test_plan_alarm_unit_filter_cannot_bypass_absence_policy(self):
+        for unit in ('Seconds','None',False,0,None,''):
+            rows=log_rows()+alarm_rows();rows[-1]['change']['before']['unit']=unit
+            with self.subTest(unit=unit),self.assertRaisesRegex(ValueError,'^NONPRODUCTION_ALARM_MIGRATION_REQUIRED$'):
                 p.message_monitoring({r['address']:r for r in rows})
-        for unit in (None,''):
-            rows=alarm_rows();rows[0]['change']['before']['unit']=unit
-            self.assertEqual(len(p.message_monitoring({r['address']:r for r in rows})),6)

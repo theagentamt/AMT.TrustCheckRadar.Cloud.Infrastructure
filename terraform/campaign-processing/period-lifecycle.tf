@@ -65,13 +65,13 @@ resource "aws_lambda_function_event_invoke_config" "period_lifecycle" {
   maximum_retry_attempts       = 0
 }
 resource "aws_cloudwatch_metric_alarm" "period_lifecycle" {
-  for_each = local.period_work_prepared ? {
+  for_each = { for alarm_key, alarm_value in(local.period_work_prepared ? {
     heartbeat  = { metric = "LifecycleHeartbeat", statistic = "Sum", threshold = 1, comparison = "LessThanThreshold", periods = 3, missing = "breaching" }
     failures   = { metric = "LifecycleFailures", statistic = "Sum", threshold = 0, comparison = "GreaterThanThreshold", periods = 1, missing = "notBreaching" }
     unverified = { metric = "LifecycleWorkUnverified", statistic = "Sum", threshold = 0, comparison = "GreaterThanThreshold", periods = 1, missing = "notBreaching" }
     stalled    = { metric = "LifecycleProgressAgeSeconds", statistic = "Maximum", threshold = 3600, comparison = "GreaterThanOrEqualToThreshold", periods = 1, missing = "notBreaching" }
     full_pass  = { metric = "LifecycleFullPassAgeSeconds", statistic = "Maximum", threshold = 7200, comparison = "GreaterThanOrEqualToThreshold", periods = 1, missing = "notBreaching" }
-  } : {}
+  } : {}) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.name_prefix}-period-${replace(each.key, "_", "-")}"
   alarm_description   = each.key == "stalled" ? "Observed overdue work with aged backlog; environment-wide signals do not prove the same record stalled. Future-only backlog does not alarm." : "Period lifecycle ${each.key}; bounded observed progress is not erasure proof. Disabled until reviewed lifecycle activation."
   namespace           = each.key == "stalled" ? null : "TrustCheckRadar/Campaign"

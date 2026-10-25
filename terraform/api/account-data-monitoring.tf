@@ -32,7 +32,7 @@ locals {
 }
 
 resource "aws_cloudwatch_metric_alarm" "account_data_function" {
-  for_each            = local.account_data_function_alarm_specs
+  for_each            = { for alarm_key, alarm_value in(local.account_data_function_alarm_specs) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.account_data_name}-${each.key}"
   alarm_description   = "Account deletion worker failure or stream lag. Preserve deletion fences and follow HISTORY-OPERATIONS.md."
   namespace           = "AWS/Lambda"
@@ -51,7 +51,7 @@ resource "aws_cloudwatch_metric_alarm" "account_data_function" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "account_data_reconciliation" {
-  for_each            = local.account_data_reconciliation_alarm_specs
+  for_each            = { for alarm_key, alarm_value in(local.account_data_reconciliation_alarm_specs) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.account_data_name}-reconciliation-${each.key}"
   alarm_description   = "Account deletion reconciliation ${each.key}; investigate before the 24-hour erasure deadline. A successful scan is not full account erasure."
   namespace           = "AMT/TrustCheckRadar/AccountData"
@@ -73,7 +73,7 @@ resource "aws_cloudwatch_metric_alarm" "account_data_reconciliation" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "account_data_stream_failure" {
-  count               = var.account_data_monitoring == null || var.account_data_deployment == null ? 0 : 1
+  count               = var.environment == "prod" ? (var.account_data_monitoring == null || var.account_data_deployment == null ? 0 : 1) : 0
   alarm_name          = "${local.account_data_name}-session-revocation-failure"
   alarm_description   = "Account deletion stream reported a partial batch failure, which need not increment Lambda Errors. Preserve the durable command and investigate retries."
   namespace           = "AMT/TrustCheckRadar/AccountData"

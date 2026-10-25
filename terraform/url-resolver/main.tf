@@ -266,7 +266,7 @@ resource "aws_cloudwatch_log_metric_filter" "partial" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "partial" {
-  count               = var.enabled ? 1 : 0
+  count               = var.environment == "prod" ? (var.enabled ? 1 : 0) : 0
   alarm_name          = "${local.name}-partial"
   namespace           = "AMT/URLResolver/${var.environment}"
   metric_name         = "PartialResolutions"
@@ -282,7 +282,7 @@ resource "aws_cloudwatch_metric_alarm" "partial" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "runtime" {
-  for_each            = var.enabled ? toset(["Errors", "Throttles"]) : toset([])
+  for_each            = { for alarm_key, alarm_value in(var.enabled ? toset(["Errors", "Throttles"]) : toset([])) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.name}-${lower(each.key)}"
   namespace           = "AWS/Lambda"
   metric_name         = each.key

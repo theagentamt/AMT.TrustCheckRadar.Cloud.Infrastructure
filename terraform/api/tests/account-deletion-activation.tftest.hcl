@@ -128,7 +128,21 @@ run "null_leaves_candidate_closed" {
 run "workers_enable_reconciliation_before_admission" {
   command = plan
   assert {
-    condition     = (!output.account_data_candidate_contract.enabled && output.account_data_candidate_contract.workers_enabled && length(aws_apigatewayv2_route.account_deletion) == 0 && length(aws_lambda_permission.account_deletion_gateway) == 0 && aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_DELETION_HTTP_SUBJECTS_JSON == "[]" && aws_lambda_event_source_mapping.account_data_revocation[0].enabled && aws_cloudwatch_event_rule.account_data_reconcile[0].state == "ENABLED" && aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_IDENTITY_FINALIZER_ENABLED == "true" && aws_lambda_function.account_data[0].environment[0].variables.CAMPAIGN_RECOVERY_WRITES_ENABLED == "true" && length(jsondecode(aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_DELETION_REQUIRED_COMPONENTS_JSON)) == 12 && aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].actions_enabled && aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].treat_missing_data == "breaching" && aws_lambda_function.campaign_participation.environment[0].variables.CAMPAIGN_RECOVERY_WRITES_ENABLED == "false")
+    condition = (
+      !output.account_data_candidate_contract.enabled &&
+      output.account_data_candidate_contract.workers_enabled &&
+      length(aws_apigatewayv2_route.account_deletion) == 0 &&
+      length(aws_lambda_permission.account_deletion_gateway) == 0 &&
+      aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_DELETION_HTTP_SUBJECTS_JSON == "[]" &&
+      aws_lambda_event_source_mapping.account_data_revocation[0].enabled &&
+      aws_cloudwatch_event_rule.account_data_reconcile[0].state == "ENABLED" &&
+      aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_IDENTITY_FINALIZER_ENABLED == "true" &&
+      aws_lambda_function.account_data[0].environment[0].variables.CAMPAIGN_RECOVERY_WRITES_ENABLED == "true" &&
+      length(jsondecode(aws_lambda_function.account_data[0].environment[0].variables.ACCOUNT_DELETION_REQUIRED_COMPONENTS_JSON)) == 12 &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].treat_missing_data == "breaching") : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      aws_lambda_function.campaign_participation.environment[0].variables.CAMPAIGN_RECOVERY_WRITES_ENABLED == "false"
+    )
     error_message = "Workers must enable durable reconciliation and heartbeat monitoring without opening routes or other producer gates."
   }
 }

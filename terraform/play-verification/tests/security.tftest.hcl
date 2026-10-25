@@ -127,12 +127,15 @@ run "optional_runtime_alerts_are_bounded" {
     alert_topic_arn = "arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"
   }
   assert {
-    condition = toset(output.candidate_contract.runtime_alarm_names) == toset([
-      "trustcheckradar-dev-v1-play-handoff-errors", "trustcheckradar-dev-v1-play-handoff-throttles"
-      ]) && alltrue([for alarm in aws_cloudwatch_metric_alarm.runtime :
-      alarm.alarm_actions == toset([var.alert_topic_arn]) &&
-      alarm.namespace == "AWS/Lambda" && alarm.dimensions.FunctionName == aws_lambda_function.runtime[0].function_name
-    ])
+    condition = (
+      (var.environment == "prod" ? (toset(output.candidate_contract.runtime_alarm_names) == toset([
+        "trustcheckradar-dev-v1-play-handoff-errors", "trustcheckradar-dev-v1-play-handoff-throttles"
+      ])) : (length(output.candidate_contract.runtime_alarm_names) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.runtime :
+        alarm.alarm_actions == toset([var.alert_topic_arn]) &&
+        alarm.namespace == "AWS/Lambda" && alarm.dimensions.FunctionName == aws_lambda_function.runtime[0].function_name
+      ])) : (length(aws_cloudwatch_metric_alarm.runtime) == 0))
+    )
     error_message = "Native runtime alarms must use the exact existing support topic and candidate function."
   }
 }

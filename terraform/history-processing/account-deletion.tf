@@ -281,11 +281,11 @@ resource "aws_lambda_event_source_mapping" "account_deletion" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "account_deletion" {
-  for_each = local.account_deletion_deployed && var.alarm_topic_arn != null ? {
+  for_each = { for alarm_key, alarm_value in(local.account_deletion_deployed && var.alarm_topic_arn != null ? {
     errors    = { metric = "Errors", statistic = "Sum", threshold = 0 }
     throttles = { metric = "Throttles", statistic = "Sum", threshold = 0 }
     lag       = { metric = "IteratorAge", statistic = "Maximum", threshold = 300000 }
-  } : {}
+  } : {}) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.account_deletion_name}-${each.key}"
   alarm_description   = "History account-deletion bridge failure or lag. Reconcile durable deletion commands; stream retention is not durable recovery."
   namespace           = "AWS/Lambda"

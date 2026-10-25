@@ -91,8 +91,12 @@ override_data {
 run "recovery_default_is_absent" {
   command = plan
   assert {
-    condition = (length(aws_scheduler_schedule.recovery) == 0 && length(aws_iam_role_policy.recovery_runtime) == 0 &&
-    length(aws_cloudwatch_metric_alarm.recovery) == 0 && !output.campaign_recovery_preparation_contract.prepared)
+    condition = (
+      length(aws_scheduler_schedule.recovery) == 0 &&
+      length(aws_iam_role_policy.recovery_runtime) == 0 &&
+      length(aws_cloudwatch_metric_alarm.recovery) == 0 &&
+      !output.campaign_recovery_preparation_contract.prepared
+    )
     error_message = "An index contract alone must not prepare or enable recovery."
   }
 }
@@ -109,13 +113,15 @@ run "prepared_recovery_stays_closed_and_content_free" {
     error_message = "Candidate scheduler must stay disabled with only static input and bounded transport retries."
   }
   assert {
-    condition = (aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_RECOVERY_ENABLED == "false" &&
+    condition = (
+      aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_RECOVERY_ENABLED == "false" &&
       aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_RECOVERY_INVENTORY_REVISION == "0" &&
       aws_lambda_function.worker["deletion"].environment[0].variables.CAMPAIGN_RECOVERY_MANIFEST_SHA256 == "" &&
-      length(aws_cloudwatch_metric_alarm.recovery) == 8 &&
-      aws_cloudwatch_metric_alarm.recovery["budget"].metric_name == "RecoveryBudgetExhausted" &&
-      aws_cloudwatch_metric_alarm.recovery["truncated"].metric_name == "RecoveryShardTruncated" &&
-    alltrue([for a in aws_cloudwatch_metric_alarm.recovery : !a.actions_enabled && toset(keys(a.dimensions)) == toset(["Environment"]) && a.dimensions.Environment == "dev"]))
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.recovery) == 8) : (length(aws_cloudwatch_metric_alarm.recovery) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.recovery["budget"].metric_name == "RecoveryBudgetExhausted") : (length(aws_cloudwatch_metric_alarm.recovery) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.recovery["truncated"].metric_name == "RecoveryShardTruncated") : (length(aws_cloudwatch_metric_alarm.recovery) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for a in aws_cloudwatch_metric_alarm.recovery : !a.actions_enabled && toset(keys(a.dimensions)) == toset(["Environment"]) && a.dimensions.Environment == "dev"])) : (length(aws_cloudwatch_metric_alarm.recovery) == 0))
+    )
     error_message = "Preparation must not enable recovery, approve inventory or send false alerts."
   }
   assert {

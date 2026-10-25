@@ -515,10 +515,10 @@ resource "aws_lambda_permission" "review" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "api_errors" {
-  for_each = merge(
+  for_each = { for alarm_key, alarm_value in(merge(
     local.enabled ? { trends = aws_lambda_function.trends[0].function_name } : {},
     var.campaign_review_api_enabled ? { review = aws_lambda_function.review[0].function_name } : {},
-  )
+  )) : alarm_key => alarm_value if var.environment == "prod" }
 
   alarm_name          = "${each.value}-errors"
   alarm_description   = "Campaign API Lambda errors; notifications must remain content-free"
@@ -540,10 +540,10 @@ resource "aws_cloudwatch_metric_alarm" "api_errors" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "api_throttles" {
-  for_each = merge(
+  for_each = { for alarm_key, alarm_value in(merge(
     local.enabled ? { trends = aws_lambda_function.trends[0].function_name } : {},
     var.campaign_review_api_enabled ? { review = aws_lambda_function.review[0].function_name } : {},
-  )
+  )) : alarm_key => alarm_value if var.environment == "prod" }
 
   alarm_name          = "${each.value}-throttles"
   alarm_description   = "Campaign API Lambda is throttled"

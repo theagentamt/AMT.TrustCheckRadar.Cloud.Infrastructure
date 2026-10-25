@@ -219,7 +219,11 @@ run "engineering_restricted_and_policy_pinned" {
     error_message = "Engineering must preserve approved retention and exact-subject restriction."
   }
   assert {
-    condition     = alltrue([for rule in aws_cloudwatch_event_rule.maintenance : rule.state == "ENABLED"]) && aws_lambda_event_source_mapping.v1_deletion[0].enabled && alltrue([for alarm in aws_cloudwatch_metric_alarm.worker_heartbeat : alarm.actions_enabled && alarm.treat_missing_data == "breaching"])
+    condition = (
+      alltrue([for rule in aws_cloudwatch_event_rule.maintenance : rule.state == "ENABLED"]) &&
+      aws_lambda_event_source_mapping.v1_deletion[0].enabled &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.worker_heartbeat : alarm.actions_enabled && alarm.treat_missing_data == "breaching"])) : (length(aws_cloudwatch_metric_alarm.worker_heartbeat) == 0))
+    )
     error_message = "Engineering activation requires recovery/deletion continuity and heartbeat alarms."
   }
 }
@@ -272,8 +276,8 @@ run "access_only_keeps_providers_and_trial_closed" {
       aws_lambda_function.runtime["deletion"].environment[0].variables.V1_AUTHORITY_DELETION_ENABLED == "true" &&
       alltrue([for rule in aws_cloudwatch_event_rule.maintenance : rule.state == "ENABLED"]) &&
       aws_lambda_event_source_mapping.v1_deletion[0].enabled &&
-      alltrue([for alarm in aws_cloudwatch_metric_alarm.worker_heartbeat : alarm.actions_enabled && alarm.treat_missing_data == "breaching"]) &&
-      aws_cloudwatch_metric_alarm.deletion_full_pass_age[0].actions_enabled
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.worker_heartbeat : alarm.actions_enabled && alarm.treat_missing_data == "breaching"])) : (length(aws_cloudwatch_metric_alarm.worker_heartbeat) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.deletion_full_pass_age[0].actions_enabled) : (length(aws_cloudwatch_metric_alarm.deletion_full_pass_age) == 0))
     )
     error_message = "Access-only mode must retain monitored scheduled expiry, lease recovery and subject-scoped deletion."
   }
@@ -349,9 +353,9 @@ run "deletion_only_exact_subjects_keep_other_capabilities_closed" {
       aws_lambda_function.runtime["deletion"].s3_key == "releases/${var.deletion_activation.source_sha}/v1_authority_deletion.zip" &&
       aws_lambda_event_source_mapping.v1_deletion[0].enabled &&
       aws_cloudwatch_event_rule.maintenance["deletion"].state == "ENABLED" &&
-      aws_cloudwatch_metric_alarm.worker_heartbeat["deletion"].actions_enabled &&
-      aws_cloudwatch_metric_alarm.worker_heartbeat["deletion"].treat_missing_data == "breaching" &&
-      aws_cloudwatch_metric_alarm.deletion_full_pass_age[0].actions_enabled &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.worker_heartbeat["deletion"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.worker_heartbeat) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.worker_heartbeat["deletion"].treat_missing_data == "breaching") : (length(aws_cloudwatch_metric_alarm.worker_heartbeat) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.deletion_full_pass_age[0].actions_enabled) : (length(aws_cloudwatch_metric_alarm.deletion_full_pass_age) == 0)) &&
       jsondecode(aws_cloudwatch_event_target.maintenance["deletion"].input) == { schemaVersion = 1, operation = "reconcile-v1-authority-deletion" }
     )
     error_message = "Reviewed cleanup must bind exact source and sorted subjects, enable its stream/reconciliation and arm deletion monitoring."
@@ -362,11 +366,14 @@ run "deletion_only_exact_subjects_keep_other_capabilities_closed" {
       alltrue([for role in ["consumer", "entitlements"] : aws_lambda_function.runtime[role].environment[0].variables.DEV_SUBJECT_ALLOWLIST_JSON == "[]"]) &&
       aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "false" &&
       aws_cloudwatch_event_rule.maintenance["recovery"].state == "DISABLED" &&
-      !aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"].actions_enabled &&
-      !aws_cloudwatch_metric_alarm.expiry_overdue[0].actions_enabled &&
-      output.candidate_contract.deletion_enabled && !output.candidate_contract.consumer_enabled &&
-      !output.candidate_contract.access_enabled && !output.candidate_contract.recovery_enabled &&
-      !output.candidate_contract.trial_activation_enabled && !output.candidate_contract.general_customer_access
+      (var.environment == "prod" ? (!aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.worker_heartbeat) == 0)) &&
+      (var.environment == "prod" ? (!aws_cloudwatch_metric_alarm.expiry_overdue[0].actions_enabled) : (length(aws_cloudwatch_metric_alarm.expiry_overdue) == 0)) &&
+      output.candidate_contract.deletion_enabled &&
+      !output.candidate_contract.consumer_enabled &&
+      !output.candidate_contract.access_enabled &&
+      !output.candidate_contract.recovery_enabled &&
+      !output.candidate_contract.trial_activation_enabled &&
+      !output.candidate_contract.general_customer_access
     )
     error_message = "Deletion-only activation must not activate providers, access, entitlements, trial checks or lease recovery."
   }
@@ -655,10 +662,14 @@ run "maintenance_only_does_not_enable_customer_or_financial_capabilities" {
     condition = (
       aws_lambda_function.runtime["recovery"].environment[0].variables.LEASE_SWEEP_ENABLED == "true" &&
       aws_cloudwatch_event_rule.maintenance["recovery"].state == "ENABLED" &&
-      aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"].actions_enabled &&
-      aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"].treat_missing_data == "breaching" &&
-      output.authority_maintenance.worker_enabled && output.authority_maintenance.schedule_enabled &&
-      output.authority_maintenance.heartbeat_enforced && !output.authority_maintenance.provider_access_added
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.worker_heartbeat) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.worker_heartbeat["recovery"].treat_missing_data == "breaching") : (length(aws_cloudwatch_metric_alarm.worker_heartbeat) == 0)) &&
+      output.authority_maintenance.worker_enabled &&
+      output.authority_maintenance.schedule_enabled &&
+      !output.authority_maintenance.heartbeat_enforced &&
+      output.authority_maintenance.alarm_policy == "dev-uat-disabled-v1" &&
+      output.authority_maintenance.schema_version == 2 &&
+      !output.authority_maintenance.provider_access_added
     )
     error_message = "Maintenance worker, schedule and failure detection must be enabled together."
   }

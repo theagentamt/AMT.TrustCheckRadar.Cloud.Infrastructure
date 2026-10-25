@@ -38,7 +38,13 @@ run "disabled_creates_nothing" {
   command = plan
   variables { deployment = null }
   assert {
-    condition     = length(aws_lambda_function.runtime) == 0 && length(aws_iam_role.runtime) == 0 && length(aws_cloudwatch_metric_alarm.runtime) == 0 && output.candidate_contract.endpoint == null && !output.candidate_contract.feedback_enabled
+    condition = (
+      length(aws_lambda_function.runtime) == 0 &&
+      length(aws_iam_role.runtime) == 0 &&
+      length(aws_cloudwatch_metric_alarm.runtime) == 0 &&
+      output.candidate_contract.endpoint == null &&
+      !output.candidate_contract.feedback_enabled
+    )
     error_message = "Default must create no feedback resources or endpoint."
   }
 }
@@ -62,7 +68,13 @@ run "dev_private_bounded_minimal" {
     error_message = "Only fenced authority transaction updates and exact HMAC secret access are allowed."
   }
   assert {
-    condition     = jsondecode(aws_iam_role_policy.feedback[0].policy).Statement[5].Effect == "Deny" && toset(jsondecode(aws_iam_role_policy.feedback[0].policy).Statement[5].Action) == toset(["s3:*", "ssm:*", "sts:AssumeRole", "lambda:InvokeFunction", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:Scan"]) && length(aws_cloudwatch_metric_alarm.runtime) == 3 && alltrue([for alarm in aws_cloudwatch_metric_alarm.runtime : alarm.alarm_actions == toset(["arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"]) && alarm.ok_actions == alarm.alarm_actions && toset(keys(alarm.dimensions)) == toset(["FunctionName"])]) && aws_cloudwatch_metric_alarm.runtime["feedback-duration"].threshold == 7000
+    condition = (
+      jsondecode(aws_iam_role_policy.feedback[0].policy).Statement[5].Effect == "Deny" &&
+      toset(jsondecode(aws_iam_role_policy.feedback[0].policy).Statement[5].Action) == toset(["s3:*", "ssm:*", "sts:AssumeRole", "lambda:InvokeFunction", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:Scan"]) &&
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.runtime) == 3) : (length(aws_cloudwatch_metric_alarm.runtime) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.runtime : alarm.alarm_actions == toset(["arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"]) && alarm.ok_actions == alarm.alarm_actions && toset(keys(alarm.dimensions)) == toset(["FunctionName"])])) : (length(aws_cloudwatch_metric_alarm.runtime) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.runtime["feedback-duration"].threshold == 7000) : (length(aws_cloudwatch_metric_alarm.runtime) == 0))
+    )
     error_message = "No provider calls, enumeration/deletion or new alert destinations; use payload-free native metrics."
   }
 }

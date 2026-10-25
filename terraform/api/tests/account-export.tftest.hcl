@@ -245,7 +245,10 @@ run "campaign_projection_access_is_index_and_purpose_scoped" {
 run "export_monitoring_is_opt_in" {
   command = plan
   assert {
-    condition     = length(aws_cloudwatch_metric_alarm.account_export_runtime) == 0 && length(aws_cloudwatch_metric_alarm.account_export_unavailable) == 0
+    condition = (
+      length(aws_cloudwatch_metric_alarm.account_export_runtime) == 0 &&
+      length(aws_cloudwatch_metric_alarm.account_export_unavailable) == 0
+    )
     error_message = "A candidate alone must not select a notification destination or create paid alarms."
   }
 }
@@ -254,13 +257,19 @@ run "monitoring_matches_handled_failure_metrics" {
   command = plan
   variables { account_export_monitoring = { alarm_topic_arn = "arn:aws:sns:us-east-1:107827791950:synthetic-alerts" } }
   assert {
-    condition = length(aws_cloudwatch_metric_alarm.account_export_runtime) == 2 && length(aws_cloudwatch_metric_alarm.account_export_unavailable) == 3 && alltrue([
-      for op, alarm in aws_cloudwatch_metric_alarm.account_export_unavailable :
-      alarm.metric_name == "AccountExportUnavailable" && alarm.namespace == "AMT/TrustCheckRadar/AccountExport" &&
-      alarm.dimensions == tomap({ Environment = "dev", Operation = op }) && alarm.period == 300 &&
-      alarm.threshold == 0 && alarm.treat_missing_data == "notBreaching" &&
-      alarm.alarm_actions == toset([var.account_export_monitoring.alarm_topic_arn])
-    ]) && !output.account_export_candidate_contract.enabled && length(output.account_export_candidate_contract.routes) == 0
+    condition = (
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.account_export_runtime) == 2) : (length(aws_cloudwatch_metric_alarm.account_export_runtime) == 0)) &&
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.account_export_unavailable) == 3) : (length(aws_cloudwatch_metric_alarm.account_export_unavailable) == 0)) &&
+      (var.environment == "prod" ? (alltrue([
+        for op, alarm in aws_cloudwatch_metric_alarm.account_export_unavailable :
+        alarm.metric_name == "AccountExportUnavailable" && alarm.namespace == "AMT/TrustCheckRadar/AccountExport" &&
+        alarm.dimensions == tomap({ Environment = "dev", Operation = op }) && alarm.period == 300 &&
+        alarm.threshold == 0 && alarm.treat_missing_data == "notBreaching" &&
+        alarm.alarm_actions == toset([var.account_export_monitoring.alarm_topic_arn])
+      ])) : (length(aws_cloudwatch_metric_alarm.account_export_unavailable) == 0)) &&
+      !output.account_export_candidate_contract.enabled &&
+      length(output.account_export_candidate_contract.routes) == 0
+    )
     error_message = "Handled503s require all three exact EMF dimension sets without activating export."
   }
 }

@@ -1272,7 +1272,7 @@ resource "aws_scheduler_schedule" "lifecycle" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "worker_errors" {
-  for_each = local.enabled ? { for key, value in local.functions : key => value.name } : {}
+  for_each = { for alarm_key, alarm_value in(local.enabled ? { for key, value in local.functions : key => value.name } : {}) : alarm_key => alarm_value if var.environment == "prod" }
 
   alarm_name          = "${each.value}-errors"
   alarm_description   = "Campaign worker errors; logs and notifications must remain content-free"
@@ -1294,9 +1294,9 @@ resource "aws_cloudwatch_metric_alarm" "worker_errors" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "queue_age" {
-  for_each = local.enabled ? {
+  for_each = { for alarm_key, alarm_value in(local.enabled ? {
     cluster = local.campaign.cluster_queue_arn
-  } : {}
+  } : {}) : alarm_key => alarm_value if var.environment == "prod" }
 
   alarm_name          = "${local.name_prefix}-${each.key}-queue-age"
   alarm_description   = "Oldest campaign queue message exceeds the five-minute processing target"
@@ -1318,9 +1318,9 @@ resource "aws_cloudwatch_metric_alarm" "queue_age" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "dead_letter" {
-  for_each = local.enabled ? {
+  for_each = { for alarm_key, alarm_value in(local.enabled ? {
     cluster = local.campaign.cluster_dlq_arn
-  } : {}
+  } : {}) : alarm_key => alarm_value if var.environment == "prod" }
 
   alarm_name          = "${local.name_prefix}-${each.key}-dlq"
   alarm_description   = "Campaign dead-letter queue contains messages"
@@ -1342,7 +1342,7 @@ resource "aws_cloudwatch_metric_alarm" "dead_letter" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "dynamodb_throttles" {
-  count = local.enabled ? 1 : 0
+  count = var.environment == "prod" ? (local.enabled ? 1 : 0) : 0
 
   alarm_name          = "${local.name_prefix}-dynamodb-throttles"
   alarm_description   = "Campaign DynamoDB requests are being throttled"
@@ -1395,7 +1395,7 @@ resource "aws_cloudwatch_metric_alarm" "dynamodb_throttles" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "privacy_deadline" {
-  count = local.enabled ? 1 : 0
+  count = var.environment == "prod" ? (local.enabled ? 1 : 0) : 0
 
   alarm_name          = "${local.name_prefix}-privacy-deadline-missed"
   alarm_description   = "Campaign deletion or period-key retirement exceeded its approved deadline"

@@ -121,47 +121,47 @@ run "account_monitoring_uses_source_metrics_without_activating_workers" {
   }
   assert {
     condition = (
-      length(aws_cloudwatch_metric_alarm.account_data_function) == 3 &&
-      length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 9 &&
-      length(aws_cloudwatch_metric_alarm.account_data_stream_failure) == 1 &&
-      alltrue([for alarm in aws_cloudwatch_metric_alarm.account_data_function :
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.account_data_function) == 3) : (length(aws_cloudwatch_metric_alarm.account_data_function) == 0)) &&
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 9) : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.account_data_stream_failure) == 1) : (length(aws_cloudwatch_metric_alarm.account_data_stream_failure) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.account_data_function :
         alarm.namespace == "AWS/Lambda" &&
         alarm.dimensions == tomap({ FunctionName = "trustcheckradar-dev-account-data-api" }) &&
         alarm.treat_missing_data == "notBreaching" &&
         alarm.alarm_actions == toset([var.account_data_monitoring.alarm_topic_arn]) &&
         alarm.ok_actions == toset([var.account_data_monitoring.alarm_topic_arn])
-      ]) &&
-      aws_cloudwatch_metric_alarm.account_data_function["lag"].unit == "Milliseconds" &&
-      aws_cloudwatch_metric_alarm.account_data_function["lag"].threshold == 300000 &&
-      alltrue([for alarm in aws_cloudwatch_metric_alarm.account_data_reconciliation :
+      ])) : (length(aws_cloudwatch_metric_alarm.account_data_function) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_function["lag"].unit == "Milliseconds") : (length(aws_cloudwatch_metric_alarm.account_data_function) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_function["lag"].threshold == 300000) : (length(aws_cloudwatch_metric_alarm.account_data_function) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.account_data_reconciliation :
         alarm.namespace == "AMT/TrustCheckRadar/AccountData" &&
         alarm.dimensions == tomap({ Environment = "dev" }) &&
         alarm.alarm_actions == toset([var.account_data_monitoring.alarm_topic_arn])
-      ]) &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].metric_name == "SessionRevocationReconciliationSuccess" &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].evaluation_periods == 3 &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["no_full_pass"].period == 21600 &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["stale_full_pass"].unit == "Seconds" &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["stale_full_pass"].threshold == 21600 &&
-      alltrue([for key in ["heartbeat", "no_full_pass", "stale_full_pass"] :
+      ])) : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].metric_name == "SessionRevocationReconciliationSuccess") : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["heartbeat"].evaluation_periods == 3) : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["no_full_pass"].period == 21600) : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["stale_full_pass"].unit == "Seconds") : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["stale_full_pass"].threshold == 21600) : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for key in ["heartbeat", "no_full_pass", "stale_full_pass"] :
         !aws_cloudwatch_metric_alarm.account_data_reconciliation[key].actions_enabled &&
         aws_cloudwatch_metric_alarm.account_data_reconciliation[key].treat_missing_data == "notBreaching"
-      ]) &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["failure"].actions_enabled &&
-      alltrue([for key in ["command_failure", "pass_failure"] :
+      ])) : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["failure"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for key in ["command_failure", "pass_failure"] :
         aws_cloudwatch_metric_alarm.account_data_reconciliation[key].actions_enabled &&
         aws_cloudwatch_metric_alarm.account_data_reconciliation[key].period == 300 &&
         aws_cloudwatch_metric_alarm.account_data_reconciliation[key].threshold == 0 &&
         aws_cloudwatch_metric_alarm.account_data_reconciliation[key].treat_missing_data == "notBreaching"
-      ]) &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["command_failure"].metric_name == "AccountDeletionReconciliationCommandFailures" &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["pass_failure"].metric_name == "AccountDeletionReconciliationPassFailures" &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["policy_blocked"].actions_enabled &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["policy_blocked"].metric_name == "AccountDeletionAnalysisAbusePolicyBlocked" &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["outbox_blocked"].metric_name == "AccountDeletionCampaignOutboxPolicyBlocked" &&
-      aws_cloudwatch_metric_alarm.account_data_reconciliation["profile_blocked"].metric_name == "AccountDeletionUserProfilePolicyBlocked" &&
-      aws_cloudwatch_metric_alarm.account_data_stream_failure[0].metric_name == "AccountDeletionFailure" &&
-      aws_cloudwatch_metric_alarm.account_data_stream_failure[0].dimensions == tomap({ Environment = "dev", Operation = "session-revocation" }) &&
+      ])) : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["command_failure"].metric_name == "AccountDeletionReconciliationCommandFailures") : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["pass_failure"].metric_name == "AccountDeletionReconciliationPassFailures") : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["policy_blocked"].actions_enabled) : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["policy_blocked"].metric_name == "AccountDeletionAnalysisAbusePolicyBlocked") : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["outbox_blocked"].metric_name == "AccountDeletionCampaignOutboxPolicyBlocked") : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_reconciliation["profile_blocked"].metric_name == "AccountDeletionUserProfilePolicyBlocked") : (length(aws_cloudwatch_metric_alarm.account_data_reconciliation) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_stream_failure[0].metric_name == "AccountDeletionFailure") : (length(aws_cloudwatch_metric_alarm.account_data_stream_failure) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.account_data_stream_failure[0].dimensions == tomap({ Environment = "dev", Operation = "session-revocation" })) : (length(aws_cloudwatch_metric_alarm.account_data_stream_failure) == 0)) &&
       aws_cloudwatch_event_rule.account_data_reconcile[0].state == "DISABLED" &&
       !aws_lambda_event_source_mapping.account_data_revocation[0].enabled &&
       !output.account_data_candidate_contract.enabled

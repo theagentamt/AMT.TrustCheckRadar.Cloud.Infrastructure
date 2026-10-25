@@ -4,6 +4,8 @@ import hashlib
 import importlib.util
 from pathlib import Path
 import unittest
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
 SPEC = importlib.util.spec_from_file_location(
@@ -48,11 +50,11 @@ def fixture(mode="inactive", changes=True):
             "counter_retention_seconds": 604800,
         },
         "authority_maintenance": {
-            "schema_version": 1, "environment": "dev",
+            "schema_version": 2, "alarm_policy": "dev-uat-disabled-v1", "environment": "dev",
             "authority_table_arn": f"arn:aws:dynamodb:{transition.REGION}:{transition.ACCOUNT}:table/{transition.PREFIX}-purchase-entitlements",
             "recovery_alias_arn": f"arn:aws:lambda:{transition.REGION}:{transition.ACCOUNT}:function:{transition.PREFIX}-url-lease-recovery:live",
             "recovery_version": "11", "recovery_code_sha256": "A" * 43 + "=",
-            "worker_enabled": True, "schedule_enabled": True, "heartbeat_enforced": True,
+            "worker_enabled": True, "schedule_enabled": True, "heartbeat_enforced": False,
             "provider_access_added": False,
         },
         "provider_budget": {
@@ -247,7 +249,7 @@ class MessageConsumerTransitionTests(unittest.TestCase):
                 if mutation == "hash": contract["recovery_code_sha256"] = "invalid"
                 if mutation == "worker": contract["worker_enabled"] = False
                 if mutation == "schedule": contract["schedule_enabled"] = False
-                if mutation == "heartbeat": contract["heartbeat_enforced"] = False
+                if mutation == "heartbeat": contract["heartbeat_enforced"] = True
                 if mutation == "provider": contract["provider_access_added"] = True
                 if mutation == "numeric": contract["worker_enabled"] = 1
                 if mutation == "text": contract["worker_enabled"] = "true"

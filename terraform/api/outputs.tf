@@ -149,7 +149,7 @@ output "age_attestation_backend_settings" {
     }
     lambdaLogGroup    = aws_cloudwatch_log_group.age_attestation_lambda.name
     apiAccessLogGroup = aws_cloudwatch_log_group.age_attestation_api.name
-    alarmNames = local.age_attestation_monitoring_enabled ? concat(
+    alarmNames = local.age_attestation_monitoring_enabled && var.environment == "prod" ? concat(
       sort([for alarm in aws_cloudwatch_metric_alarm.age_attestation_lambda : alarm.alarm_name]),
       [aws_cloudwatch_metric_alarm.age_attestation_api_5xx[0].alarm_name],
     ) : []

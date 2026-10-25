@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Validate a bounded Dev message-consumer update or engineering activation."""
 
+from nonproduction_alarms import require_alarm_free_plan
+
 import argparse
 import base64
 import hashlib
@@ -58,20 +60,22 @@ def _review_maintenance(variables):
     """Validate configuration only; trusted runtime/IAM readback is a rollout gate."""
     contract = variables.get("authority_maintenance")
     fields = {
-        "schema_version", "environment", "authority_table_arn", "recovery_alias_arn",
+        "schema_version", "alarm_policy", "environment", "authority_table_arn", "recovery_alias_arn",
         "recovery_version", "recovery_code_sha256", "worker_enabled",
         "schedule_enabled", "heartbeat_enforced", "provider_access_added",
     }
     if type(contract) is not dict or set(contract) != fields:
         raise ValueError("Exact shared maintenance configuration is required before admission.")
     if (
-        type(contract["schema_version"]) is not int or contract["schema_version"] != 1
+        type(contract["schema_version"]) is not int or contract["schema_version"] != 2
+        or contract["alarm_policy"] != "dev-uat-disabled-v1"
+        or contract["heartbeat_enforced"] is not False
         or contract["environment"] != "dev"
         or contract["authority_table_arn"] != variables["deployment"]["authority_table_arn"]
         or contract["recovery_alias_arn"] != f"arn:aws:lambda:{REGION}:{ACCOUNT}:function:{PREFIX}-url-lease-recovery:live"
         or not isinstance(contract["recovery_version"], str)
         or not re.fullmatch(r"[1-9][0-9]*", contract["recovery_version"])
-        or any(contract[key] is not True for key in ("worker_enabled", "schedule_enabled", "heartbeat_enforced"))
+        or any(contract[key] is not True for key in ("worker_enabled", "schedule_enabled"))
         or contract["provider_access_added"] is not False
     ):
         raise ValueError("Shared maintenance must be enabled, versioned, same-table and provider-free.")
@@ -149,6 +153,7 @@ def _expected_environment(name, variables, active):
 
 
 def review(plan, revision, mode):
+    require_alarm_free_plan(plan)
     if mode not in {"inactive", "engineering"}:
         raise ValueError("Unknown transition mode.")
     if not re.fullmatch(r"[0-9a-f]{40}", revision):

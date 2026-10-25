@@ -10,7 +10,7 @@ locals {
 }
 
 resource "aws_cloudwatch_metric_alarm" "lifecycle" {
-  for_each            = local.lifecycle_alarm_specs
+  for_each            = { for alarm_key, alarm_value in(local.lifecycle_alarm_specs) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.name}-${each.key}"
   alarm_description   = "History lifecycle ${each.key}; follow the privacy-safe History operations runbook."
   namespace           = "AMT/TrustCheckRadar/History"
@@ -30,7 +30,7 @@ resource "aws_cloudwatch_metric_alarm" "lifecycle" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "function" {
-  for_each            = var.lifecycle_active ? toset(["Errors", "Throttles"]) : toset([])
+  for_each            = { for alarm_key, alarm_value in(var.lifecycle_active ? toset(["Errors", "Throttles"]) : toset([])) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.name}-${lower(each.key)}"
   namespace           = "AWS/Lambda"
   metric_name         = each.key
@@ -55,7 +55,7 @@ locals {
 }
 
 resource "aws_cloudwatch_metric_alarm" "account_reconciliation" {
-  for_each            = local.account_reconciliation_alarm_specs
+  for_each            = { for alarm_key, alarm_value in(local.account_reconciliation_alarm_specs) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.account_deletion_name}-reconciliation-${each.key}"
   alarm_description   = "History deletion reconciliation ${each.key}; investigate before the 24-hour erasure deadline. Full-pass age is absent until the first pass, covered by no_full_pass."
   namespace           = "AMT/TrustCheckRadar/History"

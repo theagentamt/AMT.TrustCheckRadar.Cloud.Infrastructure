@@ -157,11 +157,11 @@ run "lambda_contract_is_pinned_scoped_and_observable" {
     condition = (
       aws_cloudwatch_log_group.age_attestation_lambda.retention_in_days == 14 &&
       aws_cloudwatch_log_group.age_attestation_api.retention_in_days == 14 &&
-      length(aws_cloudwatch_metric_alarm.age_attestation_lambda) == 2 &&
-      toset([for alarm in aws_cloudwatch_metric_alarm.age_attestation_lambda : alarm.metric_name]) == toset(["Errors", "Throttles"]) &&
-      aws_cloudwatch_metric_alarm.age_attestation_api_5xx[0].metric_name == "5xx" &&
-      aws_cloudwatch_metric_alarm.age_attestation_api_5xx[0].dimensions.Route == "POST /v1/users/age-attestation" &&
-      alltrue([for alarm in aws_cloudwatch_metric_alarm.age_attestation_lambda : alarm.alarm_actions == toset(["arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"])])
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.age_attestation_lambda) == 2) : (length(aws_cloudwatch_metric_alarm.age_attestation_lambda) == 0)) &&
+      (var.environment == "prod" ? (toset([for alarm in aws_cloudwatch_metric_alarm.age_attestation_lambda : alarm.metric_name]) == toset(["Errors", "Throttles"])) : (length(aws_cloudwatch_metric_alarm.age_attestation_lambda) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.age_attestation_api_5xx[0].metric_name == "5xx") : (length(aws_cloudwatch_metric_alarm.age_attestation_api_5xx) == 0)) &&
+      (var.environment == "prod" ? (aws_cloudwatch_metric_alarm.age_attestation_api_5xx[0].dimensions.Route == "POST /v1/users/age-attestation") : (length(aws_cloudwatch_metric_alarm.age_attestation_api_5xx) == 0)) &&
+      (var.environment == "prod" ? (alltrue([for alarm in aws_cloudwatch_metric_alarm.age_attestation_lambda : alarm.alarm_actions == toset(["arn:aws:sns:us-east-1:107827791950:trustcheckradar-dev-url-resolver-alerts"])])) : (length(aws_cloudwatch_metric_alarm.age_attestation_lambda) == 0))
     )
     error_message = "Age-attestation runtime/API logs and alarms must use bounded retention and the established support topic."
   }

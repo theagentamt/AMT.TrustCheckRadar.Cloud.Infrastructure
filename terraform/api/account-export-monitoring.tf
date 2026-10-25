@@ -13,7 +13,7 @@ variable "account_export_monitoring" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "account_export_runtime" {
-  for_each            = var.account_export_monitoring == null || var.account_export_deployment == null ? toset([]) : toset(["Errors", "Throttles"])
+  for_each            = { for alarm_key, alarm_value in(var.account_export_monitoring == null || var.account_export_deployment == null ? toset([]) : toset(["Errors", "Throttles"])) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.account_export_name}-${lower(each.key)}"
   alarm_description   = "Account export runtime failure; investigate without logging or replaying user export payloads."
   namespace           = "AWS/Lambda"
@@ -34,7 +34,7 @@ resource "aws_cloudwatch_metric_alarm" "account_export_runtime" {
 # Handled storage/key/configuration failures return 503 without incrementing
 # Lambda Errors. The handler emits exactly these bounded Operation dimensions.
 resource "aws_cloudwatch_metric_alarm" "account_export_unavailable" {
-  for_each            = var.account_export_monitoring == null || var.account_export_deployment == null ? toset([]) : toset(["start", "continue", "unknown"])
+  for_each            = { for alarm_key, alarm_value in(var.account_export_monitoring == null || var.account_export_deployment == null ? toset([]) : toset(["start", "continue", "unknown"])) : alarm_key => alarm_value if var.environment == "prod" }
   alarm_name          = "${local.account_export_name}-${each.key}-unavailable"
   alarm_description   = "Account export ${each.key} returned unavailable. Reauthentication, expiry and ordinary size rejections are separate metrics."
   namespace           = "AMT/TrustCheckRadar/AccountExport"

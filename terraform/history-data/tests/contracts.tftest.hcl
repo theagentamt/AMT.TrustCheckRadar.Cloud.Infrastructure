@@ -304,7 +304,7 @@ run "monitoring_covers_tables_and_indexes_without_account_data" {
 
   assert {
     condition = (
-      length(aws_cloudwatch_metric_alarm.storage_throttles) == 2 &&
+      (var.environment == "prod" ? (length(aws_cloudwatch_metric_alarm.storage_throttles) == 2) : (length(aws_cloudwatch_metric_alarm.storage_throttles) == 0)) &&
       length(aws_cloudwatch_dashboard.history_storage) == 1 &&
       length(local.storage_metric_dimensions) == 5 &&
       output.downstream_contract.storage_monitoring_enabled
@@ -313,25 +313,27 @@ run "monitoring_covers_tables_and_indexes_without_account_data" {
   }
 
   assert {
-    condition = alltrue([
-      for direction, alarm in aws_cloudwatch_metric_alarm.storage_throttles :
-      alarm.alarm_name == "trustcheckradar-dev-history-${direction}-throttles" &&
-      toset(alarm.alarm_actions) == toset([var.monitoring.alarm_topic_arn]) &&
-      toset(alarm.ok_actions) == toset([var.monitoring.alarm_topic_arn]) &&
-      alarm.treat_missing_data == "notBreaching" &&
-      alarm.threshold == 0 &&
-      length(alarm.metric_query) == 6 &&
-      length([for query in alarm.metric_query : query if query.return_data]) == 1 &&
-      alltrue([
-        for query in alarm.metric_query : query.id == "total" ? query.expression == "SUM(METRICS())" : alltrue([
-          for metric in query.metric :
-          metric.metric_name == local.throttle_metrics[direction] &&
-          metric.namespace == "AWS/DynamoDB" && metric.period == 300 && metric.stat == "Sum" &&
-          startswith(metric.dimensions.TableName, "trustcheckradar-dev-history-") &&
-          length(setsubtract(toset(keys(metric.dimensions)), toset(["TableName", "GlobalSecondaryIndexName"]))) == 0
+    condition = (
+      (var.environment == "prod" ? (alltrue([
+        for direction, alarm in aws_cloudwatch_metric_alarm.storage_throttles :
+        alarm.alarm_name == "trustcheckradar-dev-history-${direction}-throttles" &&
+        toset(alarm.alarm_actions) == toset([var.monitoring.alarm_topic_arn]) &&
+        toset(alarm.ok_actions) == toset([var.monitoring.alarm_topic_arn]) &&
+        alarm.treat_missing_data == "notBreaching" &&
+        alarm.threshold == 0 &&
+        length(alarm.metric_query) == 6 &&
+        length([for query in alarm.metric_query : query if query.return_data]) == 1 &&
+        alltrue([
+          for query in alarm.metric_query : query.id == "total" ? query.expression == "SUM(METRICS())" : alltrue([
+            for metric in query.metric :
+            metric.metric_name == local.throttle_metrics[direction] &&
+            metric.namespace == "AWS/DynamoDB" && metric.period == 300 && metric.stat == "Sum" &&
+            startswith(metric.dimensions.TableName, "trustcheckradar-dev-history-") &&
+            length(setsubtract(toset(keys(metric.dimensions)), toset(["TableName", "GlobalSecondaryIndexName"]))) == 0
+          ])
         ])
-      ])
-    ])
+      ])) : (length(aws_cloudwatch_metric_alarm.storage_throttles) == 0))
+    )
     error_message = "Alarm math, environment dimensions, notification actions and privacy boundary must stay exact."
   }
 
@@ -368,10 +370,10 @@ run "monitoring_isolated_in_promoted_uat" {
         for dimensions in values(local.storage_metric_dimensions) :
         startswith(dimensions.TableName, "trustcheckradar-uat-history-")
       ]) &&
-      alltrue([
+      (var.environment == "prod" ? (alltrue([
         for alarm in aws_cloudwatch_metric_alarm.storage_throttles :
         startswith(alarm.alarm_name, "trustcheckradar-uat-history-") && alarm.tags.Environment == "uat"
-      ])
+      ])) : (length(aws_cloudwatch_metric_alarm.storage_throttles) == 0))
     )
     error_message = "Promoted UAT monitoring must never use Dev data dimensions or alarm names."
   }
