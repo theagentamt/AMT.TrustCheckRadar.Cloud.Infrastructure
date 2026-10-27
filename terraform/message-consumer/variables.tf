@@ -37,6 +37,21 @@ variable "engineering_subjects" {
   }
 }
 
+variable "preserved_engineering_subjects_json" {
+  description = "Exact existing rules-only allowlist bytes. Membership must equal engineering_subjects; this never admits another subject. Null keeps canonical encoding."
+  type        = string
+  default     = null
+  validation {
+    condition = var.preserved_engineering_subjects_json == null ? true : try(
+      var.enabled && var.environment == "dev" && var.candidate3_rules_only_enabled && !var.message_ai_primary_enabled &&
+      length(var.preserved_engineering_subjects_json) <= 512 &&
+      length(jsondecode(var.preserved_engineering_subjects_json)) == 2 &&
+      toset(jsondecode(var.preserved_engineering_subjects_json)) == var.engineering_subjects &&
+    length(jsondecode(var.preserved_engineering_subjects_json)) == length(var.engineering_subjects), false)
+    error_message = "Preserved JSON must contain each admitted rules-only Dev subject exactly once; AI and other environments cannot use it."
+  }
+}
+
 variable "authority_configuration" {
   description = "Explicit V1 authority horizons; receipts and counters retain the approved seven-day boundary."
   type = object({

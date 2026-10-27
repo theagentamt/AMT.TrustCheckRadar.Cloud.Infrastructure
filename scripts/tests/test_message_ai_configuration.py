@@ -194,6 +194,9 @@ class NormalPlanTests(unittest.TestCase):
     def plan(self):
         final,baseline,captured,targets=fixtures.message()
         for plan in (final,baseline):
+            # The shared fixture builds rules-only preservation inputs; this
+            # suite exercises the unchanged AI/default-canonical input path.
+            plan['variables'].pop('preserved_engineering_subjects_json', None)
             plan['resource_changes'].extend(log_rows())
             plan['variables'].update({k:{'value':val} for k,val in {
                 'message_ai_primary_enabled':False,'ai_configuration':None,'url_assessment_enabled':False}.items()})
