@@ -184,6 +184,6 @@ output "campaign_recovery_preparation_contract" {
     producer_writes_enabled       = false
     historical_coverage_qualified = false
     schedule_enabled              = local.campaign_deletion_active
-    alarm_actions_enabled         = local.campaign_deletion_active
+    alarm_actions_enabled         = anytrue([for alarm in aws_cloudwatch_metric_alarm.recovery : alarm.actions_enabled])
   }
 }
