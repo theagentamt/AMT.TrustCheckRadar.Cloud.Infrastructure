@@ -116,7 +116,7 @@ resource "aws_lambda_function" "runtime" {
       COGNITO_REQUIRED_SCOPE              = "aws.cognito.signin.user.admin"
       AUTHORITY_HMAC_SECRET_ARN           = var.deployment.authority_hmac_secret_arn
       AUTHORITY_POLICY_VERSION            = "owner-2026-09-20-v1"
-      DEV_SUBJECT_ALLOWLIST_JSON          = jsonencode(sort(tolist(var.engineering_subjects)))
+      DEV_SUBJECT_ALLOWLIST_JSON          = var.preserved_engineering_subjects_json != null ? var.preserved_engineering_subjects_json : jsonencode(sort(tolist(var.engineering_subjects)))
       MESSAGE_EVALUATOR_FUNCTION_ARN      = local.evaluator_alias_arn
       MESSAGE_PROVIDER_CIRCUIT_OPEN       = tostring(!var.activate_rules_engineering || var.candidate3_rules_only_enabled)
       } : {

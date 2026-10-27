@@ -318,7 +318,8 @@ def review(plan, baseline, captured, revision, mode, replacements=None, configur
                 environment = _expected_environment(name, expected, True)
                 environment['MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED'] = 'true'
                 if name == 'consumer':
-                    environment.update(GOVERNED_HISTORY_SETTLEMENT_ENABLED='true', MESSAGE_PROVIDER_CIRCUIT_OPEN='true')
+                    environment.update(GOVERNED_HISTORY_SETTLEMENT_ENABLED='true', MESSAGE_PROVIDER_CIRCUIT_OPEN='true',
+                                       DEV_SUBJECT_ALLOWLIST_JSON=expected['preserved_engineering_subjects_json'])
                 require(prepare.environment(before) == prepare.environment(after) == environment, 'Candidate.3/History/AI-off configuration must remain exact.', resource=resource_category(f'aws_lambda_function.runtime["{name}"]'))
             require(prepare.artifact(after) == expected['deployment']['artifacts'][name], 'Artifact selection mismatch.', resource=resource_category(f'aws_lambda_function.runtime["{name}"]'))
             require(after.get('code_sha256') == after['source_code_hash'] or

@@ -361,6 +361,9 @@ def build(plan, captured, mode, replacements=None, configuration=None):
               'governed_history_settlement_enabled': True,
               'engineering_subjects': subjects(consumer['DEV_SUBJECT_ALLOWLIST_JSON'], 2, scope_sha(mode)),
               'authority_maintenance': captured['maintenance']}
+    if mode == 'message-history':
+        # Membership is checked above; preserve order/spacing independently.
+        values['preserved_engineering_subjects_json'] = consumer['DEV_SUBJECT_ALLOWLIST_JSON']
     deployment = copy.deepcopy(variables['deployment'])
     deployment['artifacts'] = replacements or {n: artifact(rows[f'aws_lambda_function.runtime["{n}"]']['change']['before']) for n in ('consumer', 'evaluator')}
     _review_artifacts(deployment)

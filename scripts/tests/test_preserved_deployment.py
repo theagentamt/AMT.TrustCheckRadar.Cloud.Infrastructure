@@ -311,6 +311,31 @@ class PreservedDeploymentTests(unittest.TestCase):
             with self.subTest(count=len(scope)), self.assertRaises(ValueError):
                 p.build(baseline, observed, 'message-history', targets)
 
+    def test_rules_only_preserves_serialization_without_function_or_alias_update(self):
+        _, baseline, _, _ = message()
+        raw = json.dumps(list(reversed(SYNTHETIC)), indent=1)
+        consumer = p.inventory(baseline)['aws_lambda_function.runtime["consumer"]']
+        for side in ('before', 'after'):
+            p.environment(consumer['change'][side])['DEV_SUBJECT_ALLOWLIST_JSON'] = raw
+        baseline['output_changes']['candidate_contract']['after']['engineering_subject_count'] = 2
+        observed = capture(baseline, maintenance_contract(True))
+        desired = copy.deepcopy(baseline)
+        values = p.build(baseline, observed, 'message-history')
+        self.assertEqual(values['preserved_engineering_subjects_json'], raw)
+        self.assertEqual(values['engineering_subjects'], SYNTHETIC)
+        for key, value in values.items():
+            desired['variables'][key] = {'value': value}
+        sync(baseline); sync(desired)
+        result, _ = v.review(desired, baseline, observed, REVISION, 'message-history')
+        self.assertEqual(result['resourceUpdates'], 0)
+        for row in desired['resource_changes']:
+            if row['address'].startswith(('aws_lambda_function.', 'aws_lambda_alias.')):
+                self.assertEqual(row['change']['actions'], ['no-op'])
+                self.assertEqual(row['change']['before'], row['change']['after'])
+        desired['variables']['preserved_engineering_subjects_json']['value'] = json.dumps(SYNTHETIC)
+        with self.assertRaises(ValueError):
+            v.review(desired, baseline, observed, REVISION, 'message-history')
+
     def test_rules_only_capture_and_deployed_history_use_rules_pin(self):
         p.SCOPE_SHA = p.digest([SYNTHETIC[0], '01997e3a-0000-7000-8000-000000000003'])
         _, baseline, _, _ = message(); rows = p.inventory(baseline)
