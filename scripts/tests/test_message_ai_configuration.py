@@ -185,10 +185,11 @@ class ConfigurationTests(unittest.TestCase):
 
 class NormalPlanTests(unittest.TestCase):
     def setUp(self):
-        self.scope=p.SCOPE_SHA;p.SCOPE_SHA=p.digest(fixtures.SYNTHETIC)
+        self.scope=p.SCOPE_SHA;self.rules_scope=p.RULES_SCOPE_SHA
+        p.SCOPE_SHA=p.digest(fixtures.SYNTHETIC);p.RULES_SCOPE_SHA=p.digest(fixtures.SYNTHETIC)
 
     def tearDown(self):
-        p.SCOPE_SHA=self.scope
+        p.SCOPE_SHA=self.scope;p.RULES_SCOPE_SHA=self.rules_scope
 
     def plan(self):
         final,baseline,captured,targets=fixtures.message()

@@ -9,6 +9,7 @@ import stat
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import prepare_preserved_deployment as p
@@ -138,6 +139,7 @@ def message():
 class PreservedDeploymentTests(unittest.TestCase):
     def setUp(self):
         self.original_scope = p.SCOPE_SHA
+        self.original_rules_scope = p.RULES_SCOPE_SHA
         self.original_entitlements = copy.deepcopy(p.ENTITLEMENTS)
         p.ENTITLEMENTS['baseTrialSubjectsSha256'] = p.digest([SYNTHETIC[0]])
         p.ENTITLEMENTS['current']['extraSubjectsSha256'] = p.digest([SYNTHETIC[1]])
@@ -156,9 +158,11 @@ class PreservedDeploymentTests(unittest.TestCase):
         # Only the pure compiler test process uses a synthetic digest. The CLI,
         # checked-in Terraform and deployed scope remain pinned to the real hash.
         p.SCOPE_SHA = p.digest(SYNTHETIC)
+        p.RULES_SCOPE_SHA = p.digest(SYNTHETIC)
 
     def tearDown(self):
         p.SCOPE_SHA = self.original_scope
+        p.RULES_SCOPE_SHA = self.original_rules_scope
         p.ENTITLEMENTS = self.original_entitlements
 
     def test_complete_three_resource_transition(self):
@@ -290,6 +294,57 @@ class PreservedDeploymentTests(unittest.TestCase):
         self.assertEqual(result['resourceUpdates'], 4)
         self.assertEqual(plan['variables']['engineering_subjects']['value'], SYNTHETIC)
 
+    def test_rules_only_build_does_not_use_ai_cohort_pin(self):
+        p.SCOPE_SHA = p.digest([SYNTHETIC[0], '01997e3a-0000-7000-8000-000000000003'])
+        plan, baseline, observed, targets = message()
+        result, _ = v.review(plan, baseline, observed, REVISION, 'message-history', targets)
+        self.assertFalse(result['providerCallsEnabled'])
+        self.assertEqual(plan['variables']['engineering_subjects']['value'], SYNTHETIC)
+        with self.assertRaises(ValueError):
+            p.subjects(json.dumps(SYNTHETIC), 2, p.scope_sha('message-ai'))
+
+    def test_rules_only_build_rejects_different_and_extra_subjects(self):
+        for scope in ([SYNTHETIC[0], '01997e3a-0000-7000-8000-000000000003'],
+                      SYNTHETIC + ['01997e3a-0000-7000-8000-000000000003']):
+            _, baseline, observed, targets = message()
+            p.environment(p.inventory(baseline)['aws_lambda_function.runtime["consumer"]']['change']['before'])['DEV_SUBJECT_ALLOWLIST_JSON'] = json.dumps(scope)
+            with self.subTest(count=len(scope)), self.assertRaises(ValueError):
+                p.build(baseline, observed, 'message-history', targets)
+
+    def test_rules_only_capture_and_deployed_history_use_rules_pin(self):
+        p.SCOPE_SHA = p.digest([SYNTHETIC[0], '01997e3a-0000-7000-8000-000000000003'])
+        _, baseline, _, _ = message(); rows = p.inventory(baseline)
+        history = {'State': 'Active', 'Version': '12', 'CodeSha256': 'history-source',
+                   'Environment': {'Variables': {'AUTHORITY_ENABLED': 'true',
+                    'GOVERNED_HISTORY_LIST_ENABLED': 'true', 'GOVERNED_HISTORY_DETAIL_ENABLED': 'true',
+                    'DEV_SUBJECT_ALLOWLIST_JSON': json.dumps(SYNTHETIC)}}}
+        def read(service, operation, *args):
+            if service == 'sts': return {'Account': '107827791950'}
+            self.assertEqual(service, 'lambda')
+            function = args[args.index('--function-name') + 1]
+            if function.endswith('governed-history'):
+                return {'FunctionVersion': '12'} if operation == 'get-alias' else history
+            name = function.rsplit('-', 1)[1]
+            value = rows[f'aws_lambda_function.runtime["{name}"]']['change']['before']
+            if operation == 'get-alias': return {'FunctionVersion': value['version']}
+            if operation == 'get-function-concurrency': return {'ReservedConcurrentExecutions': value['reserved_concurrent_executions']}
+            result = {out: value[key] for key, out in {'function_name': 'FunctionName',
+                'runtime': 'Runtime', 'architectures': 'Architectures', 'role': 'Role',
+                'handler': 'Handler', 'timeout': 'Timeout', 'memory_size': 'MemorySize',
+                'version': 'Version', 'code_sha256': 'CodeSha256'}.items()}
+            return result | {'State': 'Active', 'LastUpdateStatus': 'Successful',
+                             'Environment': {'Variables': p.environment(value)}}
+        with patch.object(p, 'maintenance_readback', return_value=maintenance_contract(True)):
+            captured = p.capture(baseline, 'message-history', read)
+            v.verify_deployed(baseline, baseline, captured, 'message-history', read)
+            for scope in ([SYNTHETIC[0], '01997e3a-0000-7000-8000-000000000003'],
+                          SYNTHETIC + ['01997e3a-0000-7000-8000-000000000003']):
+                history['Environment']['Variables']['DEV_SUBJECT_ALLOWLIST_JSON'] = json.dumps(scope)
+                with self.subTest(count=len(scope)), self.assertRaises(ValueError):
+                    p.capture(baseline, 'message-history', read)
+                with self.subTest(readback=True, count=len(scope)), self.assertRaises(ValueError):
+                    v.verify_deployed(baseline, baseline, captured, 'message-history', read)
+
     def test_message_computed_hash_unknown_requires_reviewed_package_change(self):
         plan, baseline, observed, targets = message()
         row = p.inventory(plan)['aws_lambda_function.runtime["consumer"]']
@@ -387,6 +442,20 @@ class PreservedDeploymentTests(unittest.TestCase):
             with self.assertRaises(FileExistsError): p.private_write(path, {})
             link = Path(temp) / 'link'; os.symlink(path, link)
             with self.assertRaises(FileExistsError): p.private_write(link, {})
+
+
+class CohortBoundaryTests(unittest.TestCase):
+    def test_rules_pin_and_ai_pin_match_their_terraform_boundaries(self):
+        text = (Path(__file__).resolve().parents[2] / 'terraform/message-consumer/variables.tf').read_text()
+        rules = text.split('variable "candidate3_rules_only_enabled"', 1)[1].split('\nvariable ', 1)[0]
+        ai = text.split('variable "message_ai_primary_enabled"', 1)[1].split('\nvariable ', 1)[0]
+        self.assertIn(p.scope_sha('message-history'), rules)
+        self.assertNotIn(p.scope_sha('message-ai'), rules)
+        self.assertIn(p.scope_sha('message-ai'), ai)
+        self.assertNotIn(p.scope_sha('message-history'), ai)
+        self.assertIn('length(var.engineering_subjects) == 1', rules)
+        self.assertIn('length(var.engineering_subjects) == 1', ai)
+        with self.assertRaises(ValueError): p.scope_sha('unknown')
 
 
 class MaintenanceAlarmMetadataTests(unittest.TestCase):

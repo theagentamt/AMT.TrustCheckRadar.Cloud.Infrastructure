@@ -16,6 +16,7 @@ import message_ai_configuration as ai
 
 PREFIX = 'trustcheckradar-dev'
 SCOPE_SHA = '7dfa1b8193c7721659824436665ce800edc740fe396b89547725df371aafc09c'
+RULES_SCOPE_SHA = 'ea905c7184be88586e8a0a5745319bf0fdeef29734b57af80c9c048cd8e353d1'
 RECOVERY_SHA = 'a5uouU5vy1ZJMuWpjQY4GUQ236d4jpRS23yTmaP5K+Y='
 COMPUTED = {'last_modified', 'qualified_arn', 'qualified_invoke_arn', 'version'}
 ENTITLEMENTS = json.loads((Path(__file__).resolve().parents[1] /
@@ -41,6 +42,11 @@ def inventory(plan):
     require(len(rows) == len(result) and all(r.get('provider_name') == 'registry.terraform.io/hashicorp/aws' for r in rows),
             'Unique AWS inventory required.')
     return result
+
+
+def scope_sha(mode):
+    require(mode in ('message-history', 'message-ai'), 'Unknown preservation mode.')
+    return RULES_SCOPE_SHA if mode == 'message-history' else SCOPE_SHA
 
 
 def subjects(raw, count=None, sha=None):
@@ -234,7 +240,7 @@ def capture(plan, mode, read=aws):
                     'AUTHORITY_ENABLED', 'GOVERNED_HISTORY_LIST_ENABLED', 'GOVERNED_HISTORY_DETAIL_ENABLED')),
                 'Existing active History service must remain qualified.')
         scope = environment(rows['aws_lambda_function.runtime["consumer"]']['change']['before'])['DEV_SUBJECT_ALLOWLIST_JSON']
-        require(subjects(scope, 2, SCOPE_SHA) == subjects(history['Environment']['Variables']['DEV_SUBJECT_ALLOWLIST_JSON'], 2, SCOPE_SHA),
+        require(subjects(scope, 2, scope_sha(mode)) == subjects(history['Environment']['Variables']['DEV_SUBJECT_ALLOWLIST_JSON'], 2, scope_sha(mode)),
                 'Message and History scope must remain identical.')
         result['history'] = {'version': history['Version'], 'codeSha256': history['CodeSha256'],
                              'environmentSha256': digest(history['Environment']['Variables'])}
@@ -353,7 +359,7 @@ def build(plan, captured, mode, replacements=None, configuration=None):
                     'AI_POLICY_READBACK')
     values = {'activate_rules_engineering': True, 'candidate3_rules_only_enabled': consumer['MESSAGE_CANDIDATE3_RULES_ONLY_ENABLED'] == 'true',
               'governed_history_settlement_enabled': True,
-              'engineering_subjects': subjects(consumer['DEV_SUBJECT_ALLOWLIST_JSON'], 2, SCOPE_SHA),
+              'engineering_subjects': subjects(consumer['DEV_SUBJECT_ALLOWLIST_JSON'], 2, scope_sha(mode)),
               'authority_maintenance': captured['maintenance']}
     deployment = copy.deepcopy(variables['deployment'])
     deployment['artifacts'] = replacements or {n: artifact(rows[f'aws_lambda_function.runtime["{n}"]']['change']['before']) for n in ('consumer', 'evaluator')}
