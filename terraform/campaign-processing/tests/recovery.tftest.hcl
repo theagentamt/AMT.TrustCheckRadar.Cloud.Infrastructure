@@ -95,7 +95,8 @@ run "recovery_default_is_absent" {
       length(aws_scheduler_schedule.recovery) == 0 &&
       length(aws_iam_role_policy.recovery_runtime) == 0 &&
       length(aws_cloudwatch_metric_alarm.recovery) == 0 &&
-      !output.campaign_recovery_preparation_contract.prepared
+      !output.campaign_recovery_preparation_contract.prepared &&
+      !output.campaign_recovery_preparation_contract.alarm_actions_enabled
     )
     error_message = "An index contract alone must not prepare or enable recovery."
   }
@@ -103,6 +104,10 @@ run "recovery_default_is_absent" {
 run "prepared_recovery_stays_closed_and_content_free" {
   command = plan
   variables { campaign_recovery_preparation = { review_reference = "synthetic-reviewed-candidate" } }
+  assert {
+    condition     = !output.campaign_recovery_preparation_contract.alarm_actions_enabled
+    error_message = "Absent Dev recovery alarms must not advertise enabled notifications."
+  }
   assert {
     condition = (aws_scheduler_schedule.recovery[0].state == "DISABLED" &&
       jsondecode(aws_scheduler_schedule.recovery[0].target[0].input) == { schemaVersion = 1, operation = "reconcile-campaign-cleanup" } &&
