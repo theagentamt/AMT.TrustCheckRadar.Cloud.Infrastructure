@@ -156,7 +156,7 @@ variable "candidate3_rules_only_enabled" {
   validation {
     condition = !var.candidate3_rules_only_enabled || (var.activate_rules_engineering && (length(var.engineering_subjects) == 1 || (
       length(var.engineering_subjects) == 2 &&
-      sha256(jsonencode(sort(tolist(var.engineering_subjects)))) == "7dfa1b8193c7721659824436665ce800edc740fe396b89547725df371aafc09c"
+      sha256(jsonencode(sort(tolist(var.engineering_subjects)))) == "ea905c7184be88586e8a0a5745319bf0fdeef29734b57af80c9c048cd8e353d1"
     )))
     error_message = "Candidate.3 requires one qualified subject or the exact existing two-subject Dev scope; no new cohort is admitted."
   }

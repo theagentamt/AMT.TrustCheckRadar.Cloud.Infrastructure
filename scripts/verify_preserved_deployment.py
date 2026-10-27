@@ -395,7 +395,7 @@ def verify_deployed(plan, baseline, captured, mode, read=prepare.aws):
     if mode in ('message-history','message-ai'):
         require(maintenance == captured['maintenance'], 'Protected maintenance metadata changed.')
         history = read('lambda', 'get-function-configuration', '--function-name', prepare.PREFIX + '-governed-history', '--qualifier', 'live')
-        prepare.subjects(history['Environment']['Variables']['DEV_SUBJECT_ALLOWLIST_JSON'], 2, prepare.SCOPE_SHA)
+        prepare.subjects(history['Environment']['Variables']['DEV_SUBJECT_ALLOWLIST_JSON'], 2, prepare.scope_sha(mode))
         history_alias = read('lambda', 'get-alias', '--function-name', prepare.PREFIX + '-governed-history', '--name', 'live')
         require(history['State'] == 'Active' and history['Version'] == history_alias['FunctionVersion'] and
                 not history_alias.get('RoutingConfig', {}).get('AdditionalVersionWeights') and captured['history'] == {
