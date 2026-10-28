@@ -349,3 +349,92 @@ run "message_rejects_maintenance_added_provider_access" {
   }
   expect_failures = [var.activate_rules_engineering]
 }
+
+run "dev_staging_changes_only_narrow_provider_permissions" {
+  command = apply
+  variables {
+    dev_staging_secret_arn = "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/openai-uHKddW"
+  }
+  assert {
+    condition = (
+      !var.message_ai_primary_enabled && var.ai_configuration == null &&
+      alltrue([for f in aws_lambda_function.runtime : f.environment[0].variables.MESSAGE_AI_ENABLED == "false"]) &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.MESSAGE_CONSUMER_ENABLED == "false" &&
+      aws_lambda_function.runtime["consumer"].environment[0].variables.MESSAGE_PROVIDER_CIRCUIT_OPEN == "true" &&
+      aws_lambda_function.runtime["evaluator"].environment[0].variables.MESSAGE_AI_QUALIFIED == "false" &&
+      !contains(keys(aws_lambda_function.runtime["evaluator"].environment[0].variables), "MESSAGE_AI_QUALIFICATION_ID") &&
+      alltrue([for key, alias in aws_lambda_alias.runtime : alias.function_version == aws_lambda_function.runtime[key].version])
+    )
+    error_message = "Staging permissions must not activate AI/admission, assert qualification or change runtime alias selection."
+  }
+  assert {
+    condition = (
+      toset(jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition["ForAllValues:StringEquals"]["dynamodb:Attributes"]) ==
+      toset(["PK", "SK", "recordType", "revision", "windowStart", "attempts", "failures", "windowSeconds", "reservedNanoUsd", "unpricedAttempts"]) &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Action == ["dynamodb:UpdateItem"] &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Resource == var.deployment.authority_table_arn &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition["ForAllValues:StringEquals"]["dynamodb:LeadingKeys"] == ["V1#CONTROL"] &&
+      jsondecode(aws_iam_role_policy.consumer[0].policy).Statement[4].Condition["ForAnyValue:StringEquals"]["dynamodb:EnclosingOperation"] == ["TransactWriteItems"]
+    )
+    error_message = "Only three budget attributes may be added; transaction, key, action and table fences must remain exact."
+  }
+  assert {
+    condition = (
+      length(jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement) == 7 &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[1].Effect == "Deny" &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[1].Resource == var.deployment.assessment_alias_arn &&
+      toset(jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[2].Action) == toset(["dynamodb:*", "s3:*", "ssm:*", "sts:AssumeRole"]) &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[3].Action == "secretsmanager:GetSecretValue" &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[3].Resource == var.dev_staging_secret_arn &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[3].Condition.StringEquals["secretsmanager:VersionStage"] == "AWSCURRENT" &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[4].NotResource == var.dev_staging_secret_arn &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[5].NotAction == "secretsmanager:GetSecretValue" &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[5].Resource == var.dev_staging_secret_arn &&
+      jsondecode(aws_iam_role_policy.evaluator[0].policy).Statement[6].Condition.StringNotEquals["secretsmanager:VersionStage"] == "AWSCURRENT"
+    )
+    error_message = "Staging must permit only current-version reads of one existing Dev secret, retaining all other secret/storage/invoke denials."
+  }
+}
+
+run "dev_staging_rejects_other_secret" {
+  command = plan
+  variables {
+    dev_staging_secret_arn = "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/openai-ABC123"
+  }
+  expect_failures = [var.dev_staging_secret_arn]
+}
+
+run "dev_staging_rejects_non_dev_and_disabled_deployment" {
+  command = plan
+  variables {
+    environment            = "prod"
+    enabled                = false
+    dev_staging_secret_arn = "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/openai-uHKddW"
+  }
+  expect_failures = [var.dev_staging_secret_arn]
+}
+
+run "dev_staging_requires_selection_cleared_before_ai_activation" {
+  command = plan
+  variables {
+    activate_rules_engineering = true
+    engineering_subjects       = ["11111111-1111-4111-8111-111111111111"]
+    message_ai_primary_enabled = true
+    dev_staging_secret_arn     = "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/openai-uHKddW"
+    ai_configuration = {
+      secret_arn                    = "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/openai-ABC123"
+      qualification_id              = "message-ai-v3-test"
+      qualification_evidence_sha256 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      timeout_ms                    = 8000
+      max_nano_usd_per_window       = 1000000000
+      cost_policy = {
+        model                 = "gpt-4.1-mini-2025-04-14"
+        contextTokens         = 1000
+        maxOutputTokens       = 512
+        inputNanoUsdPerToken  = 400
+        outputNanoUsdPerToken = 1600
+      }
+    }
+  }
+  expect_failures = [var.dev_staging_secret_arn]
+}

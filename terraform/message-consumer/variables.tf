@@ -200,6 +200,21 @@ variable "message_ai_primary_enabled" {
   }
 }
 
+variable "dev_staging_secret_arn" {
+  description = "Separately approved Dev IAM preparation for the existing OpenAI secret and three budget attributes. Does not activate AI, choose runtime configuration or attest qualification."
+  type        = string
+  default     = null
+  validation {
+    condition = var.dev_staging_secret_arn == null ? true : (
+      var.enabled && !var.message_ai_primary_enabled &&
+      var.environment == "dev" && var.project_name == "trustcheckradar" && var.aws_region == "us-east-1" &&
+      data.aws_caller_identity.current.account_id == "107827791950" &&
+      var.dev_staging_secret_arn == "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/openai-uHKddW"
+    )
+    error_message = "Staged permissions require the enabled, AI-off Dev deployment in account 107827791950/us-east-1 and its exact existing OpenAI secret. Clear staging permission selection before AI activation."
+  }
+}
+
 variable "ai_configuration" {
   description = "Nonsecret normal provider configuration. No model, monetary budget or qualification is chosen by default; artifacts must independently contain the matching accepted qualification evidence."
   type = object({
