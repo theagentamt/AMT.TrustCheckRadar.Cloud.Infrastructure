@@ -407,9 +407,14 @@ run "dev_staging_rejects_other_secret" {
 run "dev_staging_rejects_non_dev_and_disabled_deployment" {
   command = plan
   variables {
-    environment            = "prod"
-    enabled                = false
-    dev_staging_secret_arn = "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/openai-uHKddW"
+    environment             = "prod"
+    enabled                 = false
+    deployment              = null
+    api_gateway             = null
+    authority_configuration = null
+    provider_budget         = null
+    authority_maintenance   = null
+    dev_staging_secret_arn  = "arn:aws:secretsmanager:us-east-1:107827791950:secret:trustcheckradar/dev/openai-uHKddW"
   }
   expect_failures = [var.dev_staging_secret_arn]
 }
