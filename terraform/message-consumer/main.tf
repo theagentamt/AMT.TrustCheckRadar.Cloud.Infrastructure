@@ -5,9 +5,11 @@ locals {
     consumer  = { suffix = "message-consumer", timeout = 29, concurrency = 2, handler = "message_consumer.app.lambda_handler" }
     evaluator = { suffix = "message-evaluator", timeout = 23, concurrency = 2, handler = "message_evaluator.app.lambda_handler" }
   } : {}
-  identity_arns       = var.deployment == null ? [] : [var.deployment.users_table_arn, var.deployment.devices_table_arn, var.deployment.deletion_table_arn]
-  authority_arn       = try(var.deployment.authority_table_arn, "")
-  evaluator_alias_arn = "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:${local.prefix}-message-evaluator:live"
+  identity_arns                = var.deployment == null ? [] : [var.deployment.users_table_arn, var.deployment.devices_table_arn, var.deployment.deletion_table_arn]
+  authority_arn                = try(var.deployment.authority_table_arn, "")
+  evaluator_alias_arn          = "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:${local.prefix}-message-evaluator:live"
+  provider_permissions_enabled = var.message_ai_primary_enabled || var.dev_staging_secret_arn != null
+  provider_secret_arn          = var.message_ai_primary_enabled ? try(var.ai_configuration.secret_arn, null) : var.dev_staging_secret_arn
 }
 resource "aws_cloudwatch_log_group" "runtime" {
   for_each          = local.functions
@@ -41,7 +43,7 @@ resource "aws_iam_role_policy" "consumer" {
         Condition = {
           "ForAllValues:StringEquals" = {
             "dynamodb:LeadingKeys" = ["V1#CONTROL"]
-            "dynamodb:Attributes"  = concat(["PK", "SK", "recordType", "revision", "windowStart", "attempts", "failures"], var.message_ai_primary_enabled ? ["windowSeconds", "reservedNanoUsd", "unpricedAttempts"] : [])
+            "dynamodb:Attributes"  = concat(["PK", "SK", "recordType", "revision", "windowStart", "attempts", "failures"], local.provider_permissions_enabled ? ["windowSeconds", "reservedNanoUsd", "unpricedAttempts"] : [])
           }
           "ForAnyValue:StringEquals" = { "dynamodb:EnclosingOperation" = ["TransactWriteItems"] }
         }
@@ -68,13 +70,13 @@ resource "aws_iam_role_policy" "evaluator" {
     Statement = concat([
       { Sid = "OwnLogs", Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.runtime["evaluator"].arn}:*" },
       { Sid = "OneReviewedUrlAssessmentAlias", Effect = var.url_assessment_enabled ? "Allow" : "Deny", Action = "lambda:InvokeFunction", Resource = var.deployment.assessment_alias_arn },
-      { Sid = "NoConsumerStorageSecretsOrRoleChaining", Effect = "Deny", Action = concat(["dynamodb:*"], var.message_ai_primary_enabled ? [] : ["secretsmanager:*"], ["s3:*", "ssm:*", "sts:AssumeRole"]), Resource = "*" }
-      ], jsondecode(var.message_ai_primary_enabled ? jsonencode([
-        { Sid = "OneQualifiedProviderSecret", Effect = "Allow", Action = "secretsmanager:GetSecretValue", Resource = var.ai_configuration.secret_arn,
+      { Sid = "NoConsumerStorageSecretsOrRoleChaining", Effect = "Deny", Action = concat(["dynamodb:*"], local.provider_permissions_enabled ? [] : ["secretsmanager:*"], ["s3:*", "ssm:*", "sts:AssumeRole"]), Resource = "*" }
+      ], jsondecode(local.provider_permissions_enabled ? jsonencode([
+        { Sid = "OneQualifiedProviderSecret", Effect = "Allow", Action = "secretsmanager:GetSecretValue", Resource = local.provider_secret_arn,
         Condition = { StringEquals = { "secretsmanager:VersionStage" = "AWSCURRENT" } } },
-        { Sid = "NoOtherSecrets", Effect = "Deny", Action = "secretsmanager:*", NotResource = var.ai_configuration.secret_arn },
-        { Sid = "NoProviderSecretMutation", Effect = "Deny", NotAction = "secretsmanager:GetSecretValue", Resource = var.ai_configuration.secret_arn },
-        { Sid = "NoOtherProviderSecretStage", Effect = "Deny", Action = "secretsmanager:GetSecretValue", Resource = var.ai_configuration.secret_arn,
+        { Sid = "NoOtherSecrets", Effect = "Deny", Action = "secretsmanager:*", NotResource = local.provider_secret_arn },
+        { Sid = "NoProviderSecretMutation", Effect = "Deny", NotAction = "secretsmanager:GetSecretValue", Resource = local.provider_secret_arn },
+        { Sid = "NoOtherProviderSecretStage", Effect = "Deny", Action = "secretsmanager:GetSecretValue", Resource = local.provider_secret_arn,
         Condition = { StringNotEquals = { "secretsmanager:VersionStage" = "AWSCURRENT" } } }
     ]) : "[]"))
   })
