@@ -1,5 +1,6 @@
 """Offline rejection/privacy tests; no provider or AWS client is invoked."""
 import ast
+import copy
 import contextlib
 import hashlib
 import io
@@ -26,7 +27,24 @@ class DiagnosticTests(unittest.TestCase):
         # branches. Both original modes retain their dedicated regression suite;
         # all 43 original closed failure categories remain, with no removed guard.
         self.assertEqual(len(calls), 46)
-        self.assertEqual(digest, 'f544834b17ae855e1adda7791b1bb77defff7b6a7db8548c1a2c0af5207c5fa0')
+        # The reviewed trial-cohort change derives only the subject-count check
+        # from the validated private selection. Pin that exact new condition,
+        # and project it back to the old literal to prove every other guard is
+        # retained byte-for-byte at the AST level.
+        self.assertEqual(digest, '27b88933fe54c230759c81f1086b78ccea9d9605df28bfa065b736af3bf9778a')
+        original_calls = copy.deepcopy(calls)
+        selection = ast.parse("len(expected['governed_trial_subjects'])", mode='eval').body
+        matches = 0
+        for call in original_calls:
+            if call.args[1].value == 'Preserved URL/access/trial boundaries required.':
+                for condition in ast.walk(call.args[0]):
+                    if isinstance(condition, ast.Compare) and len(condition.comparators) == 1 and ast.dump(condition.comparators[0], include_attributes=False) == ast.dump(selection, include_attributes=False):
+                        condition.comparators[0] = ast.Constant(value=1)
+                        matches += 1
+        self.assertEqual(matches, 1)
+        original_conditions = sorted(ast.dump(n.args[0], include_attributes=False) for n in original_calls)
+        original_digest = hashlib.sha256(json.dumps(original_conditions, separators=(',', ':')).encode()).hexdigest()
+        self.assertEqual(original_digest, 'f544834b17ae855e1adda7791b1bb77defff7b6a7db8548c1a2c0af5207c5fa0')
         self.assertEqual({n.args[1].value for n in calls}, set(v.PREDICATES))
 
     def test_catalog_and_output_are_finite(self):
