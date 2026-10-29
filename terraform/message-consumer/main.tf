@@ -97,7 +97,7 @@ resource "aws_lambda_function" "runtime" {
   source_code_hash               = var.deployment.artifacts[each.key].source_hash
   publish                        = true
   environment {
-    variables = merge({
+    variables = local.ocr_preservation_enabled ? var.dev_ocr_preservation.environments[each.key] : merge({
       STAGE                                 = var.environment
       MESSAGE_POLICY_VERSION                = "message-rules-2026-09-20-v1"
       MESSAGE_POLICY_APPROVAL_SHA256        = "0367140fbdbaef36dd59ba81030f3e35e04e78dbbed4129277c9cb0758971a80"
@@ -154,12 +154,20 @@ resource "aws_lambda_function" "runtime" {
   }
   depends_on = [aws_iam_role_policy.consumer, aws_iam_role_policy.evaluator]
   tags       = var.tags
+  lifecycle {
+    postcondition {
+      condition = !local.ocr_preservation_enabled ? true : (
+        self.code_sha256 == (each.key == "consumer" ? "kgUck3tzaq0RSVSuWbS1OW2Q8hNZx6shc2BzEaDa1vU=" : local.ocr_evaluator_code_hash)
+      )
+      error_message = "OCR preservation must observe exactly the staged consumer and selected evaluator code; use the reviewed CAS rollout, never root apply."
+    }
+  }
 }
 resource "aws_lambda_alias" "runtime" {
   for_each         = local.functions
   name             = "live"
   function_name    = aws_lambda_function.runtime[each.key].function_name
-  function_version = aws_lambda_function.runtime[each.key].version
+  function_version = local.ocr_preservation_enabled ? (each.key == "consumer" ? "8" : nonsensitive(var.dev_ocr_preservation.evaluator_live_version)) : aws_lambda_function.runtime[each.key].version
 }
 resource "aws_lambda_function_event_invoke_config" "no_async_retries" {
   for_each                     = local.functions
