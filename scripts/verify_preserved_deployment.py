@@ -344,7 +344,7 @@ def review(plan, baseline, captured, revision, mode, replacements=None, configur
     contract = plan['output_changes']['candidate_contract']['after']
     if mode == 'maintenance':
         require(contract['consumer_enabled'] is False and contract['recovery_enabled'] is True and contract['general_customer_access'] is False and
-                contract['governed_trial_subject_count'] == 1 and contract['engineering_subject_count'] == 0, 'Preserved URL/access/trial boundaries required.')
+                contract['governed_trial_subject_count'] == len(expected['governed_trial_subjects']) and contract['engineering_subject_count'] == 0, 'Preserved URL/access/trial boundaries required.')
     elif mode == 'message-history':
         require(all(contract[k] is True for k in ('candidate3_rules_only_enabled', 'governed_history_settlement_enabled', 'consumer_enabled', 'evaluator_enabled', 'provider_circuit_open')) and
                 all(contract[k] is False for k in ('ai_enabled', 'ai_qualified', 'model_enabled')) and contract['engineering_subject_count'] == 2,

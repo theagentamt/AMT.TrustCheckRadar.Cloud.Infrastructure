@@ -9,6 +9,16 @@ import os
 from pathlib import Path
 from verify_governed_history_plan import require
 
+TRIAL_COHORT_SHA256 = 'ea905c7184be88586e8a0a5745319bf0fdeef29734b57af80c9c048cd8e353d1'
+
+
+def validate_access_subjects(subjects, active):
+    require(type(subjects) is list and all(isinstance(s, str) and re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', s) for s in subjects)
+            and len(subjects) == len(set(subjects)), 'Canonical unique access subjects required.')
+    cohort = hashlib.sha256(json.dumps(sorted(subjects), separators=(',', ':')).encode()).hexdigest()
+    require((not subjects if not active else len(subjects) == 1 or len(subjects) == 2 and cohort == TRIAL_COHORT_SHA256),
+            'Access requires one subject or the exact approved two-tester cohort; inactive requires none.')
+
 
 def validate_mode(scope, mode):
     modes = {'index': {'active', 'inactive'}, 'reader': {'inactive', 'list', 'detail', 'both'}, 'message': {'inactive', 'rules-only', 'rules-only-history'}, 'access': {'inactive', 'trial'}}
@@ -21,8 +31,8 @@ def build(scope, mode, deployment, subjects, index_ready, partitions=None):
         require(mode in {'active', 'inactive'}, 'Unknown index mode.')
         return {'governed_history_index_enabled': mode == 'active'}
     if scope == 'access':
-        require(type(subjects) is list and len(subjects) == int(mode == 'trial') and all(isinstance(s, str) and re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', s) for s in subjects), 'Access-only qualification requires one exact subject; inactive requires none.')
-        return {'governed_trial_subjects': subjects}
+        validate_access_subjects(subjects, mode == 'trial')
+        return {'governed_trial_subjects': subjects, **({'dev_access_snapshot_extra_subjects': []} if len(subjects) == 2 else {})}
     require(type(deployment) is dict and deployment, 'Reviewed immutable deployment coordinates are required.')
     partitions = partitions or []
     require(type(subjects) is list, 'Subjects must be a JSON list.')
