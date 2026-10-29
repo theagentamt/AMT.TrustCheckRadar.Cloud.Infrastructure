@@ -11,6 +11,7 @@ import verify_trial_authority_transition as legacy
 from verify_governed_history_plan import changed_fields, require
 from prepare_governed_history_configuration import validate_access_subjects
 import prepare_preserved_deployment as preserved
+from verify_preserved_deployment import unknowns
 
 FUNCTION = 'aws_lambda_function.runtime["entitlements"]'
 ALIAS = 'aws_lambda_alias.runtime["entitlements"]'
@@ -49,7 +50,7 @@ def review_cohort_addition(plan, revision, baseline):
     for address, row in rows.items():
         c = row['change']
         if address not in {FUNCTION, ALIAS}:
-            require(c['actions'] == ['no-op'] and c['before'] == c['after'] and not c.get('after_unknown'), 'All other resources must remain exact.')
+            require(c['actions'] == ['no-op'] and c['before'] == c['after'] and not unknowns(c.get('after_unknown', {})), 'All other resources must remain exact.')
     c = rows[FUNCTION]['change']
     require(changed_fields(c['before'], c['after']) <= preserved.COMPUTED | {'environment'},
             'Code/artifact, IAM, limits and other function settings must remain exact.')
@@ -57,14 +58,14 @@ def review_cohort_addition(plan, revision, baseline):
     expected.pop('DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON')
     require(preserved.environment(c['after']) == expected and previous['TRIAL_AUTHORITY_RETENTION_APPROVED'] == 'true',
             'Only the exact allowlist addition and snapshot-key removal are permitted.')
-    require(set(c.get('after_unknown', {})) <= preserved.COMPUTED,
+    require(unknowns(c.get('after_unknown', {})) <= {(field,) for field in preserved.COMPUTED},
             'Only published-version metadata may be unknown.')
     alias = rows[ALIAS]['change']
     require(alias['before']['function_version'] == '18' and alias['before']['name'] == alias['after']['name'] == 'live'
             and alias['before']['function_name'] == alias['after']['function_name'] == before['function_name']
             and not alias['before'].get('routing_config') and not alias['after'].get('routing_config'), 'Exact unweighted v18 live alias required.')
     require(changed_fields(alias['before'], alias['after']) <= {'function_version'}, 'Alias must bind updated function version.')
-    require(set(alias.get('after_unknown', {})) <= {'function_version'}, 'No other alias setting may be unknown.')
+    require(unknowns(alias.get('after_unknown', {})) <= {('function_version',)}, 'No other alias setting may be unknown.')
     version = c['after'].get('version')
     if version is None:
         resources = plan.get('configuration', {}).get('root_module', {}).get('resources', [])
@@ -77,7 +78,7 @@ def review_cohort_addition(plan, revision, baseline):
     require(set(plan.get('output_changes', {})) == set(baseline.get('output_changes', {})), 'Output inventory must remain exact.')
     for name, output in plan['output_changes'].items():
         old_output = baseline['output_changes'][name]
-        require(output.get('before') == old_output.get('after') and not output.get('after_unknown'), 'Output baseline changed or unknown.')
+        require(output.get('before') == old_output.get('after') and not unknowns(output.get('after_unknown', {})), 'Output baseline changed or unknown.')
         if name == 'candidate_contract':
             require(changed_fields(output['before'], output['after']) == {'governed_trial_subject_count'}
                     and output['before']['governed_trial_subject_count'] == 1 and output['after']['governed_trial_subject_count'] == 2,
