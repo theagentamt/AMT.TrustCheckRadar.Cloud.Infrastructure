@@ -112,3 +112,15 @@ class TrialCohortAdditionTests(unittest.TestCase):
         candidate = copy.deepcopy(self.plan)
         candidate['output_changes']['candidate_contract']['after_unknown'] = {'general_customer_access': True}
         with self.assertRaises(ValueError): gate.review(candidate, REVISION, 'trial', self.baseline)
+
+    def test_known_false_leaves_and_empty_unknown_mask_containers_are_preserved(self):
+        candidate = copy.deepcopy(self.plan)
+        rows = preserved.inventory(candidate)
+        rows[gate.FUNCTION]['change']['after_unknown'].update({
+            'architectures': [False], 'environment': [{'variables': {}}],
+            'ephemeral_storage': [{}], 'logging_config': [{}], 'tags_all': {}, 'vpc_config': []})
+        rows[gate.ALIAS]['change']['after_unknown']['routing_config'] = []
+        candidate['output_changes']['candidate_contract']['after_unknown'] = {'function_aliases': {}}
+        self.assertEqual(gate.review(candidate, REVISION, 'trial', self.baseline)[2:], (2, 2))
+        rows[gate.FUNCTION]['change']['after_unknown']['environment'][0]['variables']['AUTHORITY_ENABLED'] = True
+        with self.assertRaises(ValueError): gate.review(candidate, REVISION, 'trial', self.baseline)
