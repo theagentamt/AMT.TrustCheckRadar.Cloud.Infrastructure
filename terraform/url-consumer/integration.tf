@@ -111,18 +111,22 @@ locals {
 }
 
 variable "governed_trial_subjects" {
-  description = "SEC340: one synthetic Dev subject for access/trial only, independent of deletion and lease maintenance. Empty disables this mode."
+  description = "SEC340: one Dev subject or the exact owner-approved two-tester cohort for access/trial only. Empty disables this mode."
   type        = set(string)
   default     = []
   validation {
     condition = length(var.governed_trial_subjects) == 0 || (
-      length(var.governed_trial_subjects) == 1 && var.enabled && var.environment == "dev" &&
+      (length(var.governed_trial_subjects) == 1 || (
+        length(var.governed_trial_subjects) == 2 &&
+        sha256(jsonencode(sort(tolist(var.governed_trial_subjects)))) == "ea905c7184be88586e8a0a5745319bf0fdeef29734b57af80c9c048cd8e353d1" &&
+        var.aws_region == "us-east-1" && var.project_name == "trustcheckradar"
+      )) && var.enabled && var.environment == "dev" &&
       !local.authority_engineering_active && length(var.engineering_subjects) == 0 &&
       var.authority_configuration != null && var.api_gateway != null &&
       var.deletion_activation != null && var.alert_topic_arn != null &&
       alltrue([for subject in var.governed_trial_subjects : can(regex("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", subject))])
     )
-    error_message = "Governed qualification requires one exact Dev subject, existing cleanup/alerts and policy; other engineering modes must remain disabled."
+    error_message = "Governed qualification requires one Dev subject or the exact approved two-tester cohort, existing cleanup/alerts and policy; other engineering modes must remain disabled."
   }
 }
 locals {

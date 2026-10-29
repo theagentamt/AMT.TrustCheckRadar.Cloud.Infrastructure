@@ -60,6 +60,21 @@ def subjects(raw, count=None, sha=None):
     return value
 
 
+def trial_subject_inputs(env):
+    """Keep the historical snapshot profile distinct from the approved addition."""
+    from prepare_governed_history_configuration import validate_access_subjects
+    selected = subjects(env['DEV_SUBJECT_ALLOWLIST_JSON'])
+    validate_access_subjects(selected, True)
+    if len(selected) == 1:
+        require(digest(selected) == ENTITLEMENTS['baseTrialSubjectsSha256'], 'Existing private scope changed.')
+        extra = subjects(env['DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON'], 1, ENTITLEMENTS['current']['extraSubjectsSha256'])
+        require(not set(selected) & set(extra), 'GET scope must remain separate.')
+    else:
+        require('DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON' not in env, 'GET scope must remain separate.')
+        extra = []
+    return {'governed_trial_subjects': selected, 'dev_access_snapshot_extra_subjects': extra}
+
+
 def artifact(value):
     return {out: value[src] for out, src in {'bucket': 's3_bucket', 'key': 's3_key',
             'object_version': 's3_object_version', 'source_hash': 'source_code_hash'}.items()}
@@ -318,9 +333,7 @@ def build(plan, captured, mode, replacements=None, configuration=None):
         values = {'activate_authority_maintenance': True,
                   'maintenance_qualification_reference': 'owner-reviewed shared recovery/expiry; exact saved-plan approval required'}
         ent = environment(rows['aws_lambda_function.runtime["entitlements"]']['change']['before'])
-        values['governed_trial_subjects'] = subjects(ent['DEV_SUBJECT_ALLOWLIST_JSON'], 1, ENTITLEMENTS['baseTrialSubjectsSha256'])
-        values['dev_access_snapshot_extra_subjects'] = subjects(ent['DEV_ACCESS_SNAPSHOT_EXTRA_SUBJECTS_JSON'], 1, ENTITLEMENTS['current']['extraSubjectsSha256'])
-        require(not set(values['governed_trial_subjects']) & set(values['dev_access_snapshot_extra_subjects']), 'GET scope must remain separate.')
+        values.update(trial_subject_inputs(ent))
         for name in ('consumer', 'entitlements', 'deletion'):
             key = name + '_artifact_override'
             value = copy.deepcopy(variables[key])

@@ -586,6 +586,36 @@ run "governed_trial_rejects_wildcard" {
   expect_failures = [var.governed_trial_subjects]
 }
 
+run "governed_trial_rejects_unapproved_pair_with_existing_cleanup" {
+  command = plan
+  variables {
+    governed_trial_subjects = ["01997e3a-0000-7000-8000-000000000001", "01997e3a-0000-7000-8000-000000000002"]
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  expect_failures = [var.governed_trial_subjects]
+}
+
+run "governed_trial_rejects_third_member_with_existing_cleanup" {
+  command = plan
+  variables {
+    governed_trial_subjects = ["01997e3a-0000-7000-8000-000000000001", "01997e3a-0000-7000-8000-000000000002", "01997e3a-0000-7000-8000-000000000003"]
+    deletion_activation = {
+      source_sha            = "44bdf31bdeb150b13c2cc3732421acbdc5b7bf1d"
+      subjects              = ["00000000-0000-4000-8000-000000000002"]
+      inventory_reference   = "synthetic inventory evidence; no live approval"
+      runtime_reference     = "synthetic runtime evidence"
+      permissions_reference = "synthetic IAM evidence"
+    }
+  }
+  expect_failures = [var.governed_trial_subjects]
+}
+
 
 run "extra_snapshot_selection_preserves_trial_and_all_other_scope" {
   command = apply
