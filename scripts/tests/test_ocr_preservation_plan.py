@@ -118,6 +118,15 @@ class OcrPreservationTests(unittest.TestCase):
         p['resource_changes'][0]['address'] = 'aws_iam_role.unrelated'
         with self.assertRaises(ValueError): gate.review(p, REV)
 
+    def test_sensitivity_only_update_is_still_rejected_even_when_values_match(self):
+        p = copy.deepcopy(self.base)
+        c = p['resource_changes'][0]['change']
+        c['actions'] = ['update']
+        c['before_sensitive'] = {'environment': [{'variables': {}}]}
+        c['after_sensitive'] = {'environment': [{'variables': True}]}
+        self.assertEqual(c['before'], c['after'])
+        with self.assertRaises(ValueError): gate.review(p, REV)
+
 
 if __name__ == '__main__':
     unittest.main()

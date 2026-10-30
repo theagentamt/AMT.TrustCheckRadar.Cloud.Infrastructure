@@ -97,7 +97,10 @@ resource "aws_lambda_function" "runtime" {
   source_code_hash               = var.deployment.artifacts[each.key].source_hash
   publish                        = true
   environment {
-    variables = local.ocr_preservation_enabled ? var.dev_ocr_preservation.environments[each.key] : merge({
+    # Exact fingerprints admit nonsecret configuration/ARN references only.
+    # Keep the private profile sensitive, but preserve existing resource marks:
+    # marking this unchanged map sensitive alone schedules a Lambda update.
+    variables = local.ocr_preservation_enabled ? nonsensitive(var.dev_ocr_preservation.environments[each.key]) : merge({
       STAGE                                 = var.environment
       MESSAGE_POLICY_VERSION                = "message-rules-2026-09-20-v1"
       MESSAGE_POLICY_APPROVAL_SHA256        = "0367140fbdbaef36dd59ba81030f3e35e04e78dbbed4129277c9cb0758971a80"
