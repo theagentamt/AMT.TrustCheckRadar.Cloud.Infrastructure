@@ -17,6 +17,14 @@ not arbitrary overrides. Private inputs and plan JSON contain identity/configura
 values: use a private directory (0700), files (0600), and sanitized summaries only.
 Do not retrieve secret contents or signed artifact download URLs.
 
+The exact fingerprint-approved environment maps contain nonsecret configuration,
+identity references and secret ARNs. Only the Lambda environment argument removes
+the profile's sensitivity mark so unchanged values retain their existing resource
+marks and do not schedule an update. The profile variable remains sensitive;
+private input, plan, state and log handling still applies. Credential contents or
+any changed map fail the fixed fingerprints. The verifier still rejects update
+actions even when their values are identical.
+
 Existing `deployment.artifacts` S3 fields remain the exact historical `6d9ae503`
 inputs. AWS provider reads do not reconstruct these inputs from deployed code.
 They are inert provenance, not a claim that the historical ZIP is currently on
