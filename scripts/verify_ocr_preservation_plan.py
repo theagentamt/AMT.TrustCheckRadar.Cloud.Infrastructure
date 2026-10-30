@@ -51,6 +51,50 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
 
 
+def verified_caller_identity(plan):
+    """Read Terraform's unchanged observation without inventing a change row."""
+    address = 'data.aws_caller_identity.current'
+    provider = 'registry.terraform.io/hashicorp/aws'
+
+    def data_resources(module):
+        result = [r for r in module.get('resources', []) if r.get('mode') == 'data']
+        for child in module.get('child_modules', []):
+            result.extend(data_resources(child))
+        return result
+
+    def is_caller(row):
+        return (row.get('address') == address and row.get('mode') == 'data'
+                and row.get('type') == 'aws_caller_identity' and row.get('name') == 'current'
+                and row.get('provider_name') == provider)
+
+    prior = data_resources(plan.get('prior_state', {}).get('values', {}).get('root_module', {}))
+    require(len(prior) == 1 and is_caller(prior[0]), 'One verified prior Dev caller observation required.')
+    value = prior[0].get('values') or {}
+    require(set(value) == {'account_id', 'arn', 'id', 'user_id'}
+            and all(type(v) is str and v for v in value.values())
+            and value['account_id'] == value['id'] == '107827791950'
+            and re.fullmatch(r'arn:aws:(iam|sts)::107827791950:.+', value['arn']), 'Exact Dev caller account binding required.')
+
+    config = plan.get('configuration', {}).get('root_module', {})
+    declared = [r for r in config.get('resources', []) if r.get('mode') == 'data']
+    require(not config.get('module_calls') and len(declared) == 1
+            and declared[0].get('address') == address and declared[0].get('type') == 'aws_caller_identity'
+            and declared[0].get('name') == 'current' and declared[0].get('provider_config_key') == 'aws'
+            and plan.get('configuration', {}).get('provider_config', {}).get('aws', {}).get('full_name') == provider,
+            'Caller observation must belong to the configured AWS data source.')
+
+    changes = [r for r in plan.get('resource_changes', []) if r.get('mode') == 'data']
+    if changes:
+        require(len(changes) == 1 and is_caller(changes[0]), 'Unexpected or duplicate caller change row.')
+        c = changes[0]['change']
+        require(c['actions'] == ['no-op'] and c.get('before') == c.get('after') == value
+                and not unknowns(c.get('after_unknown', {})), 'Caller reads, changes and unknown values are forbidden.')
+    planned = data_resources(plan.get('planned_values', {}).get('root_module', {}))
+    require(not planned or (len(planned) == 1 and is_caller(planned[0]) and planned[0].get('values') == value),
+            'Planned caller observation must match the unchanged prior observation.')
+    return value
+
+
 def profile(values):
     require(values.get('environment') == 'dev' and values.get('aws_region') == 'us-east-1'
             and values.get('project_name') == 'trustcheckradar' and values.get('enabled') is True,
@@ -85,12 +129,7 @@ def review(plan, revision, baseline=None, publication=None):
     p = profile(values)
     rows = {r['address']: r for r in plan.get('resource_changes', []) if r.get('mode') == 'managed'}
     require(set(rows) == INVENTORY and len(rows) == len([r for r in plan['resource_changes'] if r.get('mode') == 'managed']), 'Exact unique 19-resource inventory required.')
-    data = [r for r in plan['resource_changes'] if r.get('mode') == 'data']
-    require(len(data) == 1 and data[0]['address'] == 'data.aws_caller_identity.current'
-            and data[0]['change']['actions'] == ['no-op']
-            and data[0]['change']['before'] == data[0]['change']['after']
-            and not unknowns(data[0]['change'].get('after_unknown', {}))
-            and data[0]['change']['after']['account_id'] == '107827791950', 'Unchanged verified Dev caller data required.')
+    verified_caller_identity(plan)
     for row in rows.values():
         c = row['change']
         require(row.get('provider_name') == 'registry.terraform.io/hashicorp/aws' and c['actions'] == ['no-op']

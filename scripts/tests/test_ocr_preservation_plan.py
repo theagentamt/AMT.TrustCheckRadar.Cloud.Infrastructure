@@ -9,6 +9,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import verify_ocr_preservation_plan as gate
 
 REV = 'a' * 40
+CALLER = {'account_id': '107827791950', 'id': '107827791950',
+          'arn': 'arn:aws:sts::107827791950:assumed-role/SyntheticRole/unit-test', 'user_id': 'SYNTHETIC:unit-test'}
+
+
+def caller_row():
+    return {'address': 'data.aws_caller_identity.current', 'mode': 'data', 'type': 'aws_caller_identity',
+            'name': 'current', 'provider_name': 'registry.terraform.io/hashicorp/aws', 'values': copy.deepcopy(CALLER)}
 
 
 def fixture():
@@ -30,12 +37,17 @@ def fixture():
             (f'aws_lambda_alias.runtime["{name}"]', {'name': 'live', 'function_name': 'trustcheckradar-dev-message-' + name,
              'function_version': '8' if name == 'consumer' else '7', 'routing_config': []})])
     rows += [(a, {'preserved': 'unchanged'}) for a in sorted(gate.INVENTORY - {a for a, _ in rows})]
+    caller = caller_row()
+    change = {k: v for k, v in caller.items() if k != 'values'}
+    change['change'] = {'actions': ['no-op'], 'before': copy.deepcopy(CALLER), 'after': copy.deepcopy(CALLER)}
     return {'terraform_version': '1.12.1', 'complete': True, 'errored': False,
+            'prior_state': {'values': {'root_module': {'resources': [caller]}}},
+            'configuration': {'root_module': {'resources': [{'address': caller['address'], 'mode': 'data',
+                'type': 'aws_caller_identity', 'name': 'current', 'provider_config_key': 'aws'}]},
+                'provider_config': {'aws': {'full_name': 'registry.terraform.io/hashicorp/aws'}}},
             'variables': {k: {'value': copy.deepcopy(v)} for k, v in values.items()},
             'resource_changes': [{'address': a, 'mode': 'managed', 'provider_name': 'registry.terraform.io/hashicorp/aws',
-                'change': {'actions': ['no-op'], 'before': copy.deepcopy(v), 'after': copy.deepcopy(v)}} for a, v in rows] + [
-                {'address': 'data.aws_caller_identity.current', 'mode': 'data', 'change': {'actions': ['no-op'],
-                 'before': {'account_id': '107827791950'}, 'after': {'account_id': '107827791950'}}}],
+                'change': {'actions': ['no-op'], 'before': copy.deepcopy(v), 'after': copy.deepcopy(v)}} for a, v in rows] + [change],
             'output_changes': {'candidate_contract': {'actions': ['no-op'], 'before': {'ai_enabled': False}, 'after': {'ai_enabled': False}}}}
 
 
@@ -87,7 +99,7 @@ class OcrPreservationTests(unittest.TestCase):
             if mutation == 'update': p['resource_changes'][-1]['change']['actions'] = ['update']
             if mutation == 'drift': p['resource_drift'] = [{'mode': 'managed', 'change': {'actions': ['update']}}]
             if mutation == 'unknown': p['resource_changes'][0]['change']['after_unknown'] = {'environment': [{'variables': {'AUTHORITY_ENABLED': True}}]}
-            if mutation == 'missing': p['resource_changes'].pop()
+            if mutation == 'missing': p['resource_changes'].pop(0)
             with self.subTest(mutation=mutation), self.assertRaises(ValueError): gate.review(p, REV)
 
     def test_future_or_wrong_version_and_consumer_alias_movement_rejected(self):
@@ -126,6 +138,61 @@ class OcrPreservationTests(unittest.TestCase):
         c['after_sensitive'] = {'environment': [{'variables': True}]}
         self.assertEqual(c['before'], c['after'])
         with self.assertRaises(ValueError): gate.review(p, REV)
+
+    def test_native_no_change_plan_uses_prior_caller_without_mutating_plan(self):
+        p = copy.deepcopy(self.base)
+        p['resource_changes'] = [r for r in p['resource_changes'] if r['mode'] == 'managed']
+        p['planned_values'] = {'outputs': {}}
+        before = copy.deepcopy(p)
+        self.assertEqual(gate.review(p, REV)['managedNoOps'], 19)
+        self.assertEqual(p, before)
+        self.assertFalse(any(r['mode'] == 'data' for r in p['resource_changes']))
+
+    def test_native_representation_does_not_mask_drift_or_resource_updates(self):
+        for kind in ('drift', 'update', 'unknown'):
+            p = copy.deepcopy(self.base)
+            p['resource_changes'].pop()
+            if kind == 'drift': p['resource_drift'] = [{'address': gate.F, 'change': {'actions': ['update']}}]
+            if kind == 'update': p['resource_changes'][0]['change']['actions'] = ['update']
+            if kind == 'unknown': p['resource_changes'][0]['change']['after_unknown'] = {'role': True}
+            with self.subTest(kind=kind), self.assertRaises(ValueError): gate.review(p, REV)
+
+    def test_missing_wrong_duplicate_or_foreign_prior_caller_rejected(self):
+        for kind in ('missing', 'duplicate', 'nested_extra', 'account', 'arn', 'provider', 'null_user', 'type'):
+            p = copy.deepcopy(self.base);p['resource_changes'].pop()
+            module = p['prior_state']['values']['root_module'];r = module['resources'][0]
+            if kind == 'missing': module['resources'] = []
+            if kind == 'duplicate': module['resources'].append(copy.deepcopy(r))
+            if kind == 'nested_extra': module['child_modules'] = [{'resources': [copy.deepcopy(r)]}]
+            if kind == 'account': r['values']['account_id'] = '000000000000'
+            if kind == 'arn': r['values']['arn'] = 'arn:aws:sts::000000000000:assumed-role/Foreign/unit-test'
+            if kind == 'provider': r['provider_name'] = 'registry.example/other/aws'
+            if kind == 'null_user': r['values']['user_id'] = None
+            if kind == 'type': r['type'] = 'aws_partition'
+            with self.subTest(kind=kind), self.assertRaises(ValueError): gate.review(p, REV)
+
+    def test_configured_caller_must_match_prior_observation(self):
+        for kind in ('missing', 'provider', 'extra', 'child_module'):
+            p = copy.deepcopy(self.base);p['resource_changes'].pop()
+            config = p['configuration']['root_module']
+            if kind == 'missing': config['resources'] = []
+            if kind == 'provider': config['resources'][0]['provider_config_key'] = 'aws.other'
+            if kind == 'extra': config['resources'].append(copy.deepcopy(config['resources'][0]))
+            if kind == 'child_module': config['module_calls'] = {'other': {}}
+            with self.subTest(kind=kind), self.assertRaises(ValueError): gate.review(p, REV)
+
+    def test_explicit_caller_reads_unknowns_or_conflicting_snapshots_rejected(self):
+        for kind in ('read', 'unknown', 'changed', 'conflicting_prior', 'duplicate', 'planned_conflict'):
+            p = copy.deepcopy(self.base);c = p['resource_changes'][-1]['change']
+            if kind == 'read': c['actions'] = ['read']
+            if kind == 'unknown': c['after_unknown'] = {'arn': True}
+            if kind == 'changed': c['after']['user_id'] = 'changed'
+            if kind == 'conflicting_prior': p['prior_state']['values']['root_module']['resources'][0]['values']['user_id'] = 'different'
+            if kind == 'duplicate': p['resource_changes'].append(copy.deepcopy(p['resource_changes'][-1]))
+            if kind == 'planned_conflict':
+                row = caller_row();row['values']['user_id'] = 'different'
+                p['planned_values'] = {'root_module': {'resources': [row]}}
+            with self.subTest(kind=kind), self.assertRaises(ValueError): gate.review(p, REV)
 
 
 if __name__ == '__main__':
