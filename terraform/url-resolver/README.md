@@ -1,5 +1,11 @@
 # Standalone URL redirect resolver
 
+For the source-only candidate that gates each destination through reputation
+before an isolated one-response fetch, use the
+[guarded expansion rollout](../../docs/URL-GUARDED-EXPANSION-ROLLOUT.md).
+It preserves this network boundary and coordinates legacy/new protocol callers;
+it does not establish a new deployed version or grant activation authority.
+
 Independent infrastructure for `url_redirect_resolver.zip` from the Lambda repository. It does not modify the API stack, URL analyzer, mobile routes, Google credentials or existing secrets. Dev was deployed and verified on 2026-09-20; its version-pinned configuration is enabled, with only a restricted Dev test caller. UAT and Prod remain disabled. See [initial deployment evidence](../../docs/URL-RESOLVER-DEV-DEPLOYMENT-2026-09-20.md) and [current Python 3.14 migration](../../docs/URL-RESOLVER-PYTHON314-MIGRATION.md).
 
 ## Resources and security boundary
