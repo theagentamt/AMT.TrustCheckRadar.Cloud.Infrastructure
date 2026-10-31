@@ -1,5 +1,10 @@
 # Private Dev URL assessment
 
+The [guarded expansion rollout](../../docs/URL-GUARDED-EXPANSION-ROLLOUT.md)
+describes the source candidate that checks reputation before each isolated target
+visit, including reader compatibility and rollout/rollback order. Existing
+permissions and resources fit that candidate; live deployment remains separate.
+
 This independent stack runs the IAM-only `url_assessment` Lambda on Python 3.14 (ARM64), using Google Web Risk Lookup and the existing private redirect resolver. It does not expose a consumer API, implement subscription/allowance authority or replace the old `/web-risk-communication` route. The owner explicitly requested leaving that legacy Dev Lambda running.
 
 ## Boundaries
