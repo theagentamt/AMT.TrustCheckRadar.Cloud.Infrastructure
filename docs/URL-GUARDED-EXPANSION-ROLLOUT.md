@@ -6,10 +6,11 @@ qualification. The source-only assessment on 2026-10-31 used infrastructure
 `c777eabacd41b5b618e919442ef19a7503403024` (tree
 `a0ddecde57bfbbb2c0064397e5122d7c5398c325`). Its retained handoff is
 `task-3/url-guarded-expansion-20261031/delivery-qualification-c777eaba/HANDOFF.json`.
-As of 2026-10-31, scoped independent review of preceding `c554278e` is clean and
-the prior P2 finding is closed; review of the new four-file export metadata delta
-is pending. Local delivery qualification remains partial: the export archive lacks
-its retained target dependencies, and Linux ARM64 execution is unperformed.
+As of 2026-10-31, scoped independent reviews of preceding `c554278e` and the
+`c777eaba` export metadata delta are clean; the prior P2 finding is closed. Local
+delivery qualification remains partial: the export archive lacks its retained
+target dependencies, Linux ARM64 execution is unperformed, and six campaign
+fixture race cases remain unqualified pending test-only time-setup correction.
 Bind the reviewed source to qualified immutable archives before preparing a live
 plan. No fresh AWS state, credentials, provider results or deployed versions were
 inspected here.
@@ -194,7 +195,7 @@ This source change authorizes none of those live actions. Package publication,
 saved plans/locks, exact deployment/state persistence, any admission changes and
 provider-backed acceptance need their concrete scoped approvals and review. No
 UAT/production/public activation, secret creation/rotation, IAM/network change or
-new paid resource is included. Remaining gates are independent review of the
-`c777eaba` export metadata delta, native reader/version readiness, immutable
-release/archive evidence and fresh authorized live pins, including actual feedback
-provisioning/route/admission. They do not justify speculative infrastructure changes.
+new paid resource is included. Remaining gates are native reader/version readiness,
+immutable release/archive evidence and fresh authorized live pins, including actual
+feedback provisioning/route/admission. They do not justify speculative
+infrastructure changes.
