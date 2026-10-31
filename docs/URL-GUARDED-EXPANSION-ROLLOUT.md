@@ -2,11 +2,13 @@
 
 This is source preparation for the guarded URL candidate, not deployment or live
 qualification. The source-only assessment on 2026-10-31 used infrastructure
-`cafb83b2f927afc97cc131f498d19a0ec01ab978` and the Lambda worktree
-`codex/url-guarded-expansion`, based on
-`d2f6a03799b4ee3df6c717f6cd8f8338b1e1abde` with uncommitted changes. Freeze the final
-reviewed backend commit and archives before preparing a live plan. No fresh AWS
-state, credentials, provider results or deployed versions were inspected here.
+`cafb83b2f927afc97cc131f498d19a0ec01ab978` and Lambda candidate
+`c554278ef373a34fcbe8f81dc749293154fe7de5` (tree
+`3cb69842e3827b96c0ce3f284d74ea24a10f4fbc`). Its retained handoff is
+`task-3/url-guarded-expansion-20261031/review-c554278e/HANDOFF.json`;
+refreshed independent backend review is pending. Bind the reviewed source to
+immutable archives before preparing a live plan. No fresh AWS state, credentials,
+provider results or deployed versions were inspected here.
 
 ## Existing resources fit the candidate
 
@@ -21,16 +23,25 @@ HTTP response. The resolver never receives the Google credential.
 | `trustcheckradar-dev-url-assessment` / `terraform/url-assessment` | New immutable `url_assessment.zip`, published version and `live` alias | Python 3.14 ARM64, 256 MiB, 35 s, concurrency at most 2, existing Web Risk secret ARN and resolver `live` ARN |
 | `trustcheckradar-dev-url-consumer` / `terraform/url-consumer` | New immutable `url_consumer.zip` through `consumer_artifact_override`, version and `live` alias | Python 3.14 ARM64, 256 MiB, 29 s, concurrency 2, JWT routes, identity/device fences, HMAC, allowance/accounting and existing assessment `live` ARN |
 | `trustcheckradar-dev-governed-history` / `terraform/governed-history` | Compatible `governed_history.zip`, version and `live` alias | Current reader admission, GSI2/table permissions, retention and current environment |
+| `trustcheckradar-dev-result-feedback` / `terraform/result-feedback` | Compatible `result_feedback.zip` through `deployment.artifacts.feedback`, version and `live` alias if already provisioned | Python 3.14 ARM64, 256 MiB, 10 s, concurrency 2, receipt/device fences and existing HMAC permission; declared inactive with no route |
 | `trustcheckradar-dev-account-export-api` / `terraform/api` | Compatible `account_export_api.zip` through `account_export_deployment` | Existing unversioned function wiring and disabled/export admission settings; no new export access |
-| `trustcheckradar-dev-v1-entitlements` / `terraform/url-consumer` | Compatible `v1_entitlements.zip` through `entitlements_artifact_override` if the strict pending-receipt reader needs correction | Exact current trial/access cohort, durations, allowance, unrelated worker artifacts and settings |
+| `trustcheckradar-dev-v1-entitlements` / `terraform/url-consumer` | Compatible `v1_entitlements.zip` through `entitlements_artifact_override` if its deployed bundled pending-receipt reader lacks candidate.3 support | Exact current trial/access cohort, durations, allowance, unrelated worker artifacts and settings |
 
 Source references: [resolver](../terraform/url-resolver/main.tf),
 [assessment](../terraform/url-assessment/main.tf),
 [consumer](../terraform/url-consumer/main.tf),
 [authenticated routes](../terraform/url-consumer/integration.tf),
-[History](../terraform/governed-history/main.tf), and
+[History](../terraform/governed-history/main.tf),
+[feedback](../terraform/result-feedback/main.tf), and
 [export](../terraform/api/account-export.tf). These are declarations, not current
 live values. Retain actual deployed pins rather than substituting historical tfvars.
+
+Feedback is declared with provisioning disabled by default and
+`RESULT_FEEDBACK_ENABLED=false`; that root creates no API route. The backend's
+versioned feedback contract does not prove a deployed endpoint exists. Verify the
+actual function, route and admission before claiming a code-only rollout. Missing
+provisioning, routing or activation needs its own concrete scope; do not create or
+enable it as an incidental reader update. Preserve export's current scope too.
 
 No new IAM grant, secret, VPC, subnet, NAT, endpoint, queue, table, index, server,
 provisioned concurrency or scheduled worker is justified by this candidate.
@@ -56,31 +67,51 @@ The backend owner must freeze and test these boundaries in the actual archives:
 
 - URL transport `1.0.0-candidate.3` selects assessment contract
   `0.4.0-candidate.1`: private assessment request schema 2/result schema 3, and
-  resolver single-response request/result schema 2. Old private schema 1 remains
-  available for existing workers. There is no guarded-to-legacy fallback.
+  resolver single-response request/result schema 2. Only the private resolver
+  retains schema 1 for mixed deployment. The assessment handler retires schema 1:
+  a valid legacy envelope returns unavailable, retains its validated `checkId`
+  and performs zero network work, allowing uncharged settlement. Historical pure
+  functions remain regression fixtures, not a runtime fallback.
 - The candidate consumer rejects legacy prepare/submit versions; older receipt
-  reconciliation remains explicit. Android must send candidate.3 and request the
-  compatible History envelope/header before enabling the new writer. An old
-  client encountering a new History item must not silently discard or mislabel it.
-- Deploy compatible History, export and strict receipt/accounting readers before
-  candidate.3 can write durable receipts. At the source snapshot inspected here,
-  `src/shared_check_authority/purchase_usage.py` still accepted only candidate.2
-  in its pending paid-receipt validation. This is a backend admission blocker,
-  not an IAM problem: require candidate.3 support with strict invalid-version
-  rejection and paid-reservation cleanup regressions before rollout.
+  reconciliation retains the original version, evidence and accounting. Android
+  must support the explicit reader versions below before enabling the new writer.
+  New readers handle old and guarded records; old readers fail closed on guarded
+  records and must not silently discard or mislabel them.
+- Deploy compatible History, feedback, export and strict receipt/accounting readers
+  before candidate.3 can write durable receipts. At `c554278e`,
+  `src/shared_check_authority/purchase_usage.py` accepts candidate.2 and candidate.3
+  while rejecting unknown versions. The earlier source blocker is fixed. Confirm
+  that deployed archives containing this reader have the same support, with paid
+  reservation cleanup regressions, before retaining their existing artifacts.
 - Archive tests must cover bundled `shared_url_guarded`, the new consumer mapper
   and schemas, the assessment's vendored resolver/DNS imports, mixed historical
-  and new History projections, export and pending-receipt cleanup. Prove installed
-  lease-recovery, deletion, maintenance, Message and Play workers remain compatible
-  before retaining their current artifacts; do not redeploy every shared-code user.
+  and new History projections, feedback, export and pending-receipt cleanup. Prove
+  installed lease-recovery, deletion, maintenance, Message and Play workers remain
+  compatible before retaining their current artifacts; do not redeploy every
+  shared-code user.
 - Existing Message/legacy private URL paths are not automatically migrated by
-  this change. Do not claim all application URL paths use guarded traversal or
-  activate AI, legacy routes, export or other services as part of this rollout.
+  this change: their schema-1 assessment calls now return explicit unavailable
+  until migrated. First-class `message_url` through URL candidate.3 is supported.
+  Do not claim all application URL paths use guarded traversal or activate AI,
+  legacy routes, feedback, export or other services as part of this rollout.
+
+| Reader interface | Required explicit version |
+| --- | --- |
+| History request header `x-history-contract-version` | `1.0.0-governed-history-candidate.2` |
+| Feedback body `feedbackTransportVersion` | `1.0.0-feedback-candidate.2` |
+| Export request header `x-account-export-contract-version`, on every page | `1.0.0-account-export-candidate.6` |
+
+Export candidate.6 preserves the configured base profile candidate.2, .4 or .5;
+the header cannot enable Play-token, demographic or other export families. Its
+cursor binds candidate.6 and the exact base profile alongside account, device,
+inventory and expiry. Feedback preserves receipt/proof/device fences and opinion
+policy, without provider lookup, entitlement change or new accounting.
 
 ## Ordered rollout under an exact reviewed live plan
 
 1. Freeze backend and Android contracts, immutable ZIP hashes/S3 versions, handler
-   imports and compatibility results. Record the exact changed package set.
+   imports and compatibility results. Record the exact changed package set. Native
+   reader/version negotiation must be ready before new guarded receipts are admitted.
 2. Under separately scoped AWS read/plan authority, verify Dev account
    `107827791950`, `us-east-1`, owning state serial/VersionId/ETag, actual code,
    aliases/revisions, runtime management/ARN, full private environment hashes,
@@ -92,12 +123,16 @@ The backend owner must freeze and test these boundaries in the actual archives:
    affects entitlement configuration, and governed-trial mode excludes it; do not
    toggle it merely to deploy code or silently change the tester cohort. Preserve
    recovery of existing admitted operations when choosing a quiescence mechanism.
-4. Publish and verify compatible durable readers first. Update resolver next,
-   verifying both legacy schema 1 and one-response schema 2. Then update assessment,
-   verifying both legacy and guarded requests. Only then move the candidate.3
-   consumer writer and compatible Android client into the approved cohort. This
-   order prevents a new assessor from calling an old resolver and a new writer
-   from outrunning strict readers. No weighted mixed-version rollout is assumed.
+4. Publish and verify History, feedback and export readers first, preserving their
+   admission, plus any required pending-receipt reader update. Update resolver
+   next, verifying private schema 1 and one-response schema 2. Then update the
+   guarded assessment, proving legacy requests return unavailable with validated
+   identity and zero network calls. Only then select the candidate.3 consumer and
+   enable the native new Check path within its approved cohort. A schema-2 call to
+   an old resolver rejects; a legacy call to the new assessor is unavailable. Both
+   mixed states fail closed; neither permits fetch-first fallback or fake clearance.
+   This order keeps the writer behind compatible readers and the assessor behind
+   its resolver. No weighted mixed-version rollout is assumed.
 5. Use the existing artifact selectors for each owning root and inspect full saved
    plans. Permit only the reviewed package/version/alias deltas; retain environment,
    IAM, networking, schedules, non-alarm monitoring and all unrelated resources.
@@ -119,14 +154,16 @@ in-flight records, allowance and recovery. Keep candidate.3-capable readers and
 reconciliation until their retained data can still be handled. Returning all old
 packages at once is not backward compatible once new receipts exist.
 
-If no new-format records were admitted and old-client compatibility is proven,
-restore the reviewed consumer first, then assessment, then resolver, using exact
-prior code/configuration/alias pins. Otherwise retain a compatible consumer's
-reconciliation path with new submissions closed; any rollback artifact must
-explicitly understand existing candidate.3 records. Reconcile interrupted states
-before retrying any mutation. Preserve the old schema-1 path for existing callers
-until they have their own migration. Never erase receipts, reset balances, rerun
-providers to repair replay, or restore broad admission as a rollback shortcut.
+Rollback artifacts must retain candidate.3 reconciliation and reader support for
+any existing guarded records. Do not restore fetch-first assessment, even if no
+new records were admitted. Review exact alias/configuration rollback pins and a
+closed-admission compatible artifact set; restoring the former stack wholesale is
+not an approved sequence. A resolver downgrade requires quiescing its schema-2
+callers, and assessment must still fail closed rather than fall back. Resolver
+schema-1 compatibility does not authorize a legacy assessment network path.
+Reconcile interrupted states before retrying any mutation. Never erase receipts,
+reset balances, rerun providers to repair replay, or restore broad admission as a
+rollback shortcut.
 
 ## Required evidence and authority
 
@@ -134,9 +171,13 @@ Local unit/functional and archive regressions are supplementary evidence. They
 must prove pre-visit reputation gating at origin and every redirect, no fetch on
 threat/provider failure, public-IP and rebinding defenses, no target request for
 origin-only input, no raw destination in public results/logs, redirect/latency/RPC
-bounds, partial/uncertain contact honesty and one logical settlement. Retain legacy
-protocol, mixed-receipt, History cursor/header, export and cleanup compatibility
-results, including real Python 3.14 ARM64 archive import checks.
+bounds, partial/uncertain contact honesty and one logical settlement. Verify
+initial policy rejection and retired legacy assessment retain validated operation
+identity for uncharged settlement with zero DNS/provider/target work. Retain
+mixed-receipt, History cursor/header, feedback version/fence, export version/base
+profile/cursor and cleanup compatibility results, including real Python 3.14 ARM64
+archive import checks. Backend handoff test totals are retained evidence, not tests
+rerun or live acceptance performed by this infrastructure workstream.
 
 Live acceptance needs an exact approved nonpersonal URL set and existing tester,
 current session, provider-secret use limited to the running integration, bounded
@@ -149,6 +190,7 @@ This source change authorizes none of those live actions. Package publication,
 saved plans/locks, exact deployment/state persistence, any admission changes and
 provider-backed acceptance need their concrete scoped approvals and review. No
 UAT/production/public activation, secret creation/rotation, IAM/network change or
-new paid resource is included. Current blockers are the unfinished backend reader
-alignment, immutable release/test evidence and fresh authorized live pins; they
-do not justify speculative infrastructure changes.
+new paid resource is included. Remaining gates are refreshed independent backend
+review, native reader/version readiness, immutable release/archive evidence and
+fresh authorized live pins, including actual feedback provisioning/route/admission.
+They do not justify speculative infrastructure changes.
