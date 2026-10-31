@@ -7,10 +7,15 @@ qualification. The source-only assessment on 2026-10-31 used infrastructure
 `a0ddecde57bfbbb2c0064397e5122d7c5398c325`). Its retained handoff is
 `task-3/url-guarded-expansion-20261031/delivery-qualification-c777eaba/HANDOFF.json`.
 As of 2026-10-31, scoped independent reviews of preceding `c554278e` and the
-`c777eaba` export metadata delta are clean; the prior P2 finding is closed. Local
-delivery qualification remains partial: the export archive lacks its retained
-target dependencies, Linux ARM64 execution is unperformed, and six campaign
-fixture race cases remain unqualified pending test-only time-setup correction.
+`c777eaba` export metadata delta are clean; the prior P2 finding is closed. The
+offline campaign fixture issue is resolved by independently reviewed test-only
+commit `4cc5c5274ca3926e5a67ed6da31ba394db951307`: runtime and runner source remain
+identical to `c777eaba`, which remains the deployment runtime pin. The affected
+14 checks, full-file 100 checks and component 363 checks plus 9 subtests passed
+without failures or skips; these selections overlap. This is offline fixture
+qualification, not live campaign acceptance. Local delivery qualification remains
+partial: the export archive lacks its retained target dependencies, and Linux
+ARM64 execution is unperformed.
 Bind the reviewed source to qualified immutable archives before preparing a live
 plan. No fresh AWS state, credentials, provider results or deployed versions were
 inspected here.
