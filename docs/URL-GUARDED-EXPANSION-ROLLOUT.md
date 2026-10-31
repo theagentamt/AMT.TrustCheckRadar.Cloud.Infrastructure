@@ -3,13 +3,16 @@
 This is source preparation for the guarded URL candidate, not deployment or live
 qualification. The source-only assessment on 2026-10-31 used infrastructure
 `cafb83b2f927afc97cc131f498d19a0ec01ab978` and Lambda candidate
-`c554278ef373a34fcbe8f81dc749293154fe7de5` (tree
-`3cb69842e3827b96c0ce3f284d74ea24a10f4fbc`). Its retained handoff is
-`task-3/url-guarded-expansion-20261031/review-c554278e/HANDOFF.json`;
-scoped independent backend review of `c554278e` is clean as of 2026-10-31, with
-the prior P2 finding closed. Bind the reviewed source to immutable archives before
-preparing a live plan. No fresh AWS state, credentials, provider results or deployed
-versions were inspected here.
+`c777eabacd41b5b618e919442ef19a7503403024` (tree
+`a0ddecde57bfbbb2c0064397e5122d7c5398c325`). Its retained handoff is
+`task-3/url-guarded-expansion-20261031/delivery-qualification-c777eaba/HANDOFF.json`.
+As of 2026-10-31, scoped independent review of preceding `c554278e` is clean and
+the prior P2 finding is closed; review of the new four-file export metadata delta
+is pending. Local delivery qualification remains partial: the export archive lacks
+its retained target dependencies, and Linux ARM64 execution is unperformed.
+Bind the reviewed source to qualified immutable archives before preparing a live
+plan. No fresh AWS state, credentials, provider results or deployed versions were
+inspected here.
 
 ## Existing resources fit the candidate
 
@@ -79,7 +82,7 @@ The backend owner must freeze and test these boundaries in the actual archives:
   New readers handle old and guarded records; old readers fail closed on guarded
   records and must not silently discard or mislabel them.
 - Deploy compatible History, feedback, export and strict receipt/accounting readers
-  before candidate.3 can write durable receipts. At `c554278e`,
+  before candidate.3 can write durable receipts. At `c777eaba`,
   `src/shared_check_authority/purchase_usage.py` accepts candidate.2 and candidate.3
   while rejecting unknown versions. The earlier source blocker is fixed. Confirm
   that deployed archives containing this reader have the same support, with paid
@@ -191,7 +194,7 @@ This source change authorizes none of those live actions. Package publication,
 saved plans/locks, exact deployment/state persistence, any admission changes and
 provider-backed acceptance need their concrete scoped approvals and review. No
 UAT/production/public activation, secret creation/rotation, IAM/network change or
-new paid resource is included. Remaining gates are native reader/version readiness,
-immutable release/archive evidence and fresh authorized live pins, including actual
-feedback provisioning/route/admission. They do not justify speculative
-infrastructure changes.
+new paid resource is included. Remaining gates are independent review of the
+`c777eaba` export metadata delta, native reader/version readiness, immutable
+release/archive evidence and fresh authorized live pins, including actual feedback
+provisioning/route/admission. They do not justify speculative infrastructure changes.
